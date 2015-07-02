@@ -1,0 +1,3 @@
+add_subdirectory(linear_elasticity)
+add_subdirectory(nonlinear_elasticity)
+add_subdirectory(partitioned_linear_elastic)
