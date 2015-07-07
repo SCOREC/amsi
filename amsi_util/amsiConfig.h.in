@@ -1,15 +1,35 @@
-#ifndef CONFIG_H_IN_
-#define CONFIG_H_IN_
+#ifndef AMSICONFIG_H_IN_
+#define AMSICONFIG_H_IN_
 
 #define AMSI_MAJOR_VERSION @AMSI_MAJOR_VERSION@
 #define AMSI_MINOR_VERSION @AMSI_MINOR_VERSION@
 #define AMSI_PATCH_VERSION @AMSI_PATCH_VERSION@
 
-#define @HOST@
-#define @HAVE_CORE@
-#define @HAVE_MESHSIM@
-#define @HAVE_ZOLTAN@
-#define @HAVE_PETSC@
+#define HOST @HOST@
+
+#if @CORE_FOUND@ == TRUE
+#  define CORE 1
+#else
+#  define CORE 0
+#endif
+
+#if @SIMMODSUITE_FOUND@ == TRUE
+#  define SIM 1
+#else
+#  define SIM 0
+#endif
+
+#if @ZOLTAN_FOUND@ == TRUE
+#  define ZOLTAN 1
+#else
+#  define ZOLTAN 0
+#endif
+
+#if @PETSC_FOUND@ == TRUE
+#  define PETSC 1
+#else
+#  define PETSC 0
+#endif
 
 #ifdef DEBUG
 #  define AMSI_DEBUG(EX) EX

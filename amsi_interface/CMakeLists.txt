@@ -1,5 +1,11 @@
-find_package(CoreSim)
+find_package(MPI REQUIRED)
+find_package(ZOLTAN)
 find_package(PETSc)
+
+find_package(CoreSim)
+if(NOT CORE_FOUND)
+  find_package(Core)
+endif()
 
 set(interface_public_headers
     amsiInterface.h
@@ -56,7 +62,7 @@ if(CORE_FOUND)
        TrussIntegrator.cc)
 endif(CORE_FOUND)
 
-if(CORESIM_FOUND)
+if(SIMMODSUITE_FOUND)
   list(APPEND interface_public_headers 
         SimFEA.h
 	apfSimFEA.h
@@ -65,12 +71,11 @@ if(CORESIM_FOUND)
 	SimTensorFieldQuery.h)
 
   list(APPEND interface_src_files 
-	apfFunctions.cc 
 	SimFEA.cc
 	apfSimFEA.cc
 	Elasticity.cc 
 	NonLinElasticity.cc)
-endif(CORESIM_FOUND)
+endif(SIMMODSUITE_FOUND)
 
 # Add the library to create
 add_library(amsi_interface ${interface_src_files} ${interface_public_headers})
@@ -90,9 +95,9 @@ if(PETSC_FOUND)
   target_link_libraries(amsi_interface PUBLIC ${PETSC_LIBRARIES})
 endif()
 
-if(CORESIM_FOUND)
-  target_include_directories(amsi_interface PUBLIC ${CORESIM_INCLUDE_DIRS})
-  target_link_libraries(amsi_interface PUBLIC ${CORESIM_LIBRARIES})
+if(CORE_FOUND)
+  target_include_directories(amsi_interface PUBLIC ${CORE_INCLUDE_DIRS})
+  target_link_libraries(amsi_interface PUBLIC ${CORE_LIBRARIES})
 endif()
 
 install(TARGETS amsi_interface

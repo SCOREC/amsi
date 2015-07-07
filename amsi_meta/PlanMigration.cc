@@ -1,7 +1,7 @@
 #include "PlanMigration.h"
 #include "DataDistribution.h"
 
-#ifdef ZOLTAN
+#if ZOLTAN
 #include <zoltan.h>
 #endif
 
@@ -173,7 +173,7 @@ namespace amsi {
       }
     }
 
-# ifdef ZOLTAN
+# if ZOLTAN
   void CommPattern_PlanMigration_Zoltan(std::vector<int> & m_index,
 					std::vector<int> & m_send_to,
 					CommPattern * pattern,

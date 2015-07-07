@@ -1,3 +1,5 @@
+find_package(MPI REQUIRED)
+
 set(control_public_headers
   amsi.h ControlService.h  )
 

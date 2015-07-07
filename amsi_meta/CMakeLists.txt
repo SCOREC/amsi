@@ -1,3 +1,11 @@
+find_package(MPI REQUIRED)
+find_package(ZOLTAN)
+find_package(PETSc)
+find_package(CoreSim)
+if(NOT CORE_FOUND)
+  find_package(Core)
+endif()
+
 set(meta_public_headers 
   amsiMeta.h
   ProcessSet.h
@@ -37,14 +45,15 @@ target_link_libraries(amsi_meta PUBLIC amsi_util ${MPI_LIBRARIES})
 
 if(ZOLTAN_FOUND)
   target_link_libraries(amsi_meta PUBLIC ${ZOLTAN_LIBRARIES})
+  target_include_directories(amsi_meta PUBLIC ${ZOLTAN_INCLUDE_DIRS})
 endif()
 
 if(PETSC_PARMETIS)
   target_link_libraries(amsi_meta PUBLIC ${PETSC_LIBRARIES})
 endif()
 
-if(CORESIM_FOUND)
-  target_link_libraries(amsi_meta PUBLIC ${CORESIM_LIBRARIES})
+if(CORE_FOUND)
+  target_link_libraries(amsi_meta PUBLIC ${CORE_LIBRARIES})
 endif()
 
 set_property(TARGET amsi_meta PROPERTY VERSION ${AMSI_VERSION})

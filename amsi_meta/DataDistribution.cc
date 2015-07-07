@@ -1,6 +1,6 @@
 #include "DataDistribution.h"
 
-#ifdef ZOLTAN
+#if ZOLTAN
 #include <zoltan.h>
 #endif
 
@@ -33,7 +33,7 @@ namespace amsi {
   // initialize member variables which are the same regardless of constructor used
   void DataDistribution::Init()
   {
-#   ifdef ZOLTAN
+#   if ZOLTAN
     zs = NULL;  
 #   endif
 
@@ -45,7 +45,7 @@ namespace amsi {
   {
     if(!assembled)
     {
-#     ifdef CORE
+#     if CORE
       int size;
       int recv_from;
       void* recv;

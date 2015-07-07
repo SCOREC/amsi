@@ -4,14 +4,14 @@
 #include "Assemblable.h"
 #include "amsiConfig.h"
 
-#ifdef CORE
+#if CORE
 #include <PCU.h>
 #endif
 
 #include <valarray>
 #include <vector>
 
-#ifdef ZOLTAN
+#if ZOLTAN
 struct Zoltan_Struct;
 #endif
 
@@ -39,7 +39,7 @@ namespace amsi {
       void setWeight(int index, int sub_index, double wgt);
       double getWeight(int index, int sub_index);
       
-#ifdef ZOLTAN
+#if ZOLTAN
       DataDistribution(int size, Zoltan_Struct *);
       Zoltan_Struct * GetZS() const {return zs;}
 #endif
@@ -51,7 +51,7 @@ namespace amsi {
       std::valarray<std::vector<double> > wgts;
       std::valarray<int> dd;
 
-#ifdef ZOLTAN
+#if ZOLTAN
       Zoltan_Struct * zs;
 #endif
     };

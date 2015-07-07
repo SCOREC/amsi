@@ -24,37 +24,6 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   include_directories(${BOOST_INCLUDE_DIR})
 endif()
 
-find_package(MPI REQUIRED)
-
-find_package(PETSc)
-if(PETSC_FOUND)
-  set(HAVE_PETSC PETSC)
-  include_directories(${PETSC_INCLUDE_DIRS})
-  message(STATUS "PETSc libraries: ${PETSC_LIBRARIES}")
-else()
-  set(HAVE_PETSC NO_PETSC)
-endif()
-
-find_package(ZOLTAN)
-
-if(ZOLTAN_FOUND)
-  set(HAVE_ZOLTAN ZOLTAN)
-  include_directories(${ZOLTAN_INCLUDE_DIRS})
-else()
-  set(HAVE_ZOLTAN NO_ZOLTAN)
-endif()
-
-# attempt to find PCU optional dependency
-find_package(CoreSim)
-if(CORESIM_FOUND)
-  set(CORE_FOUND TRUE)
-  set(HAVE_CORE CORE)
-  set(HAVE_MESHSIM SIM)
-else()
-  set(HAVE_CORE NO_CORE)
-  set(HAVE_MESHSIM NO_SIM)
-endif()
-
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 

@@ -1,3 +1,11 @@
+find_package(MPI REQUIRED)
+find_package(PETSc)
+find_package(ZOLTAN) # only here for amsiConfig.h.in configuration
+find_package(CoreSim)
+if(NOT CORE_FOUND)
+  find_package(Core)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiConfig.h.in 
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiConfig.h 
 	       @ONLY)
@@ -12,6 +20,7 @@ set(util_public_headers
   unordered_map.h 
   pystring.h
   )
+
 #really don't want unordered map to be public... hmm
 
 set(util_source_files
@@ -33,8 +42,8 @@ if(PETSC_FOUND)
   target_include_directories(amsi_util PUBLIC ${PETSC_INCLUDES})
 endif()
 
-if(CORESIM_FOUND)
-  target_include_directories(amsi_util PUBLIC ${CORESIM_INCLUDE_DIRS})
+if(CORE_FOUND)
+  target_include_directories(amsi_util PUBLIC ${CORE_INCLUDE_DIRS})
 endif()
 
 install(TARGETS amsi_util 
