@@ -31,6 +31,8 @@ if(${MESH_BACKEND} STREQUAL "SIMMETRIX")
   find_package(CoreSim REQUIRED)
 elseif(${MESH_BACKEND} STREQUAL "PUMI")
   find_package(Core REQUIRED)
+else()
+  message(FATAL_ERROR "Specify the MESH_BACKEND variable as either SIMMETRIX or PUMI")
 endif()
 
 add_subdirectory(amsi_util)
