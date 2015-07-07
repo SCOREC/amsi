@@ -22,6 +22,7 @@ fi
   cmake \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
+    -DMESH_BACKEND=SIMMETRIX \
     -DSIM_MPI=openmpi14 \
     ..
 

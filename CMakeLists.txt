@@ -27,6 +27,12 @@ endif()
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
+if(${MESH_BACKEND} STREQUAL "SIMMETRIX")
+  find_package(CoreSim REQUIRED)
+elseif(${MESH_BACKEND} STREQUAL "PUMI")
+  find_package(Core REQUIRED)
+endif()
+
 add_subdirectory(amsi_util)
 
 add_subdirectory(amsi_meta)
