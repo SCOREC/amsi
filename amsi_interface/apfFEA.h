@@ -63,12 +63,14 @@ namespace amsi {
 	{
 	  analysis_dim = apf_mesh->getDimension();
 	};
-      
+
       void RenumberDOFs();
       void Assemble(LAS * las);
       void UpdateSolution(const double*);
       void WriteMesh(const std::string &);
     };
+
+    
     
   }
 }

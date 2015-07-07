@@ -2,11 +2,6 @@ find_package(MPI REQUIRED)
 find_package(ZOLTAN)
 find_package(PETSc)
 
-find_package(CoreSim)
-if(NOT CORE_FOUND)
-  find_package(Core)
-endif()
-
 set(interface_public_headers
     amsiInterface.h
     ElementalSystem.h
@@ -18,6 +13,16 @@ set(interface_public_headers
     TensorFieldQuery.h
     NonFiniteElement.h
     ConvenienceFunctions.h
+    ElementalSystem.h
+    NeumannIntegrator.h
+    apfFunctions.h
+    apfFEA.h
+    LinearElasticIntegrator.h
+    StressStrainIntegrator.h
+    SurfaceTractionIntegrator.h
+    NonLinElasticIntegrator.h
+    NonLinearElasticIntegrator.h
+    TrussIntegrator.h
    )
 
 set(interface_src_files
@@ -28,41 +33,28 @@ set(interface_src_files
     Solvers.cc
     NonFiniteElement.cc
     ConvenienceFunctions.cc
+    ElementalSystem.cc
+    NeumannIntegrator.cc
+    apfFunctions.cc
+    apfFEA.cc
+    LinearElasticIntegrator.cc
+    StressStrainIntegrator.cc
+    SurfaceTractionIntegrator.cc
+    NonLinElasticIntegrator.cc
+    NonLinearElasticIntegrator.cc
+    TrussIntegrator.cc
    )
 
+# petsc is optional
 if(PETSC_FOUND)
   list(APPEND interface_public_headers PetscLAS.h)
   list(APPEND interface_src_files PetscLAS.cc)
   include_directories(${PETSC_INCLUDES})
 endif(PETSC_FOUND)
 
-if(CORE_FOUND)
-  list(APPEND interface_public_headers
-       ElementalSystem.h
-       NeumannIntegrator.h
-       apfFunctions.h
-       apfFEA.h
-       LinearElasticIntegrator.h
-       StressStrainIntegrator.h
-       SurfaceTractionIntegrator.h
-       NonLinElasticIntegrator.h
-       NonLinearElasticIntegrator.h
-       TrussIntegrator.h)
-
-  list(APPEND interface_src_files
-       ElementalSystem.cc
-       NeumannIntegrator.cc
-       apfFunctions.cc
-       apfFEA.cc
-       LinearElasticIntegrator.cc
-       StressStrainIntegrator.cc
-       SurfaceTractionIntegrator.cc
-       NonLinElasticIntegrator.cc
-       NonLinearElasticIntegrator.cc
-       TrussIntegrator.cc)
-endif(CORE_FOUND)
-
+# will only be found if we're doing a simmetrix build
 if(SIMMODSUITE_FOUND)
+  include(SimmetrixFiles.cmake)
   list(APPEND interface_public_headers 
         SimFEA.h
 	apfSimFEA.h
@@ -95,10 +87,8 @@ if(PETSC_FOUND)
   target_link_libraries(amsi_interface PUBLIC ${PETSC_LIBRARIES})
 endif()
 
-if(CORE_FOUND)
-  target_include_directories(amsi_interface PUBLIC ${CORE_INCLUDE_DIRS})
-  target_link_libraries(amsi_interface PUBLIC ${CORE_LIBRARIES})
-endif()
+target_include_directories(amsi_interface PUBLIC ${CORE_INCLUDE_DIRS})
+target_link_libraries(amsi_interface PUBLIC ${CORE_LIBRARIES})
 
 install(TARGETS amsi_interface
 	EXPORT amsiinterfaceTargets 

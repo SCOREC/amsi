@@ -1,10 +1,6 @@
 find_package(MPI REQUIRED)
 find_package(ZOLTAN)
 find_package(PETSc)
-find_package(CoreSim)
-if(NOT CORE_FOUND)
-  find_package(Core)
-endif()
 
 set(meta_public_headers 
   amsiMeta.h

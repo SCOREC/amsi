@@ -21,7 +21,7 @@
 namespace amsi {
   namespace Analysis {
 
-  class Elasticity: public apfSimFEA
+  class Elasticity : public apfSimFEA
   {
   public:
       

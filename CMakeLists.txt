@@ -14,6 +14,10 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   add_definitions(-DDEBUG)
 endif()
 
+if(NOT SIMMETRIX_BUILD)
+  set(SIMMETRIX_BUILD FALSE)
+endif()
+
 # TODO: determine which compiler family is in use and change the C++11 flag appropriately -qlanglvl= or something
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(HOST SCOREC)
@@ -27,12 +31,10 @@ endif()
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
-if(${MESH_BACKEND} STREQUAL "SIMMETRIX")
+if(SIMMETRIX_BUILD)
   find_package(CoreSim REQUIRED)
-elseif(${MESH_BACKEND} STREQUAL "PUMI")
-  find_package(Core REQUIRED)
 else()
-  message(FATAL_ERROR "Specify the MESH_BACKEND variable as either SIMMETRIX or PUMI")
+  find_package(Core REQUIRED)
 endif()
 
 add_subdirectory(amsi_util)

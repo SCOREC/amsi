@@ -2,12 +2,6 @@ find_package(MPI REQUIRED)
 find_package(PETSc)
 find_package(ZOLTAN) # only here for amsiConfig.h.in configuration
 
-if(SIMMETRIX_BUILD)
-  find_package(CoreSim REQUIRED)
-elif(PUMI_BUILD)
-  find_package(Core REQUIRED)
-endif()
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiConfig.h.in 
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiConfig.h 
 	       @ONLY)

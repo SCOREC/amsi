@@ -117,11 +117,6 @@ namespace amsi {
 
               apf::Vector3 cdisp;
               apf::getVector(apf_primary_field,mesh_ent,ii,cdisp);
-              apf::Vector3 init_coords;
-              apf::getVector(apf_mesh->getCoordinateField(),
-			     mesh_ent,
-			     ii,
-			     init_coords);
 
 	      for(int jj = 0; jj < num_components; jj++)
 	      {
