@@ -38,6 +38,25 @@ namespace amsi {
       }
     }
 
+    void apfFEA::ApplyBC_Dirichlet(std::vector<DirichletSpecification> & spec)
+    {
+      fixed_dofs = 0;
+      APF_ITERATE(std::vector<DirichletSpecification>,spec,entry)
+      {
+	apf::ModelEntity * ent = apf_mesh->findModelEntity(entry->type,entry->tag);
+	fixed_dofs += Entity_ApplyBC_Dirichlet(ent,entry->component,entry->value);
+      }
+    }
+
+    int apfFEA::Entity_ApplyBC_Dirichlet(apf::ModelEntity * ent, int component, double value)
+    {
+      apf::DynamicArray<apf::Node> nodes;
+      apf::getNodesOnClosure(apf_mesh,ent,nodes);
+      APF_ITERATE(apf::DynamicArray<apf::Node>,nodes,node)
+	apf::fix(apf_primary_numbering,node->entity,node->node,component,true);
+      return nodes.getSize();
+    }
+
     void apfFEA::Assemble(LAS * las)
     {
       assert(elemental_system);
@@ -62,7 +81,7 @@ namespace amsi {
     }
 
     // use solution vector to update displacement dofs associated with locally-owned nodes
-    void apfFEA::UpdateSolution(const double * sol) 
+    void apfFEA::UpdateDOFs(const double * solution) 
     {
       int num_components = apf::countComponents(apf_primary_field);
       apf::MeshEntity * mesh_ent = NULL;
@@ -86,7 +105,7 @@ namespace amsi {
 		if(!apf::isFixed(apf_primary_numbering,mesh_ent,jj,kk))
 		{
 		  int global_number = getNumber(apf_primary_numbering,mesh_ent,jj,kk);
-		  disp[kk] += sol[global_number - first_local_dof];
+		  disp[kk] += solution[global_number - first_local_dof];
 		}
 	      }
 	      apf::setVector(apf_primary_field,mesh_ent,jj,disp);
@@ -96,6 +115,8 @@ namespace amsi {
       }
       apf::synchronize(apf_primary_field);
     }
+
+    
 
     void apfFEA::WriteMesh(const std::string & nm)
     {

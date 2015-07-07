@@ -42,7 +42,7 @@ namespace amsi {
       // update analysis with solution
       double * solution = NULL;
       las->GetSolution(solution);
-      fem->UpdateSolution(solution);
+      fem->UpdateDOFs(solution);
     }
 
     void NewtonSolver(FEA * fem, 
@@ -71,7 +71,7 @@ namespace amsi {
 	
 	double * solution = NULL;
 	las->GetSolution(solution);
-	fem->UpdateSolution(solution);
+	fem->UpdateDOFs(solution);
 	
 	las->GetVectorNorm(residual_norm);
 	

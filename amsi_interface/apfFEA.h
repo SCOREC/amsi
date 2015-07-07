@@ -12,6 +12,7 @@
 #define APFFEA_H_
 
 #include "FEA.h"
+#include "amsiBCDirichlet.h"
 #include "ElementalSystem.h"
 #include "NeumannIntegrator.h"
 
@@ -29,9 +30,12 @@ namespace amsi {
       apf::Field * apf_primary_field;
       apf::Numbering * apf_primary_numbering;
 
-      // this is only here because it has not been properly abstracted into the FEA class, right now it is an apf::Integrator
+      // these are only here because they have not been properly abstracted into the FEA class, right now they are  apf::Integrator-s
       ElementalSystem * elemental_system;
       NeumannIntegrator * neumann_integrator;
+
+      int Entity_ApplyBC_Dirichlet(apf::ModelEntity*,int,double);
+      //void Entity_ApplyBC_Neumann(LAS*,apf::ModelEntity*,int);
 
     public:
     apfFEA() : 
@@ -65,13 +69,15 @@ namespace amsi {
 	};
 
       void RenumberDOFs();
-      void Assemble(LAS * las);
-      void UpdateSolution(const double*);
+      void ApplyBC_Dirichlet(std::vector<DirichletSpecification>&);
+      //void ApplyBC_Neumann(LAS*);
+      
+      void Assemble(LAS*);
+      
+      void UpdateDOFs(const double*);
+      
       void WriteMesh(const std::string &);
     };
-
-    
-    
   }
 }
 

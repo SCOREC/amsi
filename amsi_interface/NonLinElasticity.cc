@@ -21,9 +21,9 @@ namespace amsi
       neumann_integrator = new SurfaceTractionIntegrator(apf_primary_field,1);
     }
 
-    void NonLinElasticity::UpdateSolution(const double * solution)
+    void NonLinElasticity::UpdateDOFs(const double * solution)
     {
-      apfFEA::UpdateSolution(solution);
+      apfFEA::UpdateDOFs(solution);
       //displaceMesh(apf_primary_field);
     }
   }

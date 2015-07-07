@@ -18,7 +18,7 @@ namespace amsi
 		       pGModel in_model,
 		       pParMesh in_mesh);
 
-      void UpdateSolution(const double *);
+      void UpdateDOFs(const double *);
     };
     
   }

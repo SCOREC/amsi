@@ -69,6 +69,7 @@ namespace amsi {
       virtual void ApplyBC_Dirichlet() {};
       virtual void ApplyBC_Neumann(LAS *) {};
       virtual void Assemble(LAS *) {};
+      
       template <typename NODE_TYPE>
 	void AssembleDOFs(LAS * las, 
 			  int num_elemental_dofs,
@@ -86,7 +87,7 @@ namespace amsi {
       };
 
       virtual void RenumberDOFs() {};
-      virtual void UpdateSolution(const double * sol) {};
+      virtual void UpdateDOFs(const double * sol) {};
     private:
     };
 

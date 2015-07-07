@@ -4,6 +4,7 @@ find_package(PETSc)
 
 set(interface_public_headers
     amsiInterface.h
+    amsiBCDirichlet.h
     ElementalSystem.h
     MatrixUtil.h
     FullLULAS.h
@@ -27,6 +28,7 @@ set(interface_public_headers
 
 set(interface_src_files
     amsiInterface.cc
+    amsiBCDirichlet.cc
     MatrixUtil.h
     FullLULAS.cc
     FEA.cc
