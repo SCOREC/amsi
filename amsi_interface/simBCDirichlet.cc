@@ -2,7 +2,7 @@
 
 namespace amsi {
 
-  DirichletSpecification buildSpecOnEntity(pEntity entity,
+  DirichletSpecification buildSpecOnEntity(pGEntity entity,
 					   int dim,
 					   const std::string & attribute_name,
 					   const std::string & constraint_name,
@@ -16,13 +16,13 @@ namespace amsi {
     if(dirichlet_constraint)
     {
       pAttribute constraint_set = Attribute_childByType(dirichlet_constraint,"Set");
-      pPList children = Attribute_children(constrain_set);
+      pPList children = Attribute_children(constraint_set);
       void * iter = NULL;
       while(pAttribute att = static_cast<pAttribute>(PList_next(children,&iter)))
       {
 	result.component = Attribute_infoType(att)[0] - component_offset; // assumes that the components of the field are designated by a single char, fine for 'XYZ' but not general
 	pAttributeDouble constraint = static_cast<pAttributeDouble>(Attribute_childByType(att,constraint_name.c_str()));
-	result.value = AttributeDouble_evalDT(disp_attribute,0.0);	
+	result.value = AttributeDouble_evalDT(constraint,0.0);	
       }
     }
     return result;
@@ -30,7 +30,7 @@ namespace amsi {
 
   void buildDirichletSpecFromSIM(pGModel model,
 				 const std::string & attribute_name,
-				 const std::string & constraint_name
+				 const std::string & constraint_name,
 				 int component_offset,
 				 std::vector<DirichletSpecification> & spec)
   {
