@@ -2,6 +2,10 @@
 
 #include <amsiMPI.h>
 
+#if SIM
+#include <gmi_sim.h>
+#endif
+
 namespace amsi {
 
   void amsiInterfaceInit(int argc, char ** argv)
@@ -18,16 +22,17 @@ namespace amsi {
     PMU_setCommunicator(AMSI_COMM_LOCAL);
     Sim_readLicenseFile("/net/common/meshSim/license/license.txt");
     SimPartitionedMesh_start(NULL,NULL);
-    SimModel_start();
     SimField_start();
+    gmi_sim_start();
+    gmi_register_sim();
 #   endif
   }
 
   void amsiInterfaceFree()
   {
 #   ifdef SIM
+    gmi_sim_stop();
     SimField_stop();
-    SimModel_stop();
     SimPartitionedMesh_stop();
     Sim_unregisterAllKeys();
 #   endif

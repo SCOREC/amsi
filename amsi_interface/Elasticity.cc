@@ -6,7 +6,6 @@
   of the SCOREC Non-Commercial License this program is distributed under.
 *******************************************************************************/
 
-// biotissue
 #include "Elasticity.h"
 #include "LinearElasticIntegrator.h"
 #include "SurfaceTractionIntegrator.h"
