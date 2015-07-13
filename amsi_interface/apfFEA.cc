@@ -52,8 +52,16 @@ namespace amsi {
     {
       apf::DynamicArray<apf::Node> nodes;
       apf::getNodesOnClosure(apf_mesh,ent,nodes);
+      int num_comps = apf::countComponents(apf_primary_field);
       APF_ITERATE(apf::DynamicArray<apf::Node>,nodes,node)
+      {
+	double * comps = new double[num_comps]();
+	apf::getComponents(apf_primary_field,node->entity,node->node,comps);
+	comps[component] = value;
+	apf::setComponents(apf_primary_field,node->entity,node->node,comps);
 	apf::fix(apf_primary_numbering,node->entity,node->node,component,true);
+
+      }
       return nodes.getSize();
     }
 
