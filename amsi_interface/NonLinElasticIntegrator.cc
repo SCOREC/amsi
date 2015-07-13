@@ -100,7 +100,7 @@ namespace amsi
 
       apf::DynamicMatrix K1(nedofs,nedofs);
       apf::DynamicMatrix tau(9,9); // cauchy stresses in special matrix
-      tau *= 0.0;
+      tau.zero();
       
       for(int ii = 0; ii < 3; ii++)
 	for(int jj = 0; jj < 3; jj++)

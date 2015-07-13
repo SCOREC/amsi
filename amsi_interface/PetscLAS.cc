@@ -127,14 +127,16 @@ namespace amsi {
       
       KSPSetOperators(solver,A,A);
       KSPSetFromOptions(solver);
-
+      /*
       MatView(A, PETSC_VIEWER_STDOUT_WORLD);
       VecView(b, PETSC_VIEWER_STDOUT_WORLD);
-
+      */
       // solve the system
       KSPSolve(solver,b,x);
 
+      /*
       VecView(x,PETSC_VIEWER_STDOUT_WORLD);
+      */
     }
     
     /**

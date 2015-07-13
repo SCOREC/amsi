@@ -50,6 +50,9 @@ namespace amsi {
 
       // whether the dofs have been numbered or not
       bool numbered;
+
+      // the current simulation time (for dynamics) or load percentage (for statics)
+      double simulation_time;
       
       // name of this analysis
       std::string name;
