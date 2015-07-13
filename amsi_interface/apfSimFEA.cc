@@ -92,7 +92,7 @@ namespace amsi {
 	  int axis = Attribute_infoType(att)[0] - 'X'; // assuming 'xyz' axes... not too big an assumption
 	  std::cout << Attribute_infoType(att) << std::endl;
 	  pAttributeDouble disp_attribute = static_cast<pAttributeDouble>(Attribute_childByType(att,"Total Displacement"));
-	  disp[axis] = AttributeDouble_evalDT(disp_attribute,0.0);
+	  disp[axis] = AttributeDouble_evalDT(disp_attribute,simulation_time*1.0);
 	  fixed[axis] = true;
 	}
 	PList_delete(children);
