@@ -23,7 +23,7 @@ namespace amsi {
     protected:
       apf::Field * mesh_size_field;
       bool mesh_adapted;
-
+      double simulation_time; //for incremental loading.
       int Entity_ApplyBC_Dirichlet(GEntity*,int);
       void Entity_ApplyBC_Neumann(LAS *,GEntity*,int);
     public:
