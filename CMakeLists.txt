@@ -45,7 +45,9 @@ add_subdirectory(amsi_interface)
 
 add_subdirectory(amsi_control)
 
-add_subdirectory(test)
+if(BUILD_TESTS)
+  add_subdirectory(test)
+endif()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(

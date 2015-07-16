@@ -171,7 +171,6 @@ namespace amsi {
 	// todo: abstract TensorFieldQuery*?
 	TensorFieldQueryT<pAttributeTensor1> force_value(force_attrib);
 	
-	double simulation_time = 0.0;
 	force_value.bind(4,simulation_time);
 	neumann_integrator->setTensorQuery(&force_value);
 	std::list<pEntity> classified;
@@ -194,6 +193,7 @@ namespace amsi {
 		       &neumann_integrator->getFe()(0),
 		       false);
 	}
+	force_value.clear();
       }
     }
     
