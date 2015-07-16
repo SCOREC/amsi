@@ -60,6 +60,9 @@ namespace amsi {
 	  }
 	}
 
+      bool isSpaceConst() {return is_space_const;}
+      bool isTimeConst() {return is_time_const;}
+
       double* operator()(int count,...)
       {
 	double * result = 0;
@@ -91,7 +94,7 @@ namespace amsi {
 	      AttributeTensor1_evalTensorDS(tensor,&args[0],last_result);
 	    
 	    if(!is_time_const)
-	      AttributeTensor1_evalTensorDT(tensor,args[num_args],last_result);
+	      AttributeTensor1_evalTensorDT(tensor,args[0],last_result);
 	    
 	    result = last_result;
 	  }

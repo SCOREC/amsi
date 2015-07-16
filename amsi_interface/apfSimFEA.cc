@@ -170,8 +170,12 @@ namespace amsi {
 
 	// todo: abstract TensorFieldQuery*?
 	TensorFieldQueryT<pAttributeTensor1> force_value(force_attrib);
-	
-	force_value.bind(4,simulation_time);
+
+	if(!force_value.isTimeConst())
+	{
+	  int index = force_value.isSpaceConst() ? 0 : 3;
+	  force_value.bind(index,simulation_time);
+	}
 	neumann_integrator->setTensorQuery(&force_value);
 	std::list<pEntity> classified;
 	Model_GetClassifiedEntities(part,entity,dim,classified);
