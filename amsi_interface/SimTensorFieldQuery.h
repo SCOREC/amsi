@@ -47,8 +47,8 @@ namespace amsi {
 	  dim = AttributeTensor1_dimension(tensor);
 	  last_result = new double[dim];
 	  
-	  is_space_const = AttributeTensor1_constant(tensor);
-	  is_time_const = true;
+	  is_space_const = true;
+	  is_time_const = AttributeTensor1_constant(tensor);
 	  
 	  num_args = is_space_const ? 0 : 3;
 	  num_args += is_time_const ? 0 : 1;
