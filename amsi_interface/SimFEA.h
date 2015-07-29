@@ -28,6 +28,7 @@ namespace amsi {
       
       pGModel model;
       pParMesh mesh;
+      pField size_field;
       pMesh part;
     public:
       SimFEA(MPI_Comm comm,

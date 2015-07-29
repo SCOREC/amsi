@@ -140,7 +140,14 @@ namespace amsi {
     {
       pMSAdapt adapter = MSA_new(mesh,1);
 
-      // .. make calls to set mesh sizes at nodes
+      // set mesh size from size field
+      pVertex vert = NULL;
+      for(VIter viter = M_vertexIter(part); vert = VIter_next(viter); )
+      {
+	pDofGroup dof = Field_entDof(size_field,(pEntity)vert,0);
+	double size = DofGroup_value(dof,0,0);
+	MSA_setVertexSize(adapter,vert,size);
+      }
 
       MSA_adapt(adapter,NULL);
       MSA_delete(adapter);
