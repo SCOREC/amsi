@@ -80,6 +80,7 @@ namespace amsi {
 	if (newton_iteration > iteration_cap) 
 	  break;
 	newton_iteration++;
+	fem->Adapt();
       }
     }
   }

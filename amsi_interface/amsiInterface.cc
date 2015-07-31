@@ -22,6 +22,7 @@ namespace amsi {
     PMU_setCommunicator(AMSI_COMM_LOCAL);
     Sim_readLicenseFile("/net/common/meshSim/license/license.txt");
     SimPartitionedMesh_start(NULL,NULL);
+    SimMeshing_start();
     SimField_start();
     gmi_sim_start();
     gmi_register_sim();
@@ -33,6 +34,7 @@ namespace amsi {
 #   ifdef SIM
     gmi_sim_stop();
     SimField_stop();
+    SimMeshing_stop();
     SimPartitionedMesh_stop();
     Sim_unregisterAllKeys();
 #   endif
