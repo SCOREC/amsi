@@ -217,6 +217,12 @@ namespace amsi {
       sim_size_field = dynamic_cast<apf::SIMDataOf<double>* >(mesh_size_field->getData())->getSimField();
       SimFEA::Adapt();
     }
-    
+
+    void apfSimFEA::addFieldToMap(apf::Field * fd)
+    {
+      apf::SIMDataOf<double> * field_data = dynamic_cast<apf::SIMDataOf<double>*>(fd->getData());
+      if(field_data != NULL)
+	SimFEA::addFieldToMap(field_data->getSimField());
+    }
   }
 }

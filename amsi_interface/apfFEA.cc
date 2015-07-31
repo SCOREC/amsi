@@ -9,6 +9,7 @@ namespace amsi {
     {
       if(!numbered)
       {
+	global_dof_count = 0;
 	local_dof_count = apf::NaiveOrder(apf_primary_numbering);
 	
 	int analysis_size, analysis_rank;

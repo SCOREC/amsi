@@ -43,6 +43,7 @@ namespace amsi {
 		pParMesh in_mesh);
 
       virtual void Adapt();
+      virtual void addFieldToMap(apf::Field *);
       void ApplyBC_Dirichlet();
       void ApplyBC_Neumann(LAS * las);
       void Assemble(LAS * las);
