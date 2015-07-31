@@ -1,4 +1,5 @@
 #include "SimFEA.h"
+#include <cassert>
 
 namespace amsi {
   namespace Analysis {
@@ -92,7 +93,8 @@ namespace amsi {
       model_name(in_model_name),
       model(in_model),
       mesh_name(in_mesh_name),
-      mesh(in_mesh)
+      mesh(in_mesh),
+      sim_size_field(NULL)
     {
       part = PM_mesh(mesh,0);
     }
@@ -105,7 +107,8 @@ namespace amsi {
       model_name("[unavailable]"),
       model(in_model),
       mesh_name("[unavailable]"),
-      mesh(in_mesh)
+      mesh(in_mesh),
+      sim_size_field(NULL)
     {
       part = PM_mesh(in_mesh,0);
     }
@@ -119,7 +122,8 @@ namespace amsi {
       model_name(in_model_name),
       model(in_model),
       mesh_name(in_mesh_name),
-      mesh(in_mesh)
+      mesh(in_mesh),
+      sim_size_field(NULL)
     {
       part = PM_mesh(mesh,0);
     }
@@ -131,20 +135,22 @@ namespace amsi {
       model_name("[unavailable]"),
       model(in_model),
       mesh_name("[unavailable]"),
-      mesh(in_mesh)
+      mesh(in_mesh),
+      sim_size_field(NULL)
     {
       part = PM_mesh(in_mesh,0);
     }
 
     void SimFEA::Adapt()
     {
+      assert(sim_size_field);
       pMSAdapt adapter = MSA_new(mesh,1);
 
       // set mesh size from size field
       pVertex vert = NULL;
       for(VIter viter = M_vertexIter(part); vert = VIter_next(viter); )
       {
-	pDofGroup dof = Field_entDof(size_field,(pEntity)vert,0);
+	pDofGroup dof = Field_entDof(sim_size_field,(pEntity)vert,0);
 	double size = DofGroup_value(dof,0,0);
 	MSA_setVertexSize(adapter,vert,size);
       }

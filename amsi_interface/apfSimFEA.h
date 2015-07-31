@@ -42,7 +42,7 @@ namespace amsi {
 		pGModel in_model,
 		pParMesh in_mesh);
 
-      void Adapt() {};
+      virtual void Adapt();
       void ApplyBC_Dirichlet();
       void ApplyBC_Neumann(LAS * las);
       void Assemble(LAS * las);

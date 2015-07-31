@@ -3,6 +3,7 @@
 #include <amsiMPI.h>
 
 #include <apfSIM.h>
+#include <apfSIMDataOf.h>
 #include <apfShape.h>
 
 namespace amsi {
@@ -17,6 +18,7 @@ namespace amsi {
 	SimFEA(in_analysis_name,
 	       in_model,
 	       in_mesh),
+	mesh_size_field(NULL),
 	mesh_adapted(false)
     { }
 
@@ -32,6 +34,7 @@ namespace amsi {
 	       in_model,
 	       in_mesh_name,
 	       in_mesh),
+	mesh_size_field(NULL),
 	mesh_adapted(false)
     { }
     
@@ -43,6 +46,7 @@ namespace amsi {
 	SimFEA(in_analysis_name,
 	       in_model,
 	       in_mesh),
+	mesh_size_field(NULL),
 	mesh_adapted(false)
     { }
     
@@ -205,6 +209,13 @@ namespace amsi {
     {
       ApplyBC_Neumann(las);
       apfFEA::Assemble(las);
+    }
+
+    void apfSimFEA::Adapt()
+    {
+      assert(mesh_size_field);
+      sim_size_field = dynamic_cast<apf::SIMDataOf<double>* >(mesh_size_field->getData())->getSimField();
+      SimFEA::Adapt();
     }
     
   }
