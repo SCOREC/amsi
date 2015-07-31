@@ -29,8 +29,10 @@ namespace amsi {
       pGModel model;
       pParMesh mesh;
       pMesh part;
-      
+
+      bool should_adapt;
       pField sim_size_field;
+      pPList fields_to_map;
     public:
       SimFEA(MPI_Comm comm,
 	     const std::string & in_analysis_name,
@@ -58,6 +60,7 @@ namespace amsi {
       std::string GetMeshName() const {return mesh_name;}
 
       virtual void Adapt();
+      virtual void addFieldToMap(pField);
 
       friend std::ostream& operator<<(std::ostream& out, const SimFEA & analysis);
     private:

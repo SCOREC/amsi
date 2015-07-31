@@ -53,18 +53,16 @@ namespace amsi {
 		      double & residual_norm)
     {
       int global_dof_count, local_dof_count, first_local_dof;
-
       int newton_iteration = 0;
-    
-      fem->ApplyBC_Dirichlet();
-    
-      fem->RenumberDOFs();
-      fem->GetDOFInfo(global_dof_count,local_dof_count,first_local_dof);
-      las->Reinitialize(local_dof_count,global_dof_count,first_local_dof);
-
       while(true)
       {
 	std::cout << "Newton iteration " << newton_iteration << ":" << std::endl;
+	fem->ApplyBC_Dirichlet();
+    
+	fem->RenumberDOFs();
+	fem->GetDOFInfo(global_dof_count,local_dof_count,first_local_dof);
+	las->Reinitialize(local_dof_count,global_dof_count,first_local_dof);
+
 	las->Zero();
 	fem->Assemble(las);	
 	las->Solve();
@@ -79,8 +77,9 @@ namespace amsi {
 	  break;
 	if (newton_iteration > iteration_cap) 
 	  break;
-	newton_iteration++;
+
 	fem->Adapt();
+	newton_iteration++;
       }
     }
   }

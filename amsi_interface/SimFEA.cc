@@ -94,9 +94,11 @@ namespace amsi {
       model(in_model),
       mesh_name(in_mesh_name),
       mesh(in_mesh),
-      sim_size_field(NULL)
+      sim_size_field(NULL),
+      should_adapt(false)
     {
       part = PM_mesh(mesh,0);
+      fields_to_map = PList_new();
     }
 
     SimFEA::SimFEA(MPI_Comm comm,
@@ -108,9 +110,11 @@ namespace amsi {
       model(in_model),
       mesh_name("[unavailable]"),
       mesh(in_mesh),
-      sim_size_field(NULL)
+      sim_size_field(NULL),
+      should_adapt(false)
     {
       part = PM_mesh(in_mesh,0);
+      fields_to_map = PList_new();
     }
 
     SimFEA::SimFEA(const std::string & in_analysis_name,
@@ -123,9 +127,11 @@ namespace amsi {
       model(in_model),
       mesh_name(in_mesh_name),
       mesh(in_mesh),
-      sim_size_field(NULL)
+      sim_size_field(NULL),
+      should_adapt(false)
     {
       part = PM_mesh(mesh,0);
+      fields_to_map = PList_new();
     }
 
     SimFEA::SimFEA(const std::string & in_analysis_name,
@@ -136,28 +142,39 @@ namespace amsi {
       model(in_model),
       mesh_name("[unavailable]"),
       mesh(in_mesh),
-      sim_size_field(NULL)
+      sim_size_field(NULL),
+      should_adapt(false)
     {
       part = PM_mesh(in_mesh,0);
+      fields_to_map = PList_new();
     }
 
     void SimFEA::Adapt()
     {
       assert(sim_size_field);
-      pMSAdapt adapter = MSA_new(mesh,1);
-
-      // set mesh size from size field
-      pVertex vert = NULL;
-      for(VIter viter = M_vertexIter(part); vert = VIter_next(viter); )
+      if(should_adapt)
       {
-	pDofGroup dof = Field_entDof(sim_size_field,(pEntity)vert,0);
-	double size = DofGroup_value(dof,0,0);
-	MSA_setVertexSize(adapter,vert,size);
+	pMSAdapt adapter = MSA_new(mesh,1);
+	MSA_setMapFields(adapter,fields_to_map);
+	
+	// set mesh size from size field
+	pVertex vert = NULL;
+	for(VIter viter = M_vertexIter(part); vert = VIter_next(viter); )
+	{
+	  pDofGroup dof = Field_entDof(sim_size_field,(pEntity)vert,0);
+	  double size = DofGroup_value(dof,0,0);
+	  MSA_setVertexSize(adapter,vert,size);
+	}
+	
+	MSA_adapt(adapter,NULL);
+	MSA_delete(adapter);
       }
-
-      MSA_adapt(adapter,NULL);
-      MSA_delete(adapter);
     }
 
+    void SimFEA::addFieldToMap(pField fd)
+    {
+      if(!PList_contains(fields_to_map,static_cast<void*>(fd)))
+	fields_to_map = PList_append(fields_to_map,fd);
+    }
   }
 }
