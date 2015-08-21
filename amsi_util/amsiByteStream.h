@@ -20,14 +20,14 @@ template <typename T>
 void * byte_read(void * src, T & dest)
 {
   memcpy(&dest,src,sizeof(T));
-  return static_cast<void*>(static_cast<byte*>(src) + sizeof(T));
+  return static_cast<void*>(src + sizeof(T));
 }
 
 template <typename T>
 void * byte_write(void * dest, T & src)
 {
   memcpy(dest,&src,sizeof(T));
-  return static_cast<void*>(static_cast<byte*>(dest) + sizeof(T));
+  return static_cast<void*>(dest + sizeof(T));
 }
 
 template <typename Head, typename ... Tail>
@@ -43,7 +43,7 @@ void byte_pack(void * memory, Head & value)
 }
 
 template <typename Head, typename ... Tail>
-void byte_pack(void * memory, Head & value, Tail ... tail)
+void byte_pack(void * memory, Head & value, Tail & ... tail)
 {
   byte_pack(byte_write(memory,value),tail...);
 }
@@ -55,7 +55,7 @@ void byte_unpack(void * memory, Head & head)
 }
 
 template <typename Head, typename ... Tail>
-void byte_unpack(void * memory, Head & value, Tail ... tail)
+void byte_unpack(void * memory, Head & value, Tail & ... tail)
 {
   byte_unpack(byte_read(memory,value),tail...);
 }
