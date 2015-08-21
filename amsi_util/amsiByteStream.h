@@ -11,7 +11,7 @@ size_t talloc_helper(Head & head)
 }
 
 template <typename Head, typename ... Tail>
-size_t talloc_helper(Head & head, Tail ... tail)
+size_t talloc_helper(Head & head, Tail & ... tail)
 {
   return sizeof(Head) + talloc_helper(tail...);
 }
@@ -20,18 +20,18 @@ template <typename T>
 void * byte_read(void * src, T & dest)
 {
   memcpy(&dest,src,sizeof(T));
-  return static_cast<void*>(src + sizeof(T));
+  return static_cast<void*>(static_cast<byte*>(src) + sizeof(T));
 }
 
 template <typename T>
 void * byte_write(void * dest, T & src)
 {
   memcpy(dest,&src,sizeof(T));
-  return static_cast<void*>(dest + sizeof(T));
+  return static_cast<void*>(static_cast<byte*>(dest) + sizeof(T));
 }
 
 template <typename Head, typename ... Tail>
-void * talloc(Head & head, Tail ... tail)
+void * talloc(Head & head, Tail & ... tail)
 {
   return malloc(talloc_helper(head,tail...));
 }
@@ -58,6 +58,22 @@ template <typename Head, typename ... Tail>
 void byte_unpack(void * memory, Head & value, Tail & ... tail)
 {
   byte_unpack(byte_read(memory,value),tail...);
+}
+
+template <typename Head>
+void * serialize(Head & head)
+{
+  void * result = talloc(head);
+  byte_pack(result,head);
+  return result;
+}
+
+template <typename Head, typename ... Tail>
+void * serialize(Head & head, Tail & ... tail)
+{
+  void * result = talloc(head,tail...);
+  byte_pack(result,head,tail...);
+  return result;
 }
 
 
