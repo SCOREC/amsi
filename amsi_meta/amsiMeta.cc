@@ -81,7 +81,7 @@ namespace amsi {
 	cm->defineRelation(t1,t2);
       }     
     }
-    if(!tm->LockConfig())
+    if(!tm->lockConfiguration())
       std::cerr << "Could not configure AMSI with supplied file: " << filename << std::endl;
     AMSI_COMM_LOCAL = getLocal()->Comm();
   }

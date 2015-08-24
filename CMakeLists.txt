@@ -9,6 +9,7 @@ include(CTest)
 
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+set(CMAKE_FIND_LIBRARY_SUFFIX ".a")
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   add_definitions(-DDEBUG)

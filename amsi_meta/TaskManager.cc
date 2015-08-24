@@ -18,13 +18,13 @@ namespace amsi {
     id_gen(),
     tasks(),
     local_task(),
-    free_processes(),
+    process_allocator(),
     config_locked(false)
   {
     int size = 0;
     MPI_Comm_size(gc,&size);
-    
-    free_processes = static_cast<ProcessSet*>(new ProcessSet_T<std::pair<int,int> >(0,size));
+
+    process_allocator = static_cast<ProcessAllocator*>(new ExclusiveProcessAllocator(size));
   }
   
   TaskGroup * TaskManager::TaskGroup_Create(const std::string & nm)
@@ -58,18 +58,12 @@ namespace amsi {
   
   Task * TaskManager::createTask(const std::string & nm, int s)
   {
-    // determine if there are enough free processes
-    if(s > free_processes->size())
-      return NULL;
-    
-    // may want to generalize with understanding of physical structure of the machine in use at some point
-    // extract the first s-many processes (this is what prevents overlapping tasks)
-    ProcessSet * assigned_processes = free_processes->extract(s);
-    //std::cout << assigned_processes->size() << std::endl;
-    
+    Task * result = NULL;
     size_t id = id_gen(nm);
-    
-    return tasks[id] = new Task(assigned_processes);
+    ProcessSet * assigned = process_allocator->assign(s,id);
+    assert(assigned);
+    result = tasks[id] = new Task(assigned);
+    return result;
   }
   
   // experimental
@@ -124,13 +118,13 @@ namespace amsi {
     return result;
   }
 
-  bool TaskManager::LockConfig()
+  bool TaskManager::lockConfiguration()
   {
     int rank = -1;
     MPI_Comm_rank(AMSI_COMM_WORLD,&rank);
     if(!config_locked)
     {
-      if(!free_processes->isIn(rank))
+      if(process_allocator->isAssigned(rank))
       {
 	for(std::map<size_t,Task*>::iterator it = tasks.begin(), itend = tasks.end(); it != itend; it++)
 	{
@@ -150,7 +144,7 @@ namespace amsi {
   {
     int result = 0;
 
-    if(LockConfig())
+    if(lockConfiguration())
       result = local_task->Execute(argc,argv);
     else
       result = -1;

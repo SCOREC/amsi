@@ -5,6 +5,7 @@ find_package(PETSc)
 set(meta_public_headers 
   amsiMeta.h
   ProcessSet.h
+  ProcessAllocator.h
   DataDistribution.h
   Task.h
   TaskGroup.h

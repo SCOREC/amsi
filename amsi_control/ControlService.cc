@@ -90,7 +90,7 @@ namespace amsi {
 
       // still don't like this method of initiating the inter-comms...
       comm_man->InitInterComms(task_man);
-      if(task_man->LockConfig())
+      if(task_man->lockConfiguration())
       {
 
 	// TODO: Change this so the user can specificy which processes to allow to output to stdout
