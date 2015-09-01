@@ -61,7 +61,7 @@ namespace amsi {
     size_t s2 = sizeof(int);
 
     memcpy(&dd,data,s1);
-    memcpy(&local_rank,data+s1,s2);
+    memcpy(&local_rank,(void*)(((size_t)data)+s1),s2);
     /*
     for(size_t ii = 0; ii < s1; ii++)
       ((char*)&dd)[ii] = ((char*)data)[ii];
@@ -91,7 +91,7 @@ namespace amsi {
     size_t s2 = sizeof(int);
 
     memcpy(&dd,data,s1);
-    memcpy(&local_rank,data+s1,s2);
+    memcpy(&local_rank,(void*)(((size_t)data)+s1),s2);
     /*
     for(size_t ii = 0; ii < s1; ii++)
       ((char*)&dd)[ii] = ((char*)data)[ii];
@@ -131,7 +131,7 @@ namespace amsi {
     
     void * buffer = (void*) new char[s1+s2];
     memcpy(buffer,&dd,s1);
-    memcpy(buffer+s1,&local_rank,s2);
+    memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
     /*
     for(size_t ii = 0; ii < s1; ii++)
       ((char*)data)[ii] = ((char*)&dd)[ii];

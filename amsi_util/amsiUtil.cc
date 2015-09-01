@@ -1,7 +1,7 @@
 #include "amsiUtil.h"
 #include "amsiConfig.h"
 
-#include <mpi.h>
+//#include <mpi.h>
 
 #ifdef CORE
 #include <PCU.h>

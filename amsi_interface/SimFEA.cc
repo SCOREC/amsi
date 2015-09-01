@@ -66,7 +66,7 @@ namespace amsi {
     {
       pAManager attribute_manager = SModel_attManager(model);
       pProgress progress = Progress_new();
-      for(auto attribute_name = attribute_names.begin(); attribute_name != attribute_names.end(); attribute_name++)
+      for(std::vector<std::string>::iterator attribute_name = attribute_names.begin(); attribute_name != attribute_names.end(); attribute_name++)
       {
 	pACase constraints = AMAN_findCase(attribute_manager,attribute_name->c_str());
 	if(constraints)
