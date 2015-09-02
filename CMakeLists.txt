@@ -5,38 +5,28 @@ set(AMSI_MINOR_VERSION 0)
 set(AMSI_PATCH_VERSION 0)
 set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSION})
 
-include(CTest)
-
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-set(CMAKE_FIND_LIBRARY_SUFFIX ".a")
+# the toolchain file on the Q also specifies this, but we still find shared if we don't specify it again...
+set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   add_definitions(-DDEBUG)
-endif()
-
-if(NOT SIMMETRIX_BUILD)
-  set(SIMMETRIX_BUILD FALSE)
 endif()
 
 # TODO: determine which compiler family is in use and change the C++11 flag appropriately -qlanglvl= or something
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(HOST SCOREC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
   set(HOST BGQ)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qlanglvl=extended")
-  include_directories(${BOOST_INCLUDE_DIR})
 endif()
 
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
-if(SIMMETRIX_BUILD)
-  find_package(CoreSim REQUIRED)
-else()
-  find_package(Core REQUIRED)
-endif()
+find_package(CoreSim REQUIRED)
 
 add_subdirectory(amsi_util)
 
@@ -47,6 +37,7 @@ add_subdirectory(amsi_interface)
 add_subdirectory(amsi_control)
 
 if(BUILD_TESTS)
+  include(CTest)
   add_subdirectory(test)
 endif()
 

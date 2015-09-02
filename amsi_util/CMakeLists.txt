@@ -17,8 +17,6 @@ set(util_public_headers
   pystring.h
   )
 
-#really don't want unordered map to be public... hmm
-
 set(util_source_files
   amsiUtil.cc
   amsiReporter.cc
@@ -32,14 +30,16 @@ target_include_directories(amsi_util PUBLIC
 				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 				     $<INSTALL_INTERFACE:include/amsi>)
 
-target_link_libraries(amsi_util PUBLIC ${MPI_LIBRARIES})
-
-if(PETSC_FOUND)
-  target_include_directories(amsi_util PUBLIC ${PETSC_INCLUDES})
-endif()
+target_include_directories(amsi_util PUBLIC ${MPI_C_INCLUDE_PATH})
+target_link_libraries(amsi_util PUBLIC ${MPI_C_LIBRARIES})
 
 if(CORE_FOUND)
   target_include_directories(amsi_util PUBLIC ${CORE_INCLUDE_DIRS})
+  target_link_libraries(amsi_util PUBLIC ${CORE_LIBRARIES})
+endif()
+
+if($ENV{HOSTNAME} STREQUAL "q.ccni.rpi.edu")
+  target_include_directories(amsi_util PUBLIC ${BOOST_INCLUDE_DIR})
 endif()
 
 install(TARGETS amsi_util 

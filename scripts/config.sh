@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 # CMake config for AMSI
 #
 # usage: ./configamsi.sh [build_type] [install_prefix]
@@ -7,12 +7,12 @@
 if [ ! -d ../build ]; then
   mkdir ../build
 fi
-
 cd ../build
 rm -rf ./* #stupid and dangerous
 
-HOSTNAME=`hostname`
+module load cmake
 
+HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
   module load xl
   module load parmetis/xl/4.0.3
@@ -22,16 +22,14 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
   module load proprietary/simmetrix/simModSuite/10.0-150716
   module load boost
 
-  export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:$DEVROOT/install
+  export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/gpfs/u/home/PASC/PASCtbnw/barn-shared/install
 
    cmake \
-    --trace \
+    -DCMAKE_TOOLCHAIN_FILE=$CMAKE_XL_TOOLCHAIN \
     -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
-    -DSIMMETRIX_BUILD=TRUE \
     -DSIM_MPI=bgmpi \
-    -DCMAKE_TOOLCHAIN_FILE=$CMAKE_XL_TOOLCHAIN \
     -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
     ..
 
@@ -46,7 +44,6 @@ else
     -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
-    -DSIMMETRIX_BUILD=TRUE \
     -DSIM_MPI=openmpi14 \
     ..
 fi

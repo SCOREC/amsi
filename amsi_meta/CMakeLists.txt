@@ -1,7 +1,3 @@
-find_package(MPI REQUIRED)
-find_package(ZOLTAN)
-find_package(PETSc)
-
 set(meta_public_headers 
   amsiMeta.h
   ProcessSet.h
@@ -32,26 +28,29 @@ set(meta_source_files
   PlanMigration.cc
   )
 
+find_package(MPI REQUIRED)
+find_package(CoreSim REQUIRED)
+find_package(PETSc)
+find_package(ZOLTAN REQUIRED)
+
 add_library(amsi_meta ${meta_source_files} ${meta_public_headers})
 
 target_include_directories(amsi_meta PUBLIC
 				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 				     $<INSTALL_INTERFACE:include/amsi>)
 
-target_link_libraries(amsi_meta PUBLIC amsi_util ${MPI_LIBRARIES})
-
-if(ZOLTAN_FOUND)
-  target_link_libraries(amsi_meta PUBLIC ${ZOLTAN_LIBRARIES})
-  target_include_directories(amsi_meta PUBLIC ${ZOLTAN_INCLUDE_DIRS})
-endif()
-
 if(PETSC_PARMETIS)
   target_link_libraries(amsi_meta PUBLIC ${PETSC_LIBRARIES})
+  target_include_directories(amsi_meta PUBLIC ${PETSC_INCLUDES})  
 endif()
 
 if(CORE_FOUND)
   target_link_libraries(amsi_meta PUBLIC ${CORE_LIBRARIES})
+  target_include_directories(amsi_meta PUBLIC ${CORE_INCLUDE_DIRS})
 endif()
+
+target_link_libraries(amsi_meta PUBLIC amsi_util ${ZOLTAN_LIBRARIES} ${MPI_C_LIBRARIES})
+target_include_directories(amsi_meta PUBLIC ${ZOLTAN_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
 
 set_property(TARGET amsi_meta PROPERTY VERSION ${AMSI_VERSION})
 
