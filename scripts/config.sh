@@ -1,13 +1,11 @@
 #!/bin/bash
 # CMake config for AMSI
 #
-# usage: ./configamsi.sh [build_type] [install_prefix]
+# usage: ./config.sh [build_type]
 #
 
-if [ ! -d ../build ]; then
-  mkdir ../build
-fi
-cd ../build
+
+
 rm -rf ./* #stupid and dangerous
 
 module load cmake
@@ -26,7 +24,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
 
    cmake \
     -DCMAKE_TOOLCHAIN_FILE=$CMAKE_XL_TOOLCHAIN \
-    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DBUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
     -DSIM_MPI=bgmpi \
@@ -34,6 +32,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     ..
 
 else
+  module load openmpi/1.3.3
   module load parmetis/OpenMPI-1.3.3
   module load zoltan/OpenMPI-1.3.3
   module unload parmetis/OpenMPI-1.3.3
@@ -41,7 +40,7 @@ else
   module load simmetrix/simModSuite
 
   cmake \
-    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DBUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
     -DSIM_MPI=openmpi14 \
