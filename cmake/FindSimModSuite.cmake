@@ -12,7 +12,12 @@ find_library(simmodel SimModel)
 find_library(simmeshtools SimMeshTools)
 find_library(simwrapper SimPartitionWrapper-${SIM_MPI})
 find_library(simfield SimField)
-find_library(simparasolid SimParasolid270)
+
+get_property(SHARED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+if(SHARED)
+  find_library(simparasolid SimParasolid270)
+endif()
+
 set(SIMMODSUITE_LIBS "${simmeshing};${simfield};${simmeshtools};${simpartitioned};${simwrapper};${simparasolid};${simmodel}")
 
 find_path(SIMMODSUITE_INCLUDE_DIR 

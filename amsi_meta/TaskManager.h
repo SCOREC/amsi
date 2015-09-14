@@ -7,7 +7,7 @@
 #include "ProcessAllocator.h"
 #include "amsiConfig.h"
 
-#ifdef BGQ
+#if HOST==BGQ
   #include <boost/functional/hash.hpp>
 #else
   #include <functional>
@@ -18,7 +18,7 @@
 
 namespace amsi {
 
-#ifdef BGQ
+#if HOOST==BGQ
   using boost::hash;
 #else
   using std::hash;

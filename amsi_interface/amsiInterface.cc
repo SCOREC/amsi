@@ -23,7 +23,9 @@ namespace amsi {
     Sim_readLicenseFile("/net/common/meshSim/license/license.txt");
     SimPartitionedMesh_start(NULL,NULL);
     SimMeshing_start();
+#   if HOST==BGQ
     SimField_start();
+#   endif
     gmi_sim_start();
     gmi_register_sim();
 #   endif
@@ -33,7 +35,9 @@ namespace amsi {
   {
 #   ifdef SIM
     gmi_sim_stop();
+#   if HOST==GBQ
     SimField_stop();
+#   endif
     SimMeshing_stop();
     SimPartitionedMesh_stop();
     Sim_unregisterAllKeys();

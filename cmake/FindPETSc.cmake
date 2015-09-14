@@ -290,6 +290,12 @@ int main(int argc,char *argv[]) {
         list (APPEND PETSC_LIBRARIES_${pkg}  ${petsc_libraries_external})
       endforeach (pkg)
       petsc_test_runs ("${petsc_includes_minimal}" "${PETSC_LIBRARIES_TS}" petsc_works_alllibraries)
+
+      if("$ENV{HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
+        set(petsc_works_alllibraries TRUE)
+        set(PETSC_EXECUTABLE_RUNS "YES" CACHE "" BOOL FORCE)        
+      endif()
+
       if (petsc_works_alllibraries)
          message (STATUS "PETSc only need minimal includes, but requires explicit linking to all dependencies.  This is expected when PETSc is built with static libraries.")
         set (petsc_includes_needed ${petsc_includes_minimal})

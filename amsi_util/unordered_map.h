@@ -1,7 +1,7 @@
 #ifndef UNORDERED_MAP_AMSI_H_
 #define UNORDERED_MAP_AMSI_H_
 
-#ifdef BGQ
+#if HOST==BGQ
   #include <boost/unordered/unordered_map.hpp>
 #else
   #include <unordered_map>
@@ -14,7 +14,7 @@ namespace amsi {
   class CommPattern;
   class Task;
     
-#ifdef BGQ
+#if HOST==BGQ
   using boost::hash;
   typedef boost::unordered_map<size_t,CommPattern*> commpatternmap_type;
 #else
