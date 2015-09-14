@@ -6,11 +6,15 @@ Scale-balancing is the balancing of scale-tasks against eachother to minimize re
 
 A second micro-scale simulation, where the collagen fibers are embedded in tissue is currently implemented as a standalone simulation. Work to incorporate this into the biotissue example simulation will be conducted when the correct scale-coupling terms have been developed (inclusion in the AMSI system is already accomplished, but the up- and down-scaling operations have not been developed yet so this RVE is not used). \cite{} \cite{} \cite{}
 
-An article focusing on the implementation and use of the scale-sensitive load-balancing operations in AMSI for the biotissue example problem is being finalized and will be seeking publication soon.
+At present AMSI has no meta-model of the computational domain of a problem, or of the relation between the domains of associated scales, simply that they are related. A richer model of the domain relation between problems would likely allow for a wider range of automation in scale-linking and dynamic scale management operations. This will likely not be addressed until a test case where such functionality is needed or beneficial is found.
+
+An article focusing on the implementation and use of the scale-sensitive load-balancing operations in AMSI for the biotissue example problem is being finalized and will be submited for publication soon. Additional articles focused primarily on the usage of the Biotissue example simulation to solve novel problems of interest is also being worked on and should see submission in the coming months.
 
 - Summary of new proposals derived from work
 - Follow-on funding
 
-At present there are no current proposals associated with this work for ongoing funding, simply because funding for associated projects (Biotissue and other multi-scale projects) has already been secured. Thus work on AMSI will continue during the work on projects supported by AMSI. Several interesting multi-scale simulations have been suggested, however, particularly a combination of a Monte-Carlo code and a Mangetostatics code by a fellow researcher. At present these are in the preliminary stage of development.
+At present there are no current proposals associated with this work for ongoing funding, simply because funding for associated projects (Biotissue and other multi-scale projects) has already been secured. Thus work on AMSI will continue during the work on projects supported by AMSI. Several interesting multi-scale simulations have been suggested, however, particularly a combination of a Monte-Carlo code and a Magnetostatics code by a fellow researcher. At present this idea is in a preliminary stage of development, though using AMSI would be relatively straightforward and achieving a working code (given two working single-scale codes, and the development of physically-sound scale-linking operations) would likely take only several days of programming and debugging.
 
 - Impact on programs
+
+There are several ongoing projects at the Scientific Computation Research Center (SCOREC) on the RPI campus which AMSI will be used with. Particularly SCOREC's ongoing work on incorporating our dynamic mesh operations with the Albany simulation system developed at Sandia National Labs. For multi-scale simulations using the Albany simulation code, we will make use of AMSI's capabilities to be minimally intrusive and only require modifications at those locations in code where multi-scale terms are needed.
