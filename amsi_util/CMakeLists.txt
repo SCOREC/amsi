@@ -30,15 +30,15 @@ target_include_directories(amsi_util PUBLIC
 				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 				     $<INSTALL_INTERFACE:include/amsi>)
 
-target_include_directories(amsi_util PUBLIC ${MPI_C_INCLUDE_PATH})
-target_link_libraries(amsi_util PUBLIC ${MPI_C_LIBRARIES})
+target_include_directories(amsi_util PUBLIC ${MPI_INCLUDE_PATH})
+target_link_libraries(amsi_util PUBLIC ${MPI_LIBRARIES})
 
 if(CORE_FOUND)
   target_include_directories(amsi_util PUBLIC ${CORE_INCLUDE_DIRS})
   target_link_libraries(amsi_util PUBLIC ${CORE_LIBRARIES})
 endif()
 
-if($ENV{HOSTNAME} STREQUAL "q.ccni.rpi.edu")
+if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
   target_include_directories(amsi_util PUBLIC ${BOOST_INCLUDE_DIR})
 endif()
 

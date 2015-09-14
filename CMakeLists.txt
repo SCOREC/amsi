@@ -8,7 +8,9 @@ set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSIO
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 # the toolchain file on the Q also specifies this, but we still find shared if we don't specify it again...
-set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
+  set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+endif()
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   add_definitions(-DDEBUG)
