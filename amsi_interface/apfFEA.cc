@@ -1,5 +1,6 @@
 #include "apfFEA.h"
 
+#include <cassert>
 #include <apfShape.h>
 
 namespace amsi {
