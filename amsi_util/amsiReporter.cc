@@ -1,5 +1,8 @@
 #include "amsiReporter.h"
 
+#include <algorithm>
+#include <cassert>
+#include <fstream>
 #include <iomanip>
 #include <limits>
 #include <map>
@@ -10,64 +13,130 @@
 namespace amsi {
 
   class Log {
-  private:
+  protected:
+    std::string name;
     std::stringstream stream;
+    double creation_time;
+    double last_post;
   public:
-    Log() : stream()
-      {
-	stream << std::setprecision(std::numeric_limits<double>::digits10+2);
-      }
+    Log() : name(), stream()
+    {
+      stream << std::setprecision(std::numeric_limits<double>::digits10+2);
+      creation_time = MPI_Wtime();
+      last_post = creation_time;
+    }
+
+    Log(const std::string & nm) : name(nm), stream()
+    {
+      stream << std::setprecision(std::numeric_limits<double>::digits10+2);
+      creation_time = MPI_Wtime();
+      last_post = creation_time;
+    }
     
     std::iostream & getStream()
-      {
-	return stream;
-      }
-    int print(std::ostream & out)
-      {
-	out << stream.str();
-	out.flush();
-	stream.str("");
-      }
+    {
+      return stream;
+    }
+
+    const std::string & getName() const { return name; }
+    const double getCreation() const { return creation_time; }
+    double post() { last_post = MPI_Wtime(); }
+    double sincePost()
+    {
+      double result = MPI_Wtime();
+      result -= last_post;
+      return result;
+    }
+
+    double elapsed() const
+    {
+      double result = MPI_Wtime();
+      result -= creation_time;
+      return result;
+    }
+
+    void clear()
+    {
+      stream.str("");
+    }
+    
+    void writeFStream(const std::string & filename) const
+    {
+      std::fstream out;
+      out.open(filename.c_str(), std::fstream::out | std::fstream::app);
+      assert(out.is_open());
+      out << stream.str();
+      out.flush();
+      out.close();
+    }
+
+    void writeMPI(const std::string & filename) const
+    {
+	
+    }
   };
 
   std::map<std::string,Log*> logs;
-  std::map<std::string,double> start_times;
 
-  // todo: add existence checking
-  int log_new(const std::string & nm)
+  Log * makeLog(const std::string & nm)
   {
+    Log * result = NULL;
+    result = logs[nm];
+    if(result == NULL)
+      result = logs[nm] = new Log();
+    return result;
+  }
+
+  int deleteLog(Log * l)
+  {
+    assert(l);
     int result = 0;
-    logs[nm] = new Log();
-    start_times[nm] = MPI_Wtime();
-    result += logs[nm] != NULL;
+    result += (logs.erase(l->getName()) == 0);
     return result;
   }
 
-  std::iostream & log(const std::string & nm)
+  std::iostream & log(Log * l)
   {
-    return logs[nm]->getStream();
+    assert(l);
+    return l->getStream();
   }
 
-  int log_print(const std::string & nm, std::ostream & out)
+  double post(Log * l)
   {
-    int result = 0;
-    logs[nm]->print(out);
-    return result;
+    assert(l);
+    return l->post();
   }
 
-  int log_delete(const std::string & nm)
+  double getSincePost(Log * l)
   {
-    int result = 0;
-    result += (logs.erase(nm) == 0);
-    return result;
+    assert(l);
+    return l->sincePost();
   }
 
-  double log_start_time(const std::string & nm)
+  double getElapsedTime(Log * l)
   {
-    double result = 0.0;
-    result = start_times[nm];
-    return result;
+    assert(l);
+    return l->elapsed();
   }
-  
+
+  double getInitialTime(Log * l)
+  {
+    assert(l);
+    return l->getCreation();
+  }
+
+  void flush2FStream(Log * l, const std::string & out)
+  {
+    l->writeFStream(out);
+    l->clear();
+  }
+
+  void flush2MPI(Log * l, const std::string & out)
+  {
+    l->writeMPI(out);
+    l->clear();
+  }
+
+
   
 }

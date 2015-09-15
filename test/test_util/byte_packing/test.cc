@@ -24,8 +24,7 @@ int main(int argc, char * argv[])
   int int_val = 6;
   double double_val = 3.14;
 
-  void * data = talloc(int_val,double_val);
-  byte_pack(data,int_val,double_val);
+  void * data = serialize(int_val,double_val);
 
   int recovered_int = -1;
   double recovered_double = 0.0;
@@ -38,8 +37,7 @@ int main(int argc, char * argv[])
   struct_val.char_val = 'g';
   struct_val.double_val = 6.28;
 
-  void * data2 = talloc(struct_val);
-  byte_pack(data2,struct_val);
+  void * data2 = serialize(struct_val);
 
   pod_struct recovered_struct;
   byte_unpack(data2,recovered_struct);

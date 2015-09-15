@@ -1,7 +1,7 @@
 #!/bin/bash
 
-EXEDIR=$DEVROOT/amsi/build/test/test_interface/nonlinear_elasticity
-FILEDIR=$DEVROOT/amsi/test/test_interface/
+EXEDIR=$DEVROOT/amsi_sim/build/test/test_interface/nonlinear_elasticity
+FILEDIR=$DEVROOT/amsi_sim/test/test_interface/
 
 $1 mpirun $2 -np 1 $EXEDIR/nonlinear_elastic \
   -l /net/common/meshSim/license/ \

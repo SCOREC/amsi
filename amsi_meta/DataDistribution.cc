@@ -33,9 +33,17 @@ namespace amsi {
   // initialize member variables which are the same regardless of constructor used
   void DataDistribution::Init()
   {
-#   if ZOLTAN
+#   if !ZOLTAN
     zs = NULL;  
 #   endif
+
+    /*
+    for(int ii = 0; ii < wgts.size(); ii++)
+    {
+      wgts[ii].resize(1);
+      wgts[ii][0] = 0.0;
+    }
+    */
 
     assembled = false;
     valid = false;
@@ -56,7 +64,8 @@ namespace amsi {
       
       MPI_Comm_size(comm,&size);
       
-      for(int i=0;i<size;i++){
+      for(int i=0;i<size;i++)
+      {
 	if(i!=comm_rank){
 	  PCU_Comm_Write(i, &dd[comm_rank], sizeof(int));
 	}
@@ -102,6 +111,8 @@ namespace amsi {
 
   double DataDistribution::getWeight(int index, int sub_index)
   {
+    if(sub_index+1 > wgts[index].size())
+      wgts[index].resize(sub_index+1,0.0);
     return wgts[index][sub_index];
   }
 

@@ -5,11 +5,20 @@
 #include <iostream>
 
 namespace amsi {
-  int log_new(const std::string &);
-  std::iostream & log(const std::string &);
-  int log_print(const std::string &, std::ostream &);
-  int log_delete(const std::string &);
-  double log_start_time(const std::string &);
+  class Log;
+  Log * makeLog(const std::string &);
+  int deleteLog(Log *);
+  
+  std::iostream & log(Log *);
+
+  double post(Log *);
+  double getSincePost(Log *);
+  double getElapsedTime(Log *);
+  double getInitialTime(Log *);
+
+  void flush2FStream(Log *, const std::string &);
+  void flush2MPI(Log *, const std::string &);
+  
 }
 
 #endif

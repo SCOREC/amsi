@@ -17,9 +17,13 @@ namespace amsi
 			      double poisson_ratio);
       
       void atPoint(apf::Vector3 const &p, double w, double dV);
+      void setStressField(apf::Field* f) {stress_ip_field = f;}
+      void setStrainField(apf::Field* f) {strain_ip_field = f;}
     private:
       void getDisplacements(apf::DynamicVector&);
       double C(int,int,int,int);
+      apf::Field * stress_ip_field;
+      apf::Field * strain_ip_field;
       apf::DynamicMatrix& D;
       double v;
       double E;

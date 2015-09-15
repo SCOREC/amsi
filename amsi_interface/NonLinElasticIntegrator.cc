@@ -1,7 +1,7 @@
 #include "NonLinElasticIntegrator.h"
 #include "LinearElasticIntegrator.h"
 #include "ConvenienceFunctions.h"
-
+#include "apfFunctions.h"
 namespace amsi
 {
   namespace Analysis
@@ -12,7 +12,9 @@ namespace amsi
 						     double youngs_modulus,
 						     double poisson_ratio) :
       ElementalSystem(field,o),
-      D(GetIsotropicStressStrainTensor(youngs_modulus,poisson_ratio))
+      D(GetIsotropicStressStrainTensor(youngs_modulus,poisson_ratio)),
+      stress_ip_field(NULL),
+      strain_ip_field(NULL)
     {   }
 
     double delta(int i, int j)
@@ -95,8 +97,23 @@ namespace amsi
       
       apf::DynamicVector strain(6);
       apf::multiply(BL,t_u,strain);
+
+      if(strain_ip_field)
+      {
+	apf::Matrix3x3 strain_mat;
+	VoigtVectorToSymmMatrix(strain,strain_mat);
+	apf::setMatrix(strain_ip_field,apf::getMeshEntity(me),0,strain_mat);
+      }
+      
       apf::DynamicVector cauchy_stressv(6);
       apf::multiply(D,strain,cauchy_stressv);
+
+      if(stress_ip_field)
+      {
+	apf::Matrix3x3 stress_mat;
+	VoigtVectorToSymmMatrix(cauchy_stressv,stress_mat);
+	apf::setMatrix(stress_ip_field,apf::getMeshEntity(me),0,stress_mat);
+      }
 
       apf::DynamicMatrix K1(nedofs,nedofs);
       apf::DynamicMatrix tau(9,9); // cauchy stresses in special matrix

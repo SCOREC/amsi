@@ -6,11 +6,11 @@
 namespace amsi {
   namespace Analysis {
 
-    LinearStressStrainIntegrator::LinearStressStrainIntegrator(apf::Field * f,
+    LinearStressStrainIntegrator::LinearStressStrainIntegrator(apf::Field * displacement_field,
 							       apf::Field * strain_ip_field,
 							       apf::Field * stress_ip_field,
 							       double E, double v) :
-      ElementalSystem(f,0),
+      ElementalSystem(displacement_field,0),
       D(GetIsotropicStressStrainTensor(E,v)),
       u(),U(),
       stress_field(stress_ip_field),

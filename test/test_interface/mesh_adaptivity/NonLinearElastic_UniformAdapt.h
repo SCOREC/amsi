@@ -21,11 +21,17 @@ namespace amsi {
     virtual void Adapt()
     {
       assert(mesh_size_field);
-      apf::MeshEntity * vert = NULL;
-      for(apf::MeshIterator * it = apf_mesh->begin(0); vert = apf_mesh->iterate(it);)
-      	apf::setScalar(mesh_size_field,vert,0,0.1);
-      apfSimFEA::Adapt();
-      WriteMesh("post-adapt");
+      should_adapt = true;
+      if(should_adapt)
+      {
+	apf::MeshEntity * vert = NULL;
+	for(apf::MeshIterator * it = apf_mesh->begin(0); vert = apf_mesh->iterate(it);)
+	  apf::setScalar(mesh_size_field,vert,0,0.1);
+	apfSimFEA::Adapt();
+	numbered = false;
+	should_adapt = false;
+	WriteMesh("post_adapt_mapped");
+      }
     }
   };
   

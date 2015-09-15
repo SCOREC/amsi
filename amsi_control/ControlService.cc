@@ -99,7 +99,7 @@ namespace amsi {
 	std::ofstream  dev_null("/dev/null");
 	std::streambuf * old_cout = std::cout.rdbuf();
 	
-	local_rank != 0 ? std::cout.rdbuf(dev_null.rdbuf()) : NULL;
+	// local_rank != 0 ? std::cout.rdbuf(dev_null.rdbuf()) : NULL;
 
 #       ifdef ZOLTAN
 	float version = 0.0;
