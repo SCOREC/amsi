@@ -40,7 +40,7 @@ namespace amsi {
 
     const std::string & getName() const { return name; }
     const double getCreation() const { return creation_time; }
-    double post() { last_post = MPI_Wtime(); }
+    double post() { return last_post = MPI_Wtime(); }
     double sincePost()
     {
       double result = MPI_Wtime();
