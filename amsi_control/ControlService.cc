@@ -96,18 +96,14 @@ namespace amsi {
 	// TODO: Change this so the user can specificy which processes to allow to output to stdout
 	// redirect std::cout to /dev/null in silent processes
 	int local_rank = task_man->getLocalTask()->LocalRank();
-	std::ofstream  dev_null("/dev/null");
-	std::streambuf * old_cout = std::cout.rdbuf();
-	
-	// local_rank != 0 ? std::cout.rdbuf(dev_null.rdbuf()) : NULL;
+	if(local_rank > 0)
+	  std::cout.setstate(std::ios_base::failbit);
 
 #       ifdef ZOLTAN
 	float version = 0.0;
 	Zoltan_Initialize(NULL,NULL,&version);
 #       endif 
 	result += task_man->Execute(argc,argv);
-	
-	std::cout.rdbuf(old_cout);
       }
       else
 	result = -1;

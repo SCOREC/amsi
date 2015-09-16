@@ -1,6 +1,5 @@
 #include "apfFEA.h"
 
-#include <cassert>
 #include <apfShape.h>
 
 namespace amsi {
@@ -21,7 +20,7 @@ namespace amsi {
 	memset(&dofs[0],0,analysis_size*sizeof(int));
 
 	dofs[analysis_rank] = local_dof_count;
-	MPI_Allgather(&dofs[analysis_rank],1,MPI_INTEGER,
+	MPI_Allgather(&local_dof_count,1,MPI_INTEGER,
 		      &dofs[0],1,MPI_INTEGER,
 		      analysis_comm);
 	
