@@ -2,7 +2,7 @@ A multiscale simulation for the analysis of the mechanical behaviors of soft bio
 
 \begin{figure}
   \begin{center}
-    \includegraphics[height=2in]{biotissue-scales.png}
+    \includegraphics[height=3in]{biotissue-scales.png}
   \end{center}
   \caption{\small Biotissue multi-scale domains}
   \label{biotissue_scales}
@@ -10,7 +10,7 @@ A multiscale simulation for the analysis of the mechanical behaviors of soft bio
 
 The biotissue simulation was implemented by combining two single-scale simulations: a typical parallelized finite element analysis and a quasistatics code. The combination of these two simulations using AMSI was very straightforward, involving the introduction of an initialization and configuration phase for AMSI, wrapping the pre-existing main functions of each simulation in an AMSI scale-task callback, and finally introducing relavant AMSI communcation (and load-balancing) calls at locations where scale-interaction is required. 
 
-The simulation has been run many times on the Amos BlueGene/Q managed by the Center For Computational Innovations at Rennselaer Polytechnic Institute, and has scaled up to 250k elements at macro-scale with over 16k cores (with >90\% assigned to micro-scale simulations as these represent the bulk of actual computation). Scaling beyond this should be possible but has not currently been conducted. Theoretically the simulation should be able to scale up to around 300 million elements, limited by memory restrictions on the AMOS machine and the memory associated with a single RVE. Scaling to the full machine is however necessary to get a richer understanding of the performance of AMSI.
+The simulation has been run many times on the Amos BlueGene/Q managed by the Center For Computational Innovations at Rennselaer Polytechnic Institute, and has scaled up to 250k elements at macro-scale with over 16k cores (over 90\% assigned to micro-scale simulations as these represent the bulk of actual computation). Scaling beyond this should be possible but has not currently been conducted. Theoretically the simulation should be able to scale up to around 300 million elements, limited by memory restrictions on the AMOS machine and the memory associated with a single RVE. Scaling to the full machine is however necessary to get a richer understanding of the performance of AMSI.
 
 Symposia on the development and use of AMSI for the biotissue problem have been given at the SIAM Conference on Parallel Processing for Scientific Computing 2014 and at the SIAM Conference on Computational Science and Engineering 2015.
 
@@ -18,23 +18,27 @@ The Parallel Processing for Scientific Computing talk \cite{wtobin2014pp} was a 
 
 \begin{figure}
   \begin{center}
-    \includegraphics[height=2in]{allTimes_2macro_20k.png}
+    \includegraphics[height=3in]{allTimes_2macro_20k.png}
   \end{center}
   \caption{\small Multi-scale solver 1st iteration (20k elements)}
   \label{20k_first_iteration}
 \end{figure}
 
-\begin{figure}
-  \begin{center}
-    \includegraphics[height=2in]{siam_pp_weak_scaling.png}
-  \end{center}
-  \caption{\small Strong scaling on 20k mesh}
-  \label{strong_scaling}
-\end{figure}
+Figure \ref{20k_first_iteration} is a weak scaling study conducted on a 20k element mesh, leaving the number of macro-scale processes constant and varying the number of micro-scale processes from just 32 to 8192 by powers of 2. The total time to assemble and solve a single tangent stiffness matrix at the engineering scale is considered (1 Newton-Raphson iteration), and different portions of the overall workload are shown. The actual matrix solve is unchanging as the number of macro-scale processes which compute the linear solve remains constant. Thus the matrix solve time represents the idealized optimal time to compute a single iteration. It is clear that as the number of micro-scale processes increases, the overall solve time approaches the matrix solve time, and while the communication time increases, it is still several orders of magnitude less than the overall solve time.
 
 \begin{figure}
   \begin{center}
-    \includegraphics[height=2in]{dogBone14k.png}
+    \includegraphics[height=3in]{siam_pp_weak_scaling.png}
+  \end{center}
+  \caption{\small Weak scaling on 20k mesh}
+  \label{weak_scaling}
+\end{figure}
+
+Figure \ref{weak_scaling} is a view of the same weak-scaling study, weighted by the total time-to-solution for each case. Thus it is clear that as the number of micro-scale processes increase sufficiently, the overall computational load is dominated by the matrix solve. Increasing the number of processes at macro-scale should result in a reduction of this computational domincation, but both the size of macro- and micro-scales (and their ratio) must be considered when trying to determine the optimal allocation size. This figure suggests that a 1:128 macro-to-micro ratio will result in equal time being spent on both computations, and allow local load balancing operations at individual scales to make the most impact. Of course overall time-to-solution can be minimzed by simply allocating as many processes as possible, but allocating in the above ratio, weighted by the efficacy of individual scale load-balancing to impact the performance of a single scale, should result in the best possible gain. Further discussion and analysis of this concept will be published in \cite{wtobin2015mlb}.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[height=3in]{dogBone14k.png}
   \end{center}
   \caption{\small Engineering scale mesh}
   \label{dogbone_mesh}
@@ -46,9 +50,9 @@ As each RVE is a nonlinear simulation their is no a-prior estimate of the comput
 
 \begin{figure}
   \begin{center}
-    \includegraphics[height=2in]{siam_cse_initial.png}
+    \includegraphics[height=2.5in]{siam_cse_initial.png}
   \end{center}
-  \caption{\small Initial load distribution (20k elements)}
+  \caption{\small Unbalanced load distribution (20k elements)}
   \label{initial_load}
 \end{figure}
 
@@ -56,17 +60,17 @@ The initial distribution of weights is shown in figure \ref{initial_load}, with 
 
 \begin{figure}
   \begin{center}
-    \includegraphics[height=2in]{siam_cse_updated.png}
+    \includegraphics[height=2.5in]{siam_cse_updated.png}
   \end{center}
-  \caption{\small Load balancing (20k elements)}
+  \caption{\small Balanced load distribution (20k elements)}
   \label{load_balancing}
 \end{figure}
 
-Figure \ref{load_balancing} shows the result after scale-sensitive load-balancing (using the Zoltan libraries \cite{ZoltanOverviewArticle2002} \cite{ZoltanIsorropiaOverview2012} to plan the actual migration) is conducted. The maximal deviation after the first iteration is unfortunately much higher. But after that first iteration the max deviation is reduced by approximately 80\%. This is illustrative of the trend seen in the biotissue simulation, the number of micro-scale newton iterations conducted during the first incremental load step are not illustrative of the number of micro-scale newton iterations required during additional incremental load steps, which stay largely the same. Thus the first load balancing operation 'over-corrects' the issue, but the second and subsequent load-balancing operations result in better load balancing and run times overall. This can be seen more clearly in figure \ref{10_step_lb} which shows the weights for 64 micro-scale processes with the same mesh as above over 9 incrememental loading steps, the left graph shows the load without balancing and the right shows the load with balancing. The max deviation without load balancing stays in the 20\% range, while with load balancing it typically stays under 10\%, as low as 2.77\% in the 8th loading step.
+Figure \ref{load_balancing} shows the result after scale-sensitive load-balancing (using the Zoltan libraries \cite{ZoltanOverviewArticle2002} \cite{ZoltanIsorropiaOverview2012} to plan the actual migration) is conducted. The maximal deviation after the first iteration is unfortunately much higher. But after that first iteration the max deviation is reduced by approximately 80\%. This is illustrative of the trend seen in the biotissue simulation, the number of micro-scale newton iterations conducted during the first incremental load step are not illustrative of the number of micro-scale newton iterations required during additional incremental load steps, which stay largely the same. Thus the first load balancing operation over corrects the issue, but the second and subsequent load-balancing operations result in better load balancing and run times overall. This can be seen more clearly in figure \ref{10_step_lb} which shows the weights for 64 micro-scale processes with the same mesh as above over 9 incrememental loading steps, the left graph shows the load without balancing and the right shows the load with balancing. The max deviation without load balancing stays in the 20\% range, while with load balancing it typically stays under 10\%, as low as 2.77\% in the 8th loading step.
 
 \begin{figure}
   \begin{center}
-    \includegraphics[height=2.5in]{siam_cse_ten.png}
+    \includegraphics[height=3in]{siam_cse_ten.png}
   \end{center}
   \caption{\small Nine incremental loading steps (20k elements)}
   \label{10_step_lb}
