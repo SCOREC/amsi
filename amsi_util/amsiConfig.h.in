@@ -35,10 +35,10 @@
 #  define PETSC 0
 #endif
 
-#ifdef DEBUG
-#  define AMSI_DEBUG(EX) EX
-#else 
+#ifndef NDEBUG
 #  define AMSI_DEBUG(EX)
+#else 
+#  define AMSI_DEBUG(EX) EX
 #endif
 
 #endif
