@@ -51,7 +51,7 @@ else
   module load zoltan/OpenMPI-1.3.3
   module unload parmetis/OpenMPI-1.3.3
   module load ~/develop/petsc-3.5.3/arch-linux2-c-debug/lib/modules/3.5.3-arch-linux2-c-debug
-  module load simmetrix/simModSuite
+  module load simmetrix/simModSuite/9.0-150718
 
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \

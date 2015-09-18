@@ -9,6 +9,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiConfig.h.in
 set(util_public_headers
   amsiUtil.h
   amsiConfig.h
+  amsiHost.h
   amsiReporter.h
   amsiUtilFunctions.h
   amsiMPI.h

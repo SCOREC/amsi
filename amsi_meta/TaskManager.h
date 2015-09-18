@@ -6,24 +6,12 @@
 #include "ProcessSet.h"
 #include "ProcessAllocator.h"
 #include "amsiConfig.h"
-
-#if HOST==BGQ
-  #include <boost/functional/hash.hpp>
-#else
-  #include <functional>
-#endif
+#include "amsiHost.h"
 
 #include <mpi.h>
 #include <string>
 
 namespace amsi {
-
-#if HOOST==BGQ
-  using boost::hash;
-#else
-  using std::hash;
-#endif
-
   Task * getLocal();
 
   enum ProcessState
@@ -39,8 +27,6 @@ namespace amsi {
   class TaskManager
   { 
   public:
-
-    
     TaskManager(MPI_Comm);
     
     TaskGroup * TaskGroup_Create(const std::string & nm);

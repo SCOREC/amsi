@@ -21,14 +21,14 @@ namespace amsi {
 #   ifdef SIM
     PMU_setCommunicator(AMSI_COMM_LOCAL);
 
-#   if HOST==BGQ
+#   ifdef BGQ
     Sim_readLicenseFile("/gpfs/u/software/bgq/proprietary/simmetrix//license/license.txt");
-#   else
+#   elif defined SCOREC
     Sim_readLicenseFile("/net/common/meshSim/license/license.txt");
 #   endif
     SimPartitionedMesh_start(NULL,NULL);
     SimMeshing_start();
-#   if HOST!=BGQ
+#   ifdef SCOREC
     SimField_start();
 #   endif
     gmi_sim_start();
@@ -40,7 +40,7 @@ namespace amsi {
   {
 #   ifdef SIM
     gmi_sim_stop();
-#   if HOST!=BGQ
+#   ifdef SCOREC
     SimField_stop();
 #   endif
     SimMeshing_stop();

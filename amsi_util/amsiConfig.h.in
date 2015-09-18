@@ -5,7 +5,11 @@
 #define AMSI_MINOR_VERSION @AMSI_MINOR_VERSION@
 #define AMSI_PATCH_VERSION @AMSI_PATCH_VERSION@
 
-#define HOST @HOST@
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+
+#define @HOST@
 
 #if @CORE_FOUND@ == TRUE
 #  define CORE 1
