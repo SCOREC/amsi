@@ -18,7 +18,7 @@
 
 namespace amsi {
 
-  class amsiInterfaceInit : public amsiUtilInit
+  class amsiInterfaceInit : virtual public amsiUtilInit
   {
   public:
     virtual void amsiInit(int,char**);

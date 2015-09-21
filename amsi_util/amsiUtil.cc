@@ -10,17 +10,20 @@ MPI_Comm AMSI_COMM_LOCAL = MPI_COMM_WORLD;
 
 namespace amsi
 {
-  amsiInitializer * amsi_init = NULL;
+  amsiInitializer * initializer = NULL;
+
 
   void amsiInit(int argc, char ** argv)
   {
-    amsi_init->amsiInit(argc,argv);
+    if(!initializer)
+      std::cerr << "Please set amsi::initializer to the appropriate amsiInitializer class for the features in use." << std::endl;
+    else
+      initializer->amsiInit(argc,argv);
   }
 
   void amsiFree()
   {
-    amsi_init->amsiFree();
-    delete amsi_init;
+    initializer->amsiFree();
   }
   
   void amsiUtilInit::amsiInit(int argc, char ** argv)

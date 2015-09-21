@@ -11,7 +11,7 @@ namespace amsi {
   extern TaskManager * tm;
   extern CommunicationManager * cm;
 
-  class amsiMetaInit : public amsiUtilInit
+  class amsiMetaInit : virtual public amsiUtilInit
   {
   public:
     virtual void amsiInit(int,char**);

@@ -1,3 +1,3 @@
 #!/bin/sh -ex
 
-mpirun -np 32 ./test
+$1 mpirun $2 -np 32 ./test -a amsi_options_8_24

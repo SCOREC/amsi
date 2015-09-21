@@ -5,6 +5,7 @@
 #ifdef SIM
 #include <gmi_sim.h>
 #endif
+#include <gmi_null.h>
 
 namespace amsi {
 
@@ -30,9 +31,10 @@ namespace amsi {
     SimMeshing_start();
 #   ifdef SCOREC
     SimField_start();
-#   endif
     gmi_sim_start();
     gmi_register_sim();
+#   endif
+    gmi_register_null();
 #   endif
   }
 

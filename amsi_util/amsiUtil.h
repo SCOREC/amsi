@@ -3,7 +3,6 @@
 
 namespace amsi
 {
-
   void amsiInit(int argc, char ** argv);
   void amsiFree();
 
@@ -25,8 +24,7 @@ namespace amsi
     virtual void amsiFree();
   };
 
-
-  extern amsiInitializer * amsi_init;
+  extern amsiInitializer * initializer;
 }
 
 #endif

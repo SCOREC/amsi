@@ -32,7 +32,6 @@ namespace amsi {
     opterr = 1;
     return have_options;
   }
-
   
   void amsiMetaInit::amsiInit(int argc, char ** argv)
   {
