@@ -2,7 +2,7 @@
 #include "amsiBCDirichlet.h"
 #include "apfFEA.h"
 
-#if SIM
+#ifdef SIM
 #  include "apfSIM.h"
 #endif
 
@@ -22,7 +22,7 @@ void display_help_string()
 {
   std::cout << "Usage: dirichlet_test [OPTIONS]" << std::endl
 	    << "[-h, --help]                      display this help text" << std::endl
-#           if SIM
+#           ifdef SIM
 	    << "[-l, --license path_to_license]   path to simmetrix license file" << std::endl
 #           endif
 	    << "[-g, --geom model_file]           the model file" << std::endl
@@ -41,7 +41,7 @@ bool parse_options(int argc, char ** argv)
     static struct option long_options[] =
     {
       {"help",      no_argument,       0, 'h'},
-#     if SIM      
+#     ifdef SIM      
       {"license",   required_argument, 0, 'l'},
 #     endif
       {"model",     required_argument, 0, 'g'},
@@ -91,9 +91,9 @@ int main(int argc, char ** argv)
 
   if(parse_options(argc,argv))
   {
-    amsi::amsiInterfaceInit(argc,argv);
+    amsi::amsiInit(argc,argv);
     apf::Mesh * apf_mesh = NULL;
-#   if SIM
+#   ifdef SIM
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
     apf_mesh = apf::createMesh(mesh);
@@ -112,12 +112,12 @@ int main(int argc, char ** argv)
     
     
 
-#   if SIM
+#   ifdef SIM
 
 #   else
       
 #   endif
-    amsi::amsiInterfaceFree();
+    amsi::amsiFree();
   }
 
     

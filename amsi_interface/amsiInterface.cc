@@ -2,15 +2,15 @@
 
 #include <amsiMPI.h>
 
-#if SIM
+#ifdef SIM
 #include <gmi_sim.h>
 #endif
 
 namespace amsi {
 
-  void amsiInterfaceInit(int argc, char ** argv)
+  void amsiInterfaceInit::amsiInit(int argc, char ** argv)
   {
-    amsiUtilInit(argc,argv);
+    amsiUtilInit::amsiInit(argc,argv);
 
     // todo: only initialize libraries on those scales which make use of their functionality
 #   ifdef PETSC
@@ -36,7 +36,7 @@ namespace amsi {
 #   endif
   }
 
-  void amsiInterfaceFree()
+  void amsiInterfaceInit::amsiFree()
   {
 #   ifdef SIM
     gmi_sim_stop();
@@ -51,7 +51,7 @@ namespace amsi {
 #   ifdef PETSC
     PetscFinalize();
 #   endif
-    amsiUtilFree();
+    amsiUtilInit::amsiFree();
   }
   
 }

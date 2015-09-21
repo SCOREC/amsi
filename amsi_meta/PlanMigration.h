@@ -2,7 +2,7 @@
 #define PLANMIFRATION_H_
 
 #include "AddData_LoadBalancing.h"
-#include "amsiConfig.h"
+#include "amsiMetaConfig.h"
 
 namespace amsi {
 

@@ -2,7 +2,7 @@
 #define COMMPATTERN_H_
 
 #include "Assemblable.h"
-#include "amsiConfig.h"
+#include "amsiMetaConfig.h"
 
 #include <mpi.h>
 

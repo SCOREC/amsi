@@ -2,16 +2,16 @@
 #define DATADISTRIBUTION_H_
 
 #include "Assemblable.h"
-#include "amsiConfig.h"
+#include "amsiMetaConfig.h"
 
-#if CORE
+#ifdef CORE
 #include <PCU.h>
 #endif
 
 #include <valarray>
 #include <vector>
 
-#if ZOLTAN
+#ifdef ZOLTAN
 struct Zoltan_Struct;
 #endif
 
@@ -39,7 +39,7 @@ namespace amsi {
       void setWeight(int index, int sub_index, double wgt);
       double getWeight(int index, int sub_index);
       
-#if ZOLTAN
+#ifdef ZOLTAN
       DataDistribution(int size, Zoltan_Struct *);
       Zoltan_Struct * GetZS() const {return zs;}
 #endif
@@ -51,7 +51,7 @@ namespace amsi {
       std::valarray<std::vector<double> > wgts;
       std::valarray<int> dd;
 
-#if ZOLTAN
+#ifdef ZOLTAN
       Zoltan_Struct * zs;
 #endif
     };

@@ -9,22 +9,22 @@
 
 namespace amsi {
 
-  void amsiInit(int argc, char ** argv)
+  void amsiControlInit::amsiInit(int argc, char ** argv)
   {
-    amsiMetaInit(argc,argv);
+    amsiMetaInit::amsiInit(argc,argv);
     if(tm != NULL && cm != NULL)
     {
       ControlService * cs = ControlService::Instance();
       cs->SetTaskManager(tm);
       cs->SetCommunicationManager(cm);
     }
-    amsiInterfaceInit(argc,argv);
+    amsiInterfaceInit::amsiInit(argc,argv);
   }
 
-  void amsiFree()
+  void amsiControlInit::amsiFree()
   {
-    amsiInterfaceFree();
-    amsiMetaFree();
+    amsiInterfaceInit::amsiFree();
+    amsiMetaInit::amsiFree();
   }
 
 }

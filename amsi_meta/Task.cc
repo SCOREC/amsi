@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iostream>
 
-#if ZOLTAN
+#ifdef ZOLTAN
 #include <zoltan.h>
 #endif
 
@@ -51,7 +51,7 @@ namespace amsi {
 	delete (it->second);
     }
   
-# if ZOLTAN
+# ifdef ZOLTAN
   // hacky hard-coded bullshit
   int DD_get(void * data, int * ierr)
   {
@@ -120,7 +120,7 @@ namespace amsi {
   {
     DataDistribution * dd = static_cast<DataDistribution*>(NULL);
 
-#   if !ZOLTAN
+#   ifndef ZOLTAN
     dd = new DataDistribution(proc->size());
 #   else
     Zoltan_Struct * zs = Zoltan_Create(task_comm);

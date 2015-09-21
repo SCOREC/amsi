@@ -1,7 +1,5 @@
 #include "amsiUtil.h"
-#include "amsiConfig.h"
-
-//#include <mpi.h>
+#include "amsiUtilConfig.h"
 
 #ifdef CORE
 #include <PCU.h>
@@ -12,9 +10,20 @@ MPI_Comm AMSI_COMM_LOCAL = MPI_COMM_WORLD;
 
 namespace amsi
 {
-  static int util_init_call_count = 0;
+  amsiInitializer * amsi_init = NULL;
 
-  void amsiUtilInit(int argc, char ** argv)
+  void amsiInit(int argc, char ** argv)
+  {
+    amsi_init->amsiInit(argc,argv);
+  }
+
+  void amsiFree()
+  {
+    amsi_init->amsiFree();
+    delete amsi_init;
+  }
+  
+  void amsiUtilInit::amsiInit(int argc, char ** argv)
   {
     if(!util_init_call_count)
     {
@@ -26,7 +35,7 @@ namespace amsi
     util_init_call_count++;
   }
 
-  void amsiUtilFree()
+  void amsiUtilInit::amsiFree()
   {
     if(util_init_call_count == 1)
     {

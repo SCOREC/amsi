@@ -5,7 +5,7 @@
 #include "TaskGroup.h"
 #include "ProcessSet.h"
 #include "ProcessAllocator.h"
-#include "amsiConfig.h"
+#include "amsiMetaConfig.h"
 #include "amsiHost.h"
 
 #include <mpi.h>

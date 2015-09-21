@@ -9,11 +9,15 @@ set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSIO
 
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-#set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+
+# prefer static libraries and force static linking
+set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
+
 
 if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
   set(HOST BGQ)
   list(APPEND CMAKE_CXX_FLAGS "-qlanglvl=extended")
+  set(CMAKE_EXE_LINKER_FLAGS -static)
 else()
   set(HOST SCOREC)
   list(APPEND CMAKE_CXX_FLAGS "-std=c++0x")

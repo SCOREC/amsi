@@ -10,10 +10,14 @@ namespace amsi {
 
   extern TaskManager * tm;
   extern CommunicationManager * cm;
-  
-  void amsiMetaInit(int,char**);
-  void amsiMetaFree();
 
+  class amsiMetaInit : public amsiUtilInit
+  {
+  public:
+    virtual void amsiInit(int,char**);
+    virtual void amsiFree();
+  };
+  
   void configureFromFile(const std::string &);
 }
 

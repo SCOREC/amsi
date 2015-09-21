@@ -1,7 +1,7 @@
 #ifndef TASK_H_
 #define TASK_H_
 
-#include "amsiConfig.h"
+#include "amsiMetaConfig.h"
 #include "amsiHost.h"
 
 #ifdef CORE

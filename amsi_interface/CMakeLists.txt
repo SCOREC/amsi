@@ -1,9 +1,6 @@
-find_package(MPI REQUIRED)
-find_package(ZOLTAN)
-find_package(PETSc)
-
 set(interface_public_headers
     amsiInterface.h
+    amsiInterfaceConfig.h
     amsiBCDirichlet.h
     ElementalSystem.h
     MatrixUtil.h
@@ -47,6 +44,11 @@ set(interface_src_files
     TrussIntegrator.cc
    )
 
+find_package(MPI REQUIRED)
+find_package(ZOLTAN)
+find_package(PETSc)
+find_package(CoreSim)
+
 # petsc is optional
 if(PETSC_FOUND)
   list(APPEND interface_public_headers PetscLAS.h)
@@ -71,21 +73,22 @@ if(SIMMODSUITE_FOUND)
 	NonLinElasticity.cc)
 endif(SIMMODSUITE_FOUND)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiInterfaceConfig.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/amsiInterfaceConfig.h
+               @ONLY)
+
 # Add the library to create
-add_library(amsi_interface ${interface_src_files} ${interface_public_headers})
+add_library(amsi_interface ${interface_src_files})
 
 # properties for downstream packages
 target_include_directories(amsi_interface PUBLIC
 					  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 					  $<INSTALL_INTERFACE:include/amsi>)
 
-target_link_libraries(amsi_interface PUBLIC amsi_util)
+target_link_libraries(amsi_interface PUBLIC amsi_util amsi_meta)
 
 if(PETSC_FOUND)
-  target_include_directories(amsi_interface PUBLIC ${PETSC_INCLUDES})
-  if(ZOLTAN_FOUND)
-    target_link_libraries(amsi_interface PUBLIC ${ZOLTAN_LIBRARIES})
-  endif()
+  target_include_directories(amsi_interface PUBLIC ${PETSC_INCLUDE_DIRS})
   target_link_libraries(amsi_interface PUBLIC ${PETSC_LIBRARIES})
 endif()
 

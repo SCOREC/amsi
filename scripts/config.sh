@@ -55,7 +55,7 @@ else
 
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-    -DBUILD_TESTS=OFF \
+    -DBUILD_TESTS=ON \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
     -DSIM_MPI=openmpi14 \
     ..

@@ -1,5 +1,6 @@
 set(meta_public_headers 
   amsiMeta.h
+  amsiMetaConfig.h
   ProcessSet.h
   ProcessAllocator.h
   DataDistribution.h
@@ -29,28 +30,33 @@ set(meta_source_files
   )
 
 find_package(MPI REQUIRED)
-find_package(CoreSim REQUIRED)
-find_package(PETSc)
-find_package(ZOLTAN REQUIRED)
+find_package(CoreSim)
+find_package(ZOLTAN)
 
-add_library(amsi_meta ${meta_source_files} ${meta_public_headers})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h
+               @ONLY)
+
+add_library(amsi_meta ${meta_source_files})
 
 target_include_directories(amsi_meta PUBLIC
 				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 				     $<INSTALL_INTERFACE:include/amsi>)
 
-if(PETSC_PARMETIS)
-  target_link_libraries(amsi_meta PUBLIC ${PETSC_LIBRARIES})
-  target_include_directories(amsi_meta PUBLIC ${PETSC_INCLUDES})  
-endif()
+target_link_libraries(amsi_meta PUBLIC amsi_util)
 
 if(CORE_FOUND)
   target_link_libraries(amsi_meta PUBLIC ${CORE_LIBRARIES})
   target_include_directories(amsi_meta PUBLIC ${CORE_INCLUDE_DIRS})
 endif()
 
-target_link_libraries(amsi_meta PUBLIC amsi_util ${ZOLTAN_LIBRARIES} ${MPI_C_LIBRARIES})
-target_include_directories(amsi_meta PUBLIC ${ZOLTAN_INCLUDE_DIRS} ${MPI_C_INCLUDE_PATH})
+if(ZOLTAN_FOUND)
+  target_link_libraries(amsi_meta PUBLIC ${ZOLTAN_LIBRARIES})
+  target_include_directories(amsi_meta PUBLIC ${ZOLTAN_INCLUDE_DIRS})
+endif()
+
+target_link_libraries(amsi_meta PUBLIC ${MPI_LIBRARIES})
+target_include_directories(amsi_meta PUBLIC ${MPI_INCLUDE_PATH})
 
 set_property(TARGET amsi_meta PROPERTY VERSION ${AMSI_VERSION})
 

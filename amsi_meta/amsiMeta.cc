@@ -34,16 +34,16 @@ namespace amsi {
   }
 
   
-  void amsiMetaInit(int argc, char ** argv)
+  void amsiMetaInit::amsiInit(int argc, char ** argv)
   {
-    amsiUtilInit(argc,argv);
+    amsiUtilInit::amsiInit(argc,argv);
     if(parse_options(argc,argv))
       configureFromFile(options_filename);
   }
 
-  void amsiMetaFree()
+  void amsiMetaInit::amsiFree()
   {
-    amsiUtilFree();
+    amsiUtilInit::amsiFree();
   }
 
   void configureFromFile(const std::string & filename)

@@ -1,19 +1,22 @@
 #include "DataDistribution.h"
 
-#if ZOLTAN
+#ifdef ZOLTAN
 #include <zoltan.h>
 #endif
 
 namespace amsi {
 
   DataDistribution::DataDistribution() :
-    dd()
+    dd(),
+    valid(false),
+    wgts()
   {
     Init();
   }
   
   DataDistribution::DataDistribution(int size) :
     dd(size),
+    valid(false),
     wgts(size)
   { 
     Init();
@@ -33,18 +36,6 @@ namespace amsi {
   // initialize member variables which are the same regardless of constructor used
   void DataDistribution::Init()
   {
-#   if !ZOLTAN
-    zs = NULL;  
-#   endif
-
-    /*
-    for(int ii = 0; ii < wgts.size(); ii++)
-    {
-      wgts[ii].resize(1);
-      wgts[ii][0] = 0.0;
-    }
-    */
-
     assembled = false;
     valid = false;
   }
@@ -53,7 +44,7 @@ namespace amsi {
   {
     if(!assembled)
     {
-#     if CORE
+#     ifdef CORE
       int size;
       int recv_from;
       void* recv;

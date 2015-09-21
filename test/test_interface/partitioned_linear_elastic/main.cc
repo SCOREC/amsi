@@ -78,7 +78,7 @@ int main (int argc, char ** argv)
   if(parse_options(argc,argv))
   {
     std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
-    amsi::amsiInterfaceInit(argc,argv);
+    amsi::amsiInit(argc,argv);
     Sim_logOn("simmetrix_log");
     std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
 
@@ -103,7 +103,7 @@ int main (int argc, char ** argv)
     std::cout << "Results file(s) written, shutting down 3rd-party libs" << std::endl;
 
     Sim_logOff();
-    amsi::amsiInterfaceFree();
+    amsi::amsiFree();
     std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
   }
   else result--;

@@ -1,7 +1,7 @@
 #ifndef AMSIINTERFACE_H_
 #define AMSIINTERFACE_H_
 
-#include "amsiConfig.h"
+#include "amsiInterfaceConfig.h"
 #include "amsiUtil.h"
 
 #ifdef SIM
@@ -18,8 +18,12 @@
 
 namespace amsi {
 
-  void amsiInterfaceInit(int,char**);
-  void amsiInterfaceFree();
+  class amsiInterfaceInit : public amsiUtilInit
+  {
+  public:
+    virtual void amsiInit(int,char**);
+    virtual void amsiFree();
+  };
 
 }
 
