@@ -1,0 +1,21 @@
+#ifndef AMSI_H_
+#define AMSI_H_
+
+namespace amsi {
+
+  class amsiControlInit : public amsiMetaInit, public amsiInterfaceInit
+  {
+  public:
+  amsiControlInit()
+   : amsiInit(),
+     amsiMetaInit(),
+     amsiInterfaceInit()
+  {}
+
+    virtual void amsiInit(int,char**);
+    virtual void amsiFree();
+    
+  };
+}
+
+#endif
