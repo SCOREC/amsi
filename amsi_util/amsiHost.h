@@ -14,5 +14,4 @@
   using std::hash;
   using std::unordered_map;
 #endif
-
 #endif
