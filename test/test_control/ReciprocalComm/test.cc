@@ -3,7 +3,7 @@
 
 // in-project
 #include "ControlService.h"
-#include "amsiUtil.h"
+#include "amsi.h"
 
 // psuedo-standard
 #include <mpi.h>
@@ -69,7 +69,10 @@ int task1_run(int &, char **&, MPI_Comm)
   //std::cout << "Task 1 rank " << local_rank << " has sent all data" << std::endl;
   
   // Create a placeholder CommPattern to reconcile into
-  size_t recv_pattern_id = cs->RecvCommPattern("micro_results","micro","macro","");
+  size_t recv_pattern_id = cs->RecvCommPattern("micro_results",
+					       "micro",
+					       "",
+					       "macro");
 
   // Reconcile the CommPattern from the other task to this one
   cs->CommPattern_Reconcile(recv_pattern_id);
@@ -164,13 +167,11 @@ int task2_run(int &, char **&, MPI_Comm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  MPI_Init(&argc,&argv);
 
-  int rank = -1;
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-
-  int size;
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
+  amsi::use_petsc = false;
+  amsi::use_simmetrix = false;
+  amsi::initializer = new amsi::amsiControlInit;
+  amsi::amsiInit(argc,argv);
 
   std::cout << "Initializing test object(s):" << std::endl;
 
@@ -184,24 +185,12 @@ int main(int argc, char * argv[])
   int sigmaTypeSize;
   MPI_Type_size(sigma_type,&sigmaTypeSize);
 
-  // Create the TaskManager on the MPI_COMM_WORLD and the tasks
-  TaskManager * tm = new TaskManager(MPI_COMM_WORLD);
-  Task * t1 = tm->createTask("macro",3);
-  Task * t2 = tm->createTask("micro",5);
-
-  CommunicationManager * cm = new CommunicationManager();
-
-  ControlService * cs = ControlService::Instance();
+  Task * t1 = amsi::tm->getTask("macro");
+  Task * t2 = amsi::tm->getTask("micro");
   
-  cs->SetCommunicationManager(cm);
-  cs->SetTaskManager(tm);
-
+  ControlService * cs = ControlService::Instance();
   failed += test_neq("ControlService::Instance()",static_cast<ControlService*>(NULL),cs);
-
-  // Define the CommRelations between the tasks
-  cs->CommRelation_Define("macro","micro");
-  cs->CommRelation_Define("micro","macro");
-
+  
   // Set the execution functions for the tasks
   t1->SetExecutionFunction(&task1_run);
   t2->SetExecutionFunction(&task2_run);
@@ -211,6 +200,6 @@ int main(int argc, char * argv[])
 
   test("Number failed",0,failed);
 
-  MPI_Finalize();
+  amsi::amsiFree();
   return failed;
 }

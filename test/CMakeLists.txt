@@ -3,8 +3,8 @@ include(CTest)
 # testing
 function(add_mpi_test name file no_mpi_proc)
   add_executable(${name} ${file})
-  set(test_parameters -np ${no_mpi_proc} "./${name}")
-  add_test(NAME ${name} COMMAND "mpirun" ${test_parameters})
+  set(test_parameters -np ${no_mpi_proc} ${name} ${ARGN})
+  add_test(NAME ${name} COMMAND "mpirun" ${test_parameters} )
 endfunction(add_mpi_test)
 
 add_subdirectory(test_util)

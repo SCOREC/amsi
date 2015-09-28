@@ -10,8 +10,10 @@ MPI_Comm AMSI_COMM_LOCAL = MPI_COMM_WORLD;
 
 namespace amsi
 {
+  bool use_core = true;
+  bool use_simmetrix = true;
+  
   amsiInitializer * initializer = NULL;
-
 
   void amsiInit(int argc, char ** argv)
   {

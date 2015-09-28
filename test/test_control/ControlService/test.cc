@@ -122,6 +122,9 @@ int task2_run(int &, char **&, MPI_Comm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
+  amsi::use_petsc = false;
+  amsi::use_simmetrix = false;
+  
   amsi::initializer = new amsi::amsiControlInit;
   amsi::amsiInit(argc,argv);
 

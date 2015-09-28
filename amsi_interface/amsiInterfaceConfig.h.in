@@ -5,6 +5,7 @@
 
 #if @PETSC_FOUND@ == TRUE
 #  define PETSC
+namespace amsi { extern bool use_petsc; }
 #endif
 
 #endif
