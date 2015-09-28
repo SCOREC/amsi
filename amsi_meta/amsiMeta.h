@@ -6,6 +6,8 @@
 
 #include <amsiUtil.h>
 
+#include <string>
+
 namespace amsi {
 
   extern TaskManager * tm;

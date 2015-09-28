@@ -5,6 +5,9 @@
 #include <iostream>
 
 namespace amsi {
+
+  extern std::string results_dir;
+  
   class Log;
   Log * makeLog(const std::string &);
   int deleteLog(Log *);

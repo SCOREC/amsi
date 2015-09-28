@@ -12,6 +12,8 @@
 
 namespace amsi {
 
+  std::string results_dir("results/");
+
   class Log {
   protected:
     std::string name;
@@ -127,7 +129,8 @@ namespace amsi {
 
   void flush2FStream(Log * l, const std::string & out)
   {
-    l->writeFStream(out);
+    std::string fnm(results_dir + out);
+    l->writeFStream(fnm);
     l->clear();
   }
 

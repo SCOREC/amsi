@@ -1,6 +1,7 @@
 #include "amsiMeta.h"
 
 #include <amsiMPI.h>
+#include <amsiReporter.h>
 
 #include <cassert>
 #include <getopt.h>
@@ -56,6 +57,8 @@ namespace amsi {
     std::vector<std::string> tokens;
     std::string line;
     bool parsing_scales = true;
+    bool parsing_relations = false;
+    bool parsing_configure = false;
     while(std::getline(file,line))
     {
       line = pystring::strip(line);
@@ -64,21 +67,32 @@ namespace amsi {
 	if(pystring::startswith(line,std::string("#")))
 	{
 	  parsing_scales = false;
+	  parsing_relations = true;
 	  continue;
 	}
 	pystring::partition(line," ",tokens);
 	assert(tokens.size() == 3);
 	tm->createTask(tokens[0],atoi(tokens[2].c_str()));
       }
-      else
+      else if(parsing_relations)
       {
+	if(pystring::startswith(line,std::string("#")))
+	{
+	  parsing_relations=false;
+	  parsing_configure=true;
+	  continue;
+	}
 	pystring::partition(line," ",tokens);
 	assert(tokens.size() == 3);
 	size_t t1 = tm->getTaskID(tokens[0]);
 	size_t t2 = tm->getTaskID(tokens[2]);
 	assert(t1 && t2);
 	cm->defineRelation(t1,t2);
-      }     
+      }
+      else if(parsing_configure)
+      {
+	results_dir = line;
+      }
     }
     if(!tm->lockConfiguration())
       std::cerr << "Could not configure AMSI with supplied file: " << filename << std::endl;
