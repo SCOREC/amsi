@@ -39,10 +39,10 @@ namespace amsi {
       void setWeight(int index, int sub_index, double wgt);
       double getWeight(int index, int sub_index);
       
-#ifdef ZOLTAN
+#     ifdef ZOLTAN
       DataDistribution(int size, Zoltan_Struct *);
       Zoltan_Struct * GetZS() const {return zs;}
-#endif
+#     endif
 
     private:
       bool assembled;
@@ -51,9 +51,9 @@ namespace amsi {
       std::valarray<std::vector<double> > wgts;
       std::valarray<int> dd;
 
-#ifdef ZOLTAN
+#     ifdef ZOLTAN
       Zoltan_Struct * zs;
-#endif
+#     endif
     };
 
 

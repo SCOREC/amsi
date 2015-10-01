@@ -21,13 +21,13 @@ int task1_run(int &, char **&, MPI_Comm)
   // Get the local rank and determine an amount of locally-owned data
   Task * local_task = amsi::getLocal();
   
-  int local_rank = local_task->LocalRank();
+  int local_rank = local_task->localRank();
   int local_data_count = (local_rank % 4) * 4;
 
   // Create a DataDistribution, set the local data, and assemble the DD on the local Task
-  local_task->DataDist_Create("send_to_task2");
-  local_task->DataDist_SetLocal("send_to_task2",local_data_count);
-  local_task->DataDist_Assemble("send_to_task2");
+  local_task->createDD("send_to_task2");
+  local_task->setLocalDDValue("send_to_task2",local_data_count);
+  local_task->assembleDD("send_to_task2");
 
   // Create a CommPattern for the "send_to_task2" DataDistribution
   size_t pattern_id = cs->CreateCommPattern("send_to_task2","task1","task2");
@@ -86,7 +86,6 @@ int task2_run(int &, char **&, MPI_Comm)
   ControlService * cs = ControlService::Instance();
 
   Task * local_task = amsi::getLocal();
-  int local_rank = local_task->LocalRank();
 
   // Create a placeholder CommPattern to reconcile into
   size_t pattern_id = cs->RecvCommPattern("send_to_task2",
@@ -104,9 +103,9 @@ int task2_run(int &, char **&, MPI_Comm)
   cs->Communicate(pattern_id,data,MPI_DOUBLE);
 
   //invert the comm mapping for use as the commpattern for the t2->t1 relation
-  local_task->DataDist_Create("send_to_task1");
-  local_task->DataDist_SetLocal("send_to_task1",data.size());
-  local_task->DataDist_Assemble("send_to_task1");
+  local_task->createDD("send_to_task1");
+  local_task->setLocalDDValue("send_to_task1",data.size());
+  local_task->assembleDD("send_to_task1");
 
   // invert the communication pattern used to get in the t1->t2 "send_to_task2" relation
   size_t send_pattern_id = cs->CommPattern_UseInverted(pattern_id,"send_to_task1","task2","task1");
@@ -136,8 +135,8 @@ int main(int argc, char * argv[])
   failed += test_neq("ControlService::Instance()",static_cast<ControlService*>(NULL),cs);
 
   // Set the execution functions for both tasks
-  t1->SetExecutionFunction(&task1_run);
-  t2->SetExecutionFunction(&task2_run);
+  t1->setExecutionFunction(&task1_run);
+  t2->setExecutionFunction(&task2_run);
   
   // Begin execution
   failed += cs->Execute(argc,argv);

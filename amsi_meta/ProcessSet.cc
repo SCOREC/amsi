@@ -25,14 +25,15 @@ namespace amsi {
     /// @brief Retrieve process ranks from the set
     /// @param i The index of the rank the retrieve
     /// @return int The i-th rank in the set
-    int ProcessSet_T<std::pair<int,int> >::operator[](int i)
+    int ProcessSet_T<std::pair<int,int> >::operator[](int i) const
     {
-      return i <= (val.second - val.first) ? val.first + i : -1;
+      
+      return i < 0 ? -1 : i <= (val.second - val.first) ? val.first + i : -1;
     }
     
     /// @brief How many ranks are in the set
     /// @return int The set size
-    int ProcessSet_T<std::pair<int,int> >::size()
+    int ProcessSet_T<std::pair<int,int> >::size() const
     {
       //std::cout << val.first << " " << val.second << std::endl;
       return val.second - val.first;
@@ -41,7 +42,7 @@ namespace amsi {
     /// @brief Determine whether a rank is in the set
     /// @param p The rank to check
     /// @return bool Whether the rank is in the set or not
-    bool ProcessSet_T<std::pair<int,int> >::isIn(int p)
+    bool ProcessSet_T<std::pair<int,int> >::isIn(int p) const
     {
       return p >= val.first && p < val.second;
     }
@@ -52,18 +53,16 @@ namespace amsi {
     ProcessSet * ProcessSet_T<std::pair<int,int> >::extract(int s)
     {
       ProcessSet * result = NULL;  
-
-      if(s <= this->size())
+      if(s <= size())
       {
-	result =  static_cast<ProcessSet*>(new ProcessSet_T<std::pair<int,int> >(this->operator[](0),this->operator[](s)));
-	
+	result =
+	  static_cast<ProcessSet*>(new ProcessSet_T<std::pair<int,int> >((*this)[0],(*this)[s]));
 	val.first += s;
       }
-
       return result;
     }
 
-    int ProcessSet_T<std::pair<int,int> >::indexOf(int r)
+    int ProcessSet_T<std::pair<int,int> >::indexOf(int r) const
     {
       int result = -1;
       if(isIn(r))

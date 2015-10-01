@@ -96,7 +96,7 @@ namespace amsi {
     }
     if(!tm->lockConfiguration())
       std::cerr << "Could not configure AMSI with supplied file: " << filename << std::endl;
-    AMSI_COMM_LOCAL = getLocal()->Comm();
+    AMSI_COMM_LOCAL = getLocal()->comm();
   }
   
 }

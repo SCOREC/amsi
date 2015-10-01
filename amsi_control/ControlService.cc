@@ -77,7 +77,7 @@ namespace amsi {
 
   void ControlService::setScaleMain(const std::string & scale, ExecuteFunc function)
   {
-    task_man->getTask(scale)->SetExecutionFunction(function);
+    task_man->getTask(scale)->setExecutionFunction(function);
   }
   
     /// @brief Begin execution of the currently active Task on the local process
@@ -95,7 +95,7 @@ namespace amsi {
 
 	// TODO: Change this so the user can specificy which processes to allow to output to stdout
 	// redirect std::cout to /dev/null in silent processes
-	int local_rank = task_man->getLocalTask()->LocalRank();
+	int local_rank = task_man->getLocalTask()->localRank();
 	if(local_rank > 0)
 	  std::cout.setstate(std::ios_base::failbit);
 
@@ -128,9 +128,8 @@ namespace amsi {
 
       // Create additional data distribution for adding data // to support dynamic processes
       Task * tl = task_man->getLocalTask();
-      int task_rank = tl->LocalRank();
       std::string dd_init_nm = t1_dd_nm + "_init";
-      tl->DataDist_Create(dd_init_nm);
+      tl->createDD(dd_init_nm);
 
       if(t1_id && t2_id)
       {
@@ -139,15 +138,15 @@ namespace amsi {
 	  Task * t1 = task_man->getTask(t1_nm);
 	  Task * t2 = task_man->getTask(t2_nm);
 
-	  DataDistribution * t1_dd = (*t1)[t1_dd_nm];
+	  DataDistribution * t1_dd = t1->getDD(t1_dd_nm);
 	  Assemble(t1_id,static_cast<Assemblable*>(t1_dd));
 
-	  int t1s = t1->proc->size();
-	  int t2s = t2->proc->size();
+	  int t1s = taskSize(t1);
+	  int t2s = taskSize(t2);
 
 	  //std::cout << "Generating IDs" << std::endl;
 	  size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
-	  size_t t1_dd_id = task_man->DataDist_GetID(t1_nm,t1_dd_nm);
+	  size_t t1_dd_id = task_man->getTask(t1_nm)->getDD_ID(t1_dd_nm);
 
 	  //std::cout << "Combining IDs" << std::endl;
 	  rdd_id = combine_hashes(r_id,t1_dd_id);
@@ -182,14 +181,14 @@ namespace amsi {
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
+      int t1s = taskSize(t1);
+      int t2s = taskSize(t2);
       
       int t2_per_t1 = t1s > 0 ? t2s / t1s : 0;
       int extra_t2 = t1s > 0 ? t2s % t1s : 0;
 
       // determine the task rank
-      int task_rank = tl->LocalRank();
+      int task_rank = tl->localRank();
 
       // switch to the correct communicator for this communication
 
@@ -221,7 +220,7 @@ namespace amsi {
 #         ifdef CORE
           PCU_Comm_Write(send_to+t1s, &recvfrom[0], t1s*sizeof(int));
 #         else
-	  t_isend(recvfrom,MPI_INTEGER,t2->LocalToGlobalRank(send_to));
+	  t_isend(recvfrom,MPI_INTEGER,t2->localToGlobalRank(send_to));
 #         endif
 	}
 
@@ -250,10 +249,10 @@ namespace amsi {
         }
 #       else
 	// todo: change to irecv, add work-to-do queue to check every time an AMSI control call is made 
-	t_recv(recv_count,MPI_INTEGER,t1->LocalToGlobalRank(recv_from));
+	t_recv(recv_count,MPI_INTEGER,t1->localToGlobalRank(recv_from));
 #       endif
 
-	DataDistribution * local_dd = tl->DataDist_Get(rdd_dd_map[rdd_id]);
+	DataDistribution * local_dd = tl->getDD(rdd_dd_map[rdd_id]);
 	(*local_dd)[task_rank] = 0;
 	for(unsigned int ii = 0; ii < recv_count.size(); ii++)
 	{
@@ -264,7 +263,7 @@ namespace amsi {
       }
 #     ifdef CORE
       // Switch pcu comms back to task
-      PCU_Switch_Comm(tl->Comm());
+      PCU_Switch_Comm(tl->comm());
 #     endif
     }
 
@@ -276,8 +275,8 @@ namespace amsi {
       CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
-      t1s = t1->proc->size();
-      t2s = t2->proc->size();
+      t1s = taskSize(t1);
+      t2s = taskSize(t2);
       return pattern->getPattern();
     }
 
@@ -299,9 +298,10 @@ namespace amsi {
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
-      int task_rank = tl->LocalRank();
+      assert(t1 == tl || t2 == tl);
+      
+      int task_rank = tl->localRank();
+      int tls = taskSize(tl);
 
 #     ifdef CORE      
       int recv_from;
@@ -321,7 +321,7 @@ namespace amsi {
         int ct = 0;
         int num = (*pattern)(task_rank,ct);
         int prevnum = 0;
-        int ii = 0;
+        unsigned ii = 0;
         bool update = false;
         std::vector<int> indices;
 
@@ -342,7 +342,7 @@ namespace amsi {
               count.insert(count.begin()+1,indices.begin(),indices.end());
 
 #             ifdef CORE
-              PCU_Comm_Write(t1s+ct,count.data(),count.size()*sizeof(int));
+              PCU_Comm_Write(tls+ct,count.data(),count.size()*sizeof(int));
 #             endif
 
               indices.clear();
@@ -364,9 +364,8 @@ namespace amsi {
         CommPattern_Assemble(rdd_id);
 
       }
-      else
+      else if (t1 == t2)
       {
-
         CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
 
 #       ifdef CORE
@@ -388,7 +387,7 @@ namespace amsi {
           recvpat.push_back(((int*)(recv))[0]);
 
           // Convert and store indices
-          for(int jj=1;jj<recv_size/sizeof(int);jj++)
+          for(unsigned jj=1;jj<recv_size/sizeof(int);jj++)
             data.push_back( ((int*)(recv))[jj] + total );
         }
 #       else
@@ -396,7 +395,7 @@ namespace amsi {
 #       endif
 
         // Update comm pattern
-        for(int ii=0;ii<recvproc.size();ii++)
+        for(unsigned ii=0;ii<recvproc.size();ii++)
           (*pattern)(recvproc[ii],task_rank) = recvpat[ii];
 
         // Returned indices may be out of order
@@ -404,7 +403,7 @@ namespace amsi {
       }
 #     ifdef CORE
       // Switch pcu comms back to task
-      PCU_Switch_Comm(tl->Comm());
+      PCU_Switch_Comm(tl->comm());
 #     endif
     }
 
@@ -453,9 +452,9 @@ namespace amsi {
       // TODO: should this only be on the sending task?? probably...
       // Create additional data distribution for adding data
       Task * tl = task_man->getLocalTask();
-      int task_rank = tl->LocalRank();
+
       std::string dd_init_nm = t1_dd_nm + "_init";
-      tl->DataDist_Create(dd_init_nm);
+      tl->createDD(dd_init_nm);
 
       if(t1_id && t2_id)
       {
@@ -464,17 +463,17 @@ namespace amsi {
 	  Task * t1 = task_man->Task_Get(t1_id);
 	  Task * t2 = task_man->Task_Get(t2_id);
 
-	  int t1s = t1->proc->size();
-	  int t2s = t2->proc->size();
+	  int t1s = taskSize(t1);
+	  int t2s = taskSize(t2);
 
 	  size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
-	  size_t t1_dd_id = task_man->DataDist_GetID(t1_nm,t1_dd_nm);
+	  size_t t1_dd_id = task_man->getTask(t1_nm)->getDD_ID(t1_dd_nm);
 
 	  rdd_id = combine_hashes(r_id,t1_dd_id);
 	  rdd_map[rdd_id] = std::make_pair(r_id,t1_dd_id);
 
           // Create additional comm pattern for adding data
-          size_t dd_init_id = task_man->DataDist_GetID(t1_nm,dd_init_nm);
+          size_t dd_init_id = task_man->getTask(t1_nm)->getDD_ID(dd_init_nm);
 	  rdd_init_id = combine_hashes(r_id,dd_init_id);
 	  rdd_map[rdd_init_id] = std::make_pair(r_id,dd_init_id);
 
@@ -488,13 +487,13 @@ namespace amsi {
             r_init[rdd_id] = rdd_init_id; // Store reference to init comm pattern by original comm pattern
 
 	    std::string t2_dd_init_nm = t2_dd_nm + "_init";
-	    if(!t2->DataDist_Exists(t2_dd_nm))
-	      t2->DataDist_Create(t2_dd_nm);
-	    if(!t2->DataDist_Exists(t2_dd_init_nm))
-	      t2->DataDist_Create(t2_dd_init_nm);
+	    if(!t2->verifyDD(t2_dd_nm))
+	      t2->createDD(t2_dd_nm);
+	    if(!t2->verifyDD(t2_dd_init_nm))
+	      t2->createDD(t2_dd_init_nm);
 
-	    rdd_dd_map[rdd_id] = t2->DataDist_GetID(t2_dd_nm);
-	    rdd_dd_map[rdd_init_id] = t2->DataDist_GetID(t2_dd_init_nm);
+	    rdd_dd_map[rdd_id] = t2->getDD_ID(t2_dd_nm);
+	    rdd_dd_map[rdd_init_id] = t2->getDD_ID(t2_dd_init_nm);
           }
 	  else
 	  {} // err
@@ -533,11 +532,10 @@ namespace amsi {
       Task * tl = task_man->getLocalTask();
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t2s = t2->proc->size();
-      int task_rank = tl->LocalRank();
+      int task_rank = tl->localRank();
 
       CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
-      DataDistribution * dd = tl->DataDist_Get(rdd_dd_map[rdd_id]);
+      DataDistribution * dd = tl->getDD(rdd_dd_map[rdd_id]);
 
       // Call Plan Migration function specified by the user
       // This function will fill m_send_to and m_index with process number to send to and
@@ -557,14 +555,14 @@ namespace amsi {
       default:
         std::cerr << "Warning: AMSI Plan Migration option not defined - proceeding with default option" << std::endl;
       case 0:  // Default case is the test case, for now
-        CommPattern_PlanMigration_Test(m_index,m_send_to,pattern,dd,task_rank,t2->Comm());
+        CommPattern_PlanMigration_Test(m_index,m_send_to,pattern,dd,task_rank,t2->comm());
         break;
       case 1:
-        CommPattern_PlanMigration_Full(m_index,m_send_to,pattern,dd,task_rank,t2->Comm());
+        CommPattern_PlanMigration_Full(m_index,m_send_to,pattern,dd,task_rank,t2->comm());
         break;
 #     ifdef ZOLTAN
       case 2:
-	CommPattern_PlanMigration_Zoltan(m_index,m_send_to,pattern,dd,task_rank,t2->Comm());
+	CommPattern_PlanMigration_Zoltan(m_index,m_send_to,pattern,dd,task_rank,t2->comm());
 	break;
 #     endif
       }
@@ -598,17 +596,17 @@ namespace amsi {
 	{
 	  if(comm_man->CommRelation_Exists(t1_id,t2_id))
 	  {
-	    Task * t1 = task_man->getTask(t1_nm);
-	    Task * t2 = task_man->getTask(t2_nm);
+	    //Task * t1 = task_man->getTask(t1_nm);
+	    //Task * t2 = task_man->getTask(t2_nm);
 	  
-	    DataDistribution * dd = (*t1)[dd_nm];
+	    //DataDistribution * dd = t1->getDD(dd_nm);
 	  
-	    int t1s = t1->proc->size();
-	    int t2s = t2->proc->size();
+	    //int t1s = taskSize(t1);
+	    //int t2s = taskSize(t2);
 
 	    //std::cout << "Generating IDs" << std::endl;
 	    size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
-	    size_t dd_id = task_man->DataDist_GetID(t1_nm,dd_nm);
+	    size_t dd_id = task_man->getTask(t1_nm)->getDD_ID(dd_nm);
 
 	    //std::cout << "Combining IDs" << std::endl;
 	    new_rdd_id = combine_hashes(r_id,dd_id);
@@ -634,8 +632,8 @@ namespace amsi {
         Task * t1 = task_man->Task_Get(t_ids.first);
         Task * t2 = task_man->Task_Get(t_ids.second);
 
-        int t1s = t1->proc->size();
-        int t2s = t2->proc->size();
+        int t1s = taskSize(t1);
+        int t2s = taskSize(t2);
 
         for(int ii = 0; ii < t1s; ii++)
 	  for(int jj = 0; jj < t2s; jj++)
@@ -647,8 +645,8 @@ namespace amsi {
     {
       Task * t = task_man->Task_Get(t_id);
       
-      MPI_Comm task_comm = t->Comm();
-      int task_rank = t->LocalRank();
+      MPI_Comm task_comm = t->comm();
+      int task_rank = t->localRank();
 
       if(!control_data->Assemble(task_comm,task_rank))
       {}
@@ -658,13 +656,6 @@ namespace amsi {
     void ControlService::Reconcile(size_t r_id, Reconcilable * control_data)
     {
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
-      
-      Task * lt = task_man->getLocalTask();
-      int task_rank = lt->LocalRank();
-
-      Task * t1 = task_man->Task_Get(t_ids.first);
-      Task * t2 = task_man->Task_Get(t_ids.second);
-
       control_data->Reconcile();
     }
 } // namespace amsi
