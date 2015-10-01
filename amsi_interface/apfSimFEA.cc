@@ -6,6 +6,8 @@
 #include <apfSIMDataOf.h>
 #include <apfShape.h>
 
+#include <cassert>
+
 namespace amsi {
   namespace Analysis {
 

@@ -4,6 +4,8 @@
 #include <apfSIM.h>
 #include <NonLinElasticity.h>
 
+#include <cassert>
+
 namespace amsi {
 
   class UniformAdapt : public Analysis::NonLinElasticity

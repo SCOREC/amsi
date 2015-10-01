@@ -9,7 +9,7 @@
 #define VALUE(x) VALUE_TO_STRING(x)
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
 
-#define BGQ
+#define SCOREC
 
 #if TRUE == TRUE
 #  define CORE
@@ -22,9 +22,9 @@ namespace amsi{extern bool use_simmetrix;}
 #endif
 
 #ifndef NDEBUG
-#  define AMSI_DEBUG(EX)
-#else 
 #  define AMSI_DEBUG(EX) EX
+#else 
+#  define AMSI_DEBUG(EX)
 #endif
 
 #endif
