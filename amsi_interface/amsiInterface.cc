@@ -37,21 +37,21 @@ namespace amsi {
       SimMeshing_start();
 #     ifdef SCOREC
       SimField_start();
+#     endif
       gmi_sim_start();
       gmi_register_sim();
     }
 #   endif
     gmi_register_null();
-#   endif
   }
 
   void amsiInterfaceInit::amsiFree()
   {
 #   ifdef SIM
     gmi_sim_stop();
-#   ifdef SCOREC
+#    ifdef SCOREC
     SimField_stop();
-#   endif
+#    endif
     SimMeshing_stop();
     SimPartitionedMesh_stop();
     Sim_unregisterAllKeys();

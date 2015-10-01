@@ -1,6 +1,8 @@
 #include "amsiUtil.h"
 #include "amsiUtilConfig.h"
 
+#include <iostream>
+
 #ifdef CORE
 #include <PCU.h>
 #endif
