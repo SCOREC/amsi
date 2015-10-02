@@ -117,7 +117,7 @@ void zoltanPlan(std::vector<int> & to_serialize,
 
 Migration::Migration(MPI_Comm c,
 		     int a,
-		     void (*ua)())
+		     lb_fctn ua)
   : comm(c),
     comm_size(-1),
     algo(a),
@@ -147,6 +147,14 @@ void Migration::plan(std::vector<int> & to_serialize,
   int offset = 0;
   switch(algo)
   {
+  case USER_ALGO:
+    (*usr_algo)(to_serialize,
+		send_to,
+		comm,
+		local_size,
+		local_weights);
+    break;
+    
   case ZOLTAN_ALGO:
 #   ifdef ZOLTAN
     MPI_Scan(&local_size,&offset,1,MPI_INT,MPI_SUM,comm);
@@ -174,6 +182,7 @@ void Migration::plan(std::vector<int> & to_serialize,
 
 void Migration::execute(std::vector< std::vector<char> > & data)
 {
+  PCU_Comm_Begin();
   int send_count = send_to.size();
   for(int current_send = 0; current_send < send_count; current_send++)
   {
@@ -206,7 +215,7 @@ void Migration::execute(std::vector< std::vector<char> > & data)
 ScaleSensitiveMigration::ScaleSensitiveMigration(CommPattern * p,
 						 MPI_Comm c,
 						 int a,
-						 void (*ua)())
+						 lb_fctn ua)
   : Migration(c,a,ua),
     cp(p),
     send_indices()

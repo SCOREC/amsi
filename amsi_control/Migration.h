@@ -10,6 +10,8 @@
 
 namespace amsi
 {
+
+typedef void (*lb_fctn)(std::vector<int>&,std::vector<int>&,MPI_Comm,int,double*);
   
 class Migration
 {
@@ -18,7 +20,7 @@ protected:
   int comm_size;
 
   int algo;
-  void (*usr_algo)();
+  lb_fctn usr_algo;
 
   std::vector<int> send_to;
   std::vector<int> recvd_from; 
@@ -39,7 +41,8 @@ public:
   
   Migration(MPI_Comm c,
 	    int a = 0,
-	    void (*ua)() = NULL);
+	    lb_fctn = NULL);
+
   
   virtual void plan(std::vector<int> & to_serialize,
 	    int local_size,
@@ -58,7 +61,7 @@ public:
   ScaleSensitiveMigration(CommPattern * p,
 			  MPI_Comm c,
 			  int a = 0,
-			  void (*ua)() = NULL);
+			  lb_fctn = NULL);
   
   virtual void plan(std::vector<int> & to_serialize,
 		    int local_size,
