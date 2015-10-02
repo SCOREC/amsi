@@ -42,7 +42,7 @@ namespace amsi {
 			       const std::string & t1,
 			       const std::string & t2);
 
-      int* getPatternInfo(size_t rdd_id,int &,int &);
+      void getPatternInfo(size_t rdd_id,int &,int &,CommPattern *&);
 
       // Remove and add data from comm pattern
       void RemoveData(size_t rdd_id, std::vector<int> & data);
@@ -55,8 +55,8 @@ namespace amsi {
                      void (*userFunc)() = NULL );
 
       // Migration functions
-      void planMigration(size_t rdd_id,
-			 std::vector<int> & migration_indices,
+      void planMigration(std::vector<int> & migration_indices,
+			 size_t rdd_id,
                          int option = 0,
                          void (*userFunc)() = NULL);
       
@@ -65,6 +65,8 @@ namespace amsi {
                      size_t rdd_id,
                      Container<D> & objects);
 
+      
+      
       template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       void shareMigration(size_t rdd_id, Container<D> & objects);
 

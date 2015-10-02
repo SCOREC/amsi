@@ -19,6 +19,11 @@ namespace amsi {
     class CommPattern : public Assemblable, public Reconcilable
     {
     public:
+      enum SendRecv
+      {
+	SENDER = 0,
+	RECVER = 1
+      };
       CommPattern(int s1, int s2);
 
       int GetDataCount(int rank1, int rank2) const;
@@ -36,9 +41,10 @@ namespace amsi {
       void Reconcile();
       bool isReconciled() const { return reconciled; }
 
-      int * getPattern() {return pattern;}
       int getSendTaskSize() {return s1;}
       int getRecvTaskSize() {return s2;}
+
+      void invalidate() {valid = false;}
 
     protected:
       friend std::ostream& operator<<(std::ostream&,const CommPattern&);
@@ -48,6 +54,7 @@ namespace amsi {
       int s1,s2;
       int * pattern;
     private:
+      bool valid;
       
       bool assembled;
       bool reconciled;
@@ -60,6 +67,14 @@ namespace amsi {
 
     /// Create a new CommPattern which is an inversion of the old one (ie all sending processes in the old CommPattern are recvers in the produced CommPattern and vice-versa, essentially a matrix transposition)
     CommPattern * CommPattern_CreateInverted(const CommPattern * pattern);
+
+    // retrieve information about the rank and remote index of a piece of local data by index
+    std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
+					  CommPattern::SendRecv send_recv,
+					  int rank,
+					  int index);
+
+
 
 } // namespace amsi
 

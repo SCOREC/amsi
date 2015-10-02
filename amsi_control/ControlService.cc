@@ -267,18 +267,17 @@ namespace amsi {
 #     endif
     }
 
-    // To allow easy access to comm pattern and task sizes for outputing load info
-    int* ControlService::getPatternInfo(size_t rdd_id,int & t1s,int & t2s)
-    {
-      std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
-      std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
-      CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
-      Task * t1 = task_man->Task_Get(t_ids.first);
-      Task * t2 = task_man->Task_Get(t_ids.second);
-      t1s = taskSize(t1);
-      t2s = taskSize(t2);
-      return pattern->getPattern();
-    }
+  // To allow easy access to comm pattern and task sizes for outputing load info
+  void ControlService::getPatternInfo(size_t rdd_id,int & t1s,int & t2s, CommPattern *& cp)
+  {
+    std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
+    cp = comm_man->CommPattern_Get(rdd_id);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    t1s = taskSize(t1);
+    t2s = taskSize(t2);
+  }
 
     // This function takes indices of the data to be removed in the vector 'data'
     // It directly alters the communcation pattern specified by rdd_id
@@ -504,6 +503,9 @@ namespace amsi {
       return rdd_id;
     }
 
+
+  
+
     // Intra task function to plan the migration
     // TODO: Shouldn't use comm pattern, should use data dist
     //
@@ -512,8 +514,8 @@ namespace amsi {
     // This function sends comm_data to be filled by
     //   chosen or provided migration routine.
     // Basically just a wrapper for said function
-    void ControlService::planMigration(size_t rdd_id,
-				       std::vector<int> & migration_indices,
+    void ControlService::planMigration(std::vector<int> & migration_indices,
+				       size_t rdd_id,
                                        int option,
                                        void (*userFunc)())
     {
