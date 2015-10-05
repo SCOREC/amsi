@@ -363,7 +363,7 @@ namespace amsi {
         CommPattern_Assemble(rdd_id);
 
       }
-      else if (t1 == t2)
+      else if (tl == t2)
       {
         CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
 

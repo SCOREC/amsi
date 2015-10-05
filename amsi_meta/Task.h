@@ -40,7 +40,7 @@ namespace amsi
     {
       int result = 0;
       // don't execute of the global rank is not valid
-      if(localToGlobalRank(localRank()) > 0)
+      if(localToGlobalRank(localRank()) >= 0)
       {
 #       ifdef CORE
         PCU_Switch_Comm(task_comm);
