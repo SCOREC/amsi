@@ -82,7 +82,7 @@ int task1_run(int &, char **&, MPI_Comm)
   std::vector<Sigma> result_data;
   cs->Communicate(recv_pattern_id,result_data,sigma_type);
   
-  bool areequal;
+//  bool areequal;
   // Check the data
   if(data.size() == result_data.size())
   {
@@ -132,7 +132,7 @@ int task2_run(int &, char **&, MPI_Comm)
   ControlService * cs = ControlService::Instance();
   TaskManager * tm = cs->GetTaskManager();
   Task * lt = tm->getLocalTask();
-  int local_rank = lt->localRank();
+  //int local_rank = lt->localRank();
 
   // Create a placeholder CommPattern to reconcile into
   size_t pattern_id = cs->RecvCommPattern("micro_init","macro","micro","");

@@ -73,7 +73,7 @@ namespace amsi {
       assert(elemental_system);
       apf::MeshEntity * me = NULL;
       for(apf::MeshIterator * it = apf_mesh->begin(analysis_dim);
-	  me = apf_mesh->iterate(it);)
+	  (me = apf_mesh->iterate(it));)
       {
 	apf::MeshElement * melm = apf::createMeshElement(apf_mesh,me);
 	elemental_system->process(melm);
@@ -99,7 +99,7 @@ namespace amsi {
       for(int ii = 0; ii < analysis_dim; ii++)
       {	
 	for(apf::MeshIterator * it = apf_mesh->begin(ii); 
-	    mesh_ent = apf_mesh->iterate(it);)
+	    (mesh_ent = apf_mesh->iterate(it));)
 	{
 	  if(apf_mesh->isOwned(mesh_ent))
 	  {

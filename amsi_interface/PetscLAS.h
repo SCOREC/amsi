@@ -62,11 +62,12 @@ namespace amsi {
     Vec vecTemp;
     double * x_arr, * b_arr;
     int globalNumEqs;
-    int vec_low,vec_high;
-    int mat_high,mat_low;
+    int vec_low;
+    int vec_high;
+    int mat_low;
+    int mat_high;
     bool b_assembled, b_addMode;
     KSP solver;
-    int rank;
   };
 
   }

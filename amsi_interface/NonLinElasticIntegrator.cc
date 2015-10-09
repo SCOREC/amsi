@@ -12,9 +12,11 @@ namespace amsi
 						     double youngs_modulus,
 						     double poisson_ratio) :
       ElementalSystem(field,o),
-      D(GetIsotropicStressStrainTensor(youngs_modulus,poisson_ratio)),
       stress_ip_field(NULL),
-      strain_ip_field(NULL)
+      strain_ip_field(NULL),
+      D(GetIsotropicStressStrainTensor(youngs_modulus,poisson_ratio)),
+      v(poisson_ratio),
+      E(youngs_modulus)
     {   }
 
     double delta(int i, int j)

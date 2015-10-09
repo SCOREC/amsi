@@ -136,7 +136,6 @@ namespace amsi {
 			      const double * Ke,
 			      const double * fe)
     {
-      int num_units = 3;
       for(int ii = 0; ii < num_elemental_dofs; ii++)
       {
 	const int & global_num_i = dof_numbers[ii]; // row number
@@ -151,7 +150,7 @@ namespace amsi {
 	  stream << global_num_i << " ";
 	  for(int jj = 0; jj < num_elemental_dofs; jj++)
 	  {
-	    const int & global_num_j = dof_numbers[jj]; // column number
+	    //const int & global_num_j = dof_numbers[jj]; // column number
 	    const double & val = Ke[ii * num_elemental_dofs + jj];
 
 	    stream << val << " ";
@@ -186,6 +185,7 @@ namespace amsi {
       double * result = new double[size];
       for(int ii = 0; ii < size; ii++)
 	result[ii] = vector(ii);
+      return result;
     }
   }
 }

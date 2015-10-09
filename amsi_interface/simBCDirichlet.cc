@@ -35,25 +35,25 @@ namespace amsi {
 				 std::vector<DirichletSpecification> & spec)
   {
     pGEntity entity = NULL;
-    for(GRIter griter = GM_regionIter(model); entity = GRIter_next(griter);)
+    for(GRIter griter = GM_regionIter(model); (entity = GRIter_next(griter));)
       spec.push_back(buildSpecOnEntity(entity,
 				       3,
 				       attribute_name,
 				       constraint_name,
 				       component_offset));
-    for(GFIter gfiter = GM_faceIter(model); entity = GFIter_next(gfiter);)
+    for(GFIter gfiter = GM_faceIter(model); (entity = GFIter_next(gfiter));)
       spec.push_back(buildSpecOnEntity(entity,
 				       2,
 				       attribute_name,
 				       constraint_name,
 				       component_offset));
-    for(GEIter geiter = GM_edgeIter(model); entity = GEIter_next(geiter);)
+    for(GEIter geiter = GM_edgeIter(model); (entity = GEIter_next(geiter));)
       spec.push_back(buildSpecOnEntity(entity,
 				       1,
 				       attribute_name,
 				       constraint_name,
 				       component_offset));
-    for(GVIter gviter = GM_vertexIter(model); entity = GVIter_next(gviter);)
+    for(GVIter gviter = GM_vertexIter(model); (entity = GVIter_next(gviter));)
       spec.push_back(buildSpecOnEntity(entity,
 				       0,
 				       attribute_name,

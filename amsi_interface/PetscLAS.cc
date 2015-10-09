@@ -302,10 +302,21 @@ namespace amsi {
      *@param[in] The number of global equations across the linear system.
      *@param[in] The number of local equations associated with the local system.
      */
-    PetscLAS::PetscLAS ( int N, int n ) : 
+    PetscLAS::PetscLAS ( int N, int n ) :
+      A(),
+      x(),
+      b(),
+      vecTemp(),
+      x_arr(NULL),
+      b_arr(NULL),
+      globalNumEqs(N),
+      vec_low(0),
+      vec_high(0),
+      mat_low(0),
+      mat_high(0),
       b_assembled(true), 
       b_addMode(true),
-      globalNumEqs(N)
+      solver()
     {}
 
     /**
