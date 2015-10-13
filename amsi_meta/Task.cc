@@ -13,6 +13,13 @@
 
 namespace amsi {
 
+  int taskSize(Task * t)
+  {
+    const ProcessSet * ps = t->getProcessSet();
+    return ps->size();
+  }
+
+
     /// @brief Standard constructor, collective on the ProcessSet passed in
     /// @param p The ProcessSet describing the parallel ranks on which the Task will execute
     Task::Task(ProcessSet * p) :
@@ -116,68 +123,69 @@ namespace amsi {
 
   /// @brief Create a DataDistribution for this Task (using the associated ProcessSet)
   /// @param nm A unique string identifying the DataDistribution
-  void Task::DataDist_Create(const std::string & nm)
+  size_t Task::createDD(const std::string & nm)
   {
+    size_t result = 0;
     DataDistribution * dd = static_cast<DataDistribution*>(NULL);
 
 #   ifndef ZOLTAN
     dd = new DataDistribution(proc->size());
 #   else
-    Zoltan_Struct * zs = Zoltan_Create(task_comm);
-    dd = new DataDistribution(proc->size(),zs);
-
-    size_t s1 = sizeof(DataDistribution*);
-    size_t s2 = sizeof(int);
-    
-    void * buffer = (void*) new char[s1+s2];
-    memcpy(buffer,&dd,s1);
-    memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
-    /*
-    for(size_t ii = 0; ii < s1; ii++)
-      ((char*)data)[ii] = ((char*)&dd)[ii];
-    for(size_t ii = s1; ii < s1+s2; ii++)
-      ((char*)data)[ii] = ((char*)&local_rank)[ii];
-    */
-
-    Zoltan_Set_Fn(zs,
-		  ZOLTAN_NUM_OBJ_FN_TYPE,
-		  (void(*)()) &DD_get,
-		  buffer);
-    
-    Zoltan_Set_Fn(zs,
-		  ZOLTAN_OBJ_LIST_FN_TYPE,
-		  (void(*)()) &DD_describe,
-		  buffer);
+    if(!proc->size())
+      dd = new DataDistribution(proc->size());
+    else
+    {
+      Zoltan_Struct * zs = Zoltan_Create(task_comm);
+      dd = new DataDistribution(proc->size(),zs);
+      
+      size_t s1 = sizeof(DataDistribution*);
+      size_t s2 = sizeof(int);
+      
+      void * buffer = (void*) new char[s1+s2];
+      memcpy(buffer,&dd,s1);
+      memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
+      
+      Zoltan_Set_Fn(zs,
+		    ZOLTAN_NUM_OBJ_FN_TYPE,
+		    (void(*)()) &DD_get,
+		    buffer);
+      
+      Zoltan_Set_Fn(zs,
+		    ZOLTAN_OBJ_LIST_FN_TYPE,
+		    (void(*)()) &DD_describe,
+		    buffer);
+    }
 #   endif
-    size_t id = DataDist_GetID(nm);
+    result = getDD_ID(nm);
 
-    assert(dd);
-    data[id] = dd;
+    assert(result);
+    data[result] = dd;
+    return result;
   }
 
-    /// @brief Determine whether a DataDistribution with the given name exists
-    /// @param nm A unique string identifying a DataDistribution (maybe)
-    /// @return bool Whether a DataDistribution with the given name exists
-    bool Task::DataDist_Exists(const std::string & nm)
-    {
-      size_t id = DataDist_GetID(nm);
-      return data.count(id) > 0;
-    }
+  /// @brief Determine whether a DataDistribution with the given name exists
+  /// @param nm A unique string identifying a DataDistribution (maybe)
+  /// @return bool Whether a DataDistribution with the given name exists
+  bool Task::verifyDD(const std::string & nm)
+  {
+    size_t id = getDD_ID(nm);
+    return data.count(id) > 0;
+  }
 
-    /// @brief Set the locally-owned data count for a given DataDistribution
-    /// @param nm A unique string identifying the DataDistribution for which to set the count
-    /// @param ct The locally-owned data count
-    void Task::DataDist_SetLocal(const std::string & nm, int ct)
-    {
-      size_t id = DataDist_GetID(nm);
-      if(id != 0)
-	data[id]->operator[](local_rank) = ct;
-    }
-
+  /// @brief Set the locally-owned data count for a given DataDistribution
+  /// @param nm A unique string identifying the DataDistribution for which to set the count
+  /// @param ct The locally-owned data count
+  void Task::setLocalDDValue(const std::string & nm, int ct)
+  {
+    size_t id = getDD_ID(nm);
+    if(id != 0)
+      data[id]->operator[](local_rank) = ct;
+  }
+  
     /// @brief Get the locally-owned data count
     /// @param dd_id A unique identifier for the DataDistribution
     /// @return int The locally-owned data count
-    int Task::DataDist_GetLocal(size_t dd_id)
+    int Task::getLocalDDValue(size_t dd_id)
     {
       int result = -1;
       DataDistribution * dd = 0;
@@ -192,11 +200,11 @@ namespace amsi {
     /// @brief Assemble a DataDistribution defined on the ProcessSet associated with 
     ///        this task, collective on that ProcessSet
     /// @param A string uniquely identifying the DataDistribution to assemble
-    void Task::DataDist_Assemble(const std::string & nm)
+    void Task::assembleDD(const std::string & nm)
     {
-      if(DataDist_Exists(nm))
+      if(verifyDD(nm))
       {
-	size_t id = DataDist_GetID(nm);
+	size_t id = getDD_ID(nm);
 	data[id]->Assemble(task_comm,local_rank);
       }
       
@@ -236,7 +244,7 @@ namespace amsi {
     /// @brief Get a DataDistribution's identifier from the unique name
     /// @param nm A string uniquely identifying the DataDistribution
     /// @return size_t Identifier for the named DataDistribution
-    size_t Task::DataDist_GetID(const std::string & nm)
+    size_t Task::getDD_ID(const std::string & nm)
     {
       size_t result = id_gen(nm);
       return result;
@@ -245,16 +253,8 @@ namespace amsi {
     /// @brief Get the global rank of a local rank
     /// @param r The local rank to translate to global rank
     /// @note May need to relocate this
-    int Task::LocalToGlobalRank(int r)
+    int Task::localToGlobalRank(int r)
     {
       return (*proc)[r];
     }
-
-    /// @brief How many processes are in the ProcessSet currently associated with this task
-    /// @return int The number of processes
-    int Task::NumProcesses()
-    {
-      return proc->size();
-    }
-
 } // namespace amsi

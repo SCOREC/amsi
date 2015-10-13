@@ -115,12 +115,9 @@ namespace amsi {
       int allTotals[s2];
       MPI_Allgather(&local_total,1,MPI_INT,&allTotals,1,MPI_INT,task_comm);
 
-      int total;
+      int total = 0;
       for(int ii = 0; ii < s2; ii++)
 	total += allTotals[ii];
-
-      // Calculate average workload per process
-      double avgWork = total/(double)s2;
 
       int d1 = total/s2;
       int d2 = total%s2;
@@ -134,7 +131,6 @@ namespace amsi {
       }
 
       std::sort(totals.begin(),totals.end(),data_index_compare_less);
-
 
       int current_send_to = 0;
       int ii=s2-1;

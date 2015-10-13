@@ -32,10 +32,10 @@ namespace amsi {
       class TensorFieldQueryT : public TensorFieldQuery
     {
     public:
-      virtual double* operator()(int,...) {};
+      virtual double* operator()(int,...) { return NULL; }
       virtual void bind(int,double) {};
-      virtual int bound() {};
-      virtual int unbound() {};
+      virtual int bound() { return 0; }
+      virtual int unbound() { return 0; }
       virtual void clear() {};
     };
 

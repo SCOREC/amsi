@@ -13,16 +13,18 @@
 
 #if @CORE_FOUND@ == TRUE
 #  define CORE
+namespace amsi {extern bool use_core;}
 #endif
 
 #if @SIMMODSUITE_FOUND@ == TRUE
 #  define SIM
+namespace amsi{extern bool use_simmetrix;}
 #endif
 
 #ifndef NDEBUG
-#  define AMSI_DEBUG(EX)
-#else 
 #  define AMSI_DEBUG(EX) EX
+#else 
+#  define AMSI_DEBUG(EX)
 #endif
 
 #endif

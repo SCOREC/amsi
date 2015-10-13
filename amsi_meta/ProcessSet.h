@@ -10,10 +10,10 @@ namespace amsi {
     ///  several operations on them.
     class ProcessSet{
     public: 
-      virtual int operator[](int) = 0;
-      virtual int size() = 0;
-      virtual bool isIn(int) = 0;
-      virtual int indexOf(int) = 0;
+      virtual int operator[](int) const = 0;
+      virtual int size() const = 0;
+      virtual bool isIn(int) const = 0;
+      virtual int indexOf(int) const= 0;
       virtual ProcessSet * extract(int) = 0;
     };
 
@@ -24,10 +24,10 @@ namespace amsi {
     {
     public:
       ProcessSet_T(T&);
-      virtual int operator[](int);
-      virtual int size();
-      virtual bool isIn(int);
-      virtual int indexOf(int);
+      virtual int operator[](int) const;
+      virtual int size() const;
+      virtual bool isIn(int) const;
+      virtual int indexOf(int) const;
       virtual ProcessSet * extract(int);
     private:
       T val;
@@ -44,10 +44,10 @@ namespace amsi {
       ProcessSet_T(std::pair<int,int>);
       ProcessSet_T(std::pair<int,int> &);
 
-      virtual int operator[](int);
-      virtual int size();
-      virtual bool isIn(int);
-      virtual int indexOf(int);
+      virtual int operator[](int) const;
+      virtual int size() const;
+      virtual bool isIn(int) const;
+      virtual int indexOf(int) const;
       virtual ProcessSet * extract(int); // 'carves' off a chunk of the set
     private:
       std::pair<int,int> val;

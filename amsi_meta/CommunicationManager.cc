@@ -76,24 +76,21 @@ namespace amsi {
 	Task * tB = tm->Task_Get(it->second);
 	size_t r_id = CommRelation_GetID(it->first,it->second);
 
-	// determine which task is local (assumed non-overlapping)
-	Task * local_task = tA->proc->isIn(tA->rank) ? tA :
-	  tB->proc->isIn(tB->rank) ? tB : NULL;
+	int lrA = tA->localRank();
+	int lrB = tB->localRank();
+	
+	Task * local_task = lrA >= 0 ? tA : lrB >= 0 ? tB : NULL;
 
-	// create an intercomm for the tasks if this rank is in one of them
-	MPI_Group inter_group;
-	MPI_Group_union(tA->task_group,tB->task_group,&inter_group);
-	MPI_Comm_create(MPI_COMM_WORLD,inter_group,&relation_comms[r_id]);
-/*
-	if(local_task != NULL)
-	  if(local_task->task_comm != MPI_COMM_NULL)
-	    MPI_Intercomm_create(local_task->task_comm,
-				 0,
-				 MPI_COMM_WORLD,
-				 tA->proc->operator[](0),
-				 inter_comm_tag++,
-				 &relation_comms[r_id]);
-*/
+	if(local_task)
+	{
+	  const MPI_Group grp_a = tA->group();
+	  const MPI_Group grp_b = tB->group();
+	  
+	  // create an intercomm for the tasks if this rank is in one of them
+	  MPI_Group inter_group;
+	  MPI_Group_union(grp_a,grp_b,&inter_group);
+	  MPI_Comm_create(MPI_COMM_WORLD,inter_group,&relation_comms[r_id]);
+	}
       }
     }
 

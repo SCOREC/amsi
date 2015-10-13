@@ -42,7 +42,7 @@ namespace amsi {
 			       const std::string & t1,
 			       const std::string & t2);
 
-      int* getPatternInfo(size_t rdd_id,int &,int &);
+      void getPatternInfo(size_t rdd_id,int &,int &,CommPattern *&);
 
       // Remove and add data from comm pattern
       void RemoveData(size_t rdd_id, std::vector<int> & data);
@@ -55,8 +55,8 @@ namespace amsi {
                      void (*userFunc)() = NULL );
 
       // Migration functions
-      void planMigration(size_t rdd_id,
-			 std::vector<int> & migration_indices,
+      void planMigration(std::vector<int> & migration_indices,
+			 size_t rdd_id,
                          int option = 0,
                          void (*userFunc)() = NULL);
       
@@ -65,6 +65,8 @@ namespace amsi {
                      size_t rdd_id,
                      Container<D> & objects);
 
+      
+      
       template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       void shareMigration(size_t rdd_id, Container<D> & objects);
 
@@ -136,8 +138,8 @@ namespace amsi {
       void ControlService::Assemble(size_t t_id, D & data, MPI_Datatype type)
     {
       Task * t = task_man->Task_Get(t_id);
-      MPI_Comm task_comm = t->Comm();
-      int task_rank = t->LocalRank();
+      MPI_Comm task_comm = t->comm();
+      int task_rank = t->localRank();
       int data_size = data.NumPerRank();
  
       MPI_Allgather(&data[task_rank],data_size,type,
@@ -157,13 +159,13 @@ namespace amsi {
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
+      int t1s = taskSize(t1);
+      int t2s = taskSize(t2);
 
       int t2_per_t1 = t2s / t1s;
       int extra_t2 = t2s % t1s;
 
-      int task_rank = lt->LocalRank();
+      int task_rank = lt->localRank();
 
       if(lt == t1) // sending task
       {
@@ -182,13 +184,13 @@ namespace amsi {
 	for(int ii = 0; ii < to_send; ii++)
 	{
 	  int send_to = task_rank + (ii * t1s);
-	    t_ssend(data[send_to],type,t2->LocalToGlobalRank(send_to));
+	    t_ssend(data[send_to],type,t2->localToGlobalRank(send_to));
 	}
       }
       else // recving task
       {
 	int recv_from = task_rank % t1s;
-	t_srecv(data,type,t1->LocalToGlobalRank(recv_from));
+	t_srecv(data,type,t1->localToGlobalRank(recv_from));
       }
     }
 
@@ -204,13 +206,13 @@ namespace amsi {
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
+      int t1s = taskSize(t1);
+      int t2s = taskSize(t2);
 
       int t2_per_t1 = t2s / t1s;
       int extra_t2 = t2s % t1s;
 
-      int task_rank = lt->LocalRank();
+      int task_rank = lt->localRank();
 
       if(lt == t1) // sending task
       {
@@ -219,13 +221,13 @@ namespace amsi {
 	for(int ii = 0; ii < to_send; ii++)
 	{
 	  int send_to = task_rank + (ii * t1s);
-	    t_ssend(data,type,t2->LocalToGlobalRank(send_to));
+	    t_ssend(data,type,t2->localToGlobalRank(send_to));
 	}
       }
       else // recving task
       {
 	int recv_from = task_rank % t1s;
-	t_srecv(data,type,t1->LocalToGlobalRank(recv_from));
+	t_srecv(data,type,t1->localToGlobalRank(recv_from));
       }
     }
 
@@ -251,12 +253,14 @@ namespace amsi {
 	std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
 
 	Task * tl = task_man->getLocalTask();
-	int task_rank = tl->LocalRank();
+	int task_rank = tl->localRank();
 
 	Task * t1 = task_man->Task_Get(t_ids.first); // sending task
 	Task * t2 = task_man->Task_Get(t_ids.second); // recving task
 
-        int t1s = t1->proc->size();
+	assert(t1 == tl || t2 == tl);
+
+        int t1s = taskSize(t1);
 
         // Get type size
         int sizeoftype;
@@ -270,7 +274,7 @@ namespace amsi {
 
 	if(tl == t1) // if the local task is the sending task
 	{
-	  unsigned int local_count = t1->DataDist_GetLocal(r_dd_id.second);
+	  unsigned int local_count = t1->getLocalDDValue(r_dd_id.second);
 
 	  if(buffer.size() != local_count)
 	  {}
@@ -298,7 +302,7 @@ namespace amsi {
 #             else
 	      bo.s = to_send;
 	      bo.offset = offset;
-	      t_send(bo,type,t2->LocalToGlobalRank(ii));
+	      t_send(bo,type,t2->localToGlobalRank(ii));
 #             endif
 
               offset += to_send;
@@ -314,7 +318,7 @@ namespace amsi {
           { }
 #         endif
 	}
-	else // recv'ing
+	else if (t2 == tl)// recv'ing
 	{
 	  // assuming that the commpattern is reconciled here...
 	  CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
@@ -358,7 +362,7 @@ namespace amsi {
 	      int to_recv = recv_from[ii];
 	      {
 		if(to_recv > 0)
-		  buffer_offset.offset += t_recv(buffer,type,t1->LocalToGlobalRank(ii));
+		  buffer_offset.offset += t_recv(buffer,type,t1->localToGlobalRank(ii));
 	      }
 	    }
 #         endif
@@ -366,7 +370,7 @@ namespace amsi {
 
 #       ifdef CORE
         // Switch pcu comms back to task
-        PCU_Switch_Comm(tl->Comm());
+        PCU_Switch_Comm(tl->comm());
 #       endif
       }
 
@@ -403,9 +407,9 @@ namespace amsi {
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
-      int task_rank = tl->LocalRank();
+      int t1s = taskSize(t1);
+      int t2s = taskSize(t2);
+      int task_rank = tl->localRank();
 
       // If user indicated a user specified load balancing function but did not provide one
       if(option == -1 && userFunc == NULL)
@@ -426,7 +430,7 @@ namespace amsi {
 
         // exchange numNewData among all sending task processes
         int tempData = numNewData[task_rank]; // On Q the send and recv buffers need to be different
-        MPI_Allgather(&tempData,1,MPI_INT,&numNewData[0],1,MPI_INT,t1->Comm());
+        MPI_Allgather(&tempData,1,MPI_INT,&numNewData[0],1,MPI_INT,t1->comm());
 
         // Call function to update both the original comm pattern and init comm pattern
         // based on numNewData (this function will actually do the load balancing)
@@ -541,11 +545,11 @@ namespace amsi {
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
-      int task_rank = tl->LocalRank();
+      int t1s = taskSize(t1);
+      int t2s = taskSize(t1);
+      int task_rank = tl->localRank();
 
-      MPI_Comm task_comm = t2->Comm();
+      MPI_Comm task_comm = t2->comm();
 
       int recv_from;
       void* recv;
@@ -565,9 +569,9 @@ namespace amsi {
       // Assumption: migration data contents are ordered by local indices (m_index)
       int current_data = 0;
       int current_send = 0;
-      for(int ii=0;ii<t1s;ii++)
+      for(int ii = 0; ii < t1s; ii++)
       {
-        for(int jj=0;jj<(*pattern)(ii,task_rank);jj++)
+        for(int jj = 0; jj < (*pattern)(ii,task_rank); jj++)
         {
           if(current_send >= m_send_to.size())
             break;
@@ -628,7 +632,7 @@ namespace amsi {
             break;
           }
 
-      DataDistribution * dd = tl->DataDist_Get(rdd_dd_map[rdd_id]);
+      DataDistribution * dd = tl->getDD(rdd_dd_map[rdd_id]);
       (*dd)[task_rank] -= m_send_to.size();
 
       migration_data.clear();
@@ -729,13 +733,13 @@ namespace amsi {
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
 
       Task * tl = task_man->getLocalTask();
-      int task_rank = tl->LocalRank();
+      int task_rank = tl->localRank();
 
       Task * t1 = task_man->Task_Get(t_ids.first); // sending task
       Task * t2 = task_man->Task_Get(t_ids.second); // recving task
 
-      int t1s = t1->proc->size();
-      int t2s = t2->proc->size();
+      int t1s = taskSize(t1);
+      int t2s = taskSize(t2);
 
 #     ifdef CORE
       int recv_from;
@@ -864,7 +868,7 @@ namespace amsi {
 
       // Switch pcu comms back to task
 #     ifdef CORE
-      PCU_Switch_Comm(tl->Comm());
+      PCU_Switch_Comm(tl->comm());
 #     endif
     }
 

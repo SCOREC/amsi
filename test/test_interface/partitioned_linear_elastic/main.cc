@@ -1,7 +1,7 @@
-#include "amsiInterface.h"
 #include "Elasticity.h"
 #include "Solvers.h"
 
+#include <amsiInterface.h>
 #include <amsiMPI.h>
 
 #include <getopt.h>
@@ -78,8 +78,8 @@ int main (int argc, char ** argv)
   if(parse_options(argc,argv))
   {
     std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
+    amsi::initializer = new amsi::amsiInterfaceInit;
     amsi::amsiInit(argc,argv);
-    Sim_logOn("simmetrix_log");
     std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
 
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
@@ -102,7 +102,6 @@ int main (int argc, char ** argv)
     isotropic_linear_elasticity->WriteMesh(std::string("isotropic_linear_elastic_result"));
     std::cout << "Results file(s) written, shutting down 3rd-party libs" << std::endl;
 
-    Sim_logOff();
     amsi::amsiFree();
     std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
   }

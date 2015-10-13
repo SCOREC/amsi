@@ -5,40 +5,23 @@
 #endif
 
 namespace amsi {
-
-  DataDistribution::DataDistribution() :
-    dd(),
-    valid(false),
-    wgts()
-  {
-    Init();
-  }
   
   DataDistribution::DataDistribution(int size) :
-    dd(size),
+    assembled(false),
     valid(false),
-    wgts(size)
-  { 
-    Init();
-  }
+    wgts(size),
+    dd(size)
+  {  }
   
 # ifdef ZOLTAN
   DataDistribution::DataDistribution(int size, Zoltan_Struct * z) :
-    dd(size),
+    assembled(false),
     valid(false),
     wgts(size),
+    dd(size),
     zs(z)
-  {
-    Init();
-  }
+  { }
 #endif
-
-  // initialize member variables which are the same regardless of constructor used
-  void DataDistribution::Init()
-  {
-    assembled = false;
-    valid = false;
-  }
 
   int DataDistribution::Assemble(MPI_Comm comm, int comm_rank)
   {
@@ -69,7 +52,7 @@ namespace amsi {
       }
 #endif
 
-      for(int ii = 0; ii < dd.size(); ii++)
+      for(unsigned ii = 0; ii < dd.size(); ii++)
 	wgts[ii].resize(dd[ii]);
       
       assembled = true;
@@ -78,18 +61,18 @@ namespace amsi {
     return assembled;
   }
 
-  int DataDistribution::operator [](int index) const
+  int DataDistribution::operator [](unsigned index) const
   {
     return dd[index];
   }
   
-  int& DataDistribution::operator [](int index)
+  int& DataDistribution::operator [](unsigned index)
   {
     assembled = false;
     return dd[index];
   }
 
-  void DataDistribution::setWeight(int index, int sub_index, double value)
+  void DataDistribution::setWeight(unsigned index, unsigned sub_index, double value)
   {
     if(!assembled)
     {
@@ -100,7 +83,7 @@ namespace amsi {
     wgts[index][sub_index] = value;
   }
 
-  double DataDistribution::getWeight(int index, int sub_index)
+  double DataDistribution::getWeight(unsigned index, unsigned sub_index)
   {
     if(sub_index+1 > wgts[index].size())
       wgts[index].resize(sub_index+1,0.0);

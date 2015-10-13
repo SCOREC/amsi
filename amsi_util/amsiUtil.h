@@ -1,6 +1,8 @@
 #ifndef AMSIUTIL_H_
 #define AMSIUTIL_H_
 
+#include "amsiUtilConfig.h"
+
 namespace amsi
 {
   void amsiInit(int argc, char ** argv);

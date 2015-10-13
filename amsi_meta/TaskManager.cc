@@ -113,7 +113,7 @@ namespace amsi {
     if(t_id)
     {
       Task * t = tasks[t_id];
-      result = t->DataDist_GetID(dd_nm);
+      result = t->getDD_ID(dd_nm);
     }
     return result;
   }
@@ -128,7 +128,8 @@ namespace amsi {
       {
 	for(std::map<size_t,Task*>::iterator it = tasks.begin(), itend = tasks.end(); it != itend; it++)
 	{
-	  if(it->second->proc->isIn(rank))
+	  const ProcessSet * ps = it->second->getProcessSet();
+	  if(ps->isIn(rank))
 	    local_task = it->second;
 	}
       }
@@ -145,7 +146,7 @@ namespace amsi {
     int result = 0;
 
     if(lockConfiguration())
-      result = local_task->Execute(argc,argv);
+      result = local_task->execute(argc,argv);
     else
       result = -1;
     

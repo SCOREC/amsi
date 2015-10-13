@@ -20,7 +20,7 @@ if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
   set(CMAKE_EXE_LINKER_FLAGS -static)
 else()
   set(HOST SCOREC)
-  list(APPEND CMAKE_CXX_FLAGS "-std=c++0x")
+  list(APPEND CMAKE_CXX_FLAGS "-std=c++0x -Wall")
 endif()
 
 include(GenerateExportHeader)

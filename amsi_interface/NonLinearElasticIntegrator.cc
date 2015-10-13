@@ -12,12 +12,21 @@ namespace amsi {
 
     NonLinearElasticIntegrator::NonLinearElasticIntegrator(apf::Field * field,
 							   int o,
-							   double poisson_ratio,
-							   double shear_modulus) :
+							   double pr,
+							   double sm) :
       apf::Integrator(o),
       ke(),
-      e(),
-      f(field)
+      fe(),
+      e(NULL),
+      f(field),
+      fs(NULL),
+      me(NULL),
+      node_values(),
+      poisson_ratio(pr),
+      shear_modulus(sm),
+      num_element_eqs(0),
+      num_field_components(0),
+      num_element_nodes(0)
     {
       fs = apf::getShape(f);
       num_field_components = apf::countComponents(f);

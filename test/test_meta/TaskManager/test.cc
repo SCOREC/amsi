@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
   
   failed += test(".Task_GetLocal()",static_cast<void*>(NULL),static_cast<void*>(t3));
 
-  t1->SetExecutionFunction(&task1_run);
+  t1->setExecutionFunction(&task1_run);
 
   tm->Execute(argc,argv);
 

@@ -7,10 +7,16 @@ namespace amsi
 
     NeumannIntegrator::NeumannIntegrator(apf::Field * field,int o) :
       apf::Integrator(o),
-      f(field),
       fe(),
-      e()
+      me(NULL),
+      e(NULL),
+      f(field),
+      nedofs(0),
+      nenodes(0),
+      num_field_components(0),
+      tf(NULL)
     {}
+    
     void NeumannIntegrator::inElement(apf::MeshElement * ME)
     {
       me = ME;

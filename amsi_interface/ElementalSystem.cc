@@ -7,10 +7,14 @@ namespace amsi
     ElementalSystem::ElementalSystem(apf::Field * field,
 				     int o) :
       apf::Integrator(o),
-      f(field),
       Ke(),
       fe(),
-      e()
+      me(NULL),
+      e(NULL),
+      f(NULL),
+      nedofs(0),
+      nenodes(0),
+      num_field_components(0)
     {
       num_field_components = apf::countComponents(f);
     }

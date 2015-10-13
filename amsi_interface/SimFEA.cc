@@ -31,7 +31,7 @@ namespace amsi {
       {
 	RIter it = M_classifiedRegionIter(mesh,entity);
 	pRegion pr;
-	while (pr = RIter_next(it))classified.push_back((pEntity)pr);
+	while ((pr = RIter_next(it))) classified.push_back((pEntity)pr);
 	RIter_delete(it);
 	break;
       }
@@ -39,7 +39,7 @@ namespace amsi {
       {
 	FIter it = M_classifiedFaceIter(mesh,entity,1);
 	pFace pf;
-	while (pf = FIter_next(it))classified.push_back((pEntity)pf);
+	while ((pf = FIter_next(it))) classified.push_back((pEntity)pf);
 	FIter_delete(it);
 	break;
       }
@@ -47,7 +47,7 @@ namespace amsi {
       {
 	EIter it = M_classifiedEdgeIter(mesh,entity,1);
 	pEdge pe;
-	while (pe = EIter_next(it))classified.push_back((pEntity)pe);
+	while ((pe = EIter_next(it))) classified.push_back((pEntity)pe);
 	EIter_delete(it);
 	break;
       }
@@ -55,7 +55,7 @@ namespace amsi {
       {
 	VIter it = M_classifiedVertexIter(mesh,entity,1);
 	pVertex pv;
-	while (pv = VIter_next(it))classified.push_back((pEntity)pv);
+	while ((pv = VIter_next(it))) classified.push_back((pEntity)pv);
 	VIter_delete(it);
 	break;
       }
@@ -74,7 +74,7 @@ namespace amsi {
 	  pPList children = AttNode_children(constraints);
 	  pACase child;
 	  void * iter = NULL;
-	  while(child = (pACase)PList_next(children,&iter))
+	  while((child = (pACase)PList_next(children,&iter)))
 	    AttCase_setModel(child,model);
 	  AttCase_setModel(constraints,model);	
 	  AttCase_associate(constraints,progress);
@@ -91,11 +91,13 @@ namespace amsi {
 		   pParMesh in_mesh) :
       FEA(comm,in_analysis_name),
       model_name(in_model_name),
-      model(in_model),
       mesh_name(in_mesh_name),
+      model(in_model),
       mesh(in_mesh),
-      sim_size_field(NULL),
-      should_adapt(false)
+      part(),
+      should_adapt(false),
+      sim_size_field(),
+      fields_to_map()
     {
       part = PM_mesh(mesh,0);
       fields_to_map = PList_new();
@@ -107,11 +109,13 @@ namespace amsi {
 		   pParMesh in_mesh) :
       FEA(comm,in_analysis_name),
       model_name("[unavailable]"),
-      model(in_model),
       mesh_name("[unavailable]"),
+      model(in_model),
       mesh(in_mesh),
-      sim_size_field(NULL),
-      should_adapt(false)
+      part(),
+      should_adapt(false),
+      sim_size_field(),
+      fields_to_map()
     {
       part = PM_mesh(in_mesh,0);
       fields_to_map = PList_new();
@@ -124,11 +128,13 @@ namespace amsi {
 		   pParMesh in_mesh) :
       FEA(MPI_COMM_WORLD, in_analysis_name),
       model_name(in_model_name),
-      model(in_model),
       mesh_name(in_mesh_name),
+      model(in_model),
       mesh(in_mesh),
-      sim_size_field(NULL),
-      should_adapt(false)
+      part(),
+      should_adapt(false),
+      sim_size_field(),
+      fields_to_map()
     {
       part = PM_mesh(mesh,0);
       fields_to_map = PList_new();
@@ -139,11 +145,13 @@ namespace amsi {
 		   pParMesh in_mesh) :
       FEA(MPI_COMM_WORLD, in_analysis_name),
       model_name("[unavailable]"),
-      model(in_model),
       mesh_name("[unavailable]"),
+      model(in_model),
       mesh(in_mesh),
-      sim_size_field(NULL),
-      should_adapt(false)
+      part(),
+      should_adapt(false),
+      sim_size_field(),
+      fields_to_map()
     {
       part = PM_mesh(in_mesh,0);
       fields_to_map = PList_new();
@@ -159,7 +167,7 @@ namespace amsi {
 	
 	// set mesh size from size field
 	pVertex vert = NULL;
-	for(VIter viter = M_vertexIter(part); vert = VIter_next(viter); )
+	for(VIter viter = M_vertexIter(part); (vert = VIter_next(viter)); )
 	{
 	  pDofGroup dof = Field_entDof(sim_size_field,(pEntity)vert,0);
 	  double size = DofGroup_value(dof,0,0);

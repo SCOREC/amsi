@@ -6,6 +6,8 @@
 #include <apfSIMDataOf.h>
 #include <apfShape.h>
 
+#include <cassert>
+
 namespace amsi {
   namespace Analysis {
 
@@ -56,18 +58,18 @@ namespace amsi {
       pGEntity entity;
       if(analysis_dim == 3)
       {
-	for(GRIter griter = GM_regionIter(model); entity = GRIter_next(griter);)
+	for(GRIter griter = GM_regionIter(model); (entity = GRIter_next(griter));)
 	  fixed_dofs += Entity_ApplyBC_Dirichlet(entity,3);
       }
       if(analysis_dim >= 2)
       {
-	for(GFIter gfiter = GM_faceIter(model); entity = GFIter_next(gfiter);)
+	for(GFIter gfiter = GM_faceIter(model); (entity = GFIter_next(gfiter));)
 	  fixed_dofs += Entity_ApplyBC_Dirichlet(entity,2);
       }
-      for(GEIter geiter = GM_edgeIter(model); entity = GEIter_next(geiter);)
+    for(GEIter geiter = GM_edgeIter(model); (entity = GEIter_next(geiter));)
 	fixed_dofs += Entity_ApplyBC_Dirichlet(entity,1);
 
-      for(GVIter gviter = GM_vertexIter(model); entity = GVIter_next(gviter);)
+  for(GVIter gviter = GM_vertexIter(model); (entity = GVIter_next(gviter));)
 	fixed_dofs += Entity_ApplyBC_Dirichlet(entity,0);
       
       std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;
@@ -96,7 +98,7 @@ namespace amsi {
 	  int axis = Attribute_infoType(att)[0] - 'X'; // assuming 'xyz' axes... not too big an assumption
 	  //std::cout << Attribute_infoType(att) << std::endl;
 	  pAttributeDouble disp_attribute = static_cast<pAttributeDouble>(Attribute_childByType(att,"Total Displacement"));
-	  disp[axis] = AttributeDouble_evalDT(disp_attribute,simulation_time*1.0);
+	  disp[axis] = AttributeDouble_evalDT(disp_attribute,simulation_time);
 	  fixed[axis] = true;
 	}
 	PList_delete(children);
@@ -148,17 +150,18 @@ namespace amsi {
 
     void apfSimFEA::ApplyBC_Neumann(LAS * las)
     {
+      assert(las);
       assert(neumann_integrator);
       
       // iterate over the model
       pGEntity entity;
-      for(GFIter gfiter = GM_faceIter(model); entity = GFIter_next(gfiter);)
+      for(GFIter gfiter = GM_faceIter(model); (entity = GFIter_next(gfiter));)
 	Entity_ApplyBC_Neumann(las,entity,2);
       
-      for(GEIter geiter = GM_edgeIter(model); entity = GEIter_next(geiter);)
+      for(GEIter geiter = GM_edgeIter(model); (entity = GEIter_next(geiter));)
 	Entity_ApplyBC_Neumann(las,entity,1);
       
-      for(GVIter gviter = GM_vertexIter(model); entity = GVIter_next(gviter);)
+      for(GVIter gviter = GM_vertexIter(model); (entity = GVIter_next(gviter));)
 	Entity_ApplyBC_Neumann(las,entity,0);
     }
     
@@ -169,7 +172,7 @@ namespace amsi {
       pAttribute force_constraint = GEN_attrib(entity,"force constraint");
       if(force_constraint)
       {
-	int num_components = apf::countComponents(apf_primary_field);
+	//int num_components = apf::countComponents(apf_primary_field);
 	pAttributeTensor1 force_attrib = static_cast<pAttributeTensor1>(Attribute_childByType(force_constraint,"direction"));
 
 	// todo: abstract TensorFieldQuery*?

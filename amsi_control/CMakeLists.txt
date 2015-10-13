@@ -1,8 +1,8 @@
 set(control_public_headers
-  amsi.h ControlService.h  )
+  amsi.h ControlService.h Migration.h)
 
 set(control_source_files
-  amsi.cc ControlService.cc  )
+  amsi.cc ControlService.cc Migration.cc )
 
 find_package(MPI REQUIRED)
 

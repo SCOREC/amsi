@@ -6,6 +6,62 @@
 
 namespace amsi {
 
+
+  std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
+					 CommPattern::SendRecv send_recv,
+					 int rank,
+					 int index)
+  {
+    std::pair<int,int> result;
+    int remainder = 0;
+    int coupled_rank = -1;
+    int num_recvers = cp->getRecvTaskSize();
+    int num_senders = cp->getSendTaskSize();
+    if(send_recv == CommPattern::SENDER)
+    {
+      int count = 0;
+      for(int ii = 0; ii < num_recvers; ii++)
+      {
+	int other_count = (*cp)(rank,ii);
+	if(count + other_count >= index)
+	{
+	  remainder = index - count;
+	  coupled_rank = ii;
+	  break;
+	}
+	else
+	  count += other_count;
+      }
+      count = 0;
+      for(int ii = 0; ii < rank; ii++)
+	count += (*cp)(ii,coupled_rank);
+      result.first = coupled_rank;
+      result.second = count + remainder;
+    }
+    else if(send_recv == CommPattern::RECVER)
+    {
+      int count = 0;
+      for(int ii = 0; ii < num_senders; ii++)
+      {
+	int other_count = (*cp)(ii,rank);
+	if(count + other_count >= index)
+	{
+	  remainder = index - count;
+	  coupled_rank = ii;
+	  break;
+	}
+	else
+	  count += other_count;
+      }
+      count = 0;
+      for(int ii = 0; ii < rank; ii++)
+	count += (*cp)(coupled_rank,ii);
+      result.first = coupled_rank;
+      result.second = count + remainder;
+    }
+    return result;
+  }
+
     /// @brief Default constructor.
     /// @param s1_ The number of processes in the ProcessSet related to the sending task
     /// @param s2_ The number of processes in the ProcessSet related to the recving task
@@ -13,6 +69,7 @@ namespace amsi {
       s1(s1_),
       s2(s2_),
       pattern(),
+      valid(true),
       assembled(false),
       reconciled(false)
     { 

@@ -40,37 +40,36 @@ namespace amsi {
     public:
     apfFEA() : 
       FEA(MPI_COMM_WORLD,"[apf_fea]"),
-        apf_primary_field(),
-        apf_mesh(),
-        apf_primary_numbering(),
-	elemental_system(),
-	neumann_integrator()
-        {};
+	apf_mesh(NULL),
+        apf_primary_field(NULL),
+        apf_primary_numbering(NULL),
+	elemental_system(NULL),
+	neumann_integrator(NULL)
+    {};
 
     apfFEA(MPI_Comm comm) :
       FEA(comm,"[apf_fea]"),
-	apf_primary_field(),
-	apf_mesh(),
-	apf_primary_numbering(),
-	elemental_system(),
-	neumann_integrator()
-	{};
+	apf_mesh(NULL),
+        apf_primary_field(NULL),
+        apf_primary_numbering(NULL),
+	elemental_system(NULL),
+	neumann_integrator(NULL)
+    {};
 
     apfFEA(MPI_Comm comm,
 	   apf::Mesh * in_mesh) :
       FEA(comm,"[apf_fea]"),
-	apf_primary_field(),
 	apf_mesh(in_mesh),
-	apf_primary_numbering(),
-	elemental_system(),
-	neumann_integrator()
+        apf_primary_field(NULL),
+        apf_primary_numbering(NULL),
+	elemental_system(NULL),
+	neumann_integrator(NULL)
 	{
 	  analysis_dim = apf_mesh->getDimension();
 	};
 
       void RenumberDOFs();
       void ApplyBC_Dirichlet(std::vector<DirichletSpecification>&);
-      //void ApplyBC_Neumann(LAS*);
       
       void Assemble(LAS*);
       
