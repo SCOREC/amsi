@@ -11,7 +11,7 @@ namespace amsi
       fe(),
       me(NULL),
       e(NULL),
-      f(NULL),
+      f(field),
       nedofs(0),
       nenodes(0),
       num_field_components(0)
