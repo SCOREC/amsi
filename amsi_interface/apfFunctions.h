@@ -10,6 +10,8 @@
 namespace amsi {
   namespace Analysis {
 
+    void vertexNormal(apf::MeshEntity * v, apf::Vector3 & n);
+    
     void displaceMesh(apf::Field * displacement_field);
 
     void printNumbering(std::ostream & out, apf::Numbering * numbering);
