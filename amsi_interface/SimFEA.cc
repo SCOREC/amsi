@@ -62,25 +62,61 @@ namespace amsi {
       }
     }
 
-    void InitModelAttributes(pGModel model,std::vector<std::string> & attribute_names)
+    void initAttributeCase(pGModel model,const std::string & attr_nm)
     {
       pAManager attribute_manager = SModel_attManager(model);
       pProgress progress = Progress_new();
-      for(std::vector<std::string>::iterator attribute_name = attribute_names.begin(); attribute_name != attribute_names.end(); attribute_name++)
+      pACase constraints = AMAN_findCase(attribute_manager,attr_nm.c_str());
+      if(constraints)
       {
-	pACase constraints = AMAN_findCase(attribute_manager,attribute_name->c_str());
-	if(constraints)
-	{
-	  pPList children = AttNode_children(constraints);
-	  pACase child;
-	  void * iter = NULL;
-	  while((child = (pACase)PList_next(children,&iter)))
-	    AttCase_setModel(child,model);
-	  AttCase_setModel(constraints,model);	
-	  AttCase_associate(constraints,progress);
-	}
+	pPList children = AttNode_children(constraints);
+	pACase child;
+	void * iter = NULL;
+	while((child = (pACase)PList_next(children,&iter)))
+	  AttCase_setModel(child,model);
+	AttCase_setModel(constraints,model);	
+	AttCase_associate(constraints,progress);
       }
       Progress_delete(progress);
+    }
+
+    void clearModelAttributes(pGModel mdl) {}
+
+    bool isIncrementallyLoaded(pGEntity ent)
+    {
+      bool result = false;
+      pAttribute force_constraint = GEN_attrib(ent,"force constraint");
+      if(force_constraint)
+	result = !AttributeTensor1_constant(static_cast<pAttributeTensor1>(force_constraint));
+      pAttribute disp_constraint = GEN_attrib(ent,"displacement constraint");
+      if(disp_constraint)
+      {
+	pAttribute constraint_set = Attribute_childByType(disp_constraint,"Set");
+	pPList children = Attribute_children(constraint_set);
+	void * iter = NULL;
+	pAttribute att;
+	while((att = static_cast<pAttribute>(PList_next(children,&iter))) && !result)
+	{
+	  pAttributeDouble disp_attribute =
+	    static_cast<pAttributeDouble>(Attribute_childByType(att,"Total Displacement"));
+	  result = !AttributeDouble_constant(disp_attribute);
+	}
+	PList_delete(children);
+      }
+      return result;
+    }
+    
+    bool requiresIncrementalLoading(pGModel mdl)
+    {
+      bool result = false;
+      pGEntity entity;
+      for(GFIter gfiter = GM_faceIter(mdl); (entity = GFIter_next(gfiter)) && !result;)
+	result = isIncrementallyLoaded(entity);
+      for(GEIter geiter = GM_edgeIter(mdl); (entity = GEIter_next(geiter)) && !result;)
+	result = isIncrementallyLoaded(entity);
+      for(GVIter gviter = GM_vertexIter(mdl); (entity = GVIter_next(gviter)) && !result;)
+	result = isIncrementallyLoaded(entity);
+      return result;
     }
     
     SimFEA::SimFEA(MPI_Comm comm,

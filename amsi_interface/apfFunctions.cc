@@ -1,15 +1,42 @@
 #include "apfFunctions.h"
 
 #include <apfField.h>
+#include <apfGeometry.h>
 #include <apfMesh.h>
 #include <apfShape.h>
+
+#include <cassert>
 
 namespace amsi {
   namespace Analysis {
 
-    bool isFixed(int dof_num)
+
+    bool isFixed(int n)
     {
-      return dof_num == -2;
+      return n == -2;
+    }
+    
+    void vertexNormal(apf::Mesh * msh, apf::MeshEntity * vrt, apf::Vector3 & n)
+    {
+      assert(msh);
+      assert(vrt);
+      n.zero();
+      
+      apf::Field * crds = msh->getCoordinateField();
+      apf::Adjacent adj;
+      msh->getAdjacent(vrt,2,adj);
+      APF_ITERATE(apf::Adjacent,adj,fc)
+      {
+	apf::Adjacent vs;
+	msh->getAdjacent(*fc,0,vs);
+	apf::Vector3 vcrds[3];
+	apf::getVector(crds,vs[0],0,vcrds[0]);
+	apf::getVector(crds,vs[1],0,vcrds[1]);
+	apf::getVector(crds,vs[2],0,vcrds[2]);
+	apf::Plane p = apf::Plane::fromPoints(vcrds[0],vcrds[1],vcrds[2]);
+	n += p.normal;
+      }
+      n = n.normalize();
     }
 
     void displaceMesh(apf::Field * displacement_field)

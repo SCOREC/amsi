@@ -83,9 +83,8 @@ int main (int argc, char ** argv)
     std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
 
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
-    std::vector<std::string> attribute_names;
-    attribute_names.push_back(std::string("constraints"));
-    InitModelAttributes(model,attribute_names);
+    std::string cnstrnts("constraints");
+    initAttributeCase(model,cnstrnts);
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
 
     std::cout << "Input files loaded, initializing analysis: " << std::endl;
