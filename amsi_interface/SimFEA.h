@@ -17,11 +17,10 @@ namespace amsi {
 				     int dim,
 				     std::list<pEntity> & classified);
 
-    void InitModelAttributes(pGModel model,
-			     const std::string & attr_nm);
+    void initAttributeCase(pGModel model,const std::string & attr_cs);
+    void clearModelAttributes(pGModel mdl);
 
-    bool requiresIncrementalLoading(pGModel mdl,
-				    std::vector<std::string> & attribute_names);
+    bool requiresIncrementalLoading(pGModel mdl);
 
     class SimFEA : public virtual FEA
     {
