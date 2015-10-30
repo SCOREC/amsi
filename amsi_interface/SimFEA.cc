@@ -87,7 +87,7 @@ namespace amsi {
       bool result = false;
       pAttribute force_constraint = GEN_attrib(ent,"force constraint");
       if(force_constraint)
-	result = !AttributeTensor1_constant(static_cast<pAttributeTensor1>(force_constraint));
+	result = !AttributeTensor1_constant(static_cast<pAttributeTensor1>(Attribute_childByType(force_constraint,"direction")));
       pAttribute disp_constraint = GEN_attrib(ent,"displacement constraint");
       if(disp_constraint)
       {
