@@ -1,0 +1,52 @@
+\title{}
+\author{W.R. Tobin, D. Fovargue, V.W.L. Chan, M.S. Shephard}
+\date{\today}
+\documentclass[11pt]{article}
+\bibliographystyle{siam}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}\label{introduction}
+
+\label{single_scale_simulations}
+Numerical simulation of physical systems is typically conducted using single scale models. The physical terms in these models are all situated within a narrow specturm of physical magnitudes surrounding the primary solution scale. The primary solution scale is determined primarily by the desired resolution of two classes of physical terms. The resoulution of the solution produced by simulation must be fine enough to be of utility to the end-user, and the resolution of variation of physical quantities required by the physical model must be fine enough to capture suitable variation to control the buildup of numerical error.
+
+
+
+
+Single-scale models provide an averaged or generally accurate model of the overall evolution of a physical system in response to stimuli. 
+
+However all physical problems are multi-scale in nature, as the response of a system at the primary (or engineering) scale is in reality the result of actions taking place at scales many orders of magnitude removed. 
+
+
+
+
+\label{multi_scale_simulations}
+
+
+Introduction of influence from scales orders of magnitude removed from the primary scale can take place in several different ways. This influence can be incorporated during the mathematical development of the physical model itself. In this case the multi-scale features are incorporated into the numerical implementation automatically, as a result of their presence in the mathematical model. 
+
+Multi-scale influences can also be incorporated in a more strictly numerical sense, combining physical models operating at different scales referencing and effecting shared physical fields and values \cite{shenoy97} \cite{weinan2003heterogenous}. Numerically multi-scale simulations associate many numerical implementations of single-scale physical models and cause them to interact in a meaningful way by passing key physical terms between scales, typically this will involve up-/down-scaling equations to take into account the difference in scale, refered to as compression and reconstruction operators in \cite{weinan2003heterogenous} for up-scaling and down-scaling, respectively. 
+
+In order for a numerically multi-scale approach to be efficacious the domain at the scale of interest (for brevity the engineering scale) must be sufficiently large that conducting the entire simulation with terms and granularity orders of magnitude smaller would make the simulation computationally intractable. Thus some computationally reasonable subset of the engineering scale is assigned tertiary scales to simulate. The precise choice of location of the tertiary simulations is largely dependent on the specific numerical algorithms used to implement the engineering scale simulation. 
+
+Typically the tertiary scale domain subset is related to locations in the engineering domain where the impact of the tertiary scales has the most impact on the engineering scale simulation. 
+
+\label{multiscale_paradigms}
+Among numerically multi-scale simulations, there are two primary paradigms: concurrent and sequential multi-scale. 
+
+The sequential multi-scale paradigm involves the precomputation of parameters using a microscale simulation. These parameters are then used in a constitutive model for the macro-scale simulation \cite{garcia2008sequential}.
+
+In the concurrent multi-scale paradigm, both scales are computed simultaneously and the required inter-scale coupling values are provided just-in-time \cite{zeng2010concurrent}.
+
+\section{Adaptive Multiscale Simulation Infrastructure (amsi)}\label{amsi}
+
+\section{Future Work}\label{future_work}
+
+\bibliography{amsi}
+
+\end{document}
