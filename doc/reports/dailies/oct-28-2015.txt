@@ -1,0 +1,21 @@
+MPI ranks gathered into a RankSet may be assigned to and resigned from a particular Scale at any time. This is a collective process. In the case ranks are being assigned to a scale, the process is collective on the union of the RankSet currently assigned to the scale and the RankSet being assigned to the scale. In the case ranks are being resigned from a scale, the operation is collective only on the RankSet already associated with the scale. When a scale modification operation takes place, the scale notifies all pertinent systems. Currently this consists solely of ScaleCoupling objects which refer to the modified scale. The ScaleCoupling is then marked as dirty. When the ScaleCouling is next used for multi-scale communication -- a collective operation on the union of the RankSets associated with the ScaleCoupling -- the foreign scale is informed of the RankSet change to update the local metamodel accordingly. If this delayed resolution method was not used the system would be very susceptible to deadlock unless the user took proper precautions that Scale modification operations took place on all ranks associated with all Scales which share a ScaleCoupling relationship with the modified Scale. This situation is suitably cumbersome even conceptually that requiring that the user manage the coplexity would be ill-advised. [At present the ScaleCoupling is marked as dirty, but the multi-scale communication operations have not been reimplemented yet, this is merely the desired functionality].
+
+A ScaleCoupling is a model of the interaction between two Scales. It is used to enable inter-scale communication between two Scales associated with the ScaleCoupling. This relationship is not symmetric, one Scale is a receiving Scale and the other Scale is a sending Scale. This allows the implementation of uni-directional multi-scale data coupling, while allowing the implementation of bi-direction multi-scale data coupling merely by instantiating two ScaleCoupling objects one defined as A->B and one as B->A (where A and B are Scales in the amsi metamodel).
+
+== 
+
+The 'dogbone' tensile test domain with a modest discretization -- approximately 800 tetrahedral elements -- was used with a fairly standard set of uniaxial tension boundary conditions. One face on the elongated axis was held fixed in all three dimensions and then a modest surface traction was applied to the opposite side. For the sake of utility and resolution 100 incremenetal load steps were used, assuming that the simulation would fail as the fiber-networks began to stiffen extremely, as the force-response associated with a fiber is exponential. After 24 incremental load steps the simulation failed, though the system had reached approximately 60% strain. The nonlinear effects of the fiber networks were obvious in the converged state, and the evolution of the simulation can be seen in several animations of the domain taken along the principle axes;
+
+== 
+
+A simple vertex normal calculation was added to amsi. The normal is simply calculated as the average of the normals of the adjacent faces. This functionality is needed for the implementation of following force boundary conditions, which will be used in the podocyte problem.
+
+== 
+
+The indentation domain has been updated to the most recent simmetrix .smd format. The domain must be slightly modified before a faux-indentation set of boundary conditions can be designed for it in lieu of actually implementing a contact problem.  
+
+==
+
+Calculation of the fiber orientation has been added to the biotissue simulation so this data may be produced during the simulation rather than in a post-processing step. This will also allow the evolution of this value throughout the simulation to be studied.  An average fiber direction calculation, this merely sums the vectors given by the fibers together and averages them out. In order to eliminate opposite fibers from canceling eachother out, when in reality they are aligned identically, all fiber vectors lying in the negative-x plane are multiplied by -1 to eliminate this effect. Really flipping any half of the plane will produce the same effect, this is merely the chosen method.
+
+
