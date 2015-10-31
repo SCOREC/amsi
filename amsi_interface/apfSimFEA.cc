@@ -66,10 +66,10 @@ namespace amsi {
 	for(GFIter gfiter = GM_faceIter(model); (entity = GFIter_next(gfiter));)
 	  fixed_dofs += Entity_ApplyBC_Dirichlet(entity,2);
       }
-    for(GEIter geiter = GM_edgeIter(model); (entity = GEIter_next(geiter));)
+      for(GEIter geiter = GM_edgeIter(model); (entity = GEIter_next(geiter));)
 	fixed_dofs += Entity_ApplyBC_Dirichlet(entity,1);
-
-  for(GVIter gviter = GM_vertexIter(model); (entity = GVIter_next(gviter));)
+      
+      for(GVIter gviter = GM_vertexIter(model); (entity = GVIter_next(gviter));)
 	fixed_dofs += Entity_ApplyBC_Dirichlet(entity,0);
       
       std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;
