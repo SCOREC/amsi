@@ -1,5 +1,4 @@
 #include "apfSimFEA.h"
-#include "SimTensorFieldQuery.h"
 #include <amsiMPI.h>
 
 #include <apfSIM.h>
@@ -164,26 +163,37 @@ namespace amsi {
       for(GVIter gviter = GM_vertexIter(model); (entity = GVIter_next(gviter));)
 	Entity_ApplyBC_Neumann(las,entity,0);
     }
+
+    TensorFieldQuery * apfSimFEA::getForceOn(pGEntity mdl_ent)
+    {
+      TensorFieldQuery * result = NULL;
+      pAttribute force_constraint = GEN_attrib(mdl_ent,"force constraint");
+      if(force_constraint)
+      {
+	pAttributeTensor1 force_attrib =
+	  static_cast<pAttributeTensor1>(Attribute_childByType(force_constraint,"direction"));
+	
+	TensorFieldQueryT<pAttributeTensor1> * force =
+	  new TensorFieldQueryT<pAttributeTensor1>(force_attrib);
+	
+	if(!force->isTimeConst())
+	{
+	  int index = force->isSpaceConst() ? 0 : 3;
+	  force->bind(index,simulation_time);
+	}
+	result = force;
+      }
+      return result;
+    }
     
     void apfSimFEA::Entity_ApplyBC_Neumann(LAS * las,
 					   pGEntity entity, 
 					   int dim)
     {
-      pAttribute force_constraint = GEN_attrib(entity,"force constraint");
-      if(force_constraint)
+      if(hasAttribute(entity,"force constraint"))
       {
-	//int num_components = apf::countComponents(apf_primary_field);
-	pAttributeTensor1 force_attrib = static_cast<pAttributeTensor1>(Attribute_childByType(force_constraint,"direction"));
+	neumann_integrator->setTensorQuery(getForceOn(entity));
 
-	// todo: abstract TensorFieldQuery*?
-	TensorFieldQueryT<pAttributeTensor1> force_value(force_attrib);
-
-	if(!force_value.isTimeConst())
-	{
-	  int index = force_value.isSpaceConst() ? 0 : 3;
-	  force_value.bind(index,simulation_time);
-	}
-	neumann_integrator->setTensorQuery(&force_value);
 	std::list<pEntity> classified;
 	Model_GetClassifiedEntities(part,entity,dim,classified);
 	
@@ -204,7 +214,7 @@ namespace amsi {
 		       &neumann_integrator->getFe()(0),
 		       false);
 	}
-	force_value.clear();
+
       }
     }
     

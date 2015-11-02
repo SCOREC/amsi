@@ -17,11 +17,38 @@
 #include "NeumannIntegrator.h"
 
 #include <apf.h>
+#include <apfField.h>
 #include <apfMesh.h>
 #include <apfNumbering.h>
 
 namespace amsi {
   namespace Analysis {
+
+    apf::Field * analyzeMeshQuality(apf::Mesh * mesh);
+
+    class PrintField : public apf::FieldOp
+    {
+    private:
+      apf::Field * f;
+      apf::MeshEntity * me;
+      std::ostream & os;
+      int nc;
+    public:
+      PrintField(apf::Field * field, std::ostream & str) : f(field), me(), os(str), nc(0)
+      {
+	nc = f->countComponents();
+      }
+      virtual bool inEntity(apf::MeshEntity* e) {me = e; return true;}
+      virtual void outEntity() {}
+      virtual void atNode(int node)
+      {
+	double cmps[nc];
+	apf::getComponents(f,me,node,&cmps[0]);
+	for(int ii = 0; ii < nc; ii++)
+	  os << cmps[ii] << std::endl;
+      }
+    };
+    
 
     class apfFEA : public virtual FEA
     {

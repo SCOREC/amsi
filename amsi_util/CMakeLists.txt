@@ -12,6 +12,7 @@ set(util_public_headers
 
 set(util_source_files
   amsiUtil.cc
+  amsiMPI.cc
   amsiReporter.cc
   pystring.cc
   )

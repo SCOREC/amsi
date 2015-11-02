@@ -7,6 +7,8 @@
 #include <PCU.h>
 #endif
 
+// TODO bill (m) : use MPI_Comm_dup during initialization...
+
 MPI_Comm AMSI_COMM_WORLD = MPI_COMM_WORLD;
 MPI_Comm AMSI_COMM_LOCAL = MPI_COMM_WORLD;
 

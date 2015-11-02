@@ -118,6 +118,32 @@ namespace amsi {
 	result = isIncrementallyLoaded(entity);
       return result;
     }
+
+    bool hasAttribute(pGEntity entity, const char * attr)
+    {
+      return GEN_attrib(entity,attr) != NULL;
+    }
+
+    void getWithAttribute(pGModel mdl, const char * attr, std::list<pGEntity> & ents)
+    {
+      pGEntity entity;
+      
+      for(GRIter griter = GM_regionIter(mdl); (entity = GRIter_next(griter)); )
+	if(hasAttribute(entity,attr))
+	  ents.push_back(entity);
+      
+      for(GFIter gfiter = GM_faceIter(mdl); (entity = GFIter_next(gfiter)); )
+	if(hasAttribute(entity,attr))
+	  ents.push_back(entity);
+      
+      for(GEIter geiter = GM_edgeIter(mdl); (entity = GEIter_next(geiter)); )
+	if(hasAttribute(entity,attr))
+	  ents.push_back(entity);
+      
+      for(GVIter gviter = GM_vertexIter(mdl); (entity = GVIter_next(gviter)); )
+	if(hasAttribute(entity,attr))
+	  ents.push_back(entity);
+    }
     
     SimFEA::SimFEA(MPI_Comm comm,
 		   const std::string & in_analysis_name,
