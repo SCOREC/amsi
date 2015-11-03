@@ -1,0 +1,58 @@
+\title{The Adaptive Multiscale Simulation Infrastructure -- Core Features and Biological Tissue Simulation Feature Utilization}
+\author{W.R. Tobin, D. Fovargue, V.W.L. Chan, M.S. Shephard}
+\date{\today}
+\documentclass[11pt]{article}
+\bibliographystyle{siam}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}\label{introduction}
+
+\section{Biotissue Multiscale Problem}\label{biotissue}
+[An overview of the biotissue problem, along with relevant references. Just needs to be sufficient for the the reader to understand the multi-scale structure of the problem, so they can follow along as specific sections of amsi are described, and then how biotissue uses those sections of amsi is discussed.]
+
+\section{Adaptive Multiscale Simulation Infrastructure (AMSI)}\label{amsi}
+The Adaptive Multi-scale Simulation Infrastructure (AMSI) a set of libraries providing support for the implementation and execution of dynamic numerically multi-scale simulations on massively-parallel HPC machines. Currently AMSI provides interfaces for describing and managing the execution of individual scales in multi-scale simulations, for defining and managing the scale-coupling communication required by such simulations, and for planning and enacting scale-sensitive load balancing operations on individual scales in a multi-scale system. AMSI is designed to ease the incorporation of legacy single-scale simulation codes into multi-scale simulations. This is accomplished by minimizing the insertion of calls to the AMSI systems in a legacy simulation code to only those locations associated with the desired multi-scale interaction. 
+
+Centralized control, while simple, is not possible in massively parallel simulation codes -- both single- and multi-scale -- as centralized dynamic control decisions require global barrier operations to effectively implement, resulting in lowered process usage and an increased time-to-solution. Decentralized control is thus required to achieve performant operation with the desired level of dynamic control flexibility. An initial approach taken to implement decentralized control decisions is a combination of deterministic control algorithms and decision implementation deferment. Deterministic algorithms operating independently on the same set of data will all arrive at the same result, and thus no further communication with respect to local implementation of such a control decision is necesarry. Decision implementation deferement is simply delaying the implementation of a specific control decision - which might otherwise introduce a parallel barier - until a suitable barier operation at which the control decision may be implemented is reached.
+
+\section{Simulation Metamodel}\label{meta_model}
+AMSI runtime operations are predicated on a carefully designed set of simulation metadata. Minimal memory and computational footprints are a primary focus in the design and implementation of this metadata, in order to curtail any impact on underlying simulation codes used in the multi-scale simulation. 
+
+The metadata retained by an individual rank is limited only to the metadata that rank will need to operate on during the execution of a simulation. There are four levels of the metadata hierarchy: rank-local, scale-local, scale-coupling, and global metadata. The determination of the minimal set of required metadata from each level of the hierarchy for an individual rank to possess during the progression of the multi-scale simulation is what concerns a large portion of the metadata management algorithms implemented in AMSI.
+
+Local metadata currently consists primarily of simple information such as the set of scales assigned to the rank (currently limited to just a single scale, but overlapped scale assignment is a very desireable future development, see discussion in \ref{future_work}) as well as the scale-ranks of the local rank. The most important local metadata is the discrete quantity of locally-owned inter-scale data terms called a DataDistribution. The actual type(s) of the user data are unimportant to the metadata operations offered by AMSI, so long as the data can be serialized for parallel communication. This DataDistribution quantity is specific to a single scale assigned to the rank, and any number of DataDistributions can be created on each scale. The DataDistribution is converted to scale-local metadata using an AMSI process called assembly. This allows scale-local control decisions to be made using independently on each rank in a scale as opposed to globally. 
+
+Scale-local metadata is data modeling terms distributed across an entire scale, these are typically generated via assembly. Scale-local metadata such as an assembled DataDistribution are used to plan inter-scale communication, producing a piece of scale-local metadata called the CouplingPattern. The CouplingPattern models the parallel communication of coupling terms from the local scale to some coupled foreign scale. The CouplingPattern is transformed into a piece of scale-coupling metadata through a process called reconciliation. Naturally not all ranks in the foreign scale need to know the entire CouplingPattern, only the rank-local information which will guide individual parallel communication. Thus reconciliation is not communication of the entire CouplingPattern, but only individual terms of the coupling pattern, producing rank-local metadata on the foreign scale.
+
+Another key peice of scale-local metadata is the RankSet associated with non-local but coupled scales. The MPI_Comm of the foreign scale is necessarily MPI_COMM_NULL on the local rank set (as scales are currently non-overlapping), so explicit modeling of the ranks associated with coupled foreign scales is required.  Explicit storage of individual ranks assigned to foreign (and local) scales is avoided wherever possible in order to reduce single-rank memory impact as the simulation grows. 
+
+Global metadata is currently nonexistent, maintaining zero global metadata is important to the design philosophy of AMSI, though it may be required at some point. Though global metadata determined essential to AMSI will be designed to be exteremely minimal.
+
+\label{amsi_scales}
+Individual scales in a simulation are declared during the initialization of the simulation, follow by the determination and asignment of RankSets to scales, guided by a supplied configuration file or user-implemented algorithm. Scale-coupling relations are also declared at initialization time, though this decleration is limited to the indication that two scale may interact at some point during the simulation, and nothing more.
+
+RankSets are simply mathematical sets of MPI ranks implemented so as to take advantage of any mathematical conveniences to minimize explicit storage whenever possible.
+
+Scales are declared to be related if some quantities of interest (such as tensor field values) are transmitted between them for scale-coupling. This coupling relationship is not assumed to be symmetric, thus if scale A is related to scale B, scale B is not implicitly related to scale A, though this may be seperately declared.
+
+\label{amsi_communication}
+Scale coupling communication is handled by the AMSI system using DataDistributions and CommuncationPatterns. A data distribution is a meta representation of individual units of scale-coupling data distributed across a single scale-task. The implementation of the coupling data is arbitrary (so long as it can be serialized for communication). A data distribution represents the smallest unit of data important to the scale-coupling communication, which is necessarily distinct for various multi-scale use cases.
+
+\label{amsi_data_migration_balancing}
+If a local installation of the Zoltan \cite{ZoltanOverviewArticle2002} \cite{ZoltanIsorropiaOverview2012} load balancing library is available, the load balancing planning algorithms of Zoltan can be used underlying the scale-sensitive load balancing planning of AMSI. A minimal set of load-balancing algorithms are provided with AMSI. Since there is no general solution to the dynamic load balancing problem any set of provided load-balancing algorithms will prove insufficient for some use case. Thus AMSI provides users with the ability to create and register their own load-balancing algorithms specific to the requirements of a given numerical implementation.
+
+Due to the necessity of retaining inter-scale linkages through the load-balancing processes, the actual data migration undertaken to implement a specific load balancing plan is typically conducted internally by the AMSI system which is provided with buffers of data being load-balanced by each process on the appropriate scale. However, in order to maintain usability in more general situations, it is also possible to simply inform the AMSI system that the current load-balancing plan has already been accomplished by user-implemented data migration. This functionality combined with the ability to use user-designed load-balance planning algorithms allows AMSI to work with entirely external load-balancing libraries and algorithms, allowing scale-sensitive load-balancing to be used even when a specific multi-scale use case falls outside the bounds of capabilities built into the system.
+
+\section{Biotissue Metadata}
+
+
+\section{Future Work}\label{future_work}
+
+\bibliography{amsi}
+
+\end{document}

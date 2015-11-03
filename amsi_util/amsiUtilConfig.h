@@ -11,12 +11,12 @@
 
 #define SCOREC
 
-#if TRUE == TRUE
+#if FALSE == TRUE
 #  define CORE
 namespace amsi {extern bool use_core;}
 #endif
 
-#if TRUE == TRUE
+#if FALSE == TRUE
 #  define SIM
 namespace amsi{extern bool use_simmetrix;}
 #endif

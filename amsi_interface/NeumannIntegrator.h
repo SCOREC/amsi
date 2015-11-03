@@ -26,7 +26,7 @@ namespace amsi
     public:
       NeumannIntegrator(apf::Field * field, int o);
 
-      void setTensorQuery(TensorFieldQuery * q) {tf = q;}
+      void setTensorQuery(TensorFieldQuery * q) {delete tf; tf = q;}
       virtual void inElement(apf::MeshElement *);
       virtual void outElement() {};
       virtual void parallelReduce() {};

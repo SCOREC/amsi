@@ -9,6 +9,8 @@
 extern MPI_Comm AMSI_COMM_WORLD;
 extern MPI_Comm AMSI_COMM_LOCAL;
 
+double distributedAverage(double partial_sum, int partial_count, MPI_Comm cm);
+
 template <typename T>
 void t_ssend(T & msg, MPI_Datatype type, int to)
 {

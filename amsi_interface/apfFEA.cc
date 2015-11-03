@@ -1,11 +1,31 @@
 #include "apfFEA.h"
 
 #include <apfShape.h>
+#include <maShape.h>
 
 #include <cassert>
 
 namespace amsi {
   namespace Analysis {
+
+    // assumes only linear tets
+    apf::Field * analyzeMeshQuality(apf::Mesh * mesh)
+    {
+      int analysis_dim = mesh->getDimension();
+      apf::Field * f = createStepField(mesh,"quality",apf::SCALAR);
+      apf::MeshEntity * me = NULL;
+      for(apf::MeshIterator * it = mesh->begin(analysis_dim);
+	  (me = mesh->iterate(it));)
+      {
+	apf::Vector3 verts[4];
+	apf::Adjacent v;
+	mesh->getAdjacent(me,0,v);
+	for(int ii = 0; ii < 4; ii++)
+	  mesh->getPoint(v[0],0,verts[0]);
+	apf::setScalar(f,me,0,ma::measureLinearTetQuality(verts));
+      }
+      return f;
+    }
 
     void apfFEA::RenumberDOFs()
     {

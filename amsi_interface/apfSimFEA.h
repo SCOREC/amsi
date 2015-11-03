@@ -14,6 +14,7 @@
 
 #include "apfFEA.h"
 #include "SimFEA.h"
+#include "SimTensorFieldQuery.h"
 
 namespace amsi {
   namespace Analysis {
@@ -25,6 +26,8 @@ namespace amsi {
       bool mesh_adapted;
       int Entity_ApplyBC_Dirichlet(GEntity*,int);
       void Entity_ApplyBC_Neumann(LAS *,GEntity*,int);
+
+      TensorFieldQuery * getForceOn(pGEntity mdl_ent);
       
     public:
       apfSimFEA(MPI_Comm comm,
@@ -45,7 +48,7 @@ namespace amsi {
       virtual void Adapt();
       virtual void addFieldToMap(apf::Field *);
       void ApplyBC_Dirichlet();
-      void ApplyBC_Neumann(LAS * las);
+      virtual void ApplyBC_Neumann(LAS * las);
       void Assemble(LAS * las);
     private:
     };
