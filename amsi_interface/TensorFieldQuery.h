@@ -11,7 +11,7 @@
 #ifndef TENSORFIELDQUERY_H_
 #define TENSORFIELDQUERY_H_
 
-// c
+// 
 #include <stdarg.h>
 #include <string.h>
 

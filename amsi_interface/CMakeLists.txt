@@ -21,6 +21,7 @@ set(interface_public_headers
     NonLinElasticIntegrator.h
     NonLinearElasticIntegrator.h
     TrussIntegrator.h
+    FollowForceIntegrator.h
    )
 
 set(interface_src_files
@@ -42,6 +43,7 @@ set(interface_src_files
     NonLinElasticIntegrator.cc
     NonLinearElasticIntegrator.cc
     TrussIntegrator.cc
+    FollowForceIntegrator.cc
    )
 
 find_package(MPI REQUIRED)

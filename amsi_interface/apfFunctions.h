@@ -10,7 +10,13 @@
 namespace amsi {
   namespace Analysis {
 
-    void vertexNormal(apf::MeshEntity * v, apf::Vector3 & n);
+    void faceNormal(apf::Mesh *,
+		    apf::MeshEntity *,
+		    apf::Vector3 & n);
+		    
+    void vertexNormal(apf::Mesh *,
+		      apf::MeshEntity *,
+		      apf::Vector3 & n);
     
     void displaceMesh(apf::Field * displacement_field);
 
