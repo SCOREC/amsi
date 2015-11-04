@@ -9,7 +9,7 @@ namespace amsi {
   namespace Analysis {
 
     // assumes only linear tets
-    apf::Field * analyzeMeshQuality(apf::Mesh * mesh)
+    apf::Field * analyzeMeshQuality(apf::Mesh * mesh, apf::Field * disp_field)
     {
       int analysis_dim = mesh->getDimension();
       apf::Field * f = createStepField(mesh,"quality",apf::SCALAR);
@@ -21,7 +21,12 @@ namespace amsi {
 	apf::Adjacent v;
 	mesh->getAdjacent(me,0,v);
 	for(int ii = 0; ii < 4; ii++)
-	  mesh->getPoint(v[0],0,verts[0]);
+	{
+	  apf::Vector3 disp;
+	  apf::getVector(disp_field,v[ii],0,disp);
+	  mesh->getPoint(v[ii],0,verts[ii]);
+	  verts[ii] += disp;
+	}
 	apf::setScalar(f,me,0,ma::measureLinearTetQuality(verts));
       }
       return f;

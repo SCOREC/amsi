@@ -24,7 +24,7 @@
 namespace amsi {
   namespace Analysis {
 
-    apf::Field * analyzeMeshQuality(apf::Mesh * mesh);
+    apf::Field * analyzeMeshQuality(apf::Mesh * mesh, apf::Field * disp_field);
 
     class PrintField : public apf::FieldOp
     {

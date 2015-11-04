@@ -50,13 +50,13 @@ else
   module load parmetis/OpenMPI-1.3.3
   module load zoltan/OpenMPI-1.3.3
   module unload parmetis/OpenMPI-1.3.3
-  module load ~/develop/petsc-3.5.3/arch-linux2-c-debug/lib/modules/3.5.3-arch-linux2-c-debug
-  module load simmetrix/simModSuite/9.0-150718
+  module load /fasttmp/wtobin/develop/install/petsc/3.6.2/openmpi-1.3.3/lib/petsc/conf/modules/petsc/3.6.2
+  module load simmetrix/simModSuite
 
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DBUILD_TESTS=ON \
-    -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
+    -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
     -DSIM_MPI=openmpi14 \
     ..
 fi

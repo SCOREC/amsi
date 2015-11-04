@@ -30,8 +30,13 @@ set(meta_source_files
   )
 
 find_package(MPI REQUIRED)
+
+find_package(PETSc COMPONENTS ZOLTAN)
+if(NOT ZOLTAN_FOUND)
+  find_package(ZOLTAN)
+endif()
+
 find_package(CoreSim)
-find_package(ZOLTAN)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h

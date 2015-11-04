@@ -5,11 +5,19 @@
 #  PARMETIS_LIBRARIES - The libraries needed to use PARMETIS
 #  PARMETIS_DEFINITIONS - Compiler switches required for using PARMETIS
 
-find_path(PARMETIS_INCLUDE_DIR parmetis.h PATHS $ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/include)
-find_path(METIS_INCLUDE_DIR metis.h PATHS $ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/include)
+if(NOT DEFINED PETSC_DIR)
+  set(PETSC_DIR $ENV{PETSC_DIR})
+endif()
 
-find_library(PARMETIS_LIBRARY libparmetis.a parmetis PATHS $ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib)
-find_library(METIS_LIBRARY libmetis.a metis PATHS $ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib)
+if(NOT DEFINED PETSC_ARCH)
+  set(PETSC_ARCH $ENV{PETSC_ARCH})
+endif()
+
+find_path(PARMETIS_INCLUDE_DIR parmetis.h PATHS ${PETSC_DIR}/${PETSC_ARCH}/include)
+find_path(METIS_INCLUDE_DIR metis.h PATHS ${PETSC_DIR}/${PETSC_ARCH}/include)
+
+find_library(PARMETIS_LIBRARY libparmetis.a parmetis PATHS ${PETSC_DIR}/${PETSC_ARCH}/lib)
+find_library(METIS_LIBRARY libmetis.a metis PATHS ${PETSC_DIR}/${PETSC_ARCH}/lib)
 
 set(PARMETIS_LIBRARIES ${PARMETIS_LIBRARY} ${METIS_LIBRARY})
 set(PARMETIS_INCLUDE_DIRS ${PARMETIS_INCLUDE_DIR} ${METIS_INCLUDE_DIR})

@@ -6,7 +6,7 @@ if( "${PETSC_DIR}" STREQUAL "" )
 endif()
 
 if( "${PETSC_ARCH}" STREQUAL "" )
-  message(SEND_ERROR "Please specify the PETSC_ARCH environment variable.")
+  message(WARNING "PETSC_ARCH not specified.")
 endif()
 
 find_package(PkgConfig)
@@ -28,27 +28,59 @@ find_library(PETSC_LIB petsc
              HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
              PATH_SUFFIXES lib)
 
-find_library(SUPERLU_LIB superlu_dist_3.3
+find_library(SUPERLU_LIB superlu_dist_4.1
              HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
              PATH_SUFFIXES lib)
 
-find_library(PARMETIS_LIB parmetis
+find_package(PARMETIS)
+find_package(ZOLTAN)
+
+find_library(PTSCOTCH_LIB ptscotch
              HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
              PATH_SUFFIXES lib)
 
-find_library(METIS_LIB metis
+find_library(PTSCOTCHERR_LIB ptscotcherr
              HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
              PATH_SUFFIXES lib)
 
-find_library(F2CLAPACK_LIB f2clapack
+find_library(SCOTCH_LIB scotch
              HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
              PATH_SUFFIXES lib)
 
-find_library(F2CBLAS_LIB f2cblas
+find_library(SCOTCHERR_LIB scotcherr
+             HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
+             PATH_SUFFIXES lib)
+	   
+set(SCOTCH_LIBS ${PTSCOTCH_LIB} ${PTSCOTCHERR_LIB} ${SCOTCH_LIB} ${SCOTCHERR_LIB})
+
+find_library(LAPACK_LIB f2clapack
              HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
              PATH_SUFFIXES lib)
 
-set(PETSC_LIBRARIES ${PETSC_LIB} ${SUPERLU_LIB} ${PARMETIS_LIB} ${METIS_LIB} ${F2CLAPACK_LIB} ${F2CBLAS_LIB} -lX11 -lssl)
+if(NOT LAPACK_LIB_FOUND)
+  find_library(LAPACK_LIB flapack
+               HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
+               PATH_SUFFIXES lib)
+endif()
+
+find_library(BLAS_LIB f2cblas
+             HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
+             PATH_SUFFIXES lib)
+
+if(NOT BLAS_LIB_FOUND)
+  find_library(BLAS_LIB fblas
+               HINTS ${PC_PETSC_PREFIX}/${PETSC_ARCH}
+               PATH_SUFFIXES lib)
+endif()
+
+
+set(PETSC_LIBRARIES ${PETSC_LIB} 
+                    ${SUPERLU_LIB} 
+                    ${PARMETIS_LIBRARIES} 
+                    ${ZOLTAN_LIBRARIES}
+		    ${SCOTCH_LIBS}
+                    ${LAPACK_LIB} 
+                    ${BLAS_LIB} -lX11 -lssl)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PETSc DEFAULT_MSG PETSC_LIBRARIES PETSC_INCLUDE_DIRS)

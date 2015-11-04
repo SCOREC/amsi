@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # prefer static libraries and force static linking
 set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
-
+set(CMAKE_DEBUG_POSTFIX d)
 
 if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
   set(HOST BGQ)
@@ -26,12 +26,16 @@ endif()
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
+message(STATUS "Configuring amsi_util")
 add_subdirectory(amsi_util)
 
+message(STATUS "Configuring amsi_meta")
 add_subdirectory(amsi_meta)
 
+message(STATUS "Configuring amsi_interface")
 add_subdirectory(amsi_interface)
 
+message(STATUS "Configuring amsi_control")
 add_subdirectory(amsi_control)
 
 if(BUILD_TESTS)
