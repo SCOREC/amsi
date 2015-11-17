@@ -57,6 +57,7 @@ else
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DBUILD_TESTS=ON \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
+    -DCORE_ROOT=$DEVROOT/install/core-sim/openmpi-1.3.3 \
     -DSIM_MPI=openmpi14 \
     ..
 fi

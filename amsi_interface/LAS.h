@@ -18,6 +18,9 @@ namespace amsi {
 
   class LAS {
   public:
+    virtual void iter() {};
+    virtual void step() {};
+    
     /// Initialize the solver and allocate memory for the local matrix portion
     virtual void Reinitialize(int,int,int,int*) {};
     virtual void Reinitialize(int,int,int) {};
@@ -45,6 +48,7 @@ namespace amsi {
     /// retrieve the solution
     virtual void GetSolution(double *&) = 0;
     virtual void GetSolutionNorm(double &) = 0;
+    virtual void GetAccumSolutionNorm(double &) = 0;
 
     // Toshi below - must also be able to zero each side separately
     virtual bool ZeroMatrix() {return false;}
@@ -54,6 +58,7 @@ namespace amsi {
     virtual void SetVector(const double *) = 0;
 
     virtual void GetVectorNorm(double &) = 0;
+    virtual void GetDotNorm(double &) = 0;
 
     virtual void PrintMatrix(std::ostream &) {};
     virtual void PrintVector(std::ostream &) {};

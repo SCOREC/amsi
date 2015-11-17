@@ -34,25 +34,30 @@ namespace amsi {
 	int N = globalNumEqs = num_global_unknowns;
 	int n = num_local_unknowns;
 	
-	//VecCreateSeq(PETSC_COMM_SELF,N,&vecTemp); //local vector
-	
-	x_arr = new double[n];                    //local array to store solution
+	x_arr = new double[n];
 	b_arr = new double[n];
 	
-	VecCreateMPI(PETSC_COMM_WORLD,n,N,&b);    //parallel vector
-
-	VecSetOption(b, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+	VecCreateMPI(PETSC_COMM_WORLD,n,N,&b_i);    
+	VecSetOption(b_i, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
 	
-	std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;
+	std::cout << "Local equations = " << n
+		  << ", Global Equations = " << N << std::endl;
+	
 	MatCreateAIJ(PETSC_COMM_WORLD,n,n,N,N,300,PETSC_NULL,300,PETSC_NULL,&A);
 	//MatMPIAIJSetPreallocation(A,300,PETSC_NULL,300,PETSC_NULL); // This is done in previous line
-	// todo: remove this once we have preallocation working correctly
 	MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
 	
 	KSPCreate(PETSC_COMM_WORLD,&solver);
-	VecDuplicate(b,&x);
+
+	// create other vectors...
+	VecDuplicate(b_i,&x_i);
+	VecDuplicate(b_i,&x_im);
+	VecDuplicate(b_i,&b_im);
+	VecDuplicate(b_i,&b);
+	VecDuplicate(b_i,&x);
+	VecDuplicate(b_i,&w);
 	
-	VecGetOwnershipRange(b,&vec_low,&vec_high);
+	VecGetOwnershipRange(b_i,&vec_low,&vec_high);
 	MatGetOwnershipRange(A,&mat_low,&mat_high);
 
 	std::cout << "Vector ownership range: " << vec_low << "-" << vec_high << std::endl;
@@ -61,6 +66,31 @@ namespace amsi {
       }
     }
 
+    // these two really shouldn't exist, what they do should be possible from outside of PetscLAS since this is technically application logic 
+    void PetscLAS::iter()
+    {
+      // accumulate values
+      VecAYPX(b,1.0,b_i);
+      VecAYPX(x,1.0,x_i);
+
+      // move into previous iteration vecs
+      VecCopy(b_i,b_im);
+      VecCopy(x_i,x_im);
+    }
+
+    void PetscLAS::step()
+    {
+      // no iteration values anymore
+      VecZeroEntries(b_i);
+      VecZeroEntries(x_i);
+      VecZeroEntries(b_im);
+      VecZeroEntries(x_im);
+
+      // zero accumulated values as well, they're already reflected in the analysis
+      VecZeroEntries(b);
+      VecZeroEntries(x);
+    }
+      
   /**
    *@brief Add a value to the current value at the given location in the matrix in the Linear System to be solved.
    * 
@@ -73,7 +103,7 @@ namespace amsi {
       MatSetValues(A,1,&row,1,&col,&value,ADD_VALUES);
     }
 
-    void  PetscLAS::AddToMatrix(int num_rows, int * rows, int num_cols, int * cols, double * values)
+    void PetscLAS::AddToMatrix(int num_rows, int * rows, int num_cols, int * cols, double * values)
     {
       MatSetValues(A,num_rows,rows,num_cols,cols,values,ADD_VALUES);
     }
@@ -90,11 +120,11 @@ namespace amsi {
     {
       if(!b_addMode)
       {
-	VecAssemblyBegin(b);
-	VecAssemblyEnd(b);
+	VecAssemblyBegin(b_i);
+	VecAssemblyEnd(b_i);
 	b_addMode = true;
       }
-      VecSetValue(b,row,static_cast<PetscScalar>(value),ADD_VALUES);
+      VecSetValue(b_i,row,static_cast<PetscScalar>(value),ADD_VALUES);
       b_assembled = false;
     }
 
@@ -102,11 +132,11 @@ namespace amsi {
     {
       if(!b_addMode)
       {
-	VecAssemblyBegin(b);
-	VecAssemblyEnd(b);
+	VecAssemblyBegin(b_i);
+	VecAssemblyEnd(b_i);
 	b_addMode = true;
       }
-      VecSetValues(b,num_rows,rows,static_cast<PetscScalar*>(values),ADD_VALUES);
+      VecSetValues(b_i,num_rows,rows,static_cast<PetscScalar*>(values),ADD_VALUES);
       b_assembled = false;
     }
 
@@ -117,8 +147,8 @@ namespace amsi {
     {
       if (!b_assembled)
       {
-	VecAssemblyBegin(b);
-	VecAssemblyEnd(b);
+	VecAssemblyBegin(b_i);
+	VecAssemblyEnd(b_i);
 	b_assembled = true;
       }
       
@@ -129,13 +159,13 @@ namespace amsi {
       KSPSetFromOptions(solver);
       /*
       MatView(A, PETSC_VIEWER_STDOUT_WORLD);
-      VecView(b, PETSC_VIEWER_STDOUT_WORLD);
+      VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
       */
       // solve the system
-      KSPSolve(solver,b,x);
+      KSPSolve(solver,b_i,x_i);
 
       /*
-      VecView(x,PETSC_VIEWER_STDOUT_WORLD);
+      VecView(x_i,PETSC_VIEWER_STDOUT_WORLD);
       */
     }
     
@@ -157,11 +187,11 @@ namespace amsi {
     void PetscLAS::GetSolution(double *& sol)
     {
       PetscScalar * X;
-      VecGetArray(x,&X);
+      VecGetArray(x_i,&X);
 
       int n = vec_high-vec_low;
       memcpy(x_arr,(double*)X,n*sizeof(PetscScalar));
-      VecRestoreArray(x,&X);
+      VecRestoreArray(x_i,&X);
       
       sol = &x_arr[0];
     }
@@ -191,14 +221,14 @@ namespace amsi {
     {
       if(b_addMode)
       {
-	VecAssemblyBegin(b);
-    	VecAssemblyEnd(b);
+	VecAssemblyBegin(b_i);
+    	VecAssemblyEnd(b_i);
       }
       
       b_assembled = false;
       //b_addMode = false;
       
-      VecZeroEntries(b);
+      VecZeroEntries(b_i);
       return true;
     }
 
@@ -216,16 +246,16 @@ namespace amsi {
       
       VecScatter ctx;
       
-      VecScatterCreateToAll(b,&ctx,&vecTemp);
-      VecScatterBegin(ctx,b,vecTemp,INSERT_VALUES,SCATTER_FORWARD);
-      VecScatterEnd(ctx,b,vecTemp,INSERT_VALUES,SCATTER_FORWARD);
+      VecScatterCreateToAll(b_i,&ctx,&w);
+      VecScatterBegin(ctx,b_i,w,INSERT_VALUES,SCATTER_FORWARD);
+      VecScatterEnd(ctx,b_i,w,INSERT_VALUES,SCATTER_FORWARD);
       
-      VecGetArray(vecTemp,&temp);
+      VecGetArray(w,&temp);
       memcpy(b_arr,(double*)temp,globalNumEqs*sizeof(PetscScalar));
-      VecRestoreArray(vecTemp,&temp);
+      VecRestoreArray(w,&temp);
       
       VecScatterDestroy(&ctx);
-      VecZeroEntries(vecTemp);
+      VecZeroEntries(w);
       
       vec = b_arr;
     }
@@ -242,43 +272,51 @@ namespace amsi {
     {
       if(!b_addMode)
       {
-	VecAssemblyBegin(b);
-	VecAssemblyEnd(b);
+	VecAssemblyBegin(b_i);
+	VecAssemblyEnd(b_i);
       }
       
       // This should allow us to update the entire vector at once without the need to generate the array as below, still UNTESTED
-      VecSetBlockSize(b,globalNumEqs);
+      VecSetBlockSize(b_i,globalNumEqs);
       int zero = 0;
-      VecSetValuesBlocked(b,1,&zero,vec,INSERT_VALUES);
+      VecSetValuesBlocked(b_i,1,&zero,vec,INSERT_VALUES);
 
       b_assembled = false;
       b_addMode = false;
     }
 
-    void PetscLAS::GetVectorNorm(double & residual_norm)
+    void PetscLAS::GetVectorNorm(double & norm)
     {
-      // Petsc vector norm isn't working for some reason
-
-      double result = 0.0;      
-      VecNorm(b,NORM_2,&result);
+      VecNorm(b_i,NORM_2,&norm);
+    }
+    
+    void PetscLAS::GetDotNorm(double & norm)
+    {
+      VecDot(b_im,x_im,&norm);
+      norm = fabs(norm);
       /*
+      double t = 0.0;
+      VecDot(b_i,b_i,&t);
+      std::cout << "b_i sqrnorm: " << t << " norm: " << sqrt(t) << std::endl;
+      VecDot(b_im,b_im,&t);
+      std::cout << "b_im sqrnorm: " << t << " norm: " << sqrt(t) << std::endl;
 
-      // So we compute our own norm
-      PetscScalar * B;
-      VecGetArray(b,&B);
-
-      // Sum up local values
-
-      int n = vec_high-vec_low;
-      for(int ii = 0; ii < n; ii++)
-	result += B[ii]*B[ii];
-
-      VecRestoreArray(b,&B);
+      double diff = 0.0;
+      VecWAXPY(w,-1.0,b_i,b_im);
+      VecDot(w,w,&diff);
+      VecDot(b_im,b_im,&norm);
+      norm = sqrt(diff / norm);
       */
-      // shouldn't need to do this...
-      //MPI_Allreduce(&result,&result,1,MPI_DOUBLE,MPI_MAX,PETSC_COMM_WORLD);
-      //result = sqrt(result);
-      residual_norm = result;
+    }
+
+    void PetscLAS::GetSolutionNorm(double & norm)
+    {
+      VecNorm(x_i,NORM_2,&norm);
+    }
+
+    void PetscLAS::GetAccumSolutionNorm(double & norm)
+    {
+      VecNorm(x,NORM_2,&norm);
     }
     
     /**
@@ -288,8 +326,12 @@ namespace amsi {
     {
       MatDestroy(&A);
       VecDestroy(&x);
-      VecDestroy(&b);
-      VecDestroy(&vecTemp);
+      VecDestroy(&x_i);
+      VecDestroy(&x_im);
+      VecDestroy(&x);
+      VecDestroy(&b_i);
+      VecDestroy(&b_im);
+      VecDestroy(&w);
       KSPDestroy(&solver);
       
       delete[] x_arr;
@@ -302,21 +344,25 @@ namespace amsi {
      *@param[in] The number of global equations across the linear system.
      *@param[in] The number of local equations associated with the local system.
      */
-    PetscLAS::PetscLAS ( int N, int n ) :
-      A(),
-      x(),
-      b(),
-      vecTemp(),
-      x_arr(NULL),
-      b_arr(NULL),
-      globalNumEqs(N),
-      vec_low(0),
-      vec_high(0),
-      mat_low(0),
-      mat_high(0),
-      b_assembled(true), 
-      b_addMode(true),
-      solver()
+    PetscLAS::PetscLAS ( int N, int n )
+      : A()
+      , x()
+      , x_i()
+      , x_im()
+      , b()
+      , b_i()
+      , b_im()
+      , w()
+      , x_arr(NULL)
+      , b_arr(NULL)
+      , globalNumEqs(N)
+      , vec_low(0)
+      , vec_high(0)
+      , mat_low(0)
+      , mat_high(0)
+      , b_assembled(true)
+      , b_addMode(true)
+      , solver()
     {}
 
     /**
@@ -329,7 +375,6 @@ namespace amsi {
       MatView(A, PETSC_VIEWER_STDOUT_WORLD);
     }
 
-
     /**
      *@brief Print the associated vector to standard output.
      *
@@ -337,9 +382,9 @@ namespace amsi {
      */
     void PetscLAS::PrintVector(std::ostream &)
     {
-      VecAssemblyBegin(b);
-      VecAssemblyEnd(b);
-      VecView(b, PETSC_VIEWER_STDOUT_WORLD);
+      VecAssemblyBegin(b_i);
+      VecAssemblyEnd(b_i);
+      VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
     }    
   }
 } // end of namespace SCOREC_Solver

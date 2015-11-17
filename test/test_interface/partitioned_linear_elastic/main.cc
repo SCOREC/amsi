@@ -79,6 +79,8 @@ int main (int argc, char ** argv)
   {
     std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
     amsi::initializer = new amsi::amsiInterfaceInit;
+    amsi::use_petsc = true;
+    amsi::use_simmetrix = true;
     amsi::amsiInit(argc,argv);
     std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
 
@@ -92,7 +94,8 @@ int main (int argc, char ** argv)
     
     Elasticity * isotropic_linear_elasticity = new Elasticity(AMSI_COMM_LOCAL,
 							      model,
-							      mesh);
+							      mesh,
+							      43200000,0.23);
 
     std::cout << "Analysis objects created, commencing analysis: " << std::endl;
     LinearSolver(isotropic_linear_elasticity,linear_system);
@@ -105,6 +108,5 @@ int main (int argc, char ** argv)
     std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
   }
   else result--;
-  
   return result;
 }

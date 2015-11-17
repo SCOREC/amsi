@@ -21,10 +21,13 @@
 namespace amsi {
   namespace Analysis {
 
-  class PetscLAS: public LAS
+  class PetscLAS : public LAS
   {
   public:
     PetscLAS(int,int);
+
+    void iter();
+    void step();
 
     void Reinitialize(int, int, int, int*);
     void Reinitialize(int, int, int);
@@ -46,9 +49,11 @@ namespace amsi {
     void SetVector(const double *);
 
     void GetVectorNorm(double &);
+    void GetDotNorm(double &);
 
     void GetSolution(double *&);
-    void GetSolutionNorm(double & n) {};
+    void GetSolutionNorm(double & n);
+    void GetAccumSolutionNorm(double &);
 
     void PrintMatrix(std::ostream &);
     void PrintVector(std::ostream &);
@@ -56,10 +61,14 @@ namespace amsi {
     ~PetscLAS();
 
   private:
-    Mat A;
+    Mat A;     // matrix
+    Vec x_im;   // previous solution
+    Vec x_i;     // current solution
     Vec x;
+    Vec b_i;     // current vector
+    Vec b_im;   // previous vector
     Vec b;
-    Vec vecTemp;
+    Vec w;     // work vector
     double * x_arr, * b_arr;
     int globalNumEqs;
     int vec_low;
