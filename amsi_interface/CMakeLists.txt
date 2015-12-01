@@ -46,17 +46,14 @@ set(interface_src_files
     FollowForceIntegrator.cc
    )
 
-find_package(MPI REQUIRED)
 find_package(ZOLTAN)
-find_package(PETSc)
-find_package(CoreSim)
+find_package(PETSc REQUIRED)
 
-# petsc is optional
-if(PETSC_FOUND)
-  list(APPEND interface_public_headers PetscLAS.h)
-  list(APPEND interface_src_files PetscLAS.cc)
-  include_directories(${PETSC_INCLUDES})
-endif(PETSC_FOUND)
+find_package(Core COMPONENTS Sim)
+find_package(SimModSuite REQUIRED)
+
+list(APPEND interface_public_headers PetscLAS.h)
+list(APPEND interface_src_files PetscLAS.cc)
 
 # will only be found if we're doing a simmetrix build
 if(SIMMODSUITE_FOUND)
@@ -89,13 +86,14 @@ target_include_directories(amsi_interface PUBLIC
 
 target_link_libraries(amsi_interface PUBLIC amsi_util amsi_meta)
 
-if(PETSC_FOUND)
-  target_include_directories(amsi_interface PUBLIC ${PETSC_INCLUDE_DIRS})
-  target_link_libraries(amsi_interface PUBLIC ${PETSC_LIBRARIES})
-endif()
-
-target_include_directories(amsi_interface PUBLIC ${CORE_INCLUDE_DIRS})
-target_link_libraries(amsi_interface PUBLIC ${CORE_LIBRARIES})
+target_include_directories(amsi_interface PUBLIC 
+  ${PETSC_INCLUDES}
+  ${CORE_INCLUDE_DIRS}
+  ${SIMMODSUITE_INCLUDE_DIR})
+target_link_libraries(amsi_interface PUBLIC 
+  ${PETSC_LIBRARIES}
+  ${CORE_LIBS}
+  ${SIMMODSUITE_LIBS})
 
 install(TARGETS amsi_interface
 	EXPORT amsiinterfaceTargets 

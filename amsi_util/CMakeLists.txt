@@ -17,8 +17,7 @@ set(util_source_files
   pystring.cc
   )
 
-find_package(MPI REQUIRED)
-find_package(CoreSim)
+find_package(Core COMPONENTS Sim)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h.in 
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h 
@@ -30,9 +29,6 @@ set_property(TARGET amsi_util PROPERTY VERSION ${AMSI_VERSION})
 target_include_directories(amsi_util PUBLIC
 				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 				     $<INSTALL_INTERFACE:include/amsi>)
-
-target_include_directories(amsi_util PUBLIC ${MPI_CXX_INCLUDE_PATH})
-target_link_libraries(amsi_util PUBLIC ${MPI_CXX_LIBRARIES})
 
 if(CORE_FOUND)
   target_include_directories(amsi_util PUBLIC ${CORE_INCLUDE_DIRS})

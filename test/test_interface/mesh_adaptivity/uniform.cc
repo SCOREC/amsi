@@ -1,9 +1,7 @@
 #include "amsiInterface.h"
 #include "NonLinearElastic_UniformAdapt.h"
 #include "Solvers.h"
-
 #include <mpi.h>
-
 #include <getopt.h>
 #include <iostream>
 
@@ -78,6 +76,7 @@ int main (int argc, char ** argv)
   if(parse_options(argc,argv))
   {
     std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
+    amsi::initializer = new amsi::amsiInterfaceInit;
     amsi::amsiInit(argc,argv);
     Sim_logOn("simmetrix_log");
     std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;

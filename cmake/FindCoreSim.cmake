@@ -1,112 +1,83 @@
 # CORE_INCLUDE_DIRS
-# CORE_LIBRARIES
+# CORE_LIBS
 
-if(NOT DEFINED CORE_ROOT)
-  if(NOT DEFINED $ENV{CORE_ROOT})
-    message(WARNING "Please set CORE_ROOT by passing it into the cmake command or setting it in your environment")
+# TODO (M) Bill : move this into a common cmake util file
+macro(prependList lst prfx nwlst)
+  foreach(itm ${lst})
+    list(APPEND ${nwlst} ${prfx}${itm})
+  endforeach()
+endmacro()
+
+macro(pkgLibCheck pkgnm prefix libs isRequired)
+  foreach(lib ${libs})
+    string(TOUPPER "${lib}" upperlib)
+    message(STATUS ${prefix}_${upperlib}_LIBRARY_DIRS)
+    message(STATUS ${${prefix}_${upperlib}_LIBRARY_DIRS})
+
+    set(lib_path ${${prefix}_${upperlib}_LIBRARY_DIRS})
+    unset(find_lib CACHE)
+    find_library(find_lib "${lib}" PATHS ${lib_path})
+    if(NOT ${lib}_FOUND)
+      if(${isRequired})
+        message(FATAL_ERROR "library ${lib} not found in ${lib_path}")
+      else()
+        message(STATUS "library ${lib} not found in ${lib_path}")
+      endif()
+    else()
+      set("${pkgnm}_${lib}_FOUND" TRUE CACHE INTERNAL "Library present")
+      set(${pkgnm}_LIBS ${pkgnm}_LIBS ${find_lib} ${${prefix}_${lib}_LIBRARIES})
+    endif()
+  endforeach()
+endmacro(pkgLibCheck)
+
+if(NOT EXISTS "${CORE_INSTALL_DIR}")
+  if(NOT EXISTS "$ENV{CORE_INSTALL_DIR}")
+    message(FATAL_ERROR "Please specify CORE_INSTALL_DIR")
   else()
-    set(CORE_ROOT $ENV{CORE_ROOT})
+    set(CORE_INSTALL_DIR $ENV{CORE_INSTALL_DIR})
   endif()
 endif()
 
-find_package(SimModSuite REQUIRED)
+find_package(PkgConfig)
+set(EVN{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${CORE_INSTALL_DIR}/lib/pkgconfig/")
 
-find_path(PCU_INCLUDE_DIR PCU.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
+find_path(CORE_INCLUDE_DIRS
+  NAMES apf.h gmi.h ma.h mth.h PCU.h
+  PATHS ${CORE_INSTALL_DIR}
+  PATH_SUFFIXES include)
 
-find_path(APF_INCLUDE_DIR apf.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
+# set the libraries to look for depending on whether simmetrix is required/present
+set(LIBS ma mds gmi)
+message(STATUS "Looking for ${CORESIM_FIND_COMPONENTS}")
+if(";${CORE_FIND_COMPONENTS};" MATCHES ";Sim;")
+  if(CORE_FIND_REQUIRED_SIM)
+    find_package(SimModSuite REQUIRED)
+  else()
+    find_package(SimModSuite)
+  endif()
+  if(SIMMODSUITE_FOUND)
+    set(LIBS ${LIBS} gmi_sim apf apf_sim)
+  else()
+    set(LIBS ${LIBS} apf)
+  endif()
+else()
+    set(LIBS ${LIBS} apf)
+endif()
+set(LIBS ${LIBS} spr parma ph dsp lion)
 
-find_path(APF_SIM_INCLUDE_DIR apfSIM.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
+set(prefix PC_CORE)
+set(pkglibs "")
+prependList("${LIBS}" lib pkglibs)
+pkg_check_modules(${prefix} ${pkglibs})
+set(static_prefix ${prefix}_STATIC)
+pkgLibCheck(CORE ${static_prefix} "${LIBS}" TRUE)
 
-find_path(GMI_INCLUDE_DIR gmi.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
-
-find_path(GMI_SIM_INCLUDE_DIR gmi_sim.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
-
-find_path(SPR_INCLUDE_DIR spr.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
-
-find_path(MA_INCLUDE_DIR ma.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
-
-find_path(MTH_INCLUDE_DIR mth.h
-          HINTS ${CORE_ROOT}
-          PATH_SUFFIXES include)
-
-find_path(LION_INCLUDE_DIR lionBase64.h
-          HINTS ${CORE_ROOT}
-	  PATH_SUFFIXES include)
-
-set(CORE_INCLUDE_DIRS ${PCU_INCLUDE_DIR} 
-                      ${LION_INCLUDE_DIR}
-		      ${APF_INCLUDE_DIR} 
-		      ${APF_SIM_INCLUDE_DIR} 
-		      ${GMI_INCLUDE_DIR} 
-		      ${GMI_SIM_INCLUDE_DIR}
-		      ${SPR_INCLUDE_DIR}
-		      ${MA_INCLUDE_DIR}
-                      ${MTH_INCLUDE_DIR}
-	              ${SIMMODSUITE_INCLUDE_DIRS})
-
-find_library(PCU_LIB pcu
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(APF_LIB apf
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(APF_SIM_LIB apf_sim
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(GMI_LIB gmi
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(GMI_SIM_LIB gmi_sim
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(SPR_LIB spr
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(MA_LIB ma
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(MTH_LIB mth
-             HINTS ${CORE_ROOT}
-             PATH_SUFFIXES lib)
-
-find_library(LION_LIB lion
-             HINTS ${CORE_ROOT}
-	     PATH_SUFFIXES lib)
-
-set(CORE_LIBRARIES ${MA_LIB}
-                   ${APF_SIM_LIB} 
-                   ${APF_LIB} 
-                   ${GMI_SIM_LIB} 
-                   ${GMI_LIB} 
-                   ${SPR_LIB} 
-                   ${PCU_LIB}
-                   ${MTH_LIB}
-		   ${LION_LIB}
-                   ${SIMMODSUITE_LIBS})
+if(SIMMODSUITE_FOUND)
+  set(CORE_LIBS ${CORE_LIBS} ${SIMMETRIX_LIBS})
+  set(CORE_INCLUDE_DIRS ${CORE_INCLUDE_DIRS} ${SIMMETRIX_LIBS})
+endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(CORE DEFAULT_MSG CORE_LIBRARIES CORE_INCLUDE_DIRS)
-
-mark_as_advanced(CORE_LIBRARIES CORE_INCLUDE_DIRS)
+find_package_handle_standard_args(CORE DEFAULT_MSG CORE_LIBS CORE_INCLUDE_DIRS)
+mark_as_advanced(CORE_LIBS CORE_INCLUDE_DIRS)
 

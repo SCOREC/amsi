@@ -29,14 +29,9 @@ set(meta_source_files
   PlanMigration.cc
   )
 
-find_package(MPI REQUIRED)
-
-find_package(PETSc COMPONENTS ZOLTAN)
-if(NOT ZOLTAN_FOUND)
-  find_package(ZOLTAN)
-endif()
-
-find_package(CoreSim)
+find_package(PETSc)
+find_package(ZOLTAN)
+find_package(Core COMPONENTS Sim)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h
@@ -46,22 +41,14 @@ add_library(amsi_meta ${meta_source_files})
 
 target_include_directories(amsi_meta PUBLIC
 				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-				     $<INSTALL_INTERFACE:include/amsi>)
-
-target_link_libraries(amsi_meta PUBLIC amsi_util)
-
-if(CORE_FOUND)
-  target_link_libraries(amsi_meta PUBLIC ${CORE_LIBRARIES})
-  target_include_directories(amsi_meta PUBLIC ${CORE_INCLUDE_DIRS})
-endif()
+				     $<INSTALL_INTERFACE:include/amsi>
+                                     ${CORE_INCLUDE_DIRS})
+target_link_libraries(amsi_meta PUBLIC amsi_util ${CORE_LIBS})
 
 if(ZOLTAN_FOUND)
   target_link_libraries(amsi_meta PUBLIC ${ZOLTAN_LIBRARIES})
   target_include_directories(amsi_meta PUBLIC ${ZOLTAN_INCLUDE_DIRS})
 endif()
-
-target_link_libraries(amsi_meta PUBLIC ${MPI_LIBRARIES})
-target_include_directories(amsi_meta PUBLIC ${MPI_INCLUDE_PATH})
 
 set_property(TARGET amsi_meta PROPERTY VERSION ${AMSI_VERSION})
 

@@ -46,20 +46,19 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     ..
 
 else
-  module load openmpi/1.3.3
-  module load parmetis/OpenMPI-1.3.3
-  module load zoltan/OpenMPI-1.3.3
-  module unload parmetis/OpenMPI-1.3.3
-  module load /fasttmp/wtobin/develop/install/petsc/3.6.2/openmpi-1.3.3/lib/petsc/conf/modules/petsc/3.6.2
-  module load simmetrix/simModSuite
 
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DBUILD_TESTS=ON \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
-    -DCORE_ROOT=$DEVROOT/install/core-sim/openmpi-1.3.3 \
+    -DCMAKE_C_COMPILER="mpicc" \
+    -DCMAKE_CXX_COMPILER="mpicxx" \
+    -DCORE_INSTALL_DIR=$DEVROOT/install/core-sim/openmpi-1.3.3 \
     -DSIM_MPI=openmpi14 \
     ..
+
+#    -DSIMMETRIX_LIB_DIR=$DEVROOT/simPartitionWrapper/PartitionWrapper/lib \
+#    --debug-output \
 fi
 
 # Special parameters for running the test on the Q 

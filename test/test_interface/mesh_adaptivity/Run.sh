@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXEDIR=$DEVROOT/amsi_sim/build/test/test_interface/mesh_adaptivity/
+EXEDIR=$DEVROOT/amsi_sim/build_debug/test/test_interface/mesh_adaptivity/
 FILEDIR=$DEVROOT/amsi_sim/test/test_interface/
 
 $1 mpirun $2 -np 2 $EXEDIR/uniform_adapt \
