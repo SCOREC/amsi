@@ -87,7 +87,7 @@ target_include_directories(amsi_interface PUBLIC
 target_link_libraries(amsi_interface PUBLIC amsi_util amsi_meta)
 
 target_include_directories(amsi_interface PUBLIC 
-  ${PETSC_INCLUDES}
+  ${PETSC_INCLUDE_DIRS}
   ${CORE_INCLUDE_DIRS}
   ${SIMMODSUITE_INCLUDE_DIR})
 target_link_libraries(amsi_interface PUBLIC 
