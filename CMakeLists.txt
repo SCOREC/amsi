@@ -8,7 +8,7 @@ set(AMSI_PATCH_VERSION 0)
 set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSION})
 
 # add FindPACKAGE.cmake files to path
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH $ENV{DEVROOT}/scripts/cmake ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 # prefer static libraries and force static linking
 set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)

@@ -30,7 +30,7 @@ set(meta_source_files
   )
 
 find_package(PETSc)
-find_package(ZOLTAN)
+find_package(zoltan)
 find_package(Core COMPONENTS Sim)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in

@@ -53,7 +53,7 @@ else
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
     -DCMAKE_C_COMPILER="mpicc" \
     -DCMAKE_CXX_COMPILER="mpicxx" \
-    -DCORE_INSTALL_DIR=$DEVROOT/install/core-sim/openmpi-1.3.3 \
+    -DCORE_DIR=$DEVROOT/install/core-sim/openmpi-1.3.3 \
     -DSIM_MPI=openmpi14 \
     ..
 

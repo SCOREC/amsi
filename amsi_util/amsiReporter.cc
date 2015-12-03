@@ -11,9 +11,6 @@
 #include <mpi.h>
 
 namespace amsi {
-
-  std::string results_dir("results/");
-
   class Log {
   protected:
     std::string name;
@@ -27,19 +24,16 @@ namespace amsi {
       creation_time = MPI_Wtime();
       last_post = creation_time;
     }
-
     Log(const std::string & nm) : name(nm), stream()
     {
       stream << std::setprecision(std::numeric_limits<double>::digits10+2);
       creation_time = MPI_Wtime();
       last_post = creation_time;
     }
-    
     std::iostream & getStream()
     {
       return stream;
     }
-
     const std::string & getName() const { return name; }
     const double getCreation() const { return creation_time; }
     double post() { return last_post = MPI_Wtime(); }
@@ -56,12 +50,10 @@ namespace amsi {
       result -= creation_time;
       return result;
     }
-
     void clear()
     {
       stream.str("");
     }
-    
     void writeFStream(const std::string & filename) const
     {
       std::fstream out;
@@ -71,7 +63,6 @@ namespace amsi {
       out.flush();
       out.close();
     }
-
     void writeMPI(const std::string & filename) const
     {
 	
@@ -129,7 +120,7 @@ namespace amsi {
 
   void flush2FStream(Log * l, const std::string & out)
   {
-    std::string fnm(results_dir + out);
+    std::string fnm(out);
     l->writeFStream(fnm);
     l->clear();
   }

@@ -1,4 +1,5 @@
 set(util_public_headers
+  amsiFileSys.h
   amsiUtil.h
   amsiUtilConfig.h
   amsiHost.h
@@ -11,6 +12,7 @@ set(util_public_headers
   )
 
 set(util_source_files
+  amsiFileSys.cc
   amsiUtil.cc
   amsiMPI.cc
   amsiReporter.cc

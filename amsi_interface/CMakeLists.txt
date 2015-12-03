@@ -46,9 +46,8 @@ set(interface_src_files
     FollowForceIntegrator.cc
    )
 
-find_package(ZOLTAN)
 find_package(PETSc REQUIRED)
-
+find_package(zoltan)
 find_package(Core COMPONENTS Sim)
 find_package(SimModSuite REQUIRED)
 

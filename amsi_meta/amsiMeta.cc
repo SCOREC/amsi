@@ -1,17 +1,16 @@
 #include "amsiMeta.h"
-
+#include <amsiFileSys.h>
 #include <amsiMPI.h>
 #include <amsiReporter.h>
-
 #include <cassert>
 #include <getopt.h>
 #include <pystring.h>
 #include <fstream>
-
 namespace amsi {
 
   TaskManager * tm = NULL;
   CommunicationManager * cm = NULL;
+  FileSystemInfo * fs = NULL;
 
   std::string options_filename;
   bool parse_options(int argc,char ** argv)
@@ -91,7 +90,10 @@ namespace amsi {
       }
       else if(parsing_configure)
       {
-	results_dir = line;
+	if(fs)
+	  delete fs;
+	fs = new FileSystemInfo(line);
+	printInfo(fs,std::cout);
       }
     }
     if(!tm->lockConfiguration())
