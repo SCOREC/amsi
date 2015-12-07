@@ -3,6 +3,7 @@ set(interface_public_headers
     amsiInterfaceConfig.h
     amsiBCDirichlet.h
     ElementalSystem.h
+    ErrorEstimators.h
     MatrixUtil.h
     FullLULAS.h
     LAS.h

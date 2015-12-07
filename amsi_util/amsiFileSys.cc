@@ -1,4 +1,5 @@
 #include "amsiFileSys.h"
+#include <iostream> // temp
 namespace amsi
 {
   const std::string getpwd()
@@ -28,7 +29,7 @@ namespace amsi
     , rslts()
     , rslts_rel(false)
   {
-    rslts_rel = isRelativePath(rslts);
+    rslts_rel = isRelativePath(rs);
     if(rslts_rel)
       rslts = cwd + "/" + rs;
     else

@@ -45,16 +45,12 @@ namespace amsi {
       DataDistribution();
       bool assembled;
       bool valid;
-
       std::valarray<std::vector<double> > wgts;
       std::valarray<int> dd;
-
 #     ifdef ZOLTAN
       Zoltan_Struct * zs;
 #     endif
     };
-
-
 } // namespace amsi
 
 #endif

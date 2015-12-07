@@ -39,8 +39,11 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
    cmake \
     -DCMAKE_TOOLCHAIN_FILE=$CMAKE_XL_TOOLCHAIN \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    -DCMAKE_C_COMPILER="mpicc" \
+    -DCMAKE_CXX_COMPILER="mpicxx" \
     -DBUILD_TESTS=OFF \
-    -DCMAKE_INSTALL_PREFIX=$DEVROOT/install \
+    -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/xl/ \
+    -DCORE_DIR=$DEVROOT/install \
     -DSIM_MPI=bgmpi \
     -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
     ..

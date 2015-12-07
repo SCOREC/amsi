@@ -4,9 +4,8 @@
 #include <iomanip>
 #include <iostream>
 
-namespace amsi {
-
-
+namespace amsi
+{
   std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
 					 CommPattern::SendRecv send_recv,
 					 int rank,
@@ -81,7 +80,7 @@ namespace amsi {
     /// @param rank1 The sending task-rank
     /// @param rank2 The recving task-rank
     /// @return int The number of pieces of data to be communicated
-    int CommPattern::GetDataCount(int rank1, int rank2) const
+    int CommPattern::getDataCount(int rank1, int rank2) const
     {
       return pattern[rank1 * s2 + rank2];
     }

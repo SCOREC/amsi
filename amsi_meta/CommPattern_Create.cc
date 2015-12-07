@@ -6,14 +6,14 @@
 #include <limits.h>
 #include <cstdlib>
 
-namespace amsi {
-
-    CommPattern * CommPattern_CreateDistro(DataDistribution & dd, int s1, int s2)
+namespace amsi
+{
+  CommPattern * CommPattern_CreateDistro(DataDistribution & dd, int s1, int s2)
+  {
+    CommPattern * pattern = NULL;
+    if(s1 > 0 && s2 > 0)
     {
-      CommPattern * pattern = NULL;
-      if(s1 > 0 && s2 > 0)
-      {
-	//std::cout << __func__ << " : s1 and s2 : " << s1 << "," << s2 << std::endl;
+      //std::cout << __func__ << " : s1 and s2 : " << s1 << "," << s2 << std::endl;
 	int total_data = 0;
 	//std::cout << "Data distribution : ";
 	for(int ii = 0; ii < s1; ii++)

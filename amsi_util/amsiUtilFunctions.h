@@ -3,9 +3,8 @@
 
 #include <iostream>
 
-
-namespace amsi {
-    
+namespace amsi
+{
   /// Unreversible combination of two hashes. Currently only masks the upper 32 bits of hash a
   ///  and the lower 32 bits of hash b into a result.
   inline size_t combine_hashes(size_t a, size_t b)

@@ -1,34 +1,29 @@
-#ifndef COMMPATTERN_H_
-#define COMMPATTERN_H_
-
+#ifndef AMSI_COMMPATTERN_H_
+#define AMSI_COMMPATTERN_H_
 #include "Assemblable.h"
 #include "amsiMetaConfig.h"
-
 #include <mpi.h>
-
 #ifdef CORE
 #include <PCU.h>
 #endif
-
 #include <ostream>
 #include <vector>
 
-namespace amsi {
-
-    /// Decleration of the CommPattern class and interface. Used to coordinate send/recv communication operations between active task-groups.
-    class CommPattern : public Assemblable, public Reconcilable
+namespace amsi
+{
+  class CommPattern : public Assemblable, public Reconcilable
+  {
+  public:
+    enum SendRecv
     {
-    public:
-      enum SendRecv
-      {
-	SENDER = 0,
-	RECVER = 1
-      };
-      CommPattern(int s1, int s2);
-
-      int GetDataCount(int rank1, int rank2) const;
-      void GetSendTo(int rank, std::vector<int>& send_to) const;
-      void GetRecvFrom(int rank, std::vector<int>& recv_from) const;
+      SENDER = 0,
+      RECVER = 1
+    };
+    CommPattern(int s1, int s2);
+    int getDataCount(int rank1, int rank2) const;
+    
+    void GetSendTo(int rank, std::vector<int>& send_to) const;
+    void GetRecvFrom(int rank, std::vector<int>& recv_from) const;
 
       int& operator()(int,int);
       int operator()(int,int) const;

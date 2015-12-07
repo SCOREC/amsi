@@ -84,7 +84,7 @@ namespace amsi {
       int num_components = field->countComponents();
       apf::FieldShape * field_shape = apf::getShape(field);
       int analysis_dim = mesh->getDimension();
-      for(int dim = 0; dim < analysis_dim; dim++)
+      for(int dim = 0; dim <= analysis_dim; dim++)
       {
 	out << dim << " : " << std::endl;
 	apf::MeshIterator * it = mesh->begin(dim);

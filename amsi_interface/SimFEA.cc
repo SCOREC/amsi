@@ -218,7 +218,6 @@ namespace amsi {
       part = PM_mesh(in_mesh,0);
       fields_to_map = PList_new();
     }
-
     void SimFEA::Adapt()
     {
       assert(sim_size_field);
@@ -226,7 +225,6 @@ namespace amsi {
       {
 	pMSAdapt adapter = MSA_new(mesh,1);
 	MSA_setMapFields(adapter,fields_to_map);
-	
 	// set mesh size from size field
 	pVertex vert = NULL;
 	for(VIter viter = M_vertexIter(part); (vert = VIter_next(viter)); )
@@ -235,7 +233,6 @@ namespace amsi {
 	  double size = DofGroup_value(dof,0,0);
 	  MSA_setVertexSize(adapter,vert,size);
 	}
-	
 	MSA_adapt(adapter,NULL);
 	MSA_delete(adapter);
       }

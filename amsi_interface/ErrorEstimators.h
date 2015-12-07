@@ -1,62 +1,75 @@
 #ifndef ERRORESTIMATORS_H_
 #define ERRORESTIMATORS_H_
-
-namespace amsi {
-  namespace Analysis {
-
-    template <class T>
-    class NodalAverage : public FieldOp
+#include <apfField.h>
+#include <apfFieldOf.h>
+#include <apfMesh.h>
+namespace amsi
+{
+  namespace Analysis
+  {
+    template <typename T>
+      T nodalAverage(apf::Mesh * msh,
+		     apf::MeshEntity * me,
+		     apf::Field * ipf);
+    
+    template <>
+      apf::Matrix3x3 nodalAverage(apf::Mesh * msh,
+				  apf::MeshEntity * me,
+				  apf::Field * ipf)
     {
-    private:
+      apf::Matrix3x3 rslt;
+      apf::Adjacent adj;
+      msh->getAdjacent(me,msh->getDimension(),adj);
+      int num_adj = adj.getSize();
+      APF_ITERATE(apf::Adjacent,adj,eit)
+      {
+	apf::Matrix3x3 avg;
+	apf::Element * e = apf::createElement(ipf,*eit);
+	apf::NewArray<apf::Matrix3x3> fe_vals;
+	apf::getMatrixNodes(e,fe_vals);
+	int n = apf::countNodes(e);
+	for(int ii = 0; ii < n; ii++)
+	  avg = avg + fe_vals[ii];
+	avg = avg / n;
+	rslt = rslt + avg;
+      }
+      rslt = rslt / num_adj;
+      return rslt;
+    }
+
+    class RecoverNodalAverage : public apf::FieldOp
+    {
+    protected:
       apf::Mesh * mesh;
       apf::Field * ip_field;
       apf::Field * recovered_field;
+      apf::MeshEntity * cme;
+      int type;
     public:
-    NodalAverage(apf::FieldOf<T> * in_ip_field, apf::FieldOf<T> * in_recovered_field) :
-      FieldOp(),
-	mesh(apf::getMesh(in_ip_field)),
-	ip_field(in_ip_field),
-	recovered_field(in_recovered_field)
+      RecoverNodalAverage(apf::Field * ip_field,
+			  apf::Field * in_recovered_field)
+	: FieldOp()
+	, mesh(apf::getMesh(in_recovered_field))
+	, ip_field(NULL)
+	, recovered_field(in_recovered_field)
+	, cme(NULL)
+	, type(0)
       {
-	mesh = apf::getMesh(ip_field);
+	type = apf::getValueType(ip_field);
+	assert(type == apf::getValueType(recovered_field));
       }
-    };
-
-    template <>
-      class NodalAverage<apf::Matrix3x3> : public FieldOp
-    {
-    public:
-      
       bool inEntity(apf::MeshEntity * me)
       {
-	apf::Matrix3x3 recovered_value;
-	apf::Adjacent elements;
-	mesh->getAdjacent(me,mesh->getDimension(),elements);
-	int num_adjacent = elements.getSize();
-	APF_ITERATE(apf::Adjacent,elements,eit)
-	{
-	  apf::Matrix3x3 element_value;
-	  apf::Element * e = apf::createElement(ip_field,*eit);
-	  apf::NewArray<apf::Matrix3x3> fe_values;
-	  apf::getMatrixNodes(e,fe_values);
-	  int n = apf::countNodes(e);
-	  for(int ii = 0; ii < n; ii++)
-	    element_value = element_value + fe_values[ii];
-	  element_value = element_value / n;
-	  recovered_value = recovered_value + element_value;
-	}
-	recovered_value = recovered_value  / num_adjacent;
-	apf::setMatrix(recovered_value,me,0,recovered_field);
+	cme = me;
       }
-
-      void outEntity()
-      { }
-
-      void atNode(int node)
-      { }
-    }
-
-    
+      void outEntity() { }
+      void atNode(int nd)
+      {
+	if(type == apf::MATRIX)
+	  apf::setMatrix(recovered_field,cme,nd,
+			 nodalAverage<apf::Matrix3x3>(mesh,cme,ip_field));
+      }
+    };
   }
 }
 

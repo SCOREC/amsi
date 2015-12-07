@@ -36,7 +36,5 @@ namespace amsi {
       }
     }
   };
-  
 }
-
 #endif

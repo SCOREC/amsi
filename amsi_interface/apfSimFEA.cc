@@ -227,7 +227,8 @@ namespace amsi {
     void apfSimFEA::Adapt()
     {
       assert(mesh_size_field);
-      sim_size_field = dynamic_cast<apf::SIMDataOf<double>* >(mesh_size_field->getData())->getSimField();
+      sim_size_field =
+	dynamic_cast<apf::SIMDataOf<double>* >(mesh_size_field->getData())->getSimField();
       SimFEA::Adapt();
     }
 
