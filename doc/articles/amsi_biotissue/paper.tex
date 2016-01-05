@@ -56,7 +56,7 @@ simulation flow control is determined solely by the runtime system. A framework 
 While implementation of desired numerical operations into a framework is of course possible, it may prove an additional undesirable overhead for an application programmer interested only in utilizing the multi-scale framework to implement simulation, rather than implementing the various numerical operations often perfected in widely available packages and libraries \cite{} \cite{} \cite{}.
 
 \label{amsi_scales}
-A simple configuration file is supplied via command-line parameter containing the initial configuration of the process sets and their assignment to individual scales, as well as declaring the coupling between scales in the simulation. The deceleration of a scale and the initialization of the process set associated with the scale are considered a single atomic operation in the current implementation.
+A configuration file is supplied during command invocation containing the initial configuration of the process sets and their assignment to individual scales, as well as declaring the coupling between scales in the simulation. The deceleration of a scale and the initialization of the process set associated with the scale are considered a single atomic operation in the current implementation.
 
 Process sets are mathematical sets of MPI ranks implemented so as to take advantage of any mathematical conveniences to minimize explicit storage whenever possible. Process sets are required to be non-overlapping in order for amsi control mechanisms to operate correctly. Ongoing developments are targeted at removing this requirement to allow a richer set of dynamic control options and increase overall utilization in the case of coupled scales blocking on one another. 
 
