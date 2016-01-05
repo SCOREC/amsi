@@ -7,7 +7,7 @@
 <meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
 <!-- html,htex4ht --> 
 <meta name="src" content="paper.tex"> 
-<meta name="date" content="2016-01-04 23:18:00"> 
+<meta name="date" content="2016-01-04 23:29:00"> 
 <link rel="stylesheet" type="text/css" href="paper.css"> 
 </head><body 
 >
@@ -30,7 +30,7 @@ class="cmbx-8">Abstract.</span>
 physical scales are involved in the simulation - the discussion is equally applicable to
 multi-model simulations - wherein two or more numerical or physical models operating on
 the same domain (possibly with differing discretizations) are involved in the simulation - as
-well as to multi-scale-multi-model simulations.
+well as to simulations which are both.
 <!--l. 21--><p class="indent" >
 <a 
  id="x1-3r2"></a>
@@ -44,46 +44,47 @@ scale can take place in several different ways. This influence can be incorporat
 mathematical development of the physical model itself. In this case the multi-scale features
 are incorporated into the numerical implementation automatically, as a result of their
 presence in the mathematical model.
-<!--l. 28--><p class="indent" >   Multi-scale influences can also be incorporated in a more strictly numerical sense,
-combining physical models operating at different scales referencing and effecting shared
-physical fields and values <span class="cite">[<span 
+<!--l. 28--><p class="indent" >   Multi-scale influences can also be incorporated in a more strictly numerical
+sense, combining physical models operating at different scales referencing and
+effecting shared physical fields and values <span class="cite">[<span 
 class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>. Numerically multi-scale simulations associate
-many numerical implementations of single-scale physical models and cause them
-to interact in a meaningful way by passing key physical terms between scales,
-typically this will involve up-/down-scaling operations to account for differences in
-dimension as well as possibly dimensionalizing terms computed in a non-dimensional
+class="cmbx-10">?</span>]</span>. Numerically multi-scale simulations
+associate many numerical implementations of single-scale physical models and
+cause them to interact through passing key physical terms between scales. This
+scale-coupling will involve up-/down-scaling operations to account for differences in
+dimension, as well as possibly dimensionalizing terms computed in a non-dimensional
 domain.
-<!--l. 30--><p class="indent" >   In order for a numerically multi-scale approach to be efficacious the domain at the scale
-of interest (for brevity the engineering scale) must be sufficiently large that conducting the
+<!--l. 30--><p class="indent" >   In order for a numerically multi-scale approach to be effective the domain at the scale
+of interest (or engineering scale) must be sufficiently large that conducting the
 entire simulation with terms and granularity orders of magnitude smaller would
 make the simulation computationally intractable. Thus some computationally
 reasonable subset of the engineering scale is assigned tertiary scales to simulate.
 The precise choice of location of the tertiary simulations is largely dependent
 on the specific numerical algorithms used to implement the engineering scale
 simulation.
-<!--l. 32--><p class="indent" >   Typically the tertiary scale domain subset is related to locations in the engineering
-domain where the impact of the tertiary scales has the most impact on the engineering
-scale simulation.
+<!--l. 32--><p class="indent" >   Often the subset(s) of the domain associated with the tertiary scale(s) are locations in
+the engineering domain where the impact of the tertiary scales has the most impact on the
+engineering scale simulation, in order to leverage the most power from the multi-scale
                                                                        
 
                                                                        
-<!--l. 35--><p class="indent" >   Multi-scale simulations fall broadly into two distinct paradigms concurrent and
-sequential multi-scale.
-<!--l. 37--><p class="indent" >   In the concurrent multi-scale paradigm, both scales are computed simultaneously and
-the required inter-scale coupling values are provided just-in-time <span class="cite">[<span 
+approach.
+<!--l. 34--><p class="indent" >   In the concurrent multi-scale paradigm, all scales are computed simultaneously and the
+required inter-scale coupling values are provided just-in-time <span class="cite">[<span 
 class="cmbx-10">?</span>]</span>.
-<!--l. 39--><p class="indent" >   In the sequential multi-scale paradigm, tertiary scales compute parameters which are
-converted to quantities of utility to a primary scale. Each scale must be processed
-sequentially and is essentially blocked on the completion of the previous scale <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>. This
-multi-scale model maps intuitively to phased communication models related to bulk
-synchronous parallel computation <span class="cite">[<span 
+<!--l. 36--><p class="indent" >   In the sequential multi-scale paradigm, tertiary scales compute parameters which are
+converted to quantities of utility to a primary scale. Each scale (though not necessarily
+each scale-task, representing an individual operation or simulation occurring in a
+scale) must be processed sequentially <span class="cite">[<span 
+class="cmbx-10">?</span>]</span> and may be blocked on the completion of
+the previous scale. This multi-scale model maps intuitively to phased parallel
+communication models found in the commonly used bulk synchronous parallel abstraction
+<span class="cite">[<span 
 class="cmbx-10">?</span>]</span>.
-<!--l. 42--><p class="indent" >
+<!--l. 38--><p class="indent" >
 <a 
  id="x1-4r1"></a>
-<!--l. 43--><p class="indent" >   The Adaptive Multi-scale Simulation Infrastructure (amsi) is a set of libraries and tools
+<!--l. 39--><p class="indent" >   The Adaptive Multi-scale Simulation Infrastructure (amsi) is a set of libraries and tools
 developed at the Scientific Computation Research Center (SCOREC) at Rensselaer
 Polytechnic Institute. Amsi is designed to support the implementation and execution of
 dynamic numerically multi-scale simulations on massively-parallel HPC machines.
@@ -92,7 +93,7 @@ of individual scales in a multi-scale simulation, for defining and managing the
 scale-coupling communication required by such simulations, and for planning and
 enacting scale-sensitive load balancing operations on individual scales in a multi-scale
 system.
-<!--l. 45--><p class="indent" >   The interfaces provided by the amsi libraries are intended to facilitate the coupling of
+<!--l. 41--><p class="indent" >   The interfaces provided by the amsi libraries are intended to facilitate the coupling of
 functional (possibly legacy) simulation codes already in usage for single-scale problems, in
 order to avoid development overhead associated with casting a simulation into a set of
 framework-specific components. The currently implemented interfaces are physics-agnostic,
@@ -101,34 +102,34 @@ to the mathematical derivation of the multi-scale interaction. Incorporation of
 meta-information and services targeted toward specific multi-scale physical couplings
 represents a desirable extension of the amsi libraries, constituting a rich area of future
 work.
-<!--l. 47--><p class="indent" >   Amsi operates by maintaining a set of minimal simulation metadata in order to model
+<!--l. 43--><p class="indent" >   Amsi operates by maintaining a set of minimal simulation metadata in order to model
 various quantities of interest during simulation execution. A decentralized approach toward
 control is taken; dynamic control decisions are made and implemented at runtime during
 collective operations. In order to avoid the introduction of unnecessary parallel
 barriers into the code, amsi control decisions are only made during operations
 which are already collective over the set of processes effected by a given control
 decision.
-<!--l. 49--><p class="indent" >
+<!--l. 45--><p class="indent" >
 <a 
  id="x1-5r2"></a>
-<!--l. 50--><p class="indent" >   Frameworks and runtime systems have been developed which are intended for the
+<!--l. 46--><p class="indent" >   Frameworks and runtime systems have been developed which are intended for the
 development of specific multi-scale problems <span class="cite">[<span 
 class="cmbx-10">?</span>]</span> <span class="cite">[]</span> <span class="cite">[]</span> and these frameworks have in some
 cases been expanded to facilitate the implementation of additional multi-scale problems
 <span class="cite">[<span 
 class="cmbx-10">?</span>]</span>.
-<!--l. 52--><p class="indent" >   These systems suffer from the requirement that an application developer must cast the
+<!--l. 48--><p class="indent" >   These systems suffer from the requirement that an application developer must cast the
 problem of interest into a set of predefined components (interfaces, tasks, etc.) in order to
 take full advantage of such frameworks. Leveraging a component-based design is valuable
 from a software engineering perspective, but also introduces new complexities involved in
 defining the set of components and how they interoperate in the framework shifting some
 complexity up a level of abstraction. The core features of amsi used for multi-scale
-simulation management and communication are provided with no requirements of
                                                                        
 
                                                                        
+simulation management and communication are provided with no requirements of
 adherence to a specific component definition.
-<!--l. 54--><p class="indent" >   simulation flow control is determined solely by the runtime system. A framework may
+<!--l. 50--><p class="indent" >   simulation flow control is determined solely by the runtime system. A framework may
 also limit specific features of the numerical implementation to those provided by the
 framework. Domain discretization models and associated adaptive processes &#8211; structured
 and unstructured meshing and associated refinement algorithms, particle-in-cell
@@ -146,54 +147,54 @@ class="cmbx-10">?</span>]</span>. Usage of the supplied numerical components
 is not required to make use of the multi-scale meta-modeling, communication,
 dynamic instantiation, and scale-sensitive load balancing facilities supplied by
 amsi.
-<!--l. 56--><p class="indent" >   While implementation of desired numerical operations into a framework is of course
+<!--l. 52--><p class="indent" >   While implementation of desired numerical operations into a framework is of course
 possible, it may prove an additional undesirable overhead for an application programmer
 interested only in utilizing the multi-scale framework to implement simulation, rather than
 implementing the various numerical operations often perfected in widely available packages
 and libraries <span class="cite">[]</span> <span class="cite">[]</span> <span class="cite">[]</span>.
-<!--l. 59--><p class="indent" >   A configuration file is supplied during command invocation containing the initial
+<!--l. 55--><p class="indent" >   A configuration file is supplied during command invocation containing the initial
 configuration of the process sets and their assignment to individual scales, as well as
 declaring the coupling between scales in the simulation. The deceleration of a scale and the
 initialization of the process set associated with the scale are considered a single atomic
 operation in the current implementation.
-<!--l. 61--><p class="indent" >   Process sets are mathematical sets of MPI ranks implemented so as to take advantage
+<!--l. 57--><p class="indent" >   Process sets are mathematical sets of MPI ranks implemented so as to take advantage
 of any mathematical conveniences to minimize explicit storage whenever possible. Process
 sets are required to be non-overlapping in order for amsi control mechanisms to operate
 correctly. Ongoing developments are targeted at removing this requirement to allow a richer
 set of dynamic control options and increase overall utilization in the case of coupled scales
 blocking on one another.
-<!--l. 63--><p class="indent" >   Deceleration of a coupling relation between two scales is required if any communication
+<!--l. 59--><p class="indent" >   Deceleration of a coupling relation between two scales is required if any communication
 between the scales is to occur during the simulation (through the amsi libraries), as the
 coupling deceleration during simulation initialization is used to instantiate data structures
 specific to scale-coupling operations. This limits memory overhead by not allocating space
 for unneeded coupling operations.
-<!--l. 65--><p class="indent" >   Scales are declared to be related if some quantities of interest (such as physical tensor
+<!--l. 61--><p class="indent" >   Scales are declared to be related if some quantities of interest (such as physical tensor
 field values) are transmitted between them for scale-coupling. This coupling relationship is
 assumed to be asymmetric, thus if scale A is related to scale B, scale B is not implicitly
 related to scale A, though this may be separately declared. For brevity this may be written
 as A&#x00A0;B for A is coupled to B.
-<!--l. 67--><p class="indent" >   While the primary scale (the scale associated with producing the solution for the
+<!--l. 63--><p class="indent" >   While the primary scale (the scale associated with producing the solution for the
 overall simulation) is often thought of as controlling the tertiary scales in terms of dynamic
 instantiation, this is not assumed in the amsi implementation. Any scale is capable of
 informing the process set associated with a coupled scale of the addition or deletion of
 individual scale-tasks. At present it is dependent on the developer to implement
 the capability of a scale to accept additional scale-tasks, though algorithms and
 hooks for developer-designed distribution algorithms are supplied to ease the
-implementation.
                                                                        
 
                                                                        
-<!--l. 70--><p class="indent" >   Scale coupling communication is guided by data distributions and communication
+implementation.
+<!--l. 66--><p class="indent" >   Scale coupling communication is guided by data distributions and communication
 patterns. A data distribution is a representation of individual units of scale-coupling
 data distributed across a single scale-task. The format of the coupling data is
 arbitrary (so long as it can be serialized and provided for use by MPI communication
 primitives). A data distribution represents the smallest unit of data important to the
 scale-coupling communication, which is necessarily distinct for various multi-scale use
 cases.
-<!--l. 72--><p class="indent" >   All communication and planning operations in the amsi libraries use an implicit local
+<!--l. 68--><p class="indent" >   All communication and planning operations in the amsi libraries use an implicit local
 numbering for data distribution terms, essentially denoted by the term&#8217;s index in a
 serialized communication buffer.
-<!--l. 75--><p class="indent" >   If a local installation of the Zoltan <span class="cite">[<span 
+<!--l. 71--><p class="indent" >   If a local installation of the Zoltan <span class="cite">[<span 
 class="cmbx-10">?</span>]</span> <span class="cite">[<span 
 class="cmbx-10">?</span>]</span> load balancing library is available, the load
 balancing planning algorithms of Zoltan can be used underlying the scale-sensitive load
@@ -203,7 +204,7 @@ any set of provided load-balancing algorithms will prove insufficient for some
 use case. Thus amsi provides users with the ability to create and register their
 own load-balancing algorithms specific to the requirements of a given numerical
 implementation.
-<!--l. 77--><p class="indent" >   Due to the necessity of retaining inter-scale linkages through the load-balancing
+<!--l. 73--><p class="indent" >   Due to the necessity of retaining inter-scale linkages through the load-balancing
 processes, the actual data migration undertaken to implement a specific load balancing plan
 is typically conducted internally by the amsi system which is provided with buffers of data
 being load-balanced by each process on the appropriate scale. However, in order to
@@ -214,10 +215,10 @@ user-designed load-balance planning algorithms allows amsi to work with entirely
 load-balancing libraries and algorithms, allowing scale-sensitive load-balancing to be used
 even when a specific multi-scale use case falls outside the bounds of capabilities built into
 the system.
-<!--l. 79--><p class="indent" >
+<!--l. 75--><p class="indent" >
 <a 
  id="x1-6r3"></a>
-<!--l. 81--><p class="indent" >   The Biotissue code is a multi-scale simulation of soft organic tissues, consisting of an
+<!--l. 77--><p class="indent" >   The Biotissue code is a multi-scale simulation of soft organic tissues, consisting of an
 engineering-scale simulation using the finite element method, and a micro-scale
 quasistatics force-balance simulation. The Cauchy Momentum Balance Equation
 for a body in static equilibrium is used as the governing equation for the global
@@ -226,7 +227,7 @@ matrices are instead supplied by the micro-scale force-balance simulations, whic
 occur at each numerical integration point in the engineering-scale mesh, see figure
 <a 
 href="#x1-7r1">2.1<!--tex4ht:ref: biotissue_hierarchy --></a>.
-<!--l. 83--><p class="indent" >   <hr class="figure"><div class="figure" 
+<!--l. 79--><p class="indent" >   <hr class="figure"><div class="figure" 
 >
                                                                        
 
@@ -236,8 +237,8 @@ href="#x1-7r1">2.1<!--tex4ht:ref: biotissue_hierarchy --></a>.
                                                                        
 <div class="center" 
 >
-<!--l. 84--><p class="noindent" >
-<!--l. 85--><p class="noindent" ><img 
+<!--l. 80--><p class="noindent" >
+<!--l. 81--><p class="noindent" ><img 
 src="paper0x.png" alt="PIC" class="graphics" width="206.49043pt" height="144.54pt" ><!--tex4ht:graphics  
 name="paper0x.png" src="biotissue_visual_hierarchy.eps"  
 --></div>
@@ -253,8 +254,8 @@ class="cmti-9">biotissue multi-scale problem</span>
                                                                        
 
                                                                        
-<!--l. 90--><p class="indent" >   </div><hr class="endfigure">
-<!--l. 92--><p class="indent" >   The incremental displacements (the displacement deltas generated by the previous
+<!--l. 86--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 88--><p class="indent" >   The incremental displacements (the displacement deltas generated by the previous
 Newton iteration) on each engineering-scale finite element node are used to distort the a
 dimensionless representative volume element (RVE) resulting in each micro-scale node
 being displaced. Each RVE is a dimensionless unit cube containing a connected collagen
@@ -265,7 +266,7 @@ located on the boundary of the RVE be zero. The micro-scale global Jacobian is
 formulated along with the force vector, wherein the boundary condition is enforced
 by setting specific rows of the force vector associated with boundary nodes to
 zero.
-<!--l. 94--><p class="indent" >   Another Newton-Raphson iterative process occurs at micro-scale to converge to the set
+<!--l. 90--><p class="indent" >   Another Newton-Raphson iterative process occurs at micro-scale to converge to the set
 of displacements resulting in force equilibrium for all the fibers within the fiber network
 constituting the RVE. After a micro-scale simulation converges to a solution, the Jacobian
 and force vector are then evaluated again at the solution position, the force exerted along
@@ -280,12 +281,12 @@ dimensionless force terms produced by each fiber network can be found in <span c
 class="cmbx-10">?</span>]</span>
 <span class="cite">[<span 
 class="cmbx-10">?</span>]</span>.
-<!--l. 98--><p class="indent" >   Thus the simulation as a whole is essentially doubly nonlinear, as during each
+<!--l. 94--><p class="indent" >   Thus the simulation as a whole is essentially doubly nonlinear, as during each
 engineering-scale Newton iteration every micro-scale RVE must undergo a full
 Newton-Raphson convergence process.
 <a 
  id="x1-8r4"></a>
-<!--l. 102--><p class="indent" >   Scale-sensitive load balancing is conducted on the micro-scale RVE distribution at
+<!--l. 98--><p class="indent" >   Scale-sensitive load balancing is conducted on the micro-scale RVE distribution at
 locations in the code where communication bottlenecks are already present. This prevents
 the introduction of new bottlenecks which could result in reduced performance. Macro-scale
 Newton-iterations are the most frequently occuring multi-scale communication bottleneck
@@ -293,7 +294,7 @@ at which we chose to conduct the load balancing operation, and macro-scale incre
 load steps the least-frequent. These represent the two extreme cases considered in our
 analysis on the efficacy of the scale-sensitive load-balancing scheme adopted for the
 biotissue simulation.
-<!--l. 104--><p class="indent" >   Each micro-scale RVE simulation involves the assembly and solve of a linear system of
+<!--l. 100--><p class="indent" >   Each micro-scale RVE simulation involves the assembly and solve of a linear system of
 equations on the order of 10,000 unknowns for each micro-scale Newton iteration. While the
 total solve time is dependent on the number of nonlinear iterations and the hardware
 executing the code, this system is sufficiently small that parallelization of the RVE code
@@ -304,7 +305,7 @@ simulation, they may be freely distributed across the processes assigned to the 
 computation. The only restriction to their (re)distribution for load balancing purposes is
 that the relation to a specific macro-scale numerical integration point must be
 maintained.
-<!--l. 106--><p class="indent" >   As each RVE is a nonlinear simulation their is no a-prior estimate of the computational
+<!--l. 102--><p class="indent" >   As each RVE is a nonlinear simulation their is no a-prior estimate of the computational
 load each RVE represents, so the optimal initial distribution is simply treating
 the weight of each RVE as 1. Thus each micro-scale process is assigned either
 <img 
@@ -328,16 +329,16 @@ that region, which may result in the RVE requiring more Newton iterations to
 converge to an adequate solution, since the boundary conditions may lie farther
 from the initial state of the RVE in the regime of convergence for the nonlinear
 problem.
-<!--l. 108--><p class="indent" >
+<!--l. 104--><p class="indent" >
 <a 
  id="x1-9r3"></a>
-<!--l. 110--><p class="indent" >
+<!--l. 106--><p class="indent" >
 <a 
  id="x1-10r4"></a>
-<!--l. 112--><p class="indent" >   Work on scale-balancing is ongoing for the Biotissue test problem. Using this work as a
+<!--l. 108--><p class="indent" >   Work on scale-balancing is ongoing for the Biotissue test problem. Using this work as a
 basis, a set of algorithms to provide support for more general scale-balancing operations
 will be developed and packaged into amsi.
-<!--l. 114--><p class="indent" >   Embedded fiber-matrix RVEs separately parallelized and incorporated into multi-scale
+<!--l. 110--><p class="indent" >   Embedded fiber-matrix RVEs separately parallelized and incorporated into multi-scale
 model, used at most error-sensitive locations <span class="cite">[<span 
 class="cmbx-10">?</span>]</span> <span class="cite">[<span 
 class="cmbx-10">?</span>]</span> <span class="cite">[<span 
