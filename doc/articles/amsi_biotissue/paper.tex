@@ -5,6 +5,7 @@
 \bibliographystyle{siam}
 
 \usepackage{graphicx}
+\usepackage{listings}
 \usepackage{mathtools}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
@@ -53,31 +54,41 @@ Implementing required numerical operations inside an existing framework is of co
 \section{Methods}
 
 \label{amsi_scales}
-A configuration file is supplied during command invocation containing the initial configuration of the process sets and their assignment to individual scales, as well as declaring the coupling between scales in the simulation. The deceleration of a scale and the initialization of the process set associated with the scale are considered a single atomic operation in the current implementation.
+A configuration file is supplied during command invocation containing the initial configuration of the process sets and their assignment to individual scales, as well as declaring the coupling between scales in the simulation. The declaration of a scale and the initialization of the process set associated with the scale are considered a single atomic operation in the current implementation. A simple configuration file can be seen in listing \ref{amsi config file} which declares the existence of two scales, macro and micro\_fo, and assigns them 64 and 8128 processes respectively (for a total of $2^13$ processes). The file also specifies the scale-coupling relations, with macro coupled to micro and micro coupled to macro. Note that the order of specification is not relevant to the operation of amsi.
+%
+\begin{lstlisting}
+  macro 64
+  micro_fo 8128
+  #
+  macro micro_fo
+  micro_fo macro_fo
+\end{lstlisting}
+\label{amsi config file}
+%
 
 Process sets are mathematical sets of MPI ranks implemented so as to take advantage of any mathematical conveniences to minimize explicit storage whenever possible. Process sets are required to be non-overlapping in order for amsi control mechanisms to operate correctly. Ongoing developments are targeted at removing this requirement to allow a richer set of dynamic control options and increase overall utilization in the case of coupled scales blocking on one another. 
 
-Deceleration of a coupling relation between two scales is required if any communication between the scales is to occur during the simulation (through the amsi libraries), as the coupling deceleration during simulation initialization is used to instantiate data structures specific to scale-coupling operations. This limits memory overhead by not allocating space for unneeded coupling operations.
+Declaration of a coupling relation between two scales is required if any communication between the scales is to occur during the simulation (through the amsi libraries), as the coupling declaration during simulation initialization is used to instantiate data structures specific to scale-coupling operations. This limits memory overhead by not allocating space for unneeded coupling operations.
 
-Scales are declared to be related if some quantities of interest (such as physical tensor field values) are transmitted between them for scale-coupling. This coupling relationship is assumed to be asymmetric, thus if scale A is related to scale B, scale B is not implicitly related to scale A, though this may be separately declared. For brevity this may be written as A~B for A is coupled to B.
+Scales are declared to be related if some quantities of interest (such as physical tensor field values) are transmitted between them for scale-coupling. This coupling relationship is assumed to be asymmetric, thus if scale A is related to scale B, scale B is not implicitly related to scale A, though this may be separately declared.
 
 While the primary scale (the scale associated with producing the solution for the overall simulation) is often thought of as controlling the tertiary scales in terms of dynamic instantiation, this is not assumed in the amsi implementation. Any scale is capable of informing the process set associated with a coupled scale of the addition or deletion of individual scale-tasks. At present it is dependent on the developer to implement the capability of a scale to accept additional scale-tasks, though algorithms and hooks for developer-designed distribution algorithms are supplied to ease the implementation.
 
 \label{amsi_communication}
 Scale-coupling communication is guided by data distributions and communication patterns. A data distribution is a representation of individual units of scale-coupling data distributed across a single scale-task. The format of the coupling data is arbitrary (so long as it can be serialized and provided for use by MPI communication primitives). A data distribution represents the smallest unit of data important to the scale-coupling communication, which is necessarily distinct for various multi-scale use cases. 
 
-All communication and planning operations in the amsi libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer. At present an application developer must implement up-/down-scaling operations required for their particular multi-scale use case, hooks will be provided in a future release to automate application of such operations during scale-coupling.
+All communication and planning operations in the amsi libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer. At present an application developer must implement up-/down-scaling operations required for their particular multi-scale use case, hooks will be provided in a future release to automate application of such operations during scale-coupling. The current implementation includes on blocking versions of the scale-coupling communication operations. Asynchronous versions have been designed but are not currently being implemented due to lack of immediate need for the primary test amsi use case.
 
 \subsection{Soft Tissue Simulation}\label{biotissue}
 The Biotissue code is a multi-scale simulation of soft organic tissues, consisting of an engineering-scale simulation using the finite element method, and a micro-scale quasistatics force-balance simulation. The Cauchy Momentum Balance Equation for a body in static equilibrium is used as the governing equation for the macro-scale simulation. 
 %
 \begin{align}
-\nabla \cdot \pmb{\sigma} =& \; 0 \text{ in } \Omega \label{momentum_balance} \\
+\nabla \cdot \pmb{\sigma} =& \; 0 \text{ in } \Omega \label{momentum_balance} \nonumber \\
 \pmb{\sigma} \cdot \pmb{n} =& \; \pmb{t} \text{ on } \partial \Omega \nonumber
 \end{align}
 %
 Specific quantities needed to compute the elemental tangent stiffness matrices and force vectors are instead supplied by the micro-scale force-balance simulations, which occur at each numerical integration point in the engineering-scale mesh \ref{biotissue_hierarchy}. 
-
+%
 \begin{figure}
   \begin{center}
     \includegraphics[height=2in]{biotissue_visual_hierarchy.eps}
@@ -85,24 +96,28 @@ Specific quantities needed to compute the elemental tangent stiffness matrices a
   \caption{\small biotissue multi-scale problem}
   \label{biotissue_hierarchy}
 \end{figure}
+%
 
 The incremental displacements (deltas generated by the previous Newton-Raphson iteration) on each engineering-scale finite element node are used to distort the a dimensionless representative volume element (RVE) through a dimensionalized abstraction of the RVE embedded in the engineering domain and an associated displacement mapping term $\frac{d\mathbf{RVE}}{d\mathbf{FE}}$, the first order relation between the incremental displacement of an RVE with respect to the displacement of the associated mesh element. This results in each micro-scale node being displaced. Each RVE is a dimensionless unit cube containing a connected collagen fiber network, for the present results the fibers are implemented as truss elements and their distribution is generated using Delauney triangulation. The micro-scale boundary condition necessitates that the force exerted by each fiber network node located on the boundary of the RVE be zero. The micro-scale global Jacobian is formulated along with the force vector, wherein the boundary condition is enforced by setting specific rows of the force vector associated with boundary nodes to zero. 
 
 Another Newton-Raphson iterative process occurs at micro-scale to converge to the set of displacements resulting in force equilibrium for all the fibers within the fiber network constituting the RVE. After a micro-scale simulation converges to a solution, the Jacobian and force vector are then evaluated again at the solution position, the force exerted along the boundary of the RVE is summed for each of the principal and shear components of a stress tensor, which is then dimensionalized and sent back to the engineering-scale for use in the elemental tangent stiffness matrix formulation. More detail into the derivation of this multi-scale system can be found in \cite{stylianopoulos2008thesis} \cite{agoram2001coupled} \cite{stylianopoulos2007multiscale} . Discussion of the dimensionalization of the dimensionless force terms produced by each fiber network can be found in \cite{stylianopoulos2007volume} \cite{chandran2007deterministic}.
 
-Thus the simulation as a whole has two Newton-Raphson convergence operations occurring. During each macro-scale Newton iteration every micro-scale RVE must undergo a full Newton-Raphson convergence process.
+The simulation two nested Newton-Raphson operations occurring; during each macro-scale Newton iteration every micro-scale RVE must undergo a full Newton-Raphson convergence process.
 
 \section{Results and Discussion}\label{results}
 The biotissue simulation was run on the AMOS BG/Q machine housed at the CCI facilities. Both strong and weak scaling studies were conducted up to an eighth of the total machine core count, or 16384 cores. The ratio of macro-scale to micro-scale assigned processes was held near 1:128, though the total core count was kept as an integer power of 2 in order for the SLURM job scheduler to submit the jobs to the compute nodes in a timely manner. The precise calculation used to determine macro and micro ratio is given by 
 %
-num\_macro = N 
-num\_cores = N*128
-num\_micro = num\_cores - N
+\begin{lstlisting}[Language=C]
+  num_cores = 128 * num_macro;
+  num_micro = num_core - num_macro;
+\end{lstliting}
+\label{macro micro ratio}
 %
 thus as the number of cores assigned to the macro-scale computation increases, the ratio approaches 1:128. 
 
 Separate timings were taken for various sections of the simulation code, isolating the micro-scale computation, macro-scale linear system assembly and calculation of elemental linear systems, and macro-scale linear system solution. In addition, the time for spent in the amsi subroutines for communication was also measured. Thus the behavior of each section of the code is independently evaluated in our scaling study, as well as the overall execution time.
 
+%
 \begin{figure}
   \begin{center}
     \includegraphics[height=2in]{ws_phil.eps}
@@ -110,7 +125,10 @@ Separate timings were taken for various sections of the simulation code, isolati
   \caption{\small weak scaling}
   \label{weak scaling}
 \end{figure}
+%
+Keeping the work per process approximately constant (1k elements per macro-scale process, with the macro:micro ratio as specified in listing \ref{macro micro ratio}) it can be seen that the time to compute every RVE in the system stays relatively consistent, while the time to solve the macro-scale linear system increases, causing a modest increase in the overall time per macro-scale Newton iteration.
 
+%
 \begin{figure}
   \begin{center}
     \includegraphics[height=2in]{ss_phil.eps}
@@ -118,6 +136,7 @@ Separate timings were taken for various sections of the simulation code, isolati
   \caption{\small strong scaling}
   \label{strong scaling}
 \end{figure}
+%
 As the problem size is held constant with respect to the number of individual elements in the engineering scale domain discretization the simulation displays near optimal convergence to the macro-scale solve time alone, which is also reducing in time cost. The limiting factor in the speedup of the overall simulation is the potential speedup of the macro-scale simulation rather than the micro-scale simulation with fiber-only RVEs. As indicated in the weak scaling results this is related primarily to the macro-scale linear solve communication time increasing. At present an incomplete LU factorization is used to solve the linear system formulated at macro-scale each Newton iteraion (using PETSc configured with the superLU\_dist solver \cite{li05superlu} \cite{lishao10superluilu} \cite{lidemmel03superludist} ). Using instead an iterative solution method to reach a desired level of accuracy may result in stronger scaling at macro-scale, but as yet this approach has been unneeded due to the preponderance of time spent computing micro-scale results in use cases.
 
 Many problems of interest will possess finite elements numbered in the tens to hundreds of millions of degrees of freedom, such that a suitable partitioning of the mesh to cores on the machine in terms of elements per partition (and directly the macro-scale time-to-solution) may require a substantial fraction of the total cores on the machine for macro-scale to execute in reasonable time. Amsi provides services for dynamically adding and removing individual scale-tasks to a specific scale, which can be utilized to limit RVE usage to only those locations in the multi-scale mesh most influential on the overall evolution of the simulation.
