@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=latex 2015.7.15)  10 JAN 2016 14:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=latex 2015.7.15)  10 JAN 2016 17:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -186,20 +186,45 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip43
 )))
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count100
+\lst@gtempboxa=\box27
+\lst@token=\toks18
+\lst@length=\count101
+\lst@currlwidth=\dimen109
+\lst@column=\count102
+\lst@pos=\count103
+\lst@lostspace=\dimen110
+\lst@width=\dimen111
+\lst@newlines=\count104
+\lst@lineno=\count105
+\lst@maxwidth=\dimen112
+
+(/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2014/09/06 1.5e (Carsten Heinz)
+\c@lstnumber=\count106
+\lst@skipnumbers=\count107
+\lst@framebox=\box28
+)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2014/09/06 1.5e listings configuration
+))
+Package: listings 2014/09/06 1.5e (Carsten Heinz)
+
 (/usr/share/texlive/texmf-dist/tex/latex/mathtools/mathtools.sty
 Package: mathtools 2014/07/16 v1.15 mathematical typesetting tools
 
 (/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count100
-\calc@Bcount=\count101
-\calc@Adimen=\dimen109
-\calc@Bdimen=\dimen110
+\calc@Acount=\count108
+\calc@Bcount=\count109
+\calc@Adimen=\dimen113
+\calc@Bdimen=\dimen114
 \calc@Askip=\skip44
 \calc@Bskip=\skip45
 LaTeX Info: Redefining \setlength on input line 75.
 LaTeX Info: Redefining \addtolength on input line 76.
-\calc@Ccount=\count102
+\calc@Ccount=\count110
 \calc@Cskip=\skip46
 )
 (/usr/share/texlive/texmf-dist/tex/latex/mathtools/mhsetup.sty
@@ -215,84 +240,84 @@ Package: amstext 2000/06/29 v2.01
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0
-\@emptytoks=\toks18
-\ex@=\dimen111
+\@emptytoks=\toks19
+\ex@=\dimen115
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d
-\pmbraise@=\dimen112
+\pmbraise@=\dimen116
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 1999/12/14 v2.01 operator names
 )
-\inf@bad=\count103
+\inf@bad=\count111
 LaTeX Info: Redefining \frac on input line 210.
-\uproot@=\count104
-\leftroot@=\count105
+\uproot@=\count112
+\leftroot@=\count113
 LaTeX Info: Redefining \overline on input line 306.
-\classnum@=\count106
-\DOTSCASE@=\count107
+\classnum@=\count114
+\DOTSCASE@=\count115
 LaTeX Info: Redefining \ldots on input line 378.
 LaTeX Info: Redefining \dots on input line 381.
 LaTeX Info: Redefining \cdots on input line 466.
-\Mathstrutbox@=\box27
-\strutbox@=\box28
-\big@size=\dimen113
+\Mathstrutbox@=\box29
+\strutbox@=\box30
+\big@size=\dimen117
 LaTeX Font Info:    Redeclaring font encoding OML on input line 566.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
-\macc@depth=\count108
-\c@MaxMatrixCols=\count109
+\macc@depth=\count116
+\c@MaxMatrixCols=\count117
 \dotsspace@=\muskip11
-\c@parentequation=\count110
-\dspbrk@lvl=\count111
-\tag@help=\toks19
-\row@=\count112
-\column@=\count113
-\maxfields@=\count114
-\andhelp@=\toks20
-\eqnshift@=\dimen114
-\alignsep@=\dimen115
-\tagshift@=\dimen116
-\tagwidth@=\dimen117
-\totwidth@=\dimen118
-\lineht@=\dimen119
-\@envbody=\toks21
+\c@parentequation=\count118
+\dspbrk@lvl=\count119
+\tag@help=\toks20
+\row@=\count120
+\column@=\count121
+\maxfields@=\count122
+\andhelp@=\toks21
+\eqnshift@=\dimen118
+\alignsep@=\dimen119
+\tagshift@=\dimen120
+\tagwidth@=\dimen121
+\totwidth@=\dimen122
+\lineht@=\dimen123
+\@envbody=\toks22
 \multlinegap=\skip48
 \multlinetaggap=\skip49
-\mathdisplay@stack=\toks22
+\mathdisplay@stack=\toks23
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
 LaTeX Info: Thecontrolsequence`\['isalreadyrobust on input line 129.
 LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
-\g_MT_multlinerow_int=\count115
-\l_MT_multwidth_dim=\dimen120
+\g_MT_multlinerow_int=\count123
+\l_MT_multwidth_dim=\dimen124
 \origjot=\skip50
-\l_MT_shortvdotswithinadjustabove_dim=\dimen121
-\l_MT_shortvdotswithinadjustbelow_dim=\dimen122
-\l_MT_above_intertext_sep=\dimen123
-\l_MT_below_intertext_sep=\dimen124
-\l_MT_above_shortintertext_sep=\dimen125
-\l_MT_below_shortintertext_sep=\dimen126
+\l_MT_shortvdotswithinadjustabove_dim=\dimen125
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen126
+\l_MT_above_intertext_sep=\dimen127
+\l_MT_below_intertext_sep=\dimen128
+\l_MT_above_shortintertext_sep=\dimen129
+\l_MT_below_shortintertext_sep=\dimen130
 ) (./paper.aux)
 \openout1 = `paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-\AtBeginShipoutBox=\box29
-Package hyperref Info: Link coloring ON on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+\AtBeginShipoutBox=\box31
+Package hyperref Info: Link coloring ON on input line 18.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -300,61 +325,80 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count116
+\c@section@level=\count124
 )
-LaTeX Info: Redefining \ref on input line 12.
-LaTeX Info: Redefining \pageref on input line 12.
-LaTeX Info: Redefining \nameref on input line 12.
+LaTeX Info: Redefining \ref on input line 18.
+LaTeX Info: Redefining \pageref on input line 18.
+LaTeX Info: Redefining \nameref on input line 18.
 
 (./paper.out) (./paper.out)
 \@outlinefile=\write3
 \openout3 = `paper.out'.
 
+\c@lstlisting=\count125
  [1
 
 ]
-Overfull \hbox (2.0533pt too wide) in paragraph at lines 37--38
+Overfull \hbox (2.0533pt too wide) in paragraph at lines 43--44
  \OT1/cmr/bx/n/10 2.1. Adap-tive Multi-scale Sim-u-la-tion In-fras-truc-ture.[]
  \OT1/cmr/m/n/10 The Adap-tive Multi-|
  []
 
 
-LaTeX Warning: Citation `core' on page 2 undefined on input line 49.
+LaTeX Warning: Citation `core' on page 2 undefined on input line 55.
 
-[2] [3]
+[2]
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 64.
+ [3]
 File: biotissue_visual_hierarchy.eps Graphic file (type eps)
  <biotissue_visual_hierarchy.eps>
-Overfull \hbox (1.51765pt too wide) in paragraph at lines 87--88
+Overfull \hbox (1.51765pt too wide) in paragraph at lines 106--107
 []\OT1/cmr/m/n/10 The in-cre-men-tal dis-place-ments (deltas gen-er-ated by the
  pre-vi-ous Newton-Raphson|
  []
 
-[4]
+[4] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2014/09/06 1.5e listings language file
+)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2014/09/06 1.5e listings language file
+)
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 117.
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 117.
+ [5]
 File: ws_phil.eps Graphic file (type eps)
  <ws_phil.eps>
 File: ss_phil.eps Graphic file (type eps)
- <ss_phil.eps> [5] (./paper.bbl [6] [7])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 138.
+
+<ss_phil.eps> [6] (./paper.bbl [7])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 165.
  [8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 138.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 165.
  (./paper.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 138.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 138.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 165.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 165.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 138.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 165.
  ) 
 Here is how much of TeX's memory you used:
- 6057 strings out of 493106
- 88934 string characters out of 6137098
- 183966 words of memory out of 5000000
- 9479 multiletter control sequences out of 15000+600000
- 9081 words of font info for 33 fonts, out of 8000000 for 9000
+ 7403 strings out of 493106
+ 108467 string characters out of 6137098
+ 227689 words of memory out of 5000000
+ 10799 multiletter control sequences out of 15000+600000
+ 10526 words of font info for 38 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,11n,27p,1162b,453s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,11n,51p,1268b,1293s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on paper.dvi (8 pages, 50560 bytes).
+Output written on paper.dvi (8 pages, 55440 bytes).

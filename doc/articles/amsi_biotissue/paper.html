@@ -7,93 +7,93 @@
 <meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
 <!-- html,htex4ht --> 
 <meta name="src" content="paper.tex"> 
-<meta name="date" content="2016-01-04 23:29:00"> 
+<meta name="date" content="2016-01-10 17:18:00"> 
 <link rel="stylesheet" type="text/css" href="paper.css"> 
 </head><body 
 >
 <div class="center" 
 >
-<!--l. 13--><p class="noindent" >
-<!--l. 13--><p class="noindent" ><span 
+<!--l. 19--><p class="noindent" >
+<!--l. 19--><p class="noindent" ><span 
 class="cmbx-10">THE ADAPTIVE MULTI-SCALE SIMULATION INFRASTRUCTURE</span>
 <span 
-class="cmbx-10">- DESIGN AND IMPLEMENTATION OF A SOFT TISSUE</span>
-<span 
-class="cmbx-10">SIMULATION</span>
-<!--l. 13--><p class="noindent" ><span 
-class="cmr-8">W.R.  TOBIN,  D.  FOVARGUE,  V.W.L.  CHAN,  M.S.  SHEPHARD</span></div>
-<!--l. 15--><p class="noindent" ><span 
+class="cmbx-10">- DESIGN AND APPLICATION</span>
+<!--l. 19--><p class="noindent" ><span 
+class="cmr-8">W.R.  TOBIN,  V.W.L.  CHAN,  M.S.  SHEPHARD</span></div>
+<!--l. 21--><p class="noindent" ><span 
 class="cmbx-8">Abstract.</span>
 <a 
  id="x1-2r1"></a>
-<!--l. 19--><p class="noindent" >This article predominantly discusses multi-scale simulations - wherein two or more separate
+<!--l. 25--><p class="noindent" >This article predominantly discusses multi-scale simulations - wherein two or more separate
 physical scales are involved in the simulation - the discussion is equally applicable to
 multi-model simulations - wherein two or more numerical or physical models operating on
 the same domain (possibly with differing discretizations) are involved in the simulation - as
 well as to simulations which are both.
-<!--l. 21--><p class="indent" >
+<!--l. 27--><p class="indent" >
 <a 
  id="x1-3r2"></a>
-<!--l. 23--><p class="indent" >   Most physical models and implementations using numerical methods operate at a single
+<!--l. 29--><p class="indent" >   Most physical models and implementations using numerical methods operate at a single
 scale characteristic to the problem. The scale at which the preponderance of attributes
 governing the underlying physics being modelled are measured and the resolution of
 the numerical solution is considered acceptable for the desired accuracy of the
 simulation.
-<!--l. 26--><p class="indent" >   Introduction of influence from scales orders of magnitude removed from the primary
-scale can take place in several different ways. This influence can be incorporated during the
-mathematical development of the physical model itself. In this case the multi-scale features
-are incorporated into the numerical implementation automatically, as a result of their
-presence in the mathematical model.
-<!--l. 28--><p class="indent" >   Multi-scale influences can also be incorporated in a more strictly numerical
-sense, combining physical models operating at different scales referencing and
-effecting shared physical fields and values <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>. Numerically multi-scale simulations
-associate many numerical implementations of single-scale physical models and
-cause them to interact through passing key physical terms between scales. This
-scale-coupling will involve up-/down-scaling operations to account for differences in
-dimension, as well as possibly dimensionalizing terms computed in a non-dimensional
-domain.
-<!--l. 30--><p class="indent" >   In order for a numerically multi-scale approach to be effective the domain at the scale
-of interest (or engineering scale) must be sufficiently large that conducting the
-entire simulation with terms and granularity orders of magnitude smaller would
+<!--l. 32--><p class="indent" >   Introducing multi-scale influences on the scale of interest in a simulation can occur in
+several places during the development of a simulation. Most fundamentally, the influence
+can be incorporated during the mathematical development of the physical model
+itself. In this case the multi-scale features are incorporated into the numerical
+implementation automatically, as a result of their presence in the mathematical
+model.
+<!--l. 34--><p class="indent" >   Multi-scale influences can also be incorporated in a numerical sense, combining
+established physical models operating at different scales referencing and effecting shared
+physical fields and values <span class="cite">[<a 
+href="#Xshenoy97">14</a>]</span> <span class="cite">[<a 
+href="#Xweinan2003heterogenous">19</a>]</span>. Numerically multi-scale simulations associate many
+numerical implementations of single-scale physical models and cause them to
+interact by passing key physical terms between scales. This operation, referred to as
+scale-coupling, involves up-/down-scaling operations to account for differences in scale
+dimensionality (and possibly dimensionalizing terms computed in a non-dimensional
+domain).
+<!--l. 36--><p class="indent" >   In order for a numerically multi-scale approach to be effective the domain associated
+with the scale of interest (or engineering scale) must be sufficiently large that conducting
+the entire simulation with terms and granularity orders of magnitude removed would
 make the simulation computationally intractable. Thus some computationally
-reasonable subset of the engineering scale is assigned tertiary scales to simulate.
+reasonable subset of the engineering scale is assigned tertiary scale(s) to simulate.
 The precise choice of location of the tertiary simulations is largely dependent
 on the specific numerical algorithms used to implement the engineering scale
 simulation.
-<!--l. 32--><p class="indent" >   Often the subset(s) of the domain associated with the tertiary scale(s) are locations in
-the engineering domain where the impact of the tertiary scales has the most impact on the
-engineering scale simulation, in order to leverage the most power from the multi-scale
+<!--l. 38--><p class="indent" >   Often the subset of the domain associated with the tertiary scales are areas of the
+engineering domain where the impact of the tertiary scales has the most impact on the
+engineering scale simulation, in order to leverage the most utility from the multi-scale
                                                                        
 
                                                                        
 approach.
-<!--l. 34--><p class="indent" >   In the concurrent multi-scale paradigm, all scales are computed simultaneously and the
-required inter-scale coupling values are provided just-in-time <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>.
-<!--l. 36--><p class="indent" >   In the sequential multi-scale paradigm, tertiary scales compute parameters which are
-converted to quantities of utility to a primary scale. Each scale (though not necessarily
+<!--l. 40--><p class="indent" >   Numerical multi-scale simulations fall broadly into two categories. In the
+concurrent multi-scale paradigm, all scales are computed simultaneously and the
+required inter-scale coupling values are provided just-in-time <span class="cite">[<a 
+href="#Xzeng2010concurrent">20</a>]</span>. In the sequential
+multi-scale paradigm, tertiary scales compute parameters which are converted
+to quantities of utility to a primary scale. Each scale (though not necessarily
 each scale-task, representing an individual operation or simulation occurring in a
-scale) must be processed sequentially <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> and may be blocked on the completion of
+scale) must be processed sequentially <span class="cite">[<a 
+href="#Xgarcia2008sequential">8</a>]</span> and may be blocked on the completion of
 the previous scale. This multi-scale model maps intuitively to phased parallel
 communication models found in the commonly used bulk synchronous parallel abstraction
-<span class="cite">[<span 
-class="cmbx-10">?</span>]</span>.
-<!--l. 38--><p class="indent" >
+<span class="cite">[<a 
+href="#Xvaliant1990bridging">18</a>]</span>.
+<!--l. 42--><p class="indent" >
 <a 
  id="x1-4r1"></a>
-<!--l. 39--><p class="indent" >   The Adaptive Multi-scale Simulation Infrastructure (amsi) is a set of libraries and tools
+<!--l. 43--><p class="indent" >   The Adaptive Multi-scale Simulation Infrastructure (amsi) is a set of libraries and tools
 developed at the Scientific Computation Research Center (SCOREC) at Rensselaer
 Polytechnic Institute. Amsi is designed to support the implementation and execution of
 dynamic numerically multi-scale simulations on massively-parallel HPC machines.
-Currently amsi provides interfaces for describing and managing the execution
-of individual scales in a multi-scale simulation, for defining and managing the
+Currently amsi provides interfaces for describing and managing the execution of
+individual scales in a multi-scale simulation, for defining, managing and enacting the
 scale-coupling communication required by such simulations, and for planning and
 enacting scale-sensitive load balancing operations on individual scales in a multi-scale
 system.
-<!--l. 41--><p class="indent" >   The interfaces provided by the amsi libraries are intended to facilitate the coupling of
+<!--l. 45--><p class="indent" >   The interfaces provided by the amsi libraries are intended to facilitate the coupling of
 functional (possibly legacy) simulation codes already in usage for single-scale problems, in
 order to avoid development overhead associated with casting a simulation into a set of
 framework-specific components. The currently implemented interfaces are physics-agnostic,
@@ -102,132 +102,212 @@ to the mathematical derivation of the multi-scale interaction. Incorporation of
 meta-information and services targeted toward specific multi-scale physical couplings
 represents a desirable extension of the amsi libraries, constituting a rich area of future
 work.
-<!--l. 43--><p class="indent" >   Amsi operates by maintaining a set of minimal simulation metadata in order to model
+<!--l. 47--><p class="indent" >   Amsi operates by maintaining a set of minimal simulation metadata in order to model
 various quantities of interest during simulation execution. A decentralized approach toward
 control is taken; dynamic control decisions are made and implemented at runtime during
 collective operations. In order to avoid the introduction of unnecessary parallel
 barriers into the code, amsi control decisions are only made during operations
 which are already collective over the set of processes effected by a given control
 decision.
-<!--l. 45--><p class="indent" >
-<a 
- id="x1-5r2"></a>
-<!--l. 46--><p class="indent" >   Frameworks and runtime systems have been developed which are intended for the
-development of specific multi-scale problems <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[]</span> <span class="cite">[]</span> and these frameworks have in some
+<!--l. 49--><p class="indent" >   Frameworks and runtime systems have been developed which are intended for the
+development of specific multi-scale problems <span class="cite">[<a 
+href="#Xparker2006component">13</a>]</span> <span class="cite">[<a 
+href="#Xchopard2011framework">7</a>]</span> <span class="cite">[]</span> and these frameworks have in some
 cases been expanded to facilitate the implementation of additional multi-scale problems
-<span class="cite">[<span 
-class="cmbx-10">?</span>]</span>.
-<!--l. 48--><p class="indent" >   These systems suffer from the requirement that an application developer must cast the
-problem of interest into a set of predefined components (interfaces, tasks, etc.) in order to
-take full advantage of such frameworks. Leveraging a component-based design is valuable
-from a software engineering perspective, but also introduces new complexities involved in
-defining the set of components and how they interoperate in the framework shifting some
-complexity up a level of abstraction. The core features of amsi used for multi-scale
+<span class="cite">[<a 
+href="#Xberzins2010uintah">5</a>]</span>.
+<!--l. 51--><p class="indent" >   These systems suffer from the requirement that an application developer
+must cast the problem of interest into a set of predefined components (interfaces,
+tasks, etc.) or specify the problem through a high-level modelling language in
+order to take full advantage the services provided by the framework. Leveraging a
+component-based design is valuable from a software engineering perspective, but also
+introduces new complexities involved in defining the set of components and how
+they interoperate in the framework, shifting some complexity up the abstraction
                                                                        
 
                                                                        
-simulation management and communication are provided with no requirements of
-adherence to a specific component definition.
-<!--l. 50--><p class="indent" >   simulation flow control is determined solely by the runtime system. A framework may
-also limit specific features of the numerical implementation to those provided by the
-framework. Domain discretization models and associated adaptive processes &#8211; structured
-and unstructured meshing and associated refinement algorithms, particle-in-cell
-methods, etc. &#8211; convergence algorithms for both the minimization of the relevant
-residuals (Newton-Raphson, etc.) as well as iterative solution of the resulting linear
-system (KSP, GMRES, ILU, etc.). Amsi supplies several numerical components
-consisting of an adaptive finite element system, linear algebraic solver, and nonlinear
-convergence operators available as both simple C++ class interface definitions, as well as
-implementations built on top of other software supplied by SCOREC <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> and the PETSc
-linear algebraic solver <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>. Usage of the supplied numerical components
-is not required to make use of the multi-scale meta-modeling, communication,
+hierarchy. The core features of amsi used for multi-scale simulation management and
+communication are provided with no requirements of adherence to a specific component
+definition.
+<!--l. 53--><p class="indent" >   Typically simulation flow control is determined solely by the runtime system. A
+framework may also limit specific features of the numerical implementation to
+those provided by the framework. This includes domain discretization models
+and associated adaptive processes &#8211; structured and unstructured meshing and
+associated refinement algorithms, particle-in-cell methods, etc. &#8211; convergence
+algorithms for both the minimization of the relevant residuals (Newton-Raphson, etc.)
+as well as iterative solution of the resulting linear system (KSP, GMRES, ILU,
+etc.).
+<!--l. 55--><p class="indent" >   Amsi supplies several numerical components consisting of an adaptive finite element
+system, linear algebraic solver, and nonlinear convergence operators available as both
+simple C++ class interface definitions, as well as implementations of these interfaces built
+on top of other software supplied by SCOREC <span class="cite">[<span 
+class="cmbx-10">?</span>]</span> for finite element analysis operations as
+well as the PETSc linear algebraic solver <span class="cite">[<a 
+href="#Xpetsc-web-page">3</a>]</span> <span class="cite">[<a 
+href="#Xpetsc-user-ref">2</a>]</span> <span class="cite">[<a 
+href="#Xpetsc-efficient">4</a>]</span>. Usage of the supplied numerical
+components is not required to make use of the multi-scale meta-modeling, communication,
 dynamic instantiation, and scale-sensitive load balancing facilities supplied by
 amsi.
-<!--l. 52--><p class="indent" >   While implementation of desired numerical operations into a framework is of course
-possible, it may prove an additional undesirable overhead for an application programmer
-interested only in utilizing the multi-scale framework to implement simulation, rather than
-implementing the various numerical operations often perfected in widely available packages
-and libraries <span class="cite">[]</span> <span class="cite">[]</span> <span class="cite">[]</span>.
-<!--l. 55--><p class="indent" >   A configuration file is supplied during command invocation containing the initial
+<!--l. 57--><p class="indent" >   Implementing required numerical operations inside an existing framework is of course
+possible, though it may prove an additional &#8211; undesirable overhead for an application
+programmer interested only in utilizing the multi-scale framework to implement a
+simulation, rather than implementing the various numerical operations often optimized in
+widely available packages and libraries.
+<!--l. 59--><p class="indent" >
+<a 
+ id="x1-5r3"></a>
+<!--l. 62--><p class="indent" >   A configuration file is supplied during command invocation containing the initial
 configuration of the process sets and their assignment to individual scales, as well as
-declaring the coupling between scales in the simulation. The deceleration of a scale and the
+declaring the coupling between scales in the simulation. The declaration of a scale and the
 initialization of the process set associated with the scale are considered a single atomic
-operation in the current implementation.
-<!--l. 57--><p class="indent" >   Process sets are mathematical sets of MPI ranks implemented so as to take advantage
+operation in the current implementation. A simple configuration file can be seen in
+listing <a 
+href="#x1-6r1">1<!--tex4ht:ref: amsi_config_file --></a> which declares the existence of two scales, macro and micro_fo, and tells
+the amsi intialization procedures to assigne them process sets containig 64 and
+8128 processes, respectively (for a total of 2<sup><span 
+class="cmr-7">13</span></sup> processes). The file also specifies
+the scale-coupling relations, with macro coupled to micro and micro coupled to
+macro. Note that the order of specification is not relevant to the operation of amsi.
+<!--l. 64-->
+<a 
+ id="x1-6r1"></a>
+<a 
+ id="x1-7"></a>
+                                <span 
+class="cmcsc-10x-x-80">L<span 
+class="small-caps">i</span><span 
+class="small-caps">s</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;1</span>
+                              <span 
+class="cmti-8">amsi</span><span 
+class="cmti-8">_config file</span>
+   <div class="lstlisting" id="listing-1"><span class="label"><a 
+ id="x1-8r1"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">macro</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">64</span><span 
+class="cmr-9">&#x00A0;</span><br /><span class="label"><a 
+ id="x1-9r2"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">micro</span><span 
+class="cmr-9">_fo</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">8128</span><span 
+class="cmr-9">&#x00A0;</span><br /><span class="label"><a 
+ id="x1-10r3"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">#</span><span 
+class="cmr-9">&#x00A0;</span><br /><span class="label"><a 
+ id="x1-11r4"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">macro</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">micro</span><span 
+class="cmr-9">_fo</span><span 
+class="cmr-9">&#x00A0;</span><br /><span class="label"><a 
+ id="x1-12r5"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">micro</span><span 
+class="cmr-9">_fo</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">macro</span><span 
+class="cmr-9">_fo</span>
+   
+   </div>
+<!--l. 72--><p class="indent" >   Typically creation of this file will be automated and added to the shell script used to
+invoke the simulation, so ensure that process counts passed in throught the configuration
+file are valid. Alternative specification mechanisms such as ratio specification (equivalently
+percentage specification) are being considered for future use to prevent the possbility of
+misallocation of processes (the user not specifying assignment for all processes available to
+                                                                       
+
+                                                                       
+the simulation).
+<!--l. 74--><p class="indent" >   Process sets are mathematical sets of MPI ranks implemented so as to take advantage
 of any mathematical conveniences to minimize explicit storage whenever possible. Process
 sets are required to be non-overlapping in order for amsi control mechanisms to operate
 correctly. Ongoing developments are targeted at removing this requirement to allow a richer
 set of dynamic control options and increase overall utilization in the case of coupled scales
 blocking on one another.
-<!--l. 59--><p class="indent" >   Deceleration of a coupling relation between two scales is required if any communication
+<!--l. 76--><p class="indent" >   Declaration of a coupling relation between two scales is required if any communication
 between the scales is to occur during the simulation (through the amsi libraries), as the
-coupling deceleration during simulation initialization is used to instantiate data structures
+coupling declaration during simulation initialization is used to instantiate data structures
 specific to scale-coupling operations. This limits memory overhead by not allocating space
 for unneeded coupling operations.
-<!--l. 61--><p class="indent" >   Scales are declared to be related if some quantities of interest (such as physical tensor
+<!--l. 78--><p class="indent" >   Scales are declared to be related if some quantities of interest (such as physical tensor
 field values) are transmitted between them for scale-coupling. This coupling relationship is
 assumed to be asymmetric, thus if scale A is related to scale B, scale B is not implicitly
-related to scale A, though this may be separately declared. For brevity this may be written
-as A&#x00A0;B for A is coupled to B.
-<!--l. 63--><p class="indent" >   While the primary scale (the scale associated with producing the solution for the
+related to scale A, though this may be separately declared.
+<!--l. 80--><p class="indent" >   While the primary scale (the scale associated with producing the solution for the
 overall simulation) is often thought of as controlling the tertiary scales in terms of dynamic
 instantiation, this is not assumed in the amsi implementation. Any scale is capable of
 informing the process set associated with a coupled scale of the addition or deletion of
 individual scale-tasks. At present it is dependent on the developer to implement
 the capability of a scale to accept additional scale-tasks, though algorithms and
 hooks for developer-designed distribution algorithms are supplied to ease the
-                                                                       
-
-                                                                       
 implementation.
-<!--l. 66--><p class="indent" >   Scale coupling communication is guided by data distributions and communication
+<!--l. 83--><p class="indent" >   Scale-coupling communication is guided by data distributions and communication
 patterns. A data distribution is a representation of individual units of scale-coupling
 data distributed across a single scale-task. The format of the coupling data is
 arbitrary (so long as it can be serialized and provided for use by MPI communication
 primitives). A data distribution represents the smallest unit of data important to the
 scale-coupling communication, which is necessarily distinct for various multi-scale use
 cases.
-<!--l. 68--><p class="indent" >   All communication and planning operations in the amsi libraries use an implicit local
-numbering for data distribution terms, essentially denoted by the term&#8217;s index in a
-serialized communication buffer.
-<!--l. 71--><p class="indent" >   If a local installation of the Zoltan <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> load balancing library is available, the load
-balancing planning algorithms of Zoltan can be used underlying the scale-sensitive load
-balancing planning of amsi. A minimal set of load-balancing algorithms are provided with
-amsi. Since there is no general solution to the dynamic load balancing problem
-any set of provided load-balancing algorithms will prove insufficient for some
-use case. Thus amsi provides users with the ability to create and register their
-own load-balancing algorithms specific to the requirements of a given numerical
-implementation.
-<!--l. 73--><p class="indent" >   Due to the necessity of retaining inter-scale linkages through the load-balancing
-processes, the actual data migration undertaken to implement a specific load balancing plan
-is typically conducted internally by the amsi system which is provided with buffers of data
-being load-balanced by each process on the appropriate scale. However, in order to
-maintain usability in more general situations, it is also possible to simply inform the amsi
-system that the current load-balancing plan has already been accomplished by
-user-implemented data migration. This functionality combined with the ability to use
-user-designed load-balance planning algorithms allows amsi to work with entirely external
-load-balancing libraries and algorithms, allowing scale-sensitive load-balancing to be used
-even when a specific multi-scale use case falls outside the bounds of capabilities built into
-the system.
-<!--l. 75--><p class="indent" >
+<!--l. 85--><p class="indent" >   All communication and planning operations in the amsi libraries use an implicit local
+numbering for data distribution terms, the index associated with the term in a local
+serialized buffer. At present an application developer must implement up-/down-scaling
+operations required for their particular multi-scale use case, hooks will be provided in a
+future release to automate application of such operations during scale-coupling.
+The current implementation includes on blocking versions of the scale-coupling
+communication operations. Asynchronous versions have been designed but are not currently
+being implemented due to lack of immediate need for the primary test amsi use
+case.
+<!--l. 87--><p class="indent" >
 <a 
- id="x1-6r3"></a>
-<!--l. 77--><p class="indent" >   The Biotissue code is a multi-scale simulation of soft organic tissues, consisting of an
+ id="x1-13r1"></a>
+<!--l. 88--><p class="indent" >   The Biotissue code is a multi-scale simulation of soft organic tissues, consisting of an
 engineering-scale simulation using the finite element method, and a micro-scale
-quasistatics force-balance simulation. The Cauchy Momentum Balance Equation
-for a body in static equilibrium is used as the governing equation for the global
-simulation. Specific quantities needed to compute the elemental tangent stiffness
-matrices are instead supplied by the micro-scale force-balance simulations, which
-occur at each numerical integration point in the engineering-scale mesh, see figure
-<a 
-href="#x1-7r1">2.1<!--tex4ht:ref: biotissue_hierarchy --></a>.
-<!--l. 79--><p class="indent" >   <hr class="figure"><div class="figure" 
+quasistatics force-balance simulation. The Cauchy Momentum Balance Equation for a
+body in static equilibrium is used as the governing equation for the macro-scale
+simulation.
+                                                                       
+
+                                                                       
+<table 
+class="align">
+                             <tr><td 
+class="align-odd"><span 
+class="cmsy-10">&#x2207;&#x22C5;</span><img 
+src="paper0x.png" alt="&#x03C3;&#x03C3;&#x03C3;"  class="mathpalette" > =</td>                             <td 
+class="align-even"><span style="margin-left:2.77695pt" class="tmspace"></span>0 in &#x03A9;</td>                              <td 
+class="align-label"></td>                             <td 
+class="align-label">
+                             </td></tr><tr><td 
+class="align-odd"><img 
+src="paper1x.png" alt="&#x03C3;&#x03C3;&#x03C3;"  class="mathpalette" > <span 
+class="cmsy-10">&#x22C5;</span><img 
+src="paper2x.png" alt="nnn"  class="mathpalette" > =</td>                             <td 
+class="align-even"><span style="margin-left:2.77695pt" class="tmspace"></span><img 
+src="paper3x.png" alt="ttt"  class="mathpalette" > on <span 
+class="cmmi-10">&#x2202;</span>&#x03A9;</td>                             <td 
+class="align-label"></td>                             <td 
+class="align-label"></td></tr></table>
+Specific quantities needed to compute the elemental tangent stiffness matrices and
+force vectors are instead supplied by the micro-scale force-balance simulations,
+which occur at each numerical integration point in the engineering-scale mesh <a 
+href="#x1-14r1">3.1<!--tex4ht:ref: biotissue_hierarchy --></a>.
+<hr class="figure"><div class="figure" 
 >
                                                                        
 
@@ -237,112 +317,1313 @@ href="#x1-7r1">2.1<!--tex4ht:ref: biotissue_hierarchy --></a>.
                                                                        
 <div class="center" 
 >
-<!--l. 80--><p class="noindent" >
-<!--l. 81--><p class="noindent" ><img 
-src="paper0x.png" alt="PIC" class="graphics" width="206.49043pt" height="144.54pt" ><!--tex4ht:graphics  
-name="paper0x.png" src="biotissue_visual_hierarchy.eps"  
+<!--l. 98--><p class="noindent" >
+<!--l. 99--><p class="noindent" ><img 
+src="paper4x.png" alt="PIC" class="graphics" width="206.49043pt" height="144.54pt" ><!--tex4ht:graphics  
+name="paper4x.png" src="biotissue_visual_hierarchy.eps"  
 --></div>
 <a 
- id="x1-7r1"></a>
+ id="x1-14r1"></a>
                      <span 
 class="cmcsc-10x-x-80">F<span 
 class="small-caps">i</span><span 
 class="small-caps">g</span>.</span><span 
-class="cmcsc-10x-x-80">&#x00A0;2.1</span><span 
+class="cmcsc-10x-x-80">&#x00A0;3.1</span><span 
 class="cmr-8">. </span><span 
 class="cmti-9">biotissue multi-scale problem</span>
                                                                        
 
                                                                        
-<!--l. 86--><p class="indent" >   </div><hr class="endfigure">
-<!--l. 88--><p class="indent" >   The incremental displacements (the displacement deltas generated by the previous
-Newton iteration) on each engineering-scale finite element node are used to distort the a
-dimensionless representative volume element (RVE) resulting in each micro-scale node
-being displaced. Each RVE is a dimensionless unit cube containing a connected collagen
-fiber network, for the present results the fibers are implemented as truss elements
+<!--l. 103--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 106--><p class="indent" >   The incremental displacements (deltas generated by the previous Newton-Raphson
+iteration) on each engineering-scale finite element node are used to distort the a
+dimensionless representative volume element (RVE) through a dimensionalized abstraction
+of the RVE embedded in the engineering domain and an associated displacement mapping
+term <img 
+src="paper5x.png" alt="dRdFVEE-"  class="frac" align="middle">, the first order relation between the incremental displacement of an RVE with
+respect to the displacement of the associated mesh element. This results in each micro-scale
+node being displaced. Each RVE is a dimensionless unit cube containing a connected
+collagen fiber network, for the present results the fibers are implemented as truss elements
 and their distribution is generated using Delauney triangulation. The micro-scale
 boundary condition necessitates that the force exerted by each fiber network node
 located on the boundary of the RVE be zero. The micro-scale global Jacobian is
 formulated along with the force vector, wherein the boundary condition is enforced
 by setting specific rows of the force vector associated with boundary nodes to
 zero.
-<!--l. 90--><p class="indent" >   Another Newton-Raphson iterative process occurs at micro-scale to converge to the set
+<!--l. 108--><p class="indent" >   Another Newton-Raphson iterative process occurs at micro-scale to converge to the set
 of displacements resulting in force equilibrium for all the fibers within the fiber network
 constituting the RVE. After a micro-scale simulation converges to a solution, the Jacobian
 and force vector are then evaluated again at the solution position, the force exerted along
 the boundary of the RVE is summed for each of the principal and shear components of a
 stress tensor, which is then dimensionalized and sent back to the engineering-scale for use in
 the elemental tangent stiffness matrix formulation. More detail into the derivation of this
-multi-scale system can be found in <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> . Discussion of the dimensionalization of the
-dimensionless force terms produced by each fiber network can be found in <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>
-<span class="cite">[<span 
-class="cmbx-10">?</span>]</span>.
-<!--l. 94--><p class="indent" >   Thus the simulation as a whole is essentially doubly nonlinear, as during each
-engineering-scale Newton iteration every micro-scale RVE must undergo a full
-Newton-Raphson convergence process.
+multi-scale system can be found in <span class="cite">[<a 
+href="#Xstylianopoulos2008thesis">15</a>]</span> <span class="cite">[<a 
+href="#Xagoram2001coupled">1</a>]</span> <span class="cite">[<a 
+href="#Xstylianopoulos2007multiscale">16</a>]</span> . Discussion of the dimensionalization of the
+dimensionless force terms produced by each fiber network can be found in <span class="cite">[<a 
+href="#Xstylianopoulos2007volume">17</a>]</span>
+<span class="cite">[<a 
+href="#Xchandran2007deterministic">6</a>]</span>.
+<!--l. 110--><p class="indent" >   The simulation two nested Newton-Raphson operations occurring; during each
+macro-scale Newton iteration every micro-scale RVE must undergo a full Newton-Raphson
+convergence process.
 <a 
- id="x1-8r4"></a>
-<!--l. 98--><p class="indent" >   Scale-sensitive load balancing is conducted on the micro-scale RVE distribution at
-locations in the code where communication bottlenecks are already present. This prevents
-the introduction of new bottlenecks which could result in reduced performance. Macro-scale
-Newton-iterations are the most frequently occuring multi-scale communication bottleneck
-at which we chose to conduct the load balancing operation, and macro-scale incremental
-load steps the least-frequent. These represent the two extreme cases considered in our
-analysis on the efficacy of the scale-sensitive load-balancing scheme adopted for the
-biotissue simulation.
-<!--l. 100--><p class="indent" >   Each micro-scale RVE simulation involves the assembly and solve of a linear system of
-equations on the order of 10,000 unknowns for each micro-scale Newton iteration. While the
-total solve time is dependent on the number of nonlinear iterations and the hardware
-executing the code, this system is sufficiently small that parallelization of the RVE code
-itself is unwarranted, as the introduction of communication overhead into the RVE solution
-process would result in decreased performance, despite the modest gain to computation
-time. However, as each RVE represents an independent task to be accomplished by the
-simulation, they may be freely distributed across the processes assigned to the micro-scale
-computation. The only restriction to their (re)distribution for load balancing purposes is
-that the relation to a specific macro-scale numerical integration point must be
-maintained.
-<!--l. 102--><p class="indent" >   As each RVE is a nonlinear simulation their is no a-prior estimate of the computational
-load each RVE represents, so the optimal initial distribution is simply treating
-the weight of each RVE as 1. Thus each micro-scale process is assigned either
-<img 
-src="paper1x.png" alt="&#x230A;--numxrves---&#x230B;
- numxmicroxprocs"  class="left" align="middle"> or <img 
-src="paper2x.png" alt="&#x2308;---numxrves--&#x2309;
- numxmicroxprocs"  class="left" align="middle">. Once the first load-balancing event is
+ id="x1-15r4"></a>
+<!--l. 113--><p class="indent" >   The biotissue simulation was run on the AMOS BG/Q machine housed at the CCI
+facilities. Both strong and weak scaling studies were conducted up to an eighth of the total
+machine core count, or 16384 cores. The ratio of macro-scale to micro-scale assigned
+processes was held near 1:128, though the total core count was kept as an integer power of 2
+in order for the SLURM job scheduler to submit the jobs to the compute nodes in a timely
+manner. The precise calculation used to determine macro and micro process counts is given
+by <!--l. 115-->
+<a 
+ id="x1-16r2"></a>
+<a 
+ id="x1-17"></a>
+                                <span 
+class="cmcsc-10x-x-80">L<span 
+class="small-caps">i</span><span 
+class="small-caps">s</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;2</span>
+                        <span 
+class="cmti-8">process assignment calculation</span>
+   <div class="lstlisting" id="listing-2"><span class="label"><a 
+ id="x1-18r1"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">MICRO</span><span 
+class="cmr-9">_RATIO</span><span 
+class="cmr-9">=128</span><span 
+class="cmr-9">&#x00A0;</span><br /><span class="label"><a 
+ id="x1-19r2"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">NP</span><span 
+class="cmr-9">=</span><span 
+class="cmr-9">$</span><span 
+class="cmr-9">((</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">$NUM</span><span 
+class="cmr-9">_MACRO</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmsy-9">*</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">$MICRO</span><span 
+class="cmr-9">_RATIO</span><span 
+class="cmr-9">))</span><span 
+class="cmr-9">&#x00A0;</span><br /><span class="label"><a 
+ id="x1-20r3"></a></span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">NUM</span><span 
+class="cmr-9">_MICRO</span><span 
+class="cmr-9">=</span><span 
+class="cmr-9">$</span><span 
+class="cmr-9">((</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">$NP</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmsy-9">-</span><span 
+class="cmr-9">&#x00A0;</span><span 
+class="cmr-9">$NUM</span><span 
+class="cmr-9">_MACRO</span><span 
+class="cmr-9">))</span>
+   
+   </div>
+<!--l. 122--><p class="indent" >   thus as the number of cores assigned to the macro-scale computation increases, the
+ratio approaches 1:128.
+<!--l. 124--><p class="indent" >   Separate timings were taken for various sections of the simulation code, isolating the
+micro-scale computation, macro-scale linear system assembly and calculation of elemental
+linear systems, and macro-scale linear system solution. In addition, the time for spent in
+the amsi subroutines for communication was also measured. Thus the behavior of each
                                                                        
 
                                                                        
-reached, regardless of the granularity at which load-balancing is occuring for a
-given case, each RVE has recorded the total number of newton iterations it has
-conducted since the previous load-balancing event. This number is used as a heuristic
-weighting metric to determine the computational load of each individual RVE. The
-iteration count metric was chosen as each iteration takes a similar level of work to
-complete, up to the difference in the number of RVEs for each unique fiber network.
-Further, assuming linear incremental loading, regions in the engineering-scale
-mesh located near stress concentrators will result in &#8217;more interesting&#8217; boundary
-conditions for the micro-scale problems related to numerical integration points in
-that region, which may result in the RVE requiring more Newton iterations to
-converge to an adequate solution, since the boundary conditions may lie farther
-from the initial state of the RVE in the regime of convergence for the nonlinear
-problem.
-<!--l. 104--><p class="indent" >
+section of the code is independently evaluated in our scaling study, as well as the overall
+execution time.
+<!--l. 127--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+                                                                       
+
+                                                                       
+                                                                       
+
+                                                                       
+<div class="center" 
+>
+<!--l. 128--><p class="noindent" >
+<!--l. 129--><p class="noindent" ><img 
+src="paper6x.png" alt="PIC" class="graphics" width="202.47707pt" height="144.54pt" ><!--tex4ht:graphics  
+name="paper6x.png" src="ws_phil.eps"  
+--></div>
 <a 
- id="x1-9r3"></a>
-<!--l. 106--><p class="indent" >
+ id="x1-21r1"></a>
+                           <span 
+class="cmcsc-10x-x-80">F<span 
+class="small-caps">i</span><span 
+class="small-caps">g</span>.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;4.1</span><span 
+class="cmr-8">. </span><span 
+class="cmti-9">weak scaling</span>
+                                                                       
+
+                                                                       
+<!--l. 133--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 135--><p class="indent" >   Keeping the work per process approximately constant (1k elements per macro-scale
+process, with the macro:micro ratio as specified in listing <a 
+href="#x1-15r4">4<!--tex4ht:ref: macro micro ratio --></a>) it can be seen that the time to
+compute every RVE in the system stays relatively consistent, while the time to solve the
+macro-scale linear system increases, causing a modest increase in the overall time per
+macro-scale Newton iteration.
+<!--l. 138--><p class="indent" >   <hr class="figure"><div class="figure" 
+>
+                                                                       
+
+                                                                       
+                                                                       
+
+                                                                       
+<div class="center" 
+>
+<!--l. 139--><p class="noindent" >
+<!--l. 140--><p class="noindent" ><img 
+src="paper7x.png" alt="PIC" class="graphics" width="188.35896pt" height="144.54pt" ><!--tex4ht:graphics  
+name="paper7x.png" src="ss_phil.eps"  
+--></div>
 <a 
- id="x1-10r4"></a>
-<!--l. 108--><p class="indent" >   Work on scale-balancing is ongoing for the Biotissue test problem. Using this work as a
-basis, a set of algorithms to provide support for more general scale-balancing operations
-will be developed and packaged into amsi.
-<!--l. 110--><p class="indent" >   Embedded fiber-matrix RVEs separately parallelized and incorporated into multi-scale
-model, used at most error-sensitive locations <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span> <span class="cite">[<span 
-class="cmbx-10">?</span>]</span>.
+ id="x1-22r2"></a>
+                           <span 
+class="cmcsc-10x-x-80">F<span 
+class="small-caps">i</span><span 
+class="small-caps">g</span>.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;4.2</span><span 
+class="cmr-8">. </span><span 
+class="cmti-9">strong scaling</span>
+                                                                       
+
+                                                                       
+<!--l. 144--><p class="indent" >   </div><hr class="endfigure">
+<!--l. 146--><p class="indent" >   As the problem size is held constant with respect to the number of individual elements
+in the engineering scale domain discretization the simulation displays near optimal
+convergence to the macro-scale solve time alone, which is also reducing in time cost. The
+limiting factor in the speedup of the overall simulation is the potential speedup of the
+macro-scale simulation rather than the micro-scale simulation with fiber-only
+RVEs. As indicated in the weak scaling results this is related primarily to the
+macro-scale linear solve communication time increasing. At present an incomplete LU
+factorization is used to solve the linear system formulated at macro-scale each Newton
+iteraion (using PETSc configured with the superLU_dist solver <span class="cite">[<a 
+href="#Xli05superlu">10</a>]</span> <span class="cite">[<a 
+href="#Xlishao10superluilu">12</a>]</span> <span class="cite">[<a 
+href="#Xlidemmel03superludist">11</a>]</span> ).
+Using instead an iterative solution method to reach a desired level of accuracy
+may result in stronger scaling at macro-scale, but as yet this approach has been
+unneeded due to the preponderance of time spent computing micro-scale results in use
+cases.
+<!--l. 148--><p class="indent" >   Many problems of interest will possess finite elements numbered in the tens to hundreds
+of millions of degrees of freedom, such that a suitable partitioning of the mesh to cores
+on the machine in terms of elements per partition (and directly the macro-scale
+time-to-solution) may require a substantial fraction of the total cores on the machine for
+macro-scale to execute in reasonable time. Amsi provides services for dynamically adding
+and removing individual scale-tasks to a specific scale, which can be utilized to limit RVE
+usage to only those locations in the multi-scale mesh most influential on the overall
+evolution of the simulation.
+<!--l. 150--><p class="indent" >   Amsi-specific results of some sort...?
+<!--l. 152--><p class="indent" >   Could include utilization/idle time metrics, but those are far more relevant to the load
+balancing paper...
+<a 
+ id="x1-23r5"></a>
+<!--l. 156--><p class="indent" >   The Adaptive Multi-scale Simulation Infrastructure provides a valuable set of tools to
+facilitate the implementation and execution of multi-scale simulations without imposing
+restrictions on the application developer. Usage of the core operations of the amsi libraries
+does not require adherence to a specific set of interfaces nor usage of an abstract
+modeling language, which complicate inclusion of legacy components into multi-scale
+simulations.
+<!--l. 158--><p class="indent" >   Scale-sensitive load-balancing operations have been developed for the biotissue
+multi-scale test problem. Unfortunately the problem does not exhibit load persistence in
+the current parallel execution space task discretization, so an alternative parallel
+discretization such as overdecomposition with work-stealing to enforce more local balancing
+operations and occasional global balancing operations is being explored.
+<!--l. 160--><p class="indent" >   Development of libraries concerned with higher levels of abstraction of the multi-scale
+problem will also be valuable in easing the development of new multi-scale simulations from
+the perspective of the application programmer. High level abstractions such as the Scale
+Separation Map in <span class="cite">[<a 
+href="#Xchopard2011framework">7</a>]</span> could provide mechanisms to provide initial configuration
+information to the amsi system during the initialization phase, as well as assist in
+the implementation of (or usage of existing library-provided) up-/down-scaling
+operations.
+<!--l. 162--><p class="indent" >   An RVE simulation taking into account inter-fibril matrix material has been developed
+<span class="cite">[<a 
+href="#Xlake2012mechanics">9</a>]</span> <span class="cite">[<a 
+href="#Xzhang2013cross">21</a>]</span> <span class="cite">[<a 
+href="#Xzhang2013coupled">22</a>]</span>. This alternative RVE will be incorporated into the multi-scale model as an
+alternative to the fiber-only RVE, to be used in areas of the macro-scale domain determined
+to be most critical to the overall evolution of the global system, or where error
+accumulation through model inaccuracy is to be minimized. As this fiber-matrix RVE
+                                                                       
+
+                                                                       
+represents a more significant source of computational complexity, it is independently
+parallelized &#8211; in contrast to the fiber-only RVE &#8211; and will represent a compelling use case
+for the parallel execution space discretization and scale-coupling communication
+management capabilities of the amsi libraries.
+<div class="center" 
+>
+<!--l. 1--><p class="noindent" >
+<!--l. 1--><p class="noindent" ><span 
+class="cmr-8">REFERENCES</span></div>
+<!--l. 1--><p class="noindent" >
+ <span 
+class="cmr-8">[1]</span> <a 
+ id="Xagoram2001coupled"></a><span 
+class="cmcsc-10x-x-80">B<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">a</span><span 
+class="small-caps">j</span><span 
+class="small-caps">i</span>  A<span 
+class="small-caps">g</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span><span 
+class="small-caps">a</span><span 
+class="small-caps">m</span>  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;H  B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">c</span><span 
+class="small-caps">a</span><span 
+class="small-caps">s</span></span><span 
+class="cmr-8">,  </span><span 
+class="cmti-8">Coupled  macroscopic  and  microscopic  scale</span>
+       <span 
+class="cmti-8">modeling of fibrillar tissues and tissue equivalents</span><span 
+class="cmr-8">, Journal of biomechanical engineering,</span>
+       <span 
+class="cmr-8">123 (2001), pp.</span><span 
+class="cmr-8">&#x00A0;362&#8211;369.</span>
+ <span 
+class="cmr-8">[2]</span> <a 
+ id="Xpetsc-user-ref"></a><span 
+class="cmcsc-10x-x-80">S<span 
+class="small-caps">a</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span><span 
+class="small-caps">h</span>  B<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">a</span><span 
+class="small-caps">y</span>,  S<span 
+class="small-caps">h</span><span 
+class="small-caps">r</span><span 
+class="small-caps">i</span><span 
+class="small-caps">r</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>  A<span 
+class="small-caps">b</span><span 
+class="small-caps">h</span><span 
+class="small-caps">y</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">k</span><span 
+class="small-caps">a</span><span 
+class="small-caps">r</span>,  M<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">k</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;F.  A<span 
+class="small-caps">d</span><span 
+class="small-caps">a</span><span 
+class="small-caps">m</span><span 
+class="small-caps">s</span>,  J<span 
+class="small-caps">e</span><span 
+class="small-caps">d</span>  B<span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">w</span><span 
+class="small-caps">n</span>,  P<span 
+class="small-caps">e</span><span 
+class="small-caps">t</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span>  B<span 
+class="small-caps">r</span><span 
+class="small-caps">u</span><span 
+class="small-caps">n</span><span 
+class="small-caps">e</span>,</span>
+       <span 
+class="cmcsc-10x-x-80">K<span 
+class="small-caps">r</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span> B<span 
+class="small-caps">u</span><span 
+class="small-caps">s</span><span 
+class="small-caps">c</span><span 
+class="small-caps">h</span><span 
+class="small-caps">e</span><span 
+class="small-caps">l</span><span 
+class="small-caps">m</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span>, L<span 
+class="small-caps">i</span><span 
+class="small-caps">s</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span> D<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">c</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span>, V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span> E<span 
+class="small-caps">i</span><span 
+class="small-caps">j</span><span 
+class="small-caps">k</span><span 
+class="small-caps">h</span><span 
+class="small-caps">o</span><span 
+class="small-caps">u</span><span 
+class="small-caps">t</span>, W<span 
+class="small-caps">i</span><span 
+class="small-caps">l</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">m</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;D. G<span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">p</span><span 
+class="small-caps">p</span>, D<span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">e</span><span 
+class="small-caps">s</span><span 
+class="small-caps">h</span></span>
+       <span 
+class="cmcsc-10x-x-80">K<span 
+class="small-caps">a</span><span 
+class="small-caps">u</span><span 
+class="small-caps">s</span><span 
+class="small-caps">h</span><span 
+class="small-caps">i</span><span 
+class="small-caps">k</span>,  M<span 
+class="small-caps">a</span><span 
+class="small-caps">t</span><span 
+class="small-caps">t</span><span 
+class="small-caps">h</span><span 
+class="small-caps">e</span><span 
+class="small-caps">w</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;G.  K<span 
+class="small-caps">n</span><span 
+class="small-caps">e</span><span 
+class="small-caps">p</span><span 
+class="small-caps">l</span><span 
+class="small-caps">e</span><span 
+class="small-caps">y</span>,  L<span 
+class="small-caps">o</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;C<span 
+class="small-caps">u</span><span 
+class="small-caps">r</span><span 
+class="small-caps">f</span><span 
+class="small-caps">m</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span>  M<span 
+class="small-caps">c</span>I<span 
+class="small-caps">n</span><span 
+class="small-caps">n</span><span 
+class="small-caps">e</span><span 
+class="small-caps">s</span>,  K<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">l</span>  R<span 
+class="small-caps">u</span><span 
+class="small-caps">p</span><span 
+class="small-caps">p</span>,  B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">r</span><span 
+class="small-caps">y</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;F.</span>
+       <span 
+class="cmcsc-10x-x-80">S<span 
+class="small-caps">m</span><span 
+class="small-caps">i</span><span 
+class="small-caps">t</span><span 
+class="small-caps">h</span>,  S<span 
+class="small-caps">t</span><span 
+class="small-caps">e</span><span 
+class="small-caps">f</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">o</span>  Z<span 
+class="small-caps">a</span><span 
+class="small-caps">m</span><span 
+class="small-caps">p</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">i</span>,  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  H<span 
+class="small-caps">o</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>  Z<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span></span><span 
+class="cmr-8">,  </span><span 
+class="cmti-8">PETSc  users  manual</span><span 
+class="cmr-8">,  Tech.  Report</span>
+       <span 
+class="cmr-8">ANL-95/11 - Revision 3.6, Argonne National Laboratory, 2015.</span>
+ <span 
+class="cmr-8">[3]</span> <a 
+ id="Xpetsc-web-page"></a>________<span 
+class="cmr-8">, </span><span 
+class="cmti-8">PETSc Web page</span><span 
+class="cmr-8">. </span><a 
+href="http://www.mcs.anl.gov/petsc" class="url" ><span 
+class="cmtt-8">http://www.mcs.anl.gov/petsc</span></a><span 
+class="cmr-8">, 2015.</span>
+ <span 
+class="cmr-8">[4]</span> <a 
+ id="Xpetsc-efficient"></a><span 
+class="cmcsc-10x-x-80">S<span 
+class="small-caps">a</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span><span 
+class="small-caps">h</span> B<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">a</span><span 
+class="small-caps">y</span>, W<span 
+class="small-caps">i</span><span 
+class="small-caps">l</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">m</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;D. G<span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">p</span><span 
+class="small-caps">p</span>, L<span 
+class="small-caps">o</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;C<span 
+class="small-caps">u</span><span 
+class="small-caps">r</span><span 
+class="small-caps">f</span><span 
+class="small-caps">m</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span> M<span 
+class="small-caps">c</span>I<span 
+class="small-caps">n</span><span 
+class="small-caps">n</span><span 
+class="small-caps">e</span><span 
+class="small-caps">s</span>, <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">r</span><span 
+class="small-caps">y</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;F. S<span 
+class="small-caps">m</span><span 
+class="small-caps">i</span><span 
+class="small-caps">t</span><span 
+class="small-caps">h</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">Efficient</span>
+       <span 
+class="cmti-8">management of parallelism in object oriented numerical software libraries</span><span 
+class="cmr-8">,  in  Modern</span>
+       <span 
+class="cmr-8">Software Tools in Scientific Computing, E.</span><span 
+class="cmr-8">&#x00A0;Arge, A.</span><span 
+class="cmr-8">&#x00A0;M. Bruaset, and H.</span><span 
+class="cmr-8">&#x00A0;P. Langtangen,</span>
+       <span 
+class="cmr-8">eds., Birkh</span><span 
+class="cmr-8">äuser Press, 1997, pp.</span><span 
+class="cmr-8">&#x00A0;163&#8211;202.</span>
+ <span 
+class="cmr-8">[5]</span> <a 
+ id="Xberzins2010uintah"></a><span 
+class="cmcsc-10x-x-80">M<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span> B<span 
+class="small-caps">e</span><span 
+class="small-caps">r</span><span 
+class="small-caps">z</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">s</span>, J<span 
+class="small-caps">u</span><span 
+class="small-caps">s</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span> L<span 
+class="small-caps">u</span><span 
+class="small-caps">i</span><span 
+class="small-caps">t</span><span 
+class="small-caps">j</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">s</span>, Q<span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span><span 
+class="small-caps">y</span><span 
+class="small-caps">u</span> M<span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>, T<span 
+class="small-caps">o</span><span 
+class="small-caps">d</span><span 
+class="small-caps">d</span> H<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">m</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span>, C<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">l</span><span 
+class="small-caps">e</span><span 
+class="small-caps">s</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;A W<span 
+class="small-caps">i</span><span 
+class="small-caps">g</span><span 
+class="small-caps">h</span><span 
+class="small-caps">t</span>, <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span></span>
+       <span 
+class="cmcsc-10x-x-80">J<span 
+class="small-caps">o</span><span 
+class="small-caps">s</span><span 
+class="small-caps">e</span><span 
+class="small-caps">p</span><span 
+class="small-caps">h</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;R P<span 
+class="small-caps">e</span><span 
+class="small-caps">t</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span><span 
+class="small-caps">s</span><span 
+class="small-caps">o</span><span 
+class="small-caps">n</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">Uintah: a scalable framework for hazard analysis</span><span 
+class="cmr-8">, in Proceedings of</span>
+       <span 
+class="cmr-8">the 2010 TeraGrid Conference, ACM, 2010, p.</span><span 
+class="cmr-8">&#x00A0;3.</span>
+ <span 
+class="cmr-8">[6]</span> <a 
+ id="Xchandran2007deterministic"></a><span 
+class="cmcsc-10x-x-80">P<span 
+class="small-caps">r</span><span 
+class="small-caps">e</span><span 
+class="small-caps">e</span><span 
+class="small-caps">t</span><span 
+class="small-caps">h</span><span 
+class="small-caps">i</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;L  C<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span><span 
+class="small-caps">r</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span>  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;H  B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">c</span><span 
+class="small-caps">a</span><span 
+class="small-caps">s</span></span><span 
+class="cmr-8">,  </span><span 
+class="cmti-8">Deterministic  material-based  averaging</span>
+       <span 
+class="cmti-8">theory model of collagen gel micromechanics</span><span 
+class="cmr-8">, Journal of biomechanical engineering, 129</span>
+       <span 
+class="cmr-8">(2007), pp.</span><span 
+class="cmr-8">&#x00A0;137&#8211;147.</span>
+ <span 
+class="cmr-8">[7]</span> <a 
+ id="Xchopard2011framework"></a><span 
+class="cmcsc-10x-x-80">B<span 
+class="small-caps">a</span><span 
+class="small-caps">s</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span>  C<span 
+class="small-caps">h</span><span 
+class="small-caps">o</span><span 
+class="small-caps">p</span><span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">d</span>,  J<span 
+class="small-caps">e</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span>-L<span 
+class="small-caps">u</span><span 
+class="small-caps">c</span>  F<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">c</span><span 
+class="small-caps">o</span><span 
+class="small-caps">n</span><span 
+class="small-caps">e</span>,  A<span 
+class="small-caps">l</span><span 
+class="small-caps">f</span><span 
+class="small-caps">o</span><span 
+class="small-caps">n</span><span 
+class="small-caps">s</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;G  H<span 
+class="small-caps">o</span><span 
+class="small-caps">e</span><span 
+class="small-caps">k</span><span 
+class="small-caps">s</span><span 
+class="small-caps">t</span><span 
+class="small-caps">r</span><span 
+class="small-caps">a</span>,  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  J<span 
+class="small-caps">o</span><span 
+class="small-caps">r</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span>  B<span 
+class="small-caps">o</span><span 
+class="small-caps">r</span><span 
+class="small-caps">g</span><span 
+class="small-caps">d</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span><span 
+class="small-caps">f</span><span 
+class="small-caps">f</span></span><span 
+class="cmr-8">,</span>
+       <span 
+class="cmti-8">A  framework  for  multiscale  and  multiscience  modeling  and  numerical  simulations</span><span 
+class="cmr-8">,  in</span>
+       <span 
+class="cmr-8">Unconventional Computation, Springer, 2011, pp.</span><span 
+class="cmr-8">&#x00A0;2&#8211;8.</span>
+ <span 
+class="cmr-8">[8]</span> <a 
+ id="Xgarcia2008sequential"></a><span 
+class="cmcsc-10x-x-80">C<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">l</span><span 
+class="small-caps">o</span><span 
+class="small-caps">s</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;J.  G<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">c</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span>-C<span 
+class="small-caps">e</span><span 
+class="small-caps">r</span><span 
+class="small-caps">v</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span><span 
+class="small-caps">a</span>,  W<span 
+class="small-caps">e</span><span 
+class="small-caps">i</span><span 
+class="small-caps">q</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>  R<span 
+class="small-caps">e</span><span 
+class="small-caps">n</span>,  J<span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">f</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>  L<span 
+class="small-caps">u</span>,  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  E.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;W<span 
+class="small-caps">e</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span></span><span 
+class="cmr-8">,  </span><span 
+class="cmti-8">Sequential</span>
+       <span 
+class="cmti-8">multiscale  modeling  using  sparse  representation</span><span 
+class="cmr-8">,  Communications  in  Computational</span>
+       <span 
+class="cmr-8">Physics, 4 (2008), pp.</span><span 
+class="cmr-8">&#x00A0;1025&#8211;1033.</span>
+ <span 
+class="cmr-8">[9]</span> <a 
+ id="Xlake2012mechanics"></a><span 
+class="cmcsc-10x-x-80">S<span 
+class="small-caps">p</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">c</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;P   L<span 
+class="small-caps">a</span><span 
+class="small-caps">k</span><span 
+class="small-caps">e</span>,   M<span 
+class="small-caps">o</span><span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">m</span><span 
+class="small-caps">m</span><span 
+class="small-caps">a</span><span 
+class="small-caps">d</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;F   H<span 
+class="small-caps">a</span><span 
+class="small-caps">d</span><span 
+class="small-caps">i</span>,   V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;K   L<span 
+class="small-caps">a</span><span 
+class="small-caps">i</span>,   <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>   V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;H   B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">c</span><span 
+class="small-caps">a</span><span 
+class="small-caps">s</span></span><span 
+class="cmr-8">,</span>
+       <span 
+class="cmti-8">Mechanics of a fiber network within a non-fibrillar matrix: model and comparison with</span>
+       <span 
+class="cmti-8">collagen-agarose co-gels</span><span 
+class="cmr-8">, Annals of biomedical engineering, 40 (2012), pp.</span><span 
+class="cmr-8">&#x00A0;2111&#8211;2121.</span>
+ <span 
+class="cmr-8">[10]</span> <a 
+ id="Xli05superlu"></a><span 
+class="cmcsc-10x-x-80">X<span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">o</span><span 
+class="small-caps">y</span><span 
+class="small-caps">e</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;S. L<span 
+class="small-caps">i</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">An overview of SuperLU: Algorithms, implementation, and user interface</span><span 
+class="cmr-8">, ACM</span>
+       <span 
+class="cmr-8">Trans. Math. Softw., 31 (2005), pp.</span><span 
+class="cmr-8">&#x00A0;302&#8211;325.</span>
+ <span 
+class="cmr-8">[11]</span> <a 
+ id="Xlidemmel03superludist"></a><span 
+class="cmcsc-10x-x-80">X<span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">o</span><span 
+class="small-caps">y</span><span 
+class="small-caps">e</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;S. L<span 
+class="small-caps">i</span> <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> J<span 
+class="small-caps">a</span><span 
+class="small-caps">m</span><span 
+class="small-caps">e</span><span 
+class="small-caps">s</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;W. D<span 
+class="small-caps">e</span><span 
+class="small-caps">m</span><span 
+class="small-caps">m</span><span 
+class="small-caps">e</span><span 
+class="small-caps">l</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">SuperLU</span><span 
+class="cmti-8">_DIST: A scalable distributed-memory sparse</span>
+       <span 
+class="cmti-8">direct solver for unsymmetric linear systems</span><span 
+class="cmr-8">,  ACM  Trans.  Mathematical  Software,  29</span>
+       <span 
+class="cmr-8">(2003), pp.</span><span 
+class="cmr-8">&#x00A0;110&#8211;140.</span>
+ <span 
+class="cmr-8">[12]</span> <a 
+ id="Xlishao10superluilu"></a><span 
+class="cmcsc-10x-x-80">X<span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">o</span><span 
+class="small-caps">y</span><span 
+class="small-caps">e</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;S. L<span 
+class="small-caps">i</span> <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> M<span 
+class="small-caps">e</span><span 
+class="small-caps">i</span><span 
+class="small-caps">y</span><span 
+class="small-caps">u</span><span 
+class="small-caps">e</span> S<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">o</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">A supernodal approach to imcomplete LU factorization with</span>
+       <span 
+class="cmti-8">partial pivoting</span><span 
+class="cmr-8">, ACM Trans.</span><span 
+class="cmr-8">&#x00A0;Mathematical Software, 37 (2010).</span>
+                                                                       
+
+                                                                       
+ <span 
+class="cmr-8">[13]</span> <a 
+ id="Xparker2006component"></a><span 
+class="cmcsc-10x-x-80">S<span 
+class="small-caps">t</span><span 
+class="small-caps">e</span><span 
+class="small-caps">v</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;G  P<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">k</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span>,  J<span 
+class="small-caps">a</span><span 
+class="small-caps">m</span><span 
+class="small-caps">e</span><span 
+class="small-caps">s</span>  G<span 
+class="small-caps">u</span><span 
+class="small-caps">i</span><span 
+class="small-caps">l</span><span 
+class="small-caps">k</span><span 
+class="small-caps">e</span><span 
+class="small-caps">y</span>,  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  T<span 
+class="small-caps">o</span><span 
+class="small-caps">d</span><span 
+class="small-caps">d</span>  H<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">m</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span></span><span 
+class="cmr-8">,  </span><span 
+class="cmti-8">A  component-based  parallel</span>
+       <span 
+class="cmti-8">infrastructure  for  the  simulation  of  fluid&#8211;structure  interaction</span><span 
+class="cmr-8">,   Engineering   with</span>
+       <span 
+class="cmr-8">Computers, 22 (2006), pp.</span><span 
+class="cmr-8">&#x00A0;277&#8211;292.</span>
+ <span 
+class="cmr-8">[14]</span> <a 
+ id="Xshenoy97"></a><span 
+class="cmcsc-10x-x-80">V.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;B. S<span 
+class="small-caps">h</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">o</span><span 
+class="small-caps">y</span>, R.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;M<span 
+class="small-caps">i</span><span 
+class="small-caps">l</span><span 
+class="small-caps">l</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span>, E.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;B. T<span 
+class="small-caps">a</span><span 
+class="small-caps">d</span><span 
+class="small-caps">m</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span>, D.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;R<span 
+class="small-caps">o</span><span 
+class="small-caps">d</span><span 
+class="small-caps">n</span><span 
+class="small-caps">e</span><span 
+class="small-caps">y</span>, R.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;P<span 
+class="small-caps">h</span><span 
+class="small-caps">i</span><span 
+class="small-caps">l</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">p</span><span 
+class="small-caps">s</span>, <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> M.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;O<span 
+class="small-caps">r</span><span 
+class="small-caps">t</span><span 
+class="small-caps">i</span><span 
+class="small-caps">z</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">An</span>
+       <span 
+class="cmti-8">Adaptive Finite Element Approach to Atomic-Scale Mechanics - The Quasicontinuum</span>
+       <span 
+class="cmti-8">Method</span><span 
+class="cmr-8">, eprint arXiv:cond-mat/9710027, (1997).</span>
+ <span 
+class="cmr-8">[15]</span> <a 
+ id="Xstylianopoulos2008thesis"></a><span 
+class="cmcsc-10x-x-80">T.</span><span 
+class="cmcsc-10x-x-80">&#x00A0;S<span 
+class="small-caps">t</span><span 
+class="small-caps">y</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">o</span><span 
+class="small-caps">p</span><span 
+class="small-caps">o</span><span 
+class="small-caps">u</span><span 
+class="small-caps">l</span><span 
+class="small-caps">o</span><span 
+class="small-caps">s</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">Multiscale mechanical modeling of soft biological tissues</span><span 
+class="cmr-8">, PhD thesis,</span>
+       <span 
+class="cmr-8">University of Minnesota, 2008.</span>
+ <span 
+class="cmr-8">[16]</span> <a 
+ id="Xstylianopoulos2007multiscale"></a><span 
+class="cmcsc-10x-x-80">T<span 
+class="small-caps">r</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">t</span><span 
+class="small-caps">a</span><span 
+class="small-caps">f</span><span 
+class="small-caps">y</span><span 
+class="small-caps">l</span><span 
+class="small-caps">l</span><span 
+class="small-caps">o</span><span 
+class="small-caps">s</span>  S<span 
+class="small-caps">t</span><span 
+class="small-caps">y</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">o</span><span 
+class="small-caps">p</span><span 
+class="small-caps">o</span><span 
+class="small-caps">u</span><span 
+class="small-caps">l</span><span 
+class="small-caps">o</span><span 
+class="small-caps">s</span>  <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span>  V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;H  B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">c</span><span 
+class="small-caps">a</span><span 
+class="small-caps">s</span></span><span 
+class="cmr-8">,  </span><span 
+class="cmti-8">Multiscale,  structure-based</span>
+       <span 
+class="cmti-8">modeling for the elastic mechanical behavior of arterial walls</span><span 
+class="cmr-8">, Journal of biomechanical</span>
+       <span 
+class="cmr-8">engineering, 129 (2007), pp.</span><span 
+class="cmr-8">&#x00A0;611&#8211;618.</span>
+ <span 
+class="cmr-8">[17]</span> <a 
+ id="Xstylianopoulos2007volume"></a>________<span 
+class="cmr-8">, </span><span 
+class="cmti-8">Volume-averaging theory for the study of the mechanics of collagen networks</span><span 
+class="cmr-8">, Computer</span>
+       <span 
+class="cmr-8">methods in applied mechanics and engineering, 196 (2007), pp.</span><span 
+class="cmr-8">&#x00A0;2981&#8211;2990.</span>
+ <span 
+class="cmr-8">[18]</span> <a 
+ id="Xvaliant1990bridging"></a><span 
+class="cmcsc-10x-x-80">L<span 
+class="small-caps">e</span><span 
+class="small-caps">s</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">e</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;G V<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">t</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">A bridging model for parallel computation</span><span 
+class="cmr-8">, Communications of the ACM,</span>
+       <span 
+class="cmr-8">33 (1990), pp.</span><span 
+class="cmr-8">&#x00A0;103&#8211;111.</span>
+ <span 
+class="cmr-8">[19]</span> <a 
+ id="Xweinan2003heterogenous"></a><span 
+class="cmcsc-10x-x-80">E</span><span 
+class="cmcsc-10x-x-80">&#x00A0;W<span 
+class="small-caps">e</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span>, B<span 
+class="small-caps">j</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span><span 
+class="small-caps">n</span> E<span 
+class="small-caps">n</span><span 
+class="small-caps">g</span><span 
+class="small-caps">q</span><span 
+class="small-caps">u</span><span 
+class="small-caps">i</span><span 
+class="small-caps">s</span><span 
+class="small-caps">t</span>, <span 
+class="small-caps">e</span><span 
+class="small-caps">t</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;<span 
+class="small-caps">a</span><span 
+class="small-caps">l</span>.</span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">The heterognous multiscale methods</span><span 
+class="cmr-8">, Communications</span>
+       <span 
+class="cmr-8">in Mathematical Sciences, 1 (2003), pp.</span><span 
+class="cmr-8">&#x00A0;87&#8211;132.</span>
+ <span 
+class="cmr-8">[20]</span> <a 
+ id="Xzeng2010concurrent"></a><span 
+class="cmcsc-10x-x-80">X<span 
+class="small-caps">i</span><span 
+class="small-caps">a</span><span 
+class="small-caps">o</span><span 
+class="small-caps">w</span><span 
+class="small-caps">e</span><span 
+class="small-caps">i</span> Z<span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span> <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> S<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">o</span><span 
+class="small-caps">f</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span> L<span 
+class="small-caps">i</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">Recent developments on concurrent multiscale simulations</span><span 
+class="cmr-8">,</span>
+       <span 
+class="cmr-8">in Advances in engineering mechanics, Qing-Hua Qin and Bohua Sun, eds., Nova Science,</span>
+       <span 
+class="cmr-8">New York, 2010.</span>
+ <span 
+class="cmr-8">[21]</span> <a 
+ id="Xzhang2013cross"></a><span 
+class="cmcsc-10x-x-80">L</span><span 
+class="cmcsc-10x-x-80">&#x00A0;Z<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>, SP</span><span 
+class="cmcsc-10x-x-80">&#x00A0;L<span 
+class="small-caps">a</span><span 
+class="small-caps">k</span><span 
+class="small-caps">e</span>, VH</span><span 
+class="cmcsc-10x-x-80">&#x00A0;B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">c</span><span 
+class="small-caps">a</span><span 
+class="small-caps">s</span>, MS</span><span 
+class="cmcsc-10x-x-80">&#x00A0;S<span 
+class="small-caps">h</span><span 
+class="small-caps">e</span><span 
+class="small-caps">p</span><span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">d</span>, <span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> RC</span><span 
+class="cmcsc-10x-x-80">&#x00A0;P<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">u</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">Cross-linked fiber network</span>
+       <span 
+class="cmti-8">embedded in an elastic matrix</span><span 
+class="cmr-8">, Soft matter, 9 (2013), pp.</span><span 
+class="cmr-8">&#x00A0;6398&#8211;6405.</span>
+ <span 
+class="cmr-8">[22]</span> <a 
+ id="Xzhang2013coupled"></a><span 
+class="cmcsc-10x-x-80">L<span 
+class="small-caps">i</span><span 
+class="small-caps">j</span><span 
+class="small-caps">u</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span> Z<span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">g</span>, S<span 
+class="small-caps">p</span><span 
+class="small-caps">e</span><span 
+class="small-caps">n</span><span 
+class="small-caps">c</span><span 
+class="small-caps">e</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;P L<span 
+class="small-caps">a</span><span 
+class="small-caps">k</span><span 
+class="small-caps">e</span>, V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;K L<span 
+class="small-caps">a</span><span 
+class="small-caps">i</span>, C<span 
+class="small-caps">a</span><span 
+class="small-caps">t</span><span 
+class="small-caps">a</span><span 
+class="small-caps">l</span><span 
+class="small-caps">i</span><span 
+class="small-caps">n</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;R P<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">u</span>, V<span 
+class="small-caps">i</span><span 
+class="small-caps">c</span><span 
+class="small-caps">t</span><span 
+class="small-caps">o</span><span 
+class="small-caps">r</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;H B<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">o</span><span 
+class="small-caps">c</span><span 
+class="small-caps">a</span><span 
+class="small-caps">s</span>,</span>
+       <span 
+class="cmcsc-10x-x-80"><span 
+class="small-caps">a</span><span 
+class="small-caps">n</span><span 
+class="small-caps">d</span> M<span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">k</span></span><span 
+class="cmcsc-10x-x-80">&#x00A0;S S<span 
+class="small-caps">h</span><span 
+class="small-caps">e</span><span 
+class="small-caps">p</span><span 
+class="small-caps">h</span><span 
+class="small-caps">a</span><span 
+class="small-caps">r</span><span 
+class="small-caps">d</span></span><span 
+class="cmr-8">, </span><span 
+class="cmti-8">A coupled fiber-matrix model demonstrates highly inhomogeneous</span>
+       <span 
+class="cmti-8">microstructural interactions in soft tissues under tensile load</span><span 
+class="cmr-8">, Journal of biomechanical</span>
+       <span 
+class="cmr-8">engineering, 135 (2013), p.</span><span 
+class="cmr-8">&#x00A0;011008.</span>
     
 </body></html> 
 
