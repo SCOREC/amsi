@@ -25,8 +25,8 @@ namespace amsi {
   void CommPattern_LoadBalance_Spread(CommPattern * pattern, CommPattern * init, int * num)
   {
 
-    int s1 = pattern->getSendTaskSize();
-    int s2 = pattern->getRecvTaskSize();
+    int s1 = pattern->getNumSenders();
+    int s2 = pattern->getNumRecvers();
     int total_data = 0;
     for(int ii = 0; ii < s1; ii++)
     {
@@ -75,8 +75,8 @@ namespace amsi {
   void CommPattern_LoadBalance_LeastFirst(CommPattern * pattern, CommPattern * init, int * num)
   {
 
-    int s1 = pattern->getSendTaskSize();
-    int s2 = pattern->getRecvTaskSize();
+    int s1 = pattern->getNumSenders();
+    int s2 = pattern->getNumRecvers();
     int tempsum;
     int sums[s2];
 
@@ -199,7 +199,7 @@ namespace amsi {
     assert(init);
     assert(num);
 
-    int s2 = pattern->getRecvTaskSize();
+    int s2 = pattern->getNumRecvers();
     srand(time(NULL));
     for(int ii=0;ii<num[rank];ii++)
     {

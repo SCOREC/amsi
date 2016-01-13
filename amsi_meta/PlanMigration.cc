@@ -36,8 +36,8 @@ namespace amsi {
                                         int rank,
                                         MPI_Comm task_comm)
     {
-      int s1 = pattern->getSendTaskSize();
-      int s2 = pattern->getRecvTaskSize();
+      int s1 = pattern->getNumSenders();
+      int s2 = pattern->getNumRecvers();
 
       srand(time(NULL) + rank);
 
@@ -103,8 +103,8 @@ namespace amsi {
                                         int rank,
                                         MPI_Comm task_comm)
     {
-      int s1 = pattern->getSendTaskSize();
-      int s2 = pattern->getRecvTaskSize();
+      int s1 = pattern->getNumSenders();
+      int s2 = pattern->getNumRecvers();
 
       // Sum local workload
       int local_total = 0;

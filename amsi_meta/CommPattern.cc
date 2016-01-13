@@ -7,16 +7,16 @@
 namespace amsi
 {
   std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
-					 CommPattern::SendRecv send_recv,
+					 CommPattern::Role role,
 					 int rank,
 					 int index)
   {
     std::pair<int,int> result;
     int remainder = 0;
     int coupled_rank = -1;
-    int num_recvers = cp->getRecvTaskSize();
-    int num_senders = cp->getSendTaskSize();
-    if(send_recv == CommPattern::SENDER)
+    int num_recvers = cp->getNumRecvers();
+    int num_senders = cp->getNumSenders();
+    if(role == CommPattern::SENDER)
     {
       int count = 0;
       for(int ii = 0; ii < num_recvers; ii++)
@@ -37,7 +37,7 @@ namespace amsi
       result.first = coupled_rank;
       result.second = count + remainder;
     }
-    else if(send_recv == CommPattern::RECVER)
+    else if(role == CommPattern::RECVER)
     {
       int count = 0;
       for(int ii = 0; ii < num_senders; ii++)
@@ -64,25 +64,13 @@ namespace amsi
     /// @brief Default constructor.
     /// @param s1_ The number of processes in the ProcessSet related to the sending task
     /// @param s2_ The number of processes in the ProcessSet related to the recving task
-    CommPattern::CommPattern(int s1_, int s2_) :
-      s1(s1_),
-      s2(s2_),
-      pattern(),
-      valid(true),
-      assembled(false),
-      reconciled(false)
+    CommPattern::CommPattern(int s1_, int s2_)
+      : s1(s1_)
+      , s2(s2_)
+      , pattern()
     { 
       pattern = new int[s1 * s2];
       memset(&pattern[0],0, sizeof(int) * s1 * s2);
-    }
-
-    /// @brief Retrieve a count for a specific send/recv pair
-    /// @param rank1 The sending task-rank
-    /// @param rank2 The recving task-rank
-    /// @return int The number of pieces of data to be communicated
-    int CommPattern::getDataCount(int rank1, int rank2) const
-    {
-      return pattern[rank1 * s2 + rank2];
     }
 
     /// @brief Retrieve a vector representing the number of pieces of data to be 
@@ -90,7 +78,7 @@ namespace amsi
     /// @param rank The task-rank of the sending process
     /// @param send_to A vector containing, for each process in the recving task, 
     ///                the number of pieces of data to be sent to that process
-    void CommPattern::GetSendTo(int rank, std::vector<int>& send_to) const
+    void CommPattern::getSentTo(int rank, std::vector<int>& send_to) const
     {
       int offset = rank * s2;
       for(int ii = 0; ii < s2; ii++)
@@ -102,7 +90,7 @@ namespace amsi
     /// @param rank The task-rank of the recving process
     /// @param recv_from A vector containing, for each process in the sending task,
     ///                  the number of pieces of data to be recved from that process
-    void CommPattern::GetRecvFrom(int rank, std::vector<int> & recv_from) const
+    void CommPattern::getRecvedFrom(int rank, std::vector<int> & recv_from) const
     {
       for(int ii = 0; ii < s1; ii++)
       {
@@ -114,7 +102,7 @@ namespace amsi
     /// @brief Access/Modification operator, analogous to the .GetDataCount(int,int) member function
     int& CommPattern::operator()(int r1, int r2)
     {
-      assembled = false;
+      unassembled();
       return pattern[r1 * s2 + r2];
     }
     
@@ -134,7 +122,7 @@ namespace amsi
       if(!assembled)
       {
 	std::vector<int> send_to;
-	GetSendTo(rank,send_to); // get everything locally sent
+	getSentTo(rank,send_to); // get everything locally sent
 
       //std::cout << "Assembling!" << send_to.size() << std::endl;
       /* 

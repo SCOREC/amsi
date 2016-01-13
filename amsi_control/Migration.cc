@@ -252,8 +252,6 @@ void ScaleSensitiveMigration::execute(std::vector< std::vector<char> > & data)
     memcpy(d+data_sz+int_sz,&coupled_rank_index.second,int_sz);
   }
 
-  cp->invalidate();
-  
   Migration::execute(data);
 
   std::vector<int> coupled_processes;

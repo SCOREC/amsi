@@ -285,7 +285,7 @@ namespace amsi {
 
 	  // iterate over the recvers for this rank
 	  std::vector<int> send_to;
-	  send_pattern->GetSendTo(task_rank,send_to);
+	  send_pattern->getSentTo(task_rank,send_to);
 
 	  size_t offset = 0;
 #         ifndef CORE
@@ -323,7 +323,7 @@ namespace amsi {
 	  // assuming that the commpattern is reconciled here...
 	  CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
 	  std::vector<int> recv_from;
-	  pattern->GetRecvFrom(task_rank,recv_from);
+	  pattern->getRecvedFrom(task_rank,recv_from);
 	
 #         ifdef CORE
           PCU_Comm_Send();

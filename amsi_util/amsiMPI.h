@@ -1,16 +1,33 @@
 #ifndef MPI_T_H_
 #define MPI_T_H_
-
 #include <mpi.h>
-
 #include <cstring> //memcpy
 #include <iostream>
-
 extern MPI_Comm AMSI_COMM_WORLD;
 extern MPI_Comm AMSI_COMM_LOCAL;
-
-double distributedAverage(double partial_sum, int partial_count, MPI_Comm cm);
-
+template <typename T>
+MPI_Datatype mpi_type() {return MPI_BYTE;}
+template<typename T>
+T comm_sum(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
+{
+  T sm = 0;
+  MPI_Allreduce(&v,&sm,1,mpi_type<T>(),MPI_SUM,cm);
+  return sm;
+}
+template <typename T>
+T comm_min(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
+{
+  T mn = 0;
+  MPI_Allreduce(&v,&mn,1,mpi_type<T>(),MPI_MIN,cm);
+  return mn;
+}
+template <typename T>
+T comm_max(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
+{
+  T mx = 0;
+  MPI_Allreduce(&v,&mx,1,mpi_type<T>(),MPI_MAX,cm);
+  return mx;
+}
 template <typename T>
 void t_ssend(T & msg, MPI_Datatype type, int to)
 {

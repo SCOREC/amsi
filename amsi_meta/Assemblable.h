@@ -9,8 +9,9 @@ namespace amsi {
    {
    public:
      virtual int Assemble(MPI_Comm,int) = 0;
-     virtual bool isAssembled() const = 0;
-   private:
+     bool isAssembled() {return assembled;}
+   protected:
+     void unassembled() {assembled = false;}
      bool assembled;
    };
 
@@ -18,8 +19,9 @@ namespace amsi {
    {
    public:
      virtual void Reconcile() = 0;
-     virtual bool isReconciled() const = 0;
-   private:
+     bool isReconciled() {return reconciled;}
+   protected:
+     void unreconciled() {reconciled = false;}
      bool reconciled;
    };
 

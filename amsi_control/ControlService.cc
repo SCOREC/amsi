@@ -215,7 +215,7 @@ namespace amsi {
 	  
 	  // vector of t1 ranks w/ counts for the current t2 rank
 	  std::vector<int> recvfrom;
-	  send_pattern->GetRecvFrom(send_to,recvfrom);
+	  send_pattern->getRecvedFrom(send_to,recvfrom);
 
 #         ifdef CORE
           PCU_Comm_Write(send_to+t1s, &recvfrom[0], t1s*sizeof(int));
