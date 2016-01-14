@@ -1,10 +1,9 @@
 #include "DataDistribution.h"
-
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
-
-namespace amsi {
+namespace amsi
+{
   
   DataDistribution::DataDistribution(int size) :
     assembled(false),

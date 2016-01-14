@@ -167,7 +167,6 @@ namespace amsi {
       return rdd_id; 
     }
 
-
     /// @brief Reconcile a CommPattern object between the ProcessSets associated with the
     ///        Tasks forming the CommRelation on which the pattern is based.
     /// @param rdd_id The identifier of the CommPattern to reconcile
@@ -190,9 +189,9 @@ namespace amsi {
       // determine the task rank
       int task_rank = tl->localRank();
 
-      // switch to the correct communicator for this communication
+      // switch to the correct communicator for this operation
 
-#     ifdef CORE      
+#     ifndef CORE      
       int recv_from;
       void* recv;
       size_t recv_size;
@@ -217,14 +216,14 @@ namespace amsi {
 	  std::vector<int> recvfrom;
 	  send_pattern->getRecvedFrom(send_to,recvfrom);
 
-#         ifdef CORE
+#         ifndef CORE
           PCU_Comm_Write(send_to+t1s, &recvfrom[0], t1s*sizeof(int));
 #         else
 	  t_isend(recvfrom,MPI_INTEGER,t2->localToGlobalRank(send_to));
 #         endif
 	}
 
-#       ifdef CORE
+#       ifndef CORE
         // All processes must call PCU Send and Read
         PCU_Comm_Send();
         while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
@@ -240,15 +239,15 @@ namespace amsi {
 	int recv_from = t1s > 0 ? task_rank % t1s : 0;
 	std::vector<int> recv_count;
 
-#       ifdef CORE
+#       ifndef CORE
         // All processes must call PCU Send
         PCU_Comm_Send();
-        while(PCU_Comm_Read(&recv_from,&recv,&recv_size)){
+        while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
+	{
           recv_count.resize(recv_size/sizeof(int));
           memcpy(&recv_count[0], recv, recv_size);
         }
 #       else
-	// todo: change to irecv, add work-to-do queue to check every time an AMSI control call is made 
 	t_recv(recv_count,MPI_INTEGER,t1->localToGlobalRank(recv_from));
 #       endif
 
@@ -261,7 +260,7 @@ namespace amsi {
 	}
 
       }
-#     ifdef CORE
+#     ifndef CORE
       // Switch pcu comms back to task
       PCU_Switch_Comm(tl->comm());
 #     endif

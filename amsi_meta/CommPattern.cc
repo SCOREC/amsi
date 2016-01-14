@@ -160,51 +160,19 @@ namespace amsi
       return result;
     }
 
-    void FullCommPattern::Reconcile()
+  std::ostream& operator<<(std::ostream& os, const CommPattern& obj)
+  {
+    os << "CommPattern: " << std::endl;
+    for(int ii = 0; ii < obj.getNumSenders(); ii++)
     {
-/*
-      if(!reconciled)
+      for(int jj = 0; jj < obj.getNumRecvers(); jj++)
       {
-	if(sender)
-	{
-	  //int to_send = (t2_size / t1_size) + (task_rank < (t2_size % t1_size));
-	  
-	  for(int ii = 0; ii < ranks
-
-	  for(int ii = 0; ii < to_send; ii++)
-	  {
-	    int send_to = task_rank + (ii * t1_size);
-	    std::vector<int> recv_from;
-	    GetRecvFrom(send_to,recv_from);
-	    t_send(recv_from,MPI_INTEGER,t2->LocalToGlobalRank(send_to));
-	  }
-	}
-	else
-	{
-	  int recv_from = task_rank % t1_size;
-	  std::vector<int> recv_count;
-	  t_recv(recv_count,MPI_INTEGER,t1->LocalToGlobalRank(recv_from));
-	  for(int ii = 0; ii < recv_count.size(); ii++)
-	    (*recv_pattern)(ii,task_rank) = recv_count[ii];
-	}
-	reconciled = true;
+	os << std::setw(10) << obj(ii,jj) << " ";
       }
-*/
+      os << std::endl;
     }
-
-    std::ostream& operator<<(std::ostream& os, const CommPattern& obj)
-    {
-      os << "CommPattern: " << std::endl;
-      for(int ii = 0; ii < obj.getNumSenders(); ii++)
-      {
-	for(int jj = 0; jj < obj.getNumRecvers(); jj++)
-	{
-	  os << std::setw(10) << obj(ii,jj) << " ";
-	}
-	os << std::endl;
-      }
-      return os;
-    }
+    return os;
+  }
 
     CommPattern * CommPattern_CreateInverted(const CommPattern * pattern)
     {

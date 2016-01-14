@@ -11,7 +11,7 @@
 #include <vector>
 namespace amsi
 {
-  class CommPattern : public Assemblable, public Reconcilable
+  class CommPattern : public Assemblable
   {
   public:
     CommPattern(int so, int st)
@@ -38,7 +38,6 @@ namespace amsi
     virtual int& operator()(int,int);
     virtual int operator()(int,int) const;
     virtual int Assemble(MPI_Comm);
-    virtual void Reconcile();
   private:
     FullCommPattern();
     int * pattern;

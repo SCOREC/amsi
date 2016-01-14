@@ -1,35 +1,28 @@
 #include "Task.h"
-
 #include "DataDistribution.h"
 #include "ProcessSet.h"
-
 #include <cassert>
 #include <iostream>
-
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
-
-
-namespace amsi {
-
+namespace amsi
+{
   int taskSize(Task * t)
   {
     const ProcessSet * ps = t->getProcessSet();
     return ps->size();
   }
-
-
-    /// @brief Standard constructor, collective on the ProcessSet passed in
-    /// @param p The ProcessSet describing the parallel ranks on which the Task will execute
-    Task::Task(ProcessSet * p) :
-      task_comm(),
-      task_group(),
-      proc(p),
-      data(),
-      rank(),
-      local_rank(),
-      id_gen()
+  /// @brief Standard constructor, collective on the ProcessSet passed in
+  /// @param p The ProcessSet describing the parallel ranks on which the Task will execute
+  Task::Task(ProcessSet * p) 
+    : task_comm()
+    , task_group()
+    , proc(p)
+    , data()
+    , rank()
+    , local_rank()
+    , id_gen()
     {
       // Create a comm for the task
       MPI_Group world_group;
@@ -137,19 +130,15 @@ namespace amsi {
     {
       Zoltan_Struct * zs = Zoltan_Create(task_comm);
       dd = new DataDistribution(proc->size(),zs);
-      
       size_t s1 = sizeof(DataDistribution*);
       size_t s2 = sizeof(int);
-      
       void * buffer = (void*) new char[s1+s2];
       memcpy(buffer,&dd,s1);
       memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
-      
       Zoltan_Set_Fn(zs,
 		    ZOLTAN_NUM_OBJ_FN_TYPE,
 		    (void(*)()) &DD_get,
 		    buffer);
-      
       Zoltan_Set_Fn(zs,
 		    ZOLTAN_OBJ_LIST_FN_TYPE,
 		    (void(*)()) &DD_describe,
@@ -157,7 +146,6 @@ namespace amsi {
     }
 #   endif
     result = getDD_ID(nm);
-
     assert(result);
     data[result] = dd;
     return result;
