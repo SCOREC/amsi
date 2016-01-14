@@ -124,16 +124,14 @@ Another Newton-Raphson iterative process occurs at micro-scale to converge to th
 The simulation two nested Newton-Raphson operations occurring; during each macro-scale Newton iteration every micro-scale RVE must undergo a full Newton-Raphson convergence process.
 
 \section{Results and Discussion}\label{results}
-The biotissue simulation was run on the AMOS BG/Q machine housed at the CCI facilities. Both strong and weak scaling studies were conducted up to an eighth of the total machine core count, or 16384 cores. The ratio of macro-scale to micro-scale assigned processes was held near 1:128, though the total core count was kept as an integer power of 2 in order for the SLURM job scheduler to submit the jobs to the compute nodes in a timely manner. The precise calculation used to determine macro and micro process counts is given by 
+The biotissue simulation was run on the AMOS BG/Q machine housed at the CCI facilities. Both strong and weak scaling studies were conducted up to an eighth of the total machine core count, or 16384 cores. The ratio of macro-scale to micro-scale assigned processes was held at 1:127, and the total core count was kept as an integer power of 2 in order for the SLURM job scheduler to submit the jobs to the compute nodes in a timely manner. The precise calculation used to determine macro and micro process counts is given by 
 %
 \begin{lstlisting}[language=Bash,caption={process assignment calculation}]
-  MICRO_RATIO=128
-  NP=$(( $NUM_MACRO * $MICRO_RATIO))
+  NP=$(( $NUM_MACRO * 128))
   NUM_MICRO=$(( $NP - $NUM_MACRO))
 \end{lstlisting}
 \label{macro micro ratio}
 %
-thus as the number of cores assigned to the macro-scale computation increases, the ratio approaches 1:128. 
 
 Separate timings were taken for various sections of the simulation code, isolating the micro-scale computation, macro-scale linear system assembly and calculation of elemental linear systems, and macro-scale linear system solution. In addition, the time for spent in the amsi subroutines for communication was also measured. Thus the behavior of each section of the code is independently evaluated in our scaling study, as well as the overall execution time.
 
@@ -146,7 +144,7 @@ Separate timings were taken for various sections of the simulation code, isolati
   \label{weak scaling}
 \end{figure}
 %
-Keeping the work per process approximately constant (1k elements per macro-scale process, with the macro:micro ratio as specified in listing \ref{macro micro ratio}) it can be seen that the time to compute every RVE in the system stays relatively consistent, while the time to solve the macro-scale linear system increases, causing a modest increase in the overall time per macro-scale Newton iteration.
+Keeping the work per process approximately constant (1k elements per macro-scale process, with the 1:127 macro-micro ratio as specified in listing \ref{macro micro ratio}) it can be seen that the time to compute every RVE in the system stays relatively consistent, while the time to solve the macro-scale linear system increases, causing a modest increase in the overall time per macro-scale Newton iteration.
 
 %
 \begin{figure}
