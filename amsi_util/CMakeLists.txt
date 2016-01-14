@@ -6,6 +6,7 @@ set(util_public_headers
   amsiReporter.h
   amsiUtilFunctions.h
   amsiMPI.h
+  amsiMPI_impl.h
   amsiByteStream.h
   unordered_map.h 
   pystring.h

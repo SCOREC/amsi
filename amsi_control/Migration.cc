@@ -242,7 +242,7 @@ void ScaleSensitiveMigration::execute(std::vector< std::vector<char> > & data)
   for(int ii = 0; ii < send_count; ii++)
   {
     std::pair<int,int> coupled_rank_index = coupledInfoByIndex(cp,
-							       CommPattern::RECVER,
+							       RECVER,
 							       rank,
 							       send_indices[ii]);
     size_t data_sz = data[ii].size();

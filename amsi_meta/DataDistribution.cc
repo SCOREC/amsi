@@ -23,8 +23,10 @@ namespace amsi {
   { }
 #endif
 
-  int DataDistribution::Assemble(MPI_Comm comm, int comm_rank)
+  int DataDistribution::Assemble(MPI_Comm comm)
   {
+    int comm_rank = 0;
+    MPI_Comm_rank(comm,&comm_rank);
     if(!assembled)
     {
 #     ifdef CORE

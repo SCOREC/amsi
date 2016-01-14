@@ -1,9 +1,10 @@
 #include "CommunicationManager.h"
+#include "CommPattern.h"
+#include "CommPattern_Create.h"
 #include "Task.h"
 #include "TaskManager.h"
-
-namespace amsi {
-
+namespace amsi
+{
     // assumes static initialization of communication relations
     int CommunicationManager::inter_comm_tag = 0;
 
@@ -118,7 +119,7 @@ namespace amsi {
 						      int t1s,
 						      int t2s)
     {
-      comm_patterns[rdd_id] = new CommPattern(t1s,t2s);
+      comm_patterns[rdd_id] = new FullCommPattern(t1s,t2s);
     }
 
     /// @brief Invert an assembled CommPattern for reciprocal communication

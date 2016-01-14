@@ -6,12 +6,16 @@
 extern MPI_Comm AMSI_COMM_WORLD;
 extern MPI_Comm AMSI_COMM_LOCAL;
 template <typename T>
-MPI_Datatype mpi_type() {return MPI_BYTE;}
+MPI_Datatype mpi_type();
 template<typename T>
 T comm_sum(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
 {
   T sm = 0;
-  MPI_Allreduce(&v,&sm,1,mpi_type<T>(),MPI_SUM,cm);
+  MPI_Datatype tp = mpi_type<T>();
+  size_t sz = 1;
+  if(tp == MPI_BYTE)
+    sz *= sizeof(T);
+  MPI_Allreduce(&v,&sm,sz,mpi_type<T>(),MPI_SUM,cm);
   return sm;
 }
 template <typename T>
@@ -169,5 +173,5 @@ bool t_irecv(T & msg, MPI_Datatype type, int from, MPI_Request & request)
 
   return result;
 }
-
+#include "amsiMPI_impl.h"
 #endif

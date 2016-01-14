@@ -1,5 +1,5 @@
 #include "AddData_LoadBalancing.h"
-
+#include "CommPattern.h"
 #include <cassert>
 #include <iostream>
 #include <limits.h>

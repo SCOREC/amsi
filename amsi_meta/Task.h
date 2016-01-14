@@ -22,7 +22,6 @@ namespace amsi
   typedef int(*ExecuteFunc)(int&,char**&,MPI_Comm);
   
   int taskSize(Task * t);
-
   class Task{
   public:
     Task(ProcessSet* p);

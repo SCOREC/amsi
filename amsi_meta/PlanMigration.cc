@@ -1,17 +1,14 @@
 #include "PlanMigration.h"
 #include "DataDistribution.h"
-
+#include "CommPattern.h"
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
-
 #include <iostream>
 #include <limits.h>
 #include <cstdlib>
-
-
-namespace amsi {
-
+namespace amsi
+{
     // For now this is the default migration planning routine
     // TODO: get rid of comm pattern, use data distribution
     // General description:

@@ -13,13 +13,6 @@
 
 namespace amsi {
   Task * getLocal();
-
-  enum ProcessState
-  {
-    IDLE = 0,
-    ACTIVE = 1
-  };
-  
   /// The definition of the TaskManager class, which is used primarily to
   ///  create and manage tasks and generate unique ids for tasks and 
   ///  data distributions defined on tasks, and to manage task states for

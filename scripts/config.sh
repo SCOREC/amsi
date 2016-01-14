@@ -49,7 +49,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     ..
 
 else
-    module load openmpi-1.3.3
+    module load openmpi/1.3.3
     module load simmetrix/simModSuite
     module load $DEVROOT/petsc/petsc-3.6.3/ompi133-debug/lib/petsc/conf/modules/petsc/3.6.3
 

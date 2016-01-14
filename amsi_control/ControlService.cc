@@ -646,13 +646,9 @@ namespace amsi {
     void ControlService::Assemble(size_t t_id, Assemblable * control_data)
     {
       Task * t = task_man->Task_Get(t_id);
-      
       MPI_Comm task_comm = t->comm();
-      int task_rank = t->localRank();
-
-      if(!control_data->Assemble(task_comm,task_rank))
+      if(!control_data->Assemble(task_comm))
       {}
-//	std::cerr << "ERROR: AMSI control data not assembled" << std::endl;
     }
 
     void ControlService::Reconcile(size_t r_id, Reconcilable * control_data)

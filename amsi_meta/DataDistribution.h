@@ -26,8 +26,7 @@ namespace amsi {
       DataDistribution(int size);
 
       // Assemblable interface
-      int Assemble(MPI_Comm,int);
-      bool isAssembled() const {return assembled;}
+      virtual int Assemble(MPI_Comm);
       
       int operator[](unsigned index) const;
       int& operator[](unsigned index);

@@ -1,22 +1,20 @@
 #include "CommPattern.h"
-
 #include <cstring> // for memset
 #include <iomanip>
 #include <iostream>
-
 namespace amsi
 {
   std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
-					 CommPattern::Role role,
-					 int rank,
-					 int index)
+					Role role,
+					int rank,
+					int index)
   {
     std::pair<int,int> result;
     int remainder = 0;
     int coupled_rank = -1;
     int num_recvers = cp->getNumRecvers();
     int num_senders = cp->getNumSenders();
-    if(role == CommPattern::SENDER)
+    if(role == SENDER)
     {
       int count = 0;
       for(int ii = 0; ii < num_recvers; ii++)
@@ -37,7 +35,7 @@ namespace amsi
       result.first = coupled_rank;
       result.second = count + remainder;
     }
-    else if(role == CommPattern::RECVER)
+    else if(role == RECVER)
     {
       int count = 0;
       for(int ii = 0; ii < num_senders; ii++)
@@ -64,10 +62,9 @@ namespace amsi
     /// @brief Default constructor.
     /// @param s1_ The number of processes in the ProcessSet related to the sending task
     /// @param s2_ The number of processes in the ProcessSet related to the recving task
-    CommPattern::CommPattern(int s1_, int s2_)
-      : s1(s1_)
-      , s2(s2_)
-      , pattern()
+  FullCommPattern::FullCommPattern(int s1_, int s2_)
+    : CommPattern(s1_,s2_)
+    , pattern()
     { 
       pattern = new int[s1 * s2];
       memset(&pattern[0],0, sizeof(int) * s1 * s2);
@@ -80,9 +77,8 @@ namespace amsi
     ///                the number of pieces of data to be sent to that process
     void CommPattern::getSentTo(int rank, std::vector<int>& send_to) const
     {
-      int offset = rank * s2;
       for(int ii = 0; ii < s2; ii++)
-	send_to.push_back(pattern[offset + ii]);
+	send_to.push_back((*this)(rank,ii));
     }
     
     /// @brief Retrieve a vector representing the number of pieces of data to be
@@ -93,21 +89,18 @@ namespace amsi
     void CommPattern::getRecvedFrom(int rank, std::vector<int> & recv_from) const
     {
       for(int ii = 0; ii < s1; ii++)
-      {
-	int offset = ii * s2;
-	recv_from.push_back(pattern[offset + rank]);
-      }
+	recv_from.push_back((*this)(ii,rank));
     }
     
     /// @brief Access/Modification operator, analogous to the .GetDataCount(int,int) member function
-    int& CommPattern::operator()(int r1, int r2)
+    int& FullCommPattern::operator()(int r1, int r2)
     {
       unassembled();
       return pattern[r1 * s2 + r2];
     }
     
     /// @brief Access operator, analogous to the .GetDataCount(int,int) member function
-    int CommPattern::operator()(int r1, int r2) const
+    int FullCommPattern::operator()(int r1, int r2) const
     {
       return pattern[r1 * s2 + r2];
     }
@@ -116,13 +109,15 @@ namespace amsi
     /// @param MPI_Comm The comm across which to assemble the CommPattern (should be the MPI_Comm containing the 
     ///                 ranks associated with the sending task.
     /// @param rank The task-rank of the local process.
-    int CommPattern::Assemble(MPI_Comm comm, int rank)
+    int FullCommPattern::Assemble(MPI_Comm comm)
     {
       int result = 0;
       if(!assembled)
       {
+	int rnk = 0;
+	MPI_Comm_rank(comm,&rnk);
 	std::vector<int> send_to;
-	getSentTo(rank,send_to); // get everything locally sent
+	getSentTo(rnk,send_to); // get everything locally sent
 
       //std::cout << "Assembling!" << send_to.size() << std::endl;
       /* 
@@ -142,7 +137,7 @@ namespace amsi
         PCU_Comm_Begin();
         MPI_Comm_size(comm,&size);
         for(int i=0;i<size;i++)
-          if(i!=rank)
+          if(i!=rnk)
             PCU_Comm_Write(i, &send_to[0], send_to.size()*sizeof(int));
         PCU_Comm_Send();
         while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
@@ -165,7 +160,7 @@ namespace amsi
       return result;
     }
 
-    void CommPattern::Reconcile()
+    void FullCommPattern::Reconcile()
     {
 /*
       if(!reconciled)
@@ -200,9 +195,9 @@ namespace amsi
     std::ostream& operator<<(std::ostream& os, const CommPattern& obj)
     {
       os << "CommPattern: " << std::endl;
-      for(int ii = 0; ii < obj.s1; ii++)
+      for(int ii = 0; ii < obj.getNumSenders(); ii++)
       {
-	for(int jj = 0; jj < obj.s2; jj++)
+	for(int jj = 0; jj < obj.getNumRecvers(); jj++)
 	{
 	  os << std::setw(10) << obj(ii,jj) << " ";
 	}
@@ -214,15 +209,12 @@ namespace amsi
     CommPattern * CommPattern_CreateInverted(const CommPattern * pattern)
     {
       CommPattern * result = NULL;
-      result = new CommPattern(pattern->s2,pattern->s1);
-
-      for(int ii = 0; ii < pattern->s1; ii++)
-	for(int jj = 0; jj < pattern->s2; jj++)
+      int new_senders = pattern->getNumRecvers();
+      int new_recvers = pattern->getNumSenders();
+      result = new FullCommPattern(new_senders,new_recvers);
+      for(int ii = 0; ii < new_recvers; ii++)
+	for(int jj = 0; jj < new_senders; jj++)
 	  (*result)(jj,ii) = (*pattern)(ii,jj);
-
-
-      //std::cout << (*result);
-      
       return result;
     }
 

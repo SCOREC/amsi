@@ -2,60 +2,57 @@
 #define AMSI_COMMPATTERN_H_
 #include "Assemblable.h"
 #include "amsiMetaConfig.h"
+#include "CommunicationManager.h"
 #include <mpi.h>
 #ifdef CORE
 #include <PCU.h>
 #endif
 #include <ostream>
 #include <vector>
-
 namespace amsi
 {
   class CommPattern : public Assemblable, public Reconcilable
   {
   public:
-    enum Role
-    {
-      SENDER = 0,
-      RECVER = 1
-    };
-    CommPattern(int s1, int s2);
-    void getSentTo(int rank, std::vector<int>& send_to) const;
-    void getRecvedFrom(int rank, std::vector<int>& recv_from) const;
-    int& operator()(int,int);
-    int operator()(int,int) const;
-    int getNumSenders() {return s1;}
-    int getNumRecvers() {return s2;}
-    virtual int Assemble(MPI_Comm,int);
-    virtual void Reconcile();
-  protected:
-    friend std::ostream& operator<<(std::ostream&,const CommPattern&);
-    friend CommPattern* CommPattern_CreateInverted(const CommPattern*);
+    CommPattern(int so, int st)
+      : s1(so)
+      , s2(st)
+    {}
+    virtual int& operator()(int,int) = 0;
+    virtual int operator()(int,int) const = 0;
 
-    // naive implementation (full matrix) takes way more space than necessary
-    int s1,s2;
-    int * pattern;
+    void getSentTo(int rank, std::vector<int>& sent_to) const;
+    void getRecvedFrom(int rank, std::vector<int>& recv_from) const;
+
+    int getNumSenders() const {return s1;}
+    int getNumRecvers() const {return s2;}
+  protected:
+    int s1;
+    int s2;
+  };
+  
+  class FullCommPattern : public CommPattern
+  {
+  public:
+    FullCommPattern(int s1, int s2);
+    virtual int& operator()(int,int);
+    virtual int operator()(int,int) const;
+    virtual int Assemble(MPI_Comm);
+    virtual void Reconcile();
   private:
-    CommPattern();
+    FullCommPattern();
+    int * pattern;
   };
 
-  /// Associated commpattern functions
+  std::ostream& operator<<(std::ostream& os, const CommPattern& obj);
 
-    /// Output operator, used to print a matrix repressentation of the CommPattern object using the standard << operator
-    std::ostream& operator<<(std::ostream& os, const CommPattern& obj);
-
-    /// Create a new CommPattern which is an inversion of the old one (ie all sending processes in the old CommPattern are recvers in the produced CommPattern and vice-versa, essentially a matrix transposition)
-    CommPattern * CommPattern_CreateInverted(const CommPattern * pattern);
+  /// Create a new CommPattern which is an inversion of the old one (ie all sending processes in the old CommPattern are recvers in the produced CommPattern and vice-versa, essentially a matrix transposition)
+  CommPattern * CommPattern_CreateInverted(const CommPattern * pattern);
 
     // retrieve information about the rank and remote index of a piece of local data by index
-    std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
-					  CommPattern::Role send_recv,
-					  int rank,
-					  int index);
-
-
-
+  std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
+					Role role,
+					int rank,
+					int index);
 } // namespace amsi
-
-
 #endif

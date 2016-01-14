@@ -1,11 +1,9 @@
 #include "CommPattern_Create.h"
-
+#include "CommPattern.h"
 #include "DataDistribution.h"
-
 #include <iostream>
 #include <limits.h>
 #include <cstdlib>
-
 namespace amsi
 {
   CommPattern * CommPattern_CreateDistro(DataDistribution & dd, int s1, int s2)
@@ -27,7 +25,7 @@ namespace amsi
 	int even_distro = total_data / s2;
 	int extra_distro = total_data % s2;
 	
-	pattern = new CommPattern(s1,s2);
+	pattern = new FullCommPattern(s1,s2);
 	int dst = 0;
 	int dst_rcv = even_distro + (dst < extra_distro);
 	for(int src = 0; src < s1; src++)
@@ -53,7 +51,7 @@ namespace amsi
 	}
       }
       else
-	pattern = new CommPattern(s1 > 0 ? s1 : 0, s2 > 0 ? s2 : 0);
+	pattern = new FullCommPattern(s1 > 0 ? s1 : 0, s2 > 0 ? s2 : 0);
       return pattern;
     }
 

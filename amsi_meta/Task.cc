@@ -205,7 +205,7 @@ namespace amsi {
       if(verifyDD(nm))
       {
 	size_t id = getDD_ID(nm);
-	data[id]->Assemble(task_comm,local_rank);
+	data[id]->Assemble(task_comm);
       }
       
       /*

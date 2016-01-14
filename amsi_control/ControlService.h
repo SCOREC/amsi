@@ -1,22 +1,19 @@
 #ifndef CONTROLSERVICE_AMSI_H_
 #define CONTROLSERVICE_AMSI_H_
-
 #include "amsiInterfaceConfig.h"
 #include "amsiMetaConfig.h"
-
 #include "Assemblable.h"
+#include "CommPattern.h"
 #include "CommunicationManager.h"
 #include "DataDistribution.h"
 #include "TaskManager.h"
 #include "amsiUtilFunctions.h"
 #include "amsiMPI.h"
-
 #include <cstring>
 #include <list>
 #include <string>
-
-namespace amsi {
-
+namespace amsi
+{
     /// Class decleration of the ControlService class (set to be renamed as MultiscaleManager or ScaleCouplingManager or...), 
     ///  used as the top-level interface to the task managing portions of the AMSI infrastructure.
     class ControlService
@@ -706,7 +703,7 @@ namespace amsi {
 	(*dd)[task_rank] +=  migration_data.size();
       }
 
-      dd->Assemble(task_comm,task_rank);
+      dd->Assemble(task_comm);
 
     }
 
