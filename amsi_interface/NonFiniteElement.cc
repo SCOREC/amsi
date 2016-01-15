@@ -131,8 +131,8 @@ namespace amsi
                           apf::DynamicMatrix & BL)
     {
       apf::DynamicMatrix B0, B1;
-      LinearStrainDispB0(num_nodes,shape_deriv,B0);
-      LinearStrainDispB1(num_nodes,shape_deriv,node_disp,B1);
+      linearStrainDispB0(num_nodes,shape_deriv,B0);
+      linearStrainDispB1(num_nodes,shape_deriv,node_disp,B1);
       BL.setSize(B1.getRows(),B1.getColumns());
       BL.zero();
       BL += B0;

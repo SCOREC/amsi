@@ -1,32 +1,28 @@
 #include "NonLinearElasticIntegrator.h"
-
 #include "apfFunctions.h"
 #include "ConvenienceFunctions.h"
 #include "NonFiniteElement.h"
-
 #include <apfMesh.h>
 #include <apfShape.h>
-
 namespace amsi {
   namespace Analysis {
-
     NonLinearElasticIntegrator::NonLinearElasticIntegrator(apf::Field * field,
-							   int o,
-							   double pr,
-							   double sm) :
-      apf::Integrator(o),
-      ke(),
-      fe(),
-      e(NULL),
-      f(field),
-      fs(NULL),
-      me(NULL),
-      node_values(),
-      poisson_ratio(pr),
-      shear_modulus(sm),
-      num_element_eqs(0),
-      num_field_components(0),
-      num_element_nodes(0)
+                                                           int o,
+                                                           double pr,
+                                                           double sm)
+      : apf::Integrator(o)
+      , ke()
+      , fe()
+      , e(NULL)
+      , f(field)
+      , fs(NULL)
+      , me(NULL)
+      , node_values()
+      , poisson_ratio(pr)
+      , shear_modulus(sm)
+      , num_element_eqs(0)
+      , num_field_components(0)
+      , num_element_nodes(0)
     {
       fs = apf::getShape(f);
       num_field_components = apf::countComponents(f);
@@ -46,14 +42,14 @@ namespace amsi {
 
       if(reallocate)
       {
-	ke.setSize(num_element_eqs,num_element_eqs);
-	fe.setSize(num_element_eqs);
+        ke.setSize(num_element_eqs,num_element_eqs);
+        fe.setSize(num_element_eqs);
       }
-      
+
       ke *= 0.0;
       fe.zero();
     }
-    
+
     void NonLinearElasticIntegrator::atPoint(apf::Vector3 const &p, double w, double dV)
     {
       apf::Matrix3x3 J;
@@ -76,27 +72,27 @@ namespace amsi {
       PK2Stress(C,dV,poisson_ratio,shear_modulus,pk2);
 
       apf::DynamicMatrix BL;
-      LinearStrainDisp(num_element_nodes,
-		       shape_derivs,
-		       node_values,
-		       BL);
+      linearStrainDisp(num_element_nodes,
+                       shape_derivs,
+                       node_values,
+                       BL);
 
       apf::DynamicMatrix BNL;
-      NonLinearStrainDisp(num_element_nodes,
-			  shape_derivs,
-			  BNL);
+      nonLinearStrainDisp(num_element_nodes,
+                          shape_derivs,
+                          BNL);
 
       apf::DynamicMatrix K0;
-      LinearStiffnessK0(num_element_nodes,
-			BL,
-			hookes,
-			K0);
+      linearStiffnessK0(num_element_nodes,
+                        BL,
+                        hookes,
+                        K0);
 
       apf::DynamicMatrix KNL;
-      NonLinearStiffness(num_element_nodes,
-			 BNL,
-			 pk2,
-			 KNL);
+      nonLinearStiffness(num_element_nodes,
+                         BNL,
+                         pk2,
+                         KNL);
 
       ke += K0;
       ke += KNL;
@@ -107,12 +103,12 @@ namespace amsi {
       SymmMatrixToVoigtVector(pk2,pk2_vec);
 
       for(int ii = 0; ii < num_element_eqs; ii++)
-	for(int jj = 0; jj < num_element_eqs; jj++)
-	  fe(ii) += BL(jj,ii) * pk2_vec[jj];
+        for(int jj = 0; jj < num_element_eqs; jj++)
+          fe(ii) += BL(jj,ii) * pk2_vec[jj];
 
       fe *= (-wxdetjac);
 
     }
-   
+
   }
 }

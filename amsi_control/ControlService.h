@@ -14,7 +14,7 @@
 #include <string>
 namespace amsi
 {
-    /// Class decleration of the ControlService class (set to be renamed as MultiscaleManager or ScaleCouplingManager or...), 
+    /// Class decleration of the ControlService class (set to be renamed as MultiscaleManager or ScaleCouplingManager or...),
     ///  used as the top-level interface to the task managing portions of the AMSI infrastructure.
     class ControlService
     {
@@ -30,56 +30,56 @@ namespace amsi
       int Execute(int& argc,char **& argv);
 
       size_t CommRelation_Define(const std::string & nm1,
-				 const std::string & nm2);
+                                 const std::string & nm2);
 
       size_t CommRelation_GetID(const std::string & nm1,
                                 const std::string & nm2);
 
       size_t CreateCommPattern(const std::string & t1_dd,
-			       const std::string & t1,
-			       const std::string & t2);
+                               const std::string & t1,
+                               const std::string & t2);
 
       void getPatternInfo(size_t rdd_id,int &,int &,CommPattern *&);
 
       // Remove and add data from comm pattern
       void RemoveData(size_t rdd_id, std::vector<int> & data);
-      
+
       template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       size_t AddData(size_t rdd_id,
                      Container<D> & objects,
-		     std::vector<int> & data,
+                     std::vector<int> & data,
                      int option = 0,
                      void (*userFunc)() = NULL );
 
       // Migration functions
       void planMigration(std::vector<int> & migration_indices,
-			 size_t rdd_id,
+                         size_t rdd_id,
                          int option = 0,
                          void (*userFunc)() = NULL);
-      
+
       template <typename D, template<typename T, typename All = std::allocator<T> > class Container>
       void migration(std::vector< std::vector<char> > & migration_data,
                      size_t rdd_id,
                      Container<D> & objects);
 
-      
-      
+
+
       template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       void shareMigration(size_t rdd_id, Container<D> & objects);
 
       void CommPattern_Assemble(size_t rdd_id);
 
       size_t RecvCommPattern(const std::string & t1_dd_nm,
-			     const std::string & t1_nm,
-			     const std::string & t2_nm,
-			     const std::string & t2_dd_nm);
+                             const std::string & t1_nm,
+                             const std::string & t2_nm,
+                             const std::string & t2_dd_nm);
 
       void CommPattern_Reconcile(size_t rdd_id);
 
       size_t CommPattern_UseInverted(size_t rdd_id,
-				     const std::string & dd,
-				     const std::string & t1,
-				     const std::string & t2);
+                                     const std::string & dd,
+                                     const std::string & t1,
+                                     const std::string & t2);
 
       void CommPattern_UpdateInverted(size_t use_rdd_id,size_t create_rdd_id);
 
@@ -87,16 +87,16 @@ namespace amsi
       void Reconcile(size_t,Reconcilable*);
 
       template <typename D>
-	void Assemble(size_t t_id, D & data, MPI_Datatype type);
+        void Assemble(size_t t_id, D & data, MPI_Datatype type);
 
       template <typename D>
         void Reconcile(size_t r_id, D & data, MPI_Datatype type);
 
       template <typename D>
-	void Relation_Broadcast(size_t r_id, D & data, MPI_Datatype type);
+        void Relation_Broadcast(size_t r_id, D & data, MPI_Datatype type);
 
       template <typename D, template <typename T,typename All = std::allocator<T> > class Container>
-	void Communicate(size_t rdd_id,Container<D> & buffer,MPI_Datatype type);
+        void Communicate(size_t rdd_id,Container<D> & buffer,MPI_Datatype type);
 
     private:
       ControlService();
@@ -131,17 +131,17 @@ namespace amsi
     };
 
 
-    template <typename D> 
+    template <typename D>
       void ControlService::Assemble(size_t t_id, D & data, MPI_Datatype type)
     {
       Task * t = task_man->Task_Get(t_id);
       MPI_Comm task_comm = t->comm();
       int task_rank = t->localRank();
       int data_size = data.NumPerRank();
- 
+
       MPI_Allgather(&data[task_rank],data_size,type,
-		    &data[0],data_size,type,
-		    task_comm);
+                    &data[0],data_size,type,
+                    task_comm);
     }
 
     // need to differentiate between 1-to-all and many-to-all Reconciliations
@@ -166,28 +166,28 @@ namespace amsi
 
       if(lt == t1) // sending task
       {
-	// make sure the data to be reconciled is assembled on the local task
-	Assemblable * is_assemblable = dynamic_cast<Assemblable*>(&data);
-	if(is_assemblable != NULL)
-	{
-	  if(is_assemblable->isAssembled() != true)
-	    Assemble(t_ids.first,is_assemblable); //built-in assemble
-	}
-	else
-	  Assemble(t_ids.first,data,type); // user-type assemble
+        // make sure the data to be reconciled is assembled on the local task
+        Assemblable * is_assemblable = dynamic_cast<Assemblable*>(&data);
+        if(is_assemblable != NULL)
+        {
+          if(is_assemblable->isAssembled() != true)
+            Assemble(t_ids.first,is_assemblable); //built-in assemble
+        }
+        else
+          Assemble(t_ids.first,data,type); // user-type assemble
 
         int to_send = t2_per_t1 + (task_rank < extra_t2);
-	
-	for(int ii = 0; ii < to_send; ii++)
-	{
-	  int send_to = task_rank + (ii * t1s);
-	    t_ssend(data[send_to],type,t2->localToGlobalRank(send_to));
-	}
+
+        for(int ii = 0; ii < to_send; ii++)
+        {
+          int send_to = task_rank + (ii * t1s);
+            t_ssend(data[send_to],type,t2->localToGlobalRank(send_to));
+        }
       }
       else // recving task
       {
-	int recv_from = task_rank % t1s;
-	t_srecv(data,type,t1->localToGlobalRank(recv_from));
+        int recv_from = task_rank % t1s;
+        t_srecv(data,type,t1->localToGlobalRank(recv_from));
       }
     }
 
@@ -197,7 +197,7 @@ namespace amsi
     {
       // determine if sender of recver
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
-      
+
       Task * lt = task_man->getLocalTask();
 
       Task * t1 = task_man->Task_Get(t_ids.first);
@@ -214,17 +214,17 @@ namespace amsi
       if(lt == t1) // sending task
       {
         int to_send = t2_per_t1 + (task_rank < extra_t2);
-	
-	for(int ii = 0; ii < to_send; ii++)
-	{
-	  int send_to = task_rank + (ii * t1s);
-	    t_ssend(data,type,t2->localToGlobalRank(send_to));
-	}
+
+        for(int ii = 0; ii < to_send; ii++)
+        {
+          int send_to = task_rank + (ii * t1s);
+            t_ssend(data,type,t2->localToGlobalRank(send_to));
+        }
       }
       else // recving task
       {
-	int recv_from = task_rank % t1s;
-	t_srecv(data,type,t1->localToGlobalRank(recv_from));
+        int recv_from = task_rank % t1s;
+        t_srecv(data,type,t1->localToGlobalRank(recv_from));
       }
     }
 
@@ -245,125 +245,86 @@ namespace amsi
     template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       void ControlService::Communicate(size_t rdd_id, Container<D> & buffer, MPI_Datatype type)
       {
-	// determine if sender or recver
-	std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
-	std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
-
-	Task * tl = task_man->getLocalTask();
-	int task_rank = tl->localRank();
-
-	Task * t1 = task_man->Task_Get(t_ids.first); // sending task
-	Task * t2 = task_man->Task_Get(t_ids.second); // recving task
-
-	assert(t1 == tl || t2 == tl);
-
+        // determine if sender or recver
+        std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
+        std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
+        Task * tl = task_man->getLocalTask();
+        int task_rank = tl->localRank();
+        Task * t1 = task_man->Task_Get(t_ids.first); // sending task
+        Task * t2 = task_man->Task_Get(t_ids.second); // recving task
+        assert(t1 == tl || t2 == tl);
         int t1s = taskSize(t1);
-
         // Get type size
         int sizeoftype;
         MPI_Type_size(type,&sizeoftype);
-
-
 #       ifdef CORE
         PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
         PCU_Comm_Begin();
 #       endif
-
-	if(tl == t1) // if the local task is the sending task
-	{
-	  unsigned int local_count = t1->getLocalDDValue(r_dd_id.second);
-
-	  if(buffer.size() != local_count)
-	  {}
-	  // should print an error or warning msg
-	
-	  // get the commpattern related to this r/dd
-	  CommPattern * send_pattern = comm_man->CommPattern_Get(rdd_id);
-
-	  // iterate over the recvers for this rank
-	  std::vector<int> send_to;
-	  send_pattern->getSentTo(task_rank,send_to);
-
-	  size_t offset = 0;
+        if(tl == t1) // if the local task is the sending task
+        {
+          unsigned int local_count = t1->getLocalDDValue(r_dd_id.second);
+          CommPattern * send_pattern = comm_man->CommPattern_Get(rdd_id);
+          int num_snt_to = countRanksSentTo(send_pattern,task_rank);
+          std::vector<int> snt_rnks(num_snt_to);
+          std::vector<int> snt_cnts(num_snt_to);
+          getRanksSentTo(send_pattern,task_rank,&snt_rnks[0]);
+          getUnitsSentTo(send_pattern,task_rank,&snt_cnts[0]);
+          size_t offset = 0;
 #         ifndef CORE
           buffer_offset<D> bo;
           bo.buffer = &buffer[0];
 #         endif
-	  for(unsigned int ii = 0; ii < send_to.size(); ii++)
-	  {
-	    int to_send = send_to[ii];
-	    if(to_send > 0)
-	    {
-#             ifdef CORE
-              PCU_Comm_Write(ii+t1s, &buffer[offset], to_send*sizeoftype);
-#             else
-	      bo.s = to_send;
-	      bo.offset = offset;
-	      t_send(bo,type,t2->localToGlobalRank(ii));
-#             endif
-
-              offset += to_send;
-	    }
-	  }
-
+          for(unsigned int ii = 0; ii < num_snt_to; ii++)
+          {
+#           ifdef CORE
+            PCU_Comm_Write(t1s+snt_rnks[ii],&buffer[offset],snt_cnts[ii]*sizeoftype);
+#           else
+            bo.s = to_send;
+            bo.offset = offset;
+            t_send(bo,type,t2->localToGlobalRank(ii));
+#           endif
+            offset += snt_cnts[ii];
+          }
 #         ifdef CORE
           PCU_Comm_Send();
-	  int recvfrom = -1;
-	  void * recv;
-	  size_t recv_size;
+          int recvfrom = -1;
+          void * recv;
+          size_t recv_size;
           while(PCU_Comm_Read(&recvfrom,&recv,&recv_size))
           { }
 #         endif
-	}
-	else if (t2 == tl)// recv'ing
-	{
-	  // assuming that the commpattern is reconciled here...
-	  CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
-	  std::vector<int> recv_from;
-	  pattern->getRecvedFrom(task_rank,recv_from);
-	
+        }
+        else if (t2 == tl)// recv'ing
+        {
 #         ifdef CORE
           PCU_Comm_Send();
-#         endif
-
-	  
-#         ifdef CORE
-          int recvOrderOffset[t1s];
-	  size_t offset = 0;
-
-          // Calculate offsets for receiving data
-          for(int ii=0; ii < t1s; ii++)
+          size_t bfr_sz = 0;
+          size_t bfr_hd = 0;
+          size_t rcv_sz = 0;
+          int rcv_frm = -1;
+          void * rcv = NULL;
+          while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz))
           {
-            recvOrderOffset[ii] = offset;
-            offset += recv_from[ii];
-          }
-
-          // Read in data (we don't know the order)
-          // We do know how much data from each sender though
-          buffer.resize(offset); // Make sure buffer is correct size
-          offset = 0;
-
-	  int recved_from;
-	  void * recved;
-	  size_t recved_size;
-          while(PCU_Comm_Read(&recved_from,&recved,&recved_size)){
-            // Put message into data buffer
-            memcpy(&buffer[recvOrderOffset[recved_from]],recved,recved_size);
+            bfr_sz += rcv_sz;
+            buffer.resize(bfr_sz); // this is stupid and awful
+            memcpy(&buffer[bfr_hd],rcv,rcv_sz);
+            bfr_hd += rcv_sz;
           }
 #         else
-	  recv_buffer_offset<D, Container> buffer_offset;
-	  buffer_offset.buffer = &buffer;
-	  buffer_offset.offset = 0;
-	  for(size_t ii = 0; ii < recv_from.size(); ii++)
-	    {
-	      int to_recv = recv_from[ii];
-	      {
-		if(to_recv > 0)
-		  buffer_offset.offset += t_recv(buffer,type,t1->localToGlobalRank(ii));
-	      }
-	    }
+          recv_buffer_offset<D, Container> buffer_offset;
+          buffer_offset.buffer = &buffer;
+          buffer_offset.offset = 0;
+          for(size_t ii = 0; ii < recv_from.size(); ii++)
+            {
+              int to_recv = recv_from[ii];
+              {
+                if(to_recv > 0)
+                  buffer_offset.offset += t_recv(buffer,type,t1->localToGlobalRank(ii));
+              }
+            }
 #         endif
-	}
+        }
 
 #       ifdef CORE
         // Switch pcu comms back to task
@@ -374,7 +335,7 @@ namespace amsi
 
     // This function adds data while load balancing
     // Assumption: Sending task specifies additions
-    // Sending task process: 
+    // Sending task process:
     //   - Contents of 'data' doesn't matter, only size is used (size is number of added data)
     //   - rdd_id specifies the comm pattern
     //   - 'objects' is a vector of references to the data objects corresponding to
@@ -391,7 +352,7 @@ namespace amsi
     template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
     size_t ControlService::AddData(size_t rdd_id,
                                    Container<D> & objects,
-				   std::vector<int> & data,
+                                   std::vector<int> & data,
                                    int option,
                                    void (*userFunc)())
     {
@@ -451,7 +412,7 @@ namespace amsi
 
         CommPattern_Assemble(rdd_id);
         CommPattern_Assemble(rdd_init_id);
-          
+
         // Reorder objects vector based on comm patterns (Need to fill data indices? Probably not)
         // Trying to make something that will work for both vectors and lists...
         int numOldData = objects.size() - data.size();
@@ -521,7 +482,7 @@ namespace amsi
     // Output parameters:
     //  - migration_data - Contains data for any objects which have
     //    migrated to this process
-    //  - objects - The list of multiscale data elements has been 
+    //  - objects - The list of multiscale data elements has been
     //    updated to reflect the migration. A NULL element has been
     //    added for each object which migrated to this process
     //
@@ -561,7 +522,7 @@ namespace amsi
 
       // ***** SEND MIGRATION DATA ***** //
 
-      // Loop over task 1 processes to determine placing in implicit 
+      // Loop over task 1 processes to determine placing in implicit
       //   ordering and corresponding "task 1" process
       // Assumption: migration data contents are ordered by local indices (m_index)
       int current_data = 0;
@@ -576,10 +537,10 @@ namespace amsi
           // Send migration data
           if(current_data == m_index[current_send])
           {
-            // Add task 1 process and element index (jj) to migration data, 
-            //   so that recv process knows where it was taken from, in order 
+            // Add task 1 process and element index (jj) to migration data,
+            //   so that recv process knows where it was taken from, in order
             //   to inform companion task of the swap
-            // "element index" means the index within a particular element of a comm pattern matrix 
+            // "element index" means the index within a particular element of a comm pattern matrix
             migration_data[current_send].resize( migration_data[current_send].size() + 2 * sizeof(int) );
             memcpy( migration_data[current_send].data() + migration_data[current_send].size() - 2*sizeof(int),
                     &ii,
@@ -587,7 +548,7 @@ namespace amsi
             memcpy( migration_data[current_send].data() + migration_data[current_send].size() - sizeof(int),
                     &jj,
                     sizeof(int) );
-#           ifdef CORE        
+#           ifdef CORE
             PCU_Comm_Write(m_send_to[current_send],
                            migration_data[current_send].data(),
                            migration_data[current_send].size());
@@ -611,16 +572,16 @@ namespace amsi
       // Update local comm pattern with removed data
       // When inserting objects later, we need to reference
       //   the comm pattern with migrated data subtracted out
-      // Later, in shareMigration, the comm pattern will be 
+      // Later, in shareMigration, the comm pattern will be
       //   updated by the corresponding task and reconciled on
       //   this task
-      
+
       // the above explanation is weak, it will need to be made more clear
       int offset[t1s];
       offset[0] = (*pattern)(0,task_rank);
       for(int ii=1;ii<t1s;ii++)
         offset[ii] = offset[ii-1] + (*pattern)(ii,task_rank);
-        
+
       for(int ii=0;ii<m_send_to.size();ii++)
         for(int jj=0;jj<t1s;jj++)
           if(m_index[ii] < offset[jj])
@@ -671,7 +632,7 @@ namespace amsi
         std::vector<int> temp_t1p;
         std::vector<int> temp_rf;
         Container<D> temp_objects;
-        typename Container<D>::iterator currentObject = objects.begin(); 
+        typename Container<D>::iterator currentObject = objects.begin();
 
         // Order data by task 1 process
         for(int ii=0;ii<t1s;ii++)
@@ -700,7 +661,7 @@ namespace amsi
         m_recv_from = temp_rf;
         objects = temp_objects;
 
-	(*dd)[task_rank] +=  migration_data.size();
+        (*dd)[task_rank] +=  migration_data.size();
       }
 
       dd->Assemble(task_comm);
@@ -718,7 +679,7 @@ namespace amsi
     // - rdd_id - comm pattern
     // - objects - List or vector of data corresponding to rdd_id which
     //   will be reordered
-    // 
+    //
     // Receiving task (according to rdd_id): This task sends migration data
     //   to the sending task. Then waits to reconcile the comm pattern.
     // - rdd_id - comm pattern
@@ -749,7 +710,7 @@ namespace amsi
 
       CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
 
-      // If receiver in comm pattern rdd_id, then send 
+      // If receiver in comm pattern rdd_id, then send
       //   info to corresponding task 1 processes
       if(tl == t2)
       {
@@ -827,7 +788,7 @@ namespace amsi
                 else
                   for(int nn=0;nn<(*pattern)(task_rank,kk);nn++)
                     cur_obj++;
-              }              
+              }
             }
           }
 
@@ -851,7 +812,7 @@ namespace amsi
         // Reset object list/vector from newly constructed version
         objects = tempObj;
 
-	//std::cout << "Before update: "  << std::endl << (*pattern) << std::endl;
+        //std::cout << "Before update: "  << std::endl << (*pattern) << std::endl;
         // Update, assemble, and reconcile comm pattern
         for(int ii=0;ii<numMigration;ii++)
         {
@@ -860,7 +821,7 @@ namespace amsi
         }
         CommPattern_Assemble(rdd_id);
         CommPattern_Reconcile(rdd_id);
-	//std::cout << "After update: "  << std::endl << (*pattern) << std::endl;
+        //std::cout << "After update: "  << std::endl << (*pattern) << std::endl;
       }
 
       // Switch pcu comms back to task
