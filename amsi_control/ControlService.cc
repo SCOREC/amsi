@@ -174,10 +174,10 @@ namespace amsi
     // determine the task rank
     int task_rank = tl->localRank();
     // switch to the correct communicator for this operation
-#     ifndef CORE
+#   ifdef CORE
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
-#     endif
+#   endif
     if(tl == t1) // sending task
     {
       // send pattern info to t2_per_t1 + -many ranks in t2
@@ -196,22 +196,22 @@ namespace amsi
         getUnitsRecvFrom(send_pattern,snd_to,&rcv_cnts[0]);
         // intercomm rank of the recving task (hacky)
         int inter_rnk = t1s+snd_to;
-#         ifdef CORE
+#       ifdef CORE
         PCU_Comm_Write(inter_rnk, &num_rcv_rnks, sizeof(int));
         PCU_Comm_Write(inter_rnk, &rcv_rnks, sizeof(int)*num_rcv_rnks);
         PCU_Comm_Write(inter_rnk, &rcv_cnts, sizeof(int)*num_rcv_rnks);
-#         else
+#       else
         t_isend(recvfrom,MPI_INTEGER,t2->localToGlobalRank(send_to));
-#         endif
+#       endif
       }
-#       ifdef CORE
+#     ifdef CORE
       // All processes must call PCU Send and Read, makes this blocking which is bad
       PCU_Comm_Send();
       int rcv_frm = -1;
       void * rcv = NULL;
       size_t rcv_sz = 0;
       while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz)) {}
-#       endif
+#     endif
     }
     else //recving task
     {
@@ -240,7 +240,7 @@ namespace amsi
       t_recv(recv_count,MPI_INTEGER,t1->localToGlobalRank(recv_from));
 #     endif
     }
-#   ifndef CORE
+#   ifdef CORE
     // Switch pcu comms back to task
     PCU_Switch_Comm(tl->comm());
 #   endif
