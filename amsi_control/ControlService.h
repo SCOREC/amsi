@@ -25,6 +25,7 @@ namespace amsi
       void SetCommunicationManager(CommunicationManager*);
       void SetTaskManager(TaskManager*);
       TaskManager* GetTaskManager() { return task_man; }
+      CommunicationManager * getCommunicationManager() {return comm_man;}
 
       void setScaleMain(const std::string &, ExecuteFunc);
       int Execute(int& argc,char **& argv);
@@ -243,7 +244,9 @@ namespace amsi
     /// @param type An MPI_Datatype describing the POD objects to be sent/recved in this communication
     ///             action.
     template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
-      void ControlService::Communicate(size_t rdd_id, Container<D> & buffer, MPI_Datatype type)
+      void ControlService::Communicate(size_t rdd_id,
+                                       Container<D> & buffer,
+                                       MPI_Datatype type)
       {
         // determine if sender or recver
         std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
@@ -255,8 +258,8 @@ namespace amsi
         assert(t1 == tl || t2 == tl);
         int t1s = taskSize(t1);
         // Get type size
-        int sizeoftype;
-        MPI_Type_size(type,&sizeoftype);
+        int tp_sz = 0;
+        MPI_Type_size(type,&tp_sz);
 #       ifdef CORE
         PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
         PCU_Comm_Begin();
@@ -264,21 +267,24 @@ namespace amsi
         if(tl == t1) // if the local task is the sending task
         {
           unsigned int local_count = t1->getLocalDDValue(r_dd_id.second);
-          CommPattern * send_pattern = comm_man->CommPattern_Get(rdd_id);
-          int num_snt_to = countRanksSentTo(send_pattern,task_rank);
-          std::vector<int> snt_rnks(num_snt_to);
-          std::vector<int> snt_cnts(num_snt_to);
-          getRanksSentTo(send_pattern,task_rank,&snt_rnks[0]);
-          getUnitsSentTo(send_pattern,task_rank,&snt_cnts[0]);
+          CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
+          int num_snt_frm = countRanksSentFrom(send_pattern,task_rank);
+          std::vector<int> snt_rnks(num_snt_frm);
+          std::vector<int> snt_cnts(num_snt_frm);
+          getRanksSentFrom(send_pattern,task_rank,&snt_rnks[0]);
+          getUnitsSentFrom(send_pattern,task_rank,&snt_cnts[0]);
           size_t offset = 0;
 #         ifndef CORE
           buffer_offset<D> bo;
           bo.buffer = &buffer[0];
 #         endif
-          for(unsigned int ii = 0; ii < num_snt_to; ii++)
+          for(unsigned int ii = 0; ii < num_snt_frm; ii++)
           {
 #           ifdef CORE
-            PCU_Comm_Write(t1s+snt_rnks[ii],&buffer[offset],snt_cnts[ii]*sizeoftype);
+            int inter_rnk = t1s+snt_rnks[ii]; // hacky and awful
+            PCU_Comm_Write(inter_rnk,
+                           &buffer[offset],
+                           snt_cnts[ii]*tp_sz);
 #           else
             bo.s = to_send;
             bo.offset = offset;
@@ -306,10 +312,11 @@ namespace amsi
           void * rcv = NULL;
           while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz))
           {
-            bfr_sz += rcv_sz;
+            size_t rcv_cnt = rcv_sz / tp_sz;
+            bfr_sz += rcv_cnt;
             buffer.resize(bfr_sz); // this is stupid and awful
             memcpy(&buffer[bfr_hd],rcv,rcv_sz);
-            bfr_hd += rcv_sz;
+            bfr_hd += rcv_cnt;
           }
 #         else
           recv_buffer_offset<D, Container> buffer_offset;
@@ -359,7 +366,7 @@ namespace amsi
       std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
 
-      size_t rdd_init_id = r_init[rdd_id]; // Get init comm pattern reference
+      size_t delta_id = r_init[rdd_id]; // Get init comm pattern reference
 
       Task * tl = task_man->getLocalTask();
       Task * t1 = task_man->Task_Get(t_ids.first);
@@ -378,13 +385,12 @@ namespace amsi
       {
         int numNewData[t1s];
         numNewData[task_rank] = data.size();
-        CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
-        CommPattern * init_pattern = comm_man->CommPattern_Get(rdd_init_id);
-
-        // Zero out init comm pattern
+        CommPattern * pattern = comm_man->getCommPattern(rdd_id);
+        CommPattern * delta_pattern = comm_man->getCommPattern(delta_id);
+        // Zero out delta comm pattern
         for(int ii=0;ii<t1s;ii++)
           for(int jj=0;jj<t2s;jj++)
-            (*init_pattern)(ii,jj) = 0;
+            (*delta_pattern)(ii,jj) = 0;
 
         // exchange numNewData among all sending task processes
         int tempData = numNewData[task_rank]; // On Q the send and recv buffers need to be different
@@ -400,18 +406,17 @@ namespace amsi
         default:
           std::cerr << "Warning: AMSI Load Balancing option not defined - proceeding with default option" << std::endl;
         case 0:
-          CommPattern_LoadBalance_Spread(pattern,init_pattern,&numNewData[0]);
+          CommPattern_LoadBalance_Spread(pattern,delta_pattern,&numNewData[0]);
           break;
         case 1:
-          CommPattern_LoadBalance_LeastFirst(pattern,init_pattern,&numNewData[0]);
+          CommPattern_LoadBalance_LeastFirst(pattern,delta_pattern,&numNewData[0]);
           break;
         case 2:
-          CommPattern_LoadBalance_Test(pattern,init_pattern,&numNewData[0],task_rank);
+          CommPattern_LoadBalance_Test(pattern,delta_pattern,&numNewData[0],task_rank);
           break;
         }
-
         CommPattern_Assemble(rdd_id);
-        CommPattern_Assemble(rdd_init_id);
+        CommPattern_Assemble(delta_id);
 
         // Reorder objects vector based on comm patterns (Need to fill data indices? Probably not)
         // Trying to make something that will work for both vectors and lists...
@@ -425,8 +430,8 @@ namespace amsi
         // Fill tempObj
         for(int ii=0;ii<t2s;ii++)
         {
-          int numOldDataElement = (*pattern)(task_rank,ii) - (*init_pattern)(task_rank,ii);
-          int numNewDataElement = (*init_pattern)(task_rank,ii);
+          int numOldDataElement = (*pattern)(task_rank,ii) - (*delta_pattern)(task_rank,ii);
+          int numNewDataElement = (*delta_pattern)(task_rank,ii);
           for(int jj=0;jj<numOldDataElement;jj++)
           {
             tempObj.push_back(*oldObj);
@@ -445,29 +450,25 @@ namespace amsi
 
         // Reconcile orig and init comm pattern on recv task
         CommPattern_Reconcile(rdd_id);
-        CommPattern_Reconcile(rdd_init_id);
-
+        CommPattern_Reconcile(delta_id);
       }
       else
       {
         // Get the new orig and init comm patterns
         CommPattern_Reconcile(rdd_id);
-        CommPattern_Reconcile(rdd_init_id);
+        CommPattern_Reconcile(delta_id);
 
         // Fill data vector with appropriate indices
-        CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
-        CommPattern * init_pattern = comm_man->CommPattern_Get(rdd_init_id);
-        int loc = 0;
-        for(int ii=0;ii<t1s;ii++)
+        CommPattern * pattern = comm_man->getCommPattern(rdd_id);
+        CommPattern * delta_pattern = comm_man->getCommPattern(delta_id);
+        for(int ii = 0; ii < t1s; ii++)
         {
-          loc += (*pattern)(ii,task_rank) - (*init_pattern)(ii,task_rank);
-          for(int jj=0;jj<(*init_pattern)(ii,task_rank);jj++)
-            data.push_back(loc);
+          int nw = (*delta_pattern)(ii,task_rank);
+          for(int jj = 0; jj < nw; jj++)
+            data.push_back(0);
         }
-
       }
-
-      return rdd_init_id;
+      return delta_id;
     }
 
 
@@ -518,7 +519,7 @@ namespace amsi
       PCU_Comm_Begin();
 #     endif
 
-      CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
+      CommPattern * pattern = comm_man->getCommPattern(rdd_id);
 
       // ***** SEND MIGRATION DATA ***** //
 
@@ -708,7 +709,7 @@ namespace amsi
       PCU_Comm_Begin();
 #     endif
 
-      CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
+      CommPattern * pattern = comm_man->getCommPattern(rdd_id);
 
       // If receiver in comm pattern rdd_id, then send
       //   info to corresponding task 1 processes

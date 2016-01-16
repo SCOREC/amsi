@@ -29,9 +29,9 @@ namespace amsi
       // check if relation already exists
       if(!CommRelation_Exists(id1,id2))
       {
-	relations.insert(std::make_pair(id1,id2));
-	result = CommRelation_GetID(id1,id2);
-	rtmap[result] = std::make_pair(id1,id2);
+        relations.insert(std::make_pair(id1,id2));
+        result = CommRelation_GetID(id1,id2);
+        rtmap[result] = std::make_pair(id1,id2);
       }
 
       return result;
@@ -41,16 +41,16 @@ namespace amsi
     /// @param rdd_id The id of the CommPattern
     /// @return CommPattern* Pointer to the identified CommPattern or NULL if
     ///                      no such pattern exists
-    CommPattern * CommunicationManager::CommPattern_Get(size_t rdd_id)
+    CommPattern * CommunicationManager::getCommPattern(size_t rdd_id)
     {
       CommPattern * result = NULL;
 
       if(comm_patterns.find(rdd_id) != comm_patterns.end())
-	result = comm_patterns[rdd_id];
+        result = comm_patterns[rdd_id];
 
       return result;
     }
-   
+
     /// @brief Determine if two tasks have a CommRelation defined between them
     /// @param id1 Identifier for the sending task in the CommRelation
     /// @param id2 Identifier for the recving task in the CommRelation
@@ -62,8 +62,8 @@ namespace amsi
       ret = relations.equal_range(id1);
 
       for(;ret.first != ret.second; ret.first++)
-	if(ret.first->second == id2)
-	  result = true;
+        if(ret.first->second == id2)
+          result = true;
       return result;
     }
 
@@ -73,25 +73,25 @@ namespace amsi
     {
       for(relationmap_type::iterator it = relations.begin(), itend = relations.end(); it != itend; it++)
       {
-	Task * tA = tm->Task_Get(it->first);
-	Task * tB = tm->Task_Get(it->second);
-	size_t r_id = CommRelation_GetID(it->first,it->second);
+        Task * tA = tm->Task_Get(it->first);
+        Task * tB = tm->Task_Get(it->second);
+        size_t r_id = CommRelation_GetID(it->first,it->second);
 
-	int lrA = tA->localRank();
-	int lrB = tB->localRank();
-	
-	Task * local_task = lrA >= 0 ? tA : lrB >= 0 ? tB : NULL;
+        int lrA = tA->localRank();
+        int lrB = tB->localRank();
 
-	if(local_task)
-	{
-	  const MPI_Group grp_a = tA->group();
-	  const MPI_Group grp_b = tB->group();
-	  
-	  // create an intercomm for the tasks if this rank is in one of them
-	  MPI_Group inter_group;
-	  MPI_Group_union(grp_a,grp_b,&inter_group);
-	  MPI_Comm_create(MPI_COMM_WORLD,inter_group,&relation_comms[r_id]);
-	}
+        Task * local_task = lrA >= 0 ? tA : lrB >= 0 ? tB : NULL;
+
+        if(local_task)
+        {
+          const MPI_Group grp_a = tA->group();
+          const MPI_Group grp_b = tB->group();
+
+          // create an intercomm for the tasks if this rank is in one of them
+          MPI_Group inter_group;
+          MPI_Group_union(grp_a,grp_b,&inter_group);
+          MPI_Comm_create(MPI_COMM_WORLD,inter_group,&relation_comms[r_id]);
+        }
       }
     }
 
@@ -103,7 +103,7 @@ namespace amsi
     /// @param CommPatternAlgo A function pointer to the current/assigned CommPattern creation algorithm for this specific CommPattern
     void CommunicationManager::CommPattern_Create(size_t rdd_id, DataDistribution* dd, int size_t1, int size_t2, CommPatternAlgo func)
     {
-      // look up the commpattern build function registered for use by this relation and dd 
+      // look up the commpattern build function registered for use by this relation and dd
       //std::cout << "Invoking the pattern creation algorithm" << std::endl;
       CommPattern * cp = (*func)((*dd),size_t1,size_t2);
       comm_patterns[rdd_id] = cp;
@@ -116,8 +116,8 @@ namespace amsi
     /// @param t1s The number of processes currently associated with the sending task
     /// @param t2s The number of processes currently associated with the recving task
     void CommunicationManager::CommPattern_CreateRecv(size_t rdd_id,
-						      int t1s,
-						      int t2s)
+                                                      int t1s,
+                                                      int t2s)
     {
       comm_patterns[rdd_id] = new FullCommPattern(t1s,t2s);
     }
@@ -126,7 +126,7 @@ namespace amsi
     /// @param n_rdd_id The identifier for the new CommPattern created by the inversion process
     /// @param o_rdd_id The identifier for the old CommPattern to be inverted
     void CommunicationManager::CommPattern_Invert(size_t n_rdd_id,
-						  size_t o_rdd_id)
+                                                  size_t o_rdd_id)
     {
       comm_patterns[n_rdd_id] = CommPattern_CreateInverted(comm_patterns[o_rdd_id]);
     }
@@ -148,7 +148,7 @@ namespace amsi
   MPI_Comm CommunicationManager::CommRelation_GetInterComm(size_t r_id)
   {
     MPI_Comm result = MPI_COMM_NULL;
-    
+
     rtmap_t::iterator it = rtmap.find(r_id);
     if(it != rtmap.end())
       result = relation_comms[r_id];
@@ -156,7 +156,7 @@ namespace amsi
     return result;
   }
 
-    // should extract this from the class 
+    // should extract this from the class
     /// @brief Get the identifier for a CommPattern (uniquely identified by a CommRelation and DataDistribution)
     /// @param r_id The identifier for the CommRelation on which the CommPattern is defined
     /// @param dd
@@ -177,7 +177,7 @@ namespace amsi
       std::pair<size_t,size_t> result = std::make_pair(0,0);
       rtmap_t::iterator it = rtmap.find(r_id);
       if(it != rtmap.end())
-	result = rtmap[r_id];
+        result = rtmap[r_id];
       return result;
     }
 

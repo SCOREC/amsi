@@ -3,6 +3,7 @@
 #include <cstring> // for memset
 #include <iomanip>
 #include <iostream>
+#include <numeric>
 namespace amsi
 {
   std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
@@ -63,15 +64,15 @@ namespace amsi
   {
     int cnt = 0;
     for(int ii = 0; ii < cp->getNumSenders(); ii++)
-      if((*cp)(rnk,ii) > 0)
+      if((*cp)(ii,rnk) > 0)
         cnt++;
     return cnt;
   }
-  int countRanksRecvFrom(const CommPattern * cp, int rnk)
+  int countRanksSentFrom(const CommPattern * cp, int rnk)
   {
     int cnt = 0;
     for(int ii = 0; ii < cp->getNumRecvers(); ii++)
-      if((*cp)(ii,rnk) > 0)
+      if((*cp)(rnk,ii) > 0)
         cnt++;
     return cnt;
   }
@@ -79,17 +80,17 @@ namespace amsi
   {
     int hd = 0;
     for(int ii = 0; ii < cp->getNumSenders(); ii++)
-      if((*cp)(rnk,ii) > 0)
+      if((*cp)(ii,rnk) > 0)
       {
         rnks[hd] = ii;
         hd++;
       }
   }
-  void getRanksRecvFrom(const CommPattern * cp, int rnk, int * rnks)
+  void getRanksSentFrom(const CommPattern * cp, int rnk, int * rnks)
   {
     int hd = 0;
     for(int ii = 0; ii < cp->getNumRecvers(); ii++)
-      if((*cp)(ii,rnk) > 0)
+      if((*cp)(rnk,ii) > 0)
       {
         rnks[hd] = ii;
         hd++;
@@ -97,13 +98,46 @@ namespace amsi
   }
   void getUnitsSentTo(const CommPattern * cp, int rnk, int * sent_to)
   {
+    int hd = 0;
     for(int ii = 0; ii < cp->getNumSenders(); ii++)
-      sent_to[ii] = (*cp)(rnk,ii);
+    {
+      int unts = (*cp)(ii,rnk);
+      if(unts > 0)
+      {
+        sent_to[hd] = (*cp)(ii,rnk);
+        hd++;
+      }
+    }
   }
-  void getUnitsRecvFrom(const CommPattern * cp, int rnk, int * recv_from)
+  void getUnitsSentFrom(const CommPattern * cp, int rnk, int * recv_from)
   {
+    int hd = 0;
     for(int ii = 0; ii < cp->getNumRecvers(); ii++)
-      recv_from[ii] = (*cp)(ii,rnk);
+    {
+      int unts = (*cp)(rnk,ii);
+      if(unts > 0)
+      {
+        recv_from[hd] = (*cp)(rnk,ii);
+        hd++;
+      }
+    }
+  }
+  void zeroCommPattern(CommPattern * cp)
+  {
+    for(int ii = 0; ii < cp->getNumSenders(); ii++)
+      for(int jj = 0; jj < cp->getNumRecvers(); jj++)
+        (*cp)(ii,jj) = 0;
+  }
+  void zeroNonLocal(CommPattern * cp, int rnk, Role rl)
+  {
+    if(rl == SENDER)
+      for(int ii = 0; ii < cp->getNumSenders() && ii != rnk; ii++)
+        for(int jj = 0; jj < cp->getNumRecvers(); jj++)
+          (*cp)(ii,jj) = 0;
+    else if(rl == RECVER)
+      for(int ii = 0; ii < cp->getNumSenders(); ii++)
+        for(int jj = 0; jj < cp->getNumRecvers() && jj != rnk; jj++)
+          (*cp)(ii,jj) = 0;
   }
   /// @brief Default constructor.
   /// @param s1_ The number of processes in the ProcessSet related to the sending task
@@ -120,12 +154,16 @@ namespace amsi
   int& FullCommPattern::operator()(int r1, int r2)
   {
     unassembled();
+    assert(r1 < s1 && r1 >= 0);
+    assert(r2 < s2 && r2 >= 0);
     return pattern[r1 * s2 + r2];
   }
 
   /// @brief Access operator, analogous to the .GetDataCount(int,int) member function
   int FullCommPattern::operator()(int r1, int r2) const
   {
+    assert(r1 < s1 && r1 >= 0);
+    assert(r2 < s2 && r2 >= 0);
     return pattern[r1 * s2 + r2];
   }
 
@@ -143,37 +181,38 @@ namespace amsi
       int sz = -1;
       MPI_Comm_size(cm,&sz);
       assert(sz != -1);
-      int rnks_cnt = countRanksSentTo(this,rnk);
-      std::vector<int> snd_to(rnks_cnt);
-      std::vector<int> snd_cnt(rnks_cnt);
-      getRanksSentTo(this,rnk,&snd_to[0]);
-      getUnitsSentTo(this,rnk,&snd_cnt[0]);
+      zeroNonLocal(this,rnk,SENDER);
+      int rnks_cnt = countRanksSentFrom(this,rnk);
       std::vector<int> rnks_cnts(sz);
       rnks_cnts[rnk] = rnks_cnt;
       MPI_Allgather(&rnks_cnt,1,mpi_type<int>(),
                     &rnks_cnts[0],1,mpi_type<int>(),
                     cm);
+      std::vector<int> rnks(rnks_cnt);
+      std::vector<int> cnts(rnks_cnt);
+      getRanksSentFrom(this,rnk,&rnks[0]);
+      getUnitsSentFrom(this,rnk,&cnts[0]);
       int ttl_cnt = rnks_cnts[0];
-      int offsets[ttl_cnt];
+      int offsets[sz];
       offsets[0] = 0;
       for(int ii = 1; ii < sz; ii++)
       {
+        offsets[ii] = offsets[ii-1] + rnks_cnts[ii-1];
         ttl_cnt += rnks_cnts[ii];
-        offsets[ii] = rnks_cnts[ii] + offsets[ii-1];
       }
-      int snd_tos[ttl_cnt];
-      int snd_cnts[ttl_cnt];
-      MPI_Allgatherv(&snd_to[0],rnks_cnt,mpi_type<int>(),
-                     &snd_tos[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
+      int all_rnks[ttl_cnt];
+      int all_cnts[ttl_cnt];
+      MPI_Allgatherv(&rnks[0],rnks_cnt,mpi_type<int>(),
+                     &all_rnks[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
                      cm);
-      MPI_Allgatherv(&snd_cnt[0],rnks_cnt,mpi_type<int>(),
-                     &snd_cnts[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
+      MPI_Allgatherv(&cnts[0],rnks_cnt,mpi_type<int>(),
+                     &all_cnts[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
                      cm);
       for(int ii = 0; ii < sz; ii++)
       {
         int cnt = rnks_cnts[ii];
         for(int jj = 0; jj < cnt; jj++)
-          (*this)(ii,snd_tos[jj+offsets[ii]]) = snd_cnts[jj+offsets[ii]];
+          (*this)(ii,all_rnks[jj+offsets[ii]]) = all_cnts[jj+offsets[ii]];
       }
       assembled = true;
       result = 0;

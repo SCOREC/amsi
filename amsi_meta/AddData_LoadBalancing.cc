@@ -8,69 +8,66 @@
 namespace amsi {
 
     // Utility for load balancing function (pair sort)
-  bool data_index_compare_greater(const data_index& i,const data_index& j) 
+  bool data_index_compare_greater(const data_index& i,const data_index& j)
   { return i.first > j.first; }
 
-  bool data_index_compare_less(const data_index& i,const data_index& j) 
+  bool data_index_compare_less(const data_index& i,const data_index& j)
   { return i.first < j.first; }
 
 
   // Load balancing with added data (no migration)
-  // Updates pattern (current comm pattern) and init (initialization comm pattern) 
+  // Updates pattern (current comm pattern) and init (initialization comm pattern)
   //   by distributing the data counts specified in num
   // This load balancing uses the default algorithm in CommPattern_CreateDistro to
   //   essentially spew new data accross the comm pattern without regard for filling
   //   lighter loaded processes. So essentially it only load balances the new data.
   // This algorithm is efficient but doesn't really load balance
-  void CommPattern_LoadBalance_Spread(CommPattern * pattern, CommPattern * init, int * num)
+  void CommPattern_LoadBalance_Spread(CommPattern * pattern,
+                                      CommPattern * delta,
+                                      int * num)
   {
-
     int s1 = pattern->getNumSenders();
     int s2 = pattern->getNumRecvers();
     int total_data = 0;
     for(int ii = 0; ii < s1; ii++)
-    {
       total_data += num[ii];
-    }
     int even_distro = total_data / s2;
     int extra_distro = total_data % s2;
     int dst = 0;
     int dst_rcv = even_distro + (dst < extra_distro);
-
     for(int src = 0; src < s1; src++)
     {
       int src_count = num[src];
       while(src_count > 0)
       {
-	// if there are enough to send all needed to dstCommPattern_LoadBalance_Spread
-	if(src_count >= dst_rcv)
-	{
-	  (*pattern)(src,dst) += dst_rcv;
-	  (*init)(src,dst) = dst_rcv;
-	  src_count -= dst_rcv;
-	  dst++;
-	  dst_rcv = even_distro + (dst < extra_distro);
-	}
-	else if(src_count < dst_rcv)
-	{
-	  (*pattern)(src,dst) += src_count;
-	  (*init)(src,dst) = src_count;
-	  dst_rcv -= src_count;
-	  src_count = 0;
-	}
+        // if there are enough to send all needed to dstCommPattern_LoadBalance_Spread
+        if(src_count >= dst_rcv)
+        {
+          (*pattern)(src,dst) += dst_rcv;
+          (*delta)(src,dst) = dst_rcv;
+          src_count -= dst_rcv;
+          dst++;
+          dst_rcv = even_distro + (dst < extra_distro);
+        }
+        else if(src_count < dst_rcv)
+        {
+          (*pattern)(src,dst) += src_count;
+          (*delta)(src,dst) = src_count;
+          dst_rcv -= src_count;
+          src_count = 0;
+        }
       }
     }
-
   }
 
   // Load balancing with added data (no migration)
-  // Updates pattern (current comm pattern) and init (initialization comm pattern) 
+  // Updates pattern (current comm pattern) and init (initialization comm pattern)
   //   by distributing the data counts specified in num
-  // This load balancing algorithm finds the lightest loaded processes and 
-  //   adds data to them first. This is the opposite end of the spectrum from 
-  //   CommPattern_LoadBalance_Spread. i.e. this does perfect-ish load 
-  //   balancing but is inefficient. 
-  // Any left over data, after filling lighter loads is sorted by using the 
+  // This load balancing algorithm finds the lightest loaded processes and
+  //   adds data to them first. This is the opposite end of the spectrum from
+  //   CommPattern_LoadBalance_Spread. i.e. this does perfect-ish load
+  //   balancing but is inefficient.
+  // Any left over data, after filling lighter loads is sorted by using the
   //   algorithm found in both CommPattern_CreateDistro and CommPattern_LoadBalance_Spread
   void CommPattern_LoadBalance_LeastFirst(CommPattern * pattern, CommPattern * init, int * num)
   {
@@ -87,12 +84,12 @@ namespace amsi {
     {
       tempsum = 0;
       for(int kk=0;kk<s1;kk++)
-	tempsum += (*pattern)(kk,jj);
+        tempsum += (*pattern)(kk,jj);
       sums[jj] = tempsum; // Store sum
       if(tempsum > maxsum)
       {
-	maxsum = tempsum;
-	maxjj = jj;
+        maxsum = tempsum;
+        maxjj = jj;
       }
     }
 
@@ -126,26 +123,26 @@ namespace amsi {
       jj = 0;
       while(!stepDone)
       {
-	// Update patterns and data counts
-	(*pattern)(ii,deltas[jj].second) ++;
-	(*init)(ii,deltas[jj].second) ++;
-	num[ii]--;
-	deltas[jj].first--;
+        // Update patterns and data counts
+        (*pattern)(ii,deltas[jj].second) ++;
+        (*init)(ii,deltas[jj].second) ++;
+        num[ii]--;
+        deltas[jj].first--;
 
-	// Check if there is still data to add
-	while(ii<s1 && num[ii]==0)
-	  ii++;
-	if(ii >= s1)
-	{
-	  stepDone = true;
-	  done = true;
-	}
+        // Check if there is still data to add
+        while(ii<s1 && num[ii]==0)
+          ii++;
+        if(ii >= s1)
+        {
+          stepDone = true;
+          done = true;
+        }
 
-	// All lightest loads have had one added to them
-	if(deltas[jj+1].first != curDelta)
-	  stepDone = true;
+        // All lightest loads have had one added to them
+        if(deltas[jj+1].first != curDelta)
+          stepDone = true;
 
-	jj++;
+        jj++;
 
       }
 
@@ -172,22 +169,22 @@ namespace amsi {
       int src_count = num[src];
       while(src_count > 0)
       {
-	// if there are enough to send all needed to dst
-	if(src_count >= dst_rcv)
-	{
-	  (*pattern)(src,dst) += dst_rcv;
-	  (*init)(src,dst) += dst_rcv;
-	  src_count -= dst_rcv;
-	  dst++;
-	  dst_rcv = even_distro + (dst < extra_distro);
-	}
-	else if(src_count < dst_rcv)
-	{
-	  (*pattern)(src,dst) += src_count;
-	  (*init)(src,dst) += src_count;
-	  dst_rcv -= src_count;
-	  src_count = 0;
-	}
+        // if there are enough to send all needed to dst
+        if(src_count >= dst_rcv)
+        {
+          (*pattern)(src,dst) += dst_rcv;
+          (*init)(src,dst) += dst_rcv;
+          src_count -= dst_rcv;
+          dst++;
+          dst_rcv = even_distro + (dst < extra_distro);
+        }
+        else if(src_count < dst_rcv)
+        {
+          (*pattern)(src,dst) += src_count;
+          (*init)(src,dst) += src_count;
+          dst_rcv -= src_count;
+          src_count = 0;
+        }
       }
     }
 

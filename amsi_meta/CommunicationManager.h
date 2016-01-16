@@ -24,7 +24,7 @@ namespace amsi
       size_t defineRelation(size_t id1, size_t id2);
       bool CommRelation_Exists(size_t id1, size_t id2);
       // will return null until the pattern for a relation is actually initialized
-      CommPattern * CommPattern_Get(size_t rdd_id);
+      CommPattern * getCommPattern(size_t rdd_id);
       std::pair<size_t,size_t> Relation_GetTasks(size_t r_id);
     protected:
       friend class ControlService;

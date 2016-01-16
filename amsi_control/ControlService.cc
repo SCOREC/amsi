@@ -7,6 +7,7 @@
 #endif
 #include <fstream>
 #include <algorithm>
+#include <cstring> //memcpy
 namespace amsi
 {
   ControlService * ControlService::instance = NULL;
@@ -45,7 +46,6 @@ namespace amsi
 
     return result;
   }
-
   /// @brief Retrieve the ID of a CommRelation
   /// @param nm1 A string containing the name of the sending task
   /// @param nm2 A string containing the name of the recving task
@@ -185,24 +185,30 @@ namespace amsi
       for(int ii = 0; ii < to_send; ii++)
       {
         // task-rank of the recving task
-        int snd_to = task_rank + (ii * t1s);
+        int snd_to = task_rank*t2_per_t1 + ii;
         // retrieve pattern info relating to the current t2 rank
-        CommPattern * send_pattern = comm_man->CommPattern_Get(rdd_id);
+        CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
         // vector of t1 ranks w/ counts for the current t2 rank
-        int num_rcv_rnks = countRanksRecvFrom(send_pattern,snd_to);
-        std::vector<int> rcv_rnks(num_rcv_rnks);
-        std::vector<int> rcv_cnts(num_rcv_rnks);
-        getRanksRecvFrom(send_pattern,snd_to,&rcv_rnks[0]);
-        getUnitsRecvFrom(send_pattern,snd_to,&rcv_cnts[0]);
-        // intercomm rank of the recving task (hacky)
-        int inter_rnk = t1s+snd_to;
-#       ifdef CORE
-        PCU_Comm_Write(inter_rnk, &num_rcv_rnks, sizeof(int));
-        PCU_Comm_Write(inter_rnk, &rcv_rnks, sizeof(int)*num_rcv_rnks);
-        PCU_Comm_Write(inter_rnk, &rcv_cnts, sizeof(int)*num_rcv_rnks);
-#       else
-        t_isend(recvfrom,MPI_INTEGER,t2->localToGlobalRank(send_to));
-#       endif
+        int num_rnks = countRanksSentTo(send_pattern,snd_to);
+        if(num_rnks > 0)
+        {
+          std::vector<int> rnks(num_rnks);
+          std::vector<int> cnts(num_rnks);
+          getRanksSentTo(send_pattern,snd_to,&rnks[0]);
+          getUnitsSentTo(send_pattern,snd_to,&cnts[0]);
+          // intercomm rank of the recving task (hacky)
+          int inter_rnk = t1s+snd_to;
+#         ifdef CORE
+          int bfr_sz = 1+2*num_rnks;
+          int bfr[bfr_sz];
+          bfr[0] = num_rnks;
+          memcpy(&bfr[1],&rnks[0],sizeof(int)*num_rnks);
+          memcpy(&bfr[1+num_rnks],&cnts[0],sizeof(int)*num_rnks);
+          PCU_Comm_Write(inter_rnk,&bfr,sizeof(int)*bfr_sz);
+#         else
+          t_isend(recvfrom,MPI_INTEGER,t2->localToGlobalRank(send_to));
+#         endif
+        }
       }
 #     ifdef CORE
       // All processes must call PCU Send and Read, makes this blocking which is bad
@@ -216,7 +222,9 @@ namespace amsi
     else //recving task
     {
       // get the recving comm pattern
-      CommPattern * recv_pattern = comm_man->CommPattern_Get(rdd_id);
+      CommPattern * recv_pattern = comm_man->getCommPattern(rdd_id);
+      // since only nonzeros are sent the pattern needs to start from zero
+      zeroCommPattern(recv_pattern);
 #     ifdef CORE
       // All processes must call PCU Send
       PCU_Comm_Send();
@@ -227,13 +235,16 @@ namespace amsi
       (*local_dd)[task_rank] = 0;
       while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz))
       {
-        int num_rcv_rnks = (*(int*)(rcv));
-        int * bfr = ((int*)rcv)+1;
+        int * hdr = (int*)rcv;
+        int num_rcv_rnks = hdr[0];
+        int * bfr = &hdr[1];
         for(int ii = 0; ii < num_rcv_rnks; ii++)
         {
-          int rcv_cnt = bfr[num_rcv_rnks+ii];
-          (*recv_pattern)(bfr[ii],task_rank) = rcv_cnt;
-          (*local_dd)[task_rank] += rcv_cnt;
+          int rnk = bfr[ii];
+          int cnt = bfr[num_rcv_rnks+ii];
+          // using rcv_frm is just as hacky as the t1s+snd_to above, need to map from coupling ranks to task ranks instead (and vice-versa)
+          (*recv_pattern)(rnk,task_rank) = cnt;
+          (*local_dd)[task_rank] += cnt;
         }
       }
 #     else
@@ -251,7 +262,7 @@ namespace amsi
   {
     std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
-    cp = comm_man->CommPattern_Get(rdd_id);
+    cp = comm_man->getCommPattern(rdd_id);
     Task * t1 = task_man->Task_Get(t_ids.first);
     Task * t2 = task_man->Task_Get(t_ids.second);
     t1s = taskSize(t1);
@@ -291,7 +302,7 @@ namespace amsi
 
     if(tl == t1)
     {
-      CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
+      CommPattern * pattern = comm_man->getCommPattern(rdd_id);
 
       // Update local part of pattern with removals
       // Record indices of removals
@@ -344,7 +355,7 @@ namespace amsi
     }
     else if (tl == t2)
     {
-      CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
+      CommPattern * pattern = comm_man->getCommPattern(rdd_id);
 
 #       ifdef CORE
       PCU_Comm_Send();
@@ -392,7 +403,7 @@ namespace amsi
   /// @param rdd_id The identifier of the CommPattern to assemble
   void ControlService::CommPattern_Assemble(size_t rdd_id)
   {
-    CommPattern * to_assemble = comm_man->CommPattern_Get(rdd_id);
+    CommPattern * to_assemble = comm_man->getCommPattern(rdd_id);
 
     if(to_assemble != NULL)
     {
@@ -515,7 +526,7 @@ namespace amsi
 
     int task_rank = tl->localRank();
 
-    CommPattern * pattern = comm_man->CommPattern_Get(rdd_id);
+    CommPattern * pattern = comm_man->getCommPattern(rdd_id);
     DataDistribution * dd = tl->getDD(rdd_dd_map[rdd_id]);
 
     // Call Plan Migration function specified by the user
@@ -567,7 +578,7 @@ namespace amsi
   {
     size_t new_rdd_id = 0;
     // retrieve the old comm pattern
-    CommPattern * to_invert = comm_man->CommPattern_Get(rdd_id);
+    CommPattern * to_invert = comm_man->getCommPattern(rdd_id);
     if(to_invert != NULL)
     {
       size_t t1_id = task_man->getTaskID(t1_nm);
@@ -604,8 +615,8 @@ namespace amsi
   void ControlService::CommPattern_UpdateInverted(size_t use_rdd_id,size_t create_rdd_id)
   {
 
-    CommPattern * use_pattern = comm_man->CommPattern_Get(use_rdd_id);
-    CommPattern * create_pattern = comm_man->CommPattern_Get(create_rdd_id);
+    CommPattern * use_pattern = comm_man->getCommPattern(use_rdd_id);
+    CommPattern * create_pattern = comm_man->getCommPattern(create_rdd_id);
 
     std::pair<size_t,size_t> r_dd_id = rdd_map[use_rdd_id];
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
