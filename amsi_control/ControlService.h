@@ -2,8 +2,8 @@
 #define CONTROLSERVICE_AMSI_H_
 #include "amsiInterfaceConfig.h"
 #include "amsiMetaConfig.h"
+#include "amsiCoupling.h"
 #include "Assemblable.h"
-#include "CommPattern.h"
 #include "CommunicationManager.h"
 #include "DataDistribution.h"
 #include "TaskManager.h"
@@ -93,8 +93,8 @@ namespace amsi
       template <typename D>
         void Reconcile(size_t r_id, D & data, MPI_Datatype type);
 
-      template <typename D>
-        void Relation_Broadcast(size_t r_id, D & data, MPI_Datatype type);
+      template <typename T>
+        void couplingBroadcast(size_t r_id, T * buf);
 
       template <typename D, template <typename T,typename All = std::allocator<T> > class Container>
         void Communicate(size_t rdd_id,Container<D> & buffer,MPI_Datatype type);
@@ -191,42 +191,31 @@ namespace amsi
         t_srecv(data,type,t1->localToGlobalRank(recv_from));
       }
     }
-
-    // need to differentiate between 1-to-all and many-to-all Reconciliations
-    template <typename D>
-      void ControlService::Relation_Broadcast(size_t r_id, D & data, MPI_Datatype type)
+    // assumes that the data has been assembled locally
+    template <typename T>
+      void ControlService::couplingBroadcast(size_t r_id, T * buf)
     {
       // determine if sender of recver
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
-
       Task * lt = task_man->getLocalTask();
-
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
-
       int t1s = taskSize(t1);
       int t2s = taskSize(t2);
-
       int t2_per_t1 = t2s / t1s;
       int extra_t2 = t2s % t1s;
-
       int task_rank = lt->localRank();
-
-      if(lt == t1) // sending task
+      if(lt == t1) // send
       {
         int to_send = t2_per_t1 + (task_rank < extra_t2);
-
         for(int ii = 0; ii < to_send; ii++)
         {
           int send_to = task_rank + (ii * t1s);
-            t_ssend(data,type,t2->localToGlobalRank(send_to));
+          amsi::asend(buf,t2->localToGlobalRank(send_to),1,AMSI_COMM_WORLD);
         }
       }
-      else // recving task
-      {
-        int recv_from = task_rank % t1s;
-        t_srecv(data,type,t1->localToGlobalRank(recv_from));
-      }
+      else // recv
+        amsi::recv(buf,MPI_ANY_SOURCE,1,AMSI_COMM_WORLD);
     }
 
     /// @brief Templated member function used to communicate all data related to a specific CommPattern,
@@ -266,9 +255,9 @@ namespace amsi
 #       endif
         if(tl == t1) // if the local task is the sending task
         {
-          unsigned int local_count = t1->getLocalDDValue(r_dd_id.second);
+          //unsigned local_count = t1->getLocalDDValue(r_dd_id.second);
           CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
-          int num_snt_frm = countRanksSentFrom(send_pattern,task_rank);
+          unsigned num_snt_frm = countRanksSentFrom(send_pattern,task_rank);
           std::vector<int> snt_rnks(num_snt_frm);
           std::vector<int> snt_cnts(num_snt_frm);
           getRanksSentFrom(send_pattern,task_rank,&snt_rnks[0]);
@@ -278,7 +267,7 @@ namespace amsi
           buffer_offset<D> bo;
           bo.buffer = &buffer[0];
 #         endif
-          for(unsigned int ii = 0; ii < num_snt_frm; ii++)
+          for(unsigned ii = 0; ii < num_snt_frm; ii++)
           {
 #           ifdef CORE
             int inter_rnk = t1s+snt_rnks[ii]; // hacky and awful

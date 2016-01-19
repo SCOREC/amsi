@@ -1,6 +1,6 @@
 #include "PlanMigration.h"
 #include "DataDistribution.h"
-#include "CommPattern.h"
+#include "amsiCoupling.h"
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
@@ -13,7 +13,7 @@ namespace amsi
     // TODO: get rid of comm pattern, use data distribution
     // General description:
     //  - Fills the m_send_to vector with the process number to send to
-    //    and the m_index vetor with the local index of each piece of 
+    //    and the m_index vetor with the local index of each piece of
     //    data to be sent
     //  - These vectors must be sorted by local index
     //  - This function does not update the comm pattern
@@ -29,7 +29,7 @@ namespace amsi
     void CommPattern_PlanMigration_Test(std::vector<int> & m_index,
                                         std::vector<int> & m_send_to,
                                         CommPattern * pattern,
-					const DataDistribution * dd,
+                                        const DataDistribution * dd,
                                         int rank,
                                         MPI_Comm task_comm)
     {
@@ -77,7 +77,7 @@ namespace amsi
             if(ll > s2  && send_to != rank)
               sendNow = true;
           }
-          
+
           if(sendNow)
           {
             m_index.push_back(kk);
@@ -96,7 +96,7 @@ namespace amsi
     void CommPattern_PlanMigration_Full(std::vector<int> & m_index,
                                         std::vector<int> & m_send_to,
                                         CommPattern * pattern,
-					const DataDistribution * dd,
+                                        const DataDistribution * dd,
                                         int rank,
                                         MPI_Comm task_comm)
     {
@@ -114,7 +114,7 @@ namespace amsi
 
       int total = 0;
       for(int ii = 0; ii < s2; ii++)
-	total += allTotals[ii];
+        total += allTotals[ii];
 
       int d1 = total/s2;
       int d2 = total%s2;
@@ -137,7 +137,7 @@ namespace amsi
         int amount_over = totals[ii].first - (d1 + (ii >= (s2-d2)));
         for(int jj=0;jj<amount_over;jj++)
         {
-	  // if the process to which we're planning to send data is full
+          // if the process to which we're planning to send data is full
           bool current_full = totals[current_send_to].first >= ( d1 + (current_send_to >= (s2-d2)) );
           if(current_full)
           {
@@ -146,41 +146,41 @@ namespace amsi
           }
           else
           {
-	    // remove one from the current sending process
+            // remove one from the current sending process
             totals[ii].first--;
-	    // add one to the current recving process
+            // add one to the current recving process
             totals[current_send_to].first++;
-	    
+
             if(rank == totals[ii].second)
             {
-	      // local datadist index of data to send
+              // local datadist index of data to send
               m_index.push_back(kk++);
 
-	      // process to which the data is being sent
+              // process to which the data is being sent
               m_send_to.push_back(current_send_to);
             }
           }
         }
-	// move to the process with the next largest weights
+        // move to the process with the next largest weights
         ii--;
       }
     }
 
 # ifdef ZOLTAN
   void CommPattern_PlanMigration_Zoltan(std::vector<int> & m_index,
-					std::vector<int> & m_send_to,
-					CommPattern * pattern,
-					const DataDistribution * dd,
-					int rank,
-					MPI_Comm task_comm)
+                                        std::vector<int> & m_send_to,
+                                        CommPattern * pattern,
+                                        const DataDistribution * dd,
+                                        int rank,
+                                        MPI_Comm task_comm)
   {
     Zoltan_Struct * zs = dd->GetZS();
-    
+
     // get the zoltan struct ready
     Zoltan_Set_Param(zs,"RETURN_LISTS","EXPORT"); // only generate sending lists
-    Zoltan_Set_Param(zs,"OBJ_WEIGHT_DIM","1"); // 
+    Zoltan_Set_Param(zs,"OBJ_WEIGHT_DIM","1"); //
     Zoltan_Set_Param(zs,"LB_METHOD","BLOCK");
-    
+
     int do_lb = 0;
     int num_gid_entries = 0;
     int num_lid_entries = 0;
@@ -194,19 +194,19 @@ namespace amsi
 
     int * recv_ranks; // ranks from which to recv each object
     int * send_ranks; // ranks to which to send objects
-    
+
     Zoltan_LB_Balance(zs,
-		      &do_lb,
-		      &num_gid_entries,
-		      &num_lid_entries,
-		      &num_recv,
-		      &recv_gids,
-		      &recv_lids,
-		      &recv_ranks,
-		      &num_send,
-		      &send_gids,
-		      &send_lids,
-		      &send_ranks);
+                      &do_lb,
+                      &num_gid_entries,
+                      &num_lid_entries,
+                      &num_recv,
+                      &recv_gids,
+                      &recv_lids,
+                      &recv_ranks,
+                      &num_send,
+                      &send_gids,
+                      &send_lids,
+                      &send_ranks);
 
     if(do_lb)
     {
@@ -215,12 +215,12 @@ namespace amsi
     }
 
     Zoltan_LB_Free_Data(&recv_gids,
-			&recv_lids,
-			&recv_ranks,
-			&send_gids,
-			&send_lids,
-			&send_ranks);
-	  
+                        &recv_lids,
+                        &recv_ranks,
+                        &send_gids,
+                        &send_lids,
+                        &send_ranks);
+
   }
 # endif
 

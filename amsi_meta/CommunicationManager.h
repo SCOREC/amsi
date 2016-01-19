@@ -1,7 +1,7 @@
 #ifndef COMMUNICATION_MANAGER_H_
 #define COMMUNICATION_MANAGER_H_
 #include "unordered_map.h"
-#include "CommPattern_Create.h"
+#include "amsiCreateCoupling.h"
 #include "AddData_LoadBalancing.h"
 #include "PlanMigration.h"
 #include <map>

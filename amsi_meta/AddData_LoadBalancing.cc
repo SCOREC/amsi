@@ -1,12 +1,11 @@
 #include "AddData_LoadBalancing.h"
-#include "CommPattern.h"
+#include "amsiCoupling.h"
 #include <cassert>
 #include <iostream>
 #include <limits.h>
 #include <cstdlib>
-
-namespace amsi {
-
+namespace amsi
+{
     // Utility for load balancing function (pair sort)
   bool data_index_compare_greater(const data_index& i,const data_index& j)
   { return i.first > j.first; }

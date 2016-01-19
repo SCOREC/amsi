@@ -1,6 +1,6 @@
 #include "CommunicationManager.h"
-#include "CommPattern.h"
-#include "CommPattern_Create.h"
+#include "amsiCoupling.h"
+#include "amsiCreateCoupling.h"
 #include "Task.h"
 #include "TaskManager.h"
 namespace amsi

@@ -1,6 +1,8 @@
-set(meta_public_headers 
+set(meta_public_headers
   amsiMeta.h
   amsiMetaConfig.h
+  amsiCoupling.h
+  amsiCreateCoupling.h
   ProcessSet.h
   ProcessAllocator.h
   DataDistribution.h
@@ -8,23 +10,21 @@ set(meta_public_headers
   TaskGroup.h
   TaskManager.h
   CommunicationManager.h
-  CommPattern.h
-  CommPattern_Create.h
   AddData_LoadBalancing.h
   PlanMigration.h
   Assemblable.h
   )
 
-set(meta_source_files 
+set(meta_source_files
   amsiMeta.cc
+  amsiCoupling.cc
+  amsiCreateCoupling.cc
   ProcessSet.cc
   DataDistribution.cc
   Task.cc
   TaskGroup.cc
   TaskManager.cc
   CommunicationManager.cc
-  CommPattern.cc
-  CommPattern_Create.cc
   AddData_LoadBalancing.cc
   PlanMigration.cc
   )
@@ -40,8 +40,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in
 add_library(amsi_meta ${meta_source_files})
 
 target_include_directories(amsi_meta PUBLIC
-				     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-				     $<INSTALL_INTERFACE:include/amsi>
+                                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                     $<INSTALL_INTERFACE:include/amsi>
                                      ${CORE_INCLUDE_DIRS})
 target_link_libraries(amsi_meta PUBLIC amsi_util ${CORE_LIBS})
 
@@ -52,13 +52,13 @@ endif()
 
 set_property(TARGET amsi_meta PROPERTY VERSION ${AMSI_VERSION})
 
-install(TARGETS amsi_meta 
-	EXPORT amsimetaTargets
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-	INCLUDES DESTINATION include/amsi)
+install(TARGETS amsi_meta
+        EXPORT amsimetaTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        INCLUDES DESTINATION include/amsi)
 
 install(EXPORT amsimetaTargets
-	DESTINATION ${ConfigPackageLocation})
+        DESTINATION ${ConfigPackageLocation})
 
 install(FILES ${meta_public_headers} DESTINATION include/amsi)

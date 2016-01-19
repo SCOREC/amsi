@@ -1,4 +1,4 @@
-#include "CommPattern.h"
+#include "amsiCoupling.h"
 #include <cassert>
 #include <cstring> // for memset
 #include <iomanip>
@@ -185,8 +185,8 @@ namespace amsi
       int rnks_cnt = countRanksSentFrom(this,rnk);
       std::vector<int> rnks_cnts(sz);
       rnks_cnts[rnk] = rnks_cnt;
-      MPI_Allgather(&rnks_cnt,1,mpi_type<int>(),
-                    &rnks_cnts[0],1,mpi_type<int>(),
+      MPI_Allgather(&rnks_cnt,1,mpi_type(rnks_cnt),
+                    &rnks_cnts[0],1,mpi_type(rnks_cnt),
                     cm);
       std::vector<int> rnks(rnks_cnt);
       std::vector<int> cnts(rnks_cnt);

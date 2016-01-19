@@ -1,5 +1,5 @@
-#include "CommPattern_Create.h"
-#include "CommPattern.h"
+#include "amsiCreateCoupling.h"
+#include "amsiCoupling.h"
 #include "DataDistribution.h"
 #include <cassert>
 #include <iostream>
