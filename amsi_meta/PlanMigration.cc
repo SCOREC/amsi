@@ -9,6 +9,11 @@
 #include <cstdlib>
 namespace amsi
 {
+  typedef std::pair<int,int> data_index;
+  bool data_index_compare_greater(const data_index& i,const data_index& j)
+  { return i.first > j.first; }
+  bool data_index_compare_less(const data_index& i,const data_index& j)
+  { return i.first < j.first; }
     // For now this is the default migration planning routine
     // TODO: get rid of comm pattern, use data distribution
     // General description:
@@ -90,8 +95,6 @@ namespace amsi
       }
 
     }
-
-
 
     void CommPattern_PlanMigration_Full(std::vector<int> & m_index,
                                         std::vector<int> & m_send_to,

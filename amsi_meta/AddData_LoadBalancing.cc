@@ -1,19 +1,13 @@
 #include "AddData_LoadBalancing.h"
 #include "amsiCoupling.h"
+#include "amsiPermute.h"
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <limits.h>
 #include <cstdlib>
 namespace amsi
 {
-    // Utility for load balancing function (pair sort)
-  bool data_index_compare_greater(const data_index& i,const data_index& j)
-  { return i.first > j.first; }
-
-  bool data_index_compare_less(const data_index& i,const data_index& j)
-  { return i.first < j.first; }
-
-
   // Load balancing with added data (no migration)
   // Updates pattern (current comm pattern) and init (initialization comm pattern)
   //   by distributing the data counts specified in num
@@ -21,12 +15,10 @@ namespace amsi
   //   essentially spew new data accross the comm pattern without regard for filling
   //   lighter loaded processes. So essentially it only load balances the new data.
   // This algorithm is efficient but doesn't really load balance
-  void CommPattern_LoadBalance_Spread(CommPattern * pattern,
-                                      CommPattern * delta,
-                                      int * num)
+  void addData_evenSpread(CommPattern * cp, CommPattern * dlta, int * num)
   {
-    int s1 = pattern->getNumSenders();
-    int s2 = pattern->getNumRecvers();
+    int s1 = cp->getNumSenders();
+    int s2 = cp->getNumRecvers();
     int total_data = 0;
     for(int ii = 0; ii < s1; ii++)
       total_data += num[ii];
@@ -42,23 +34,22 @@ namespace amsi
         // if there are enough to send all needed to dstCommPattern_LoadBalance_Spread
         if(src_count >= dst_rcv)
         {
-          (*pattern)(src,dst) += dst_rcv;
-          (*delta)(src,dst) = dst_rcv;
+          (*cp)(src,dst) += dst_rcv;
+          (*dlta)(src,dst) = dst_rcv;
           src_count -= dst_rcv;
           dst++;
           dst_rcv = even_distro + (dst < extra_distro);
         }
         else if(src_count < dst_rcv)
         {
-          (*pattern)(src,dst) += src_count;
-          (*delta)(src,dst) = src_count;
+          (*cp)(src,dst) += src_count;
+          (*dlta)(src,dst) = src_count;
           dst_rcv -= src_count;
           src_count = 0;
         }
       }
     }
   }
-
   // Load balancing with added data (no migration)
   // Updates pattern (current comm pattern) and init (initialization comm pattern)
   //   by distributing the data counts specified in num
@@ -68,101 +59,80 @@ namespace amsi
   //   balancing but is inefficient.
   // Any left over data, after filling lighter loads is sorted by using the
   //   algorithm found in both CommPattern_CreateDistro and CommPattern_LoadBalance_Spread
-  void CommPattern_LoadBalance_LeastFirst(CommPattern * pattern, CommPattern * init, int * num)
+  // i hate the way this is written and it needs to be improved / made more clear
+  void addData_leastFirst(CommPattern * cp, CommPattern * init, int * num)
   {
-
-    int s1 = pattern->getNumSenders();
-    int s2 = pattern->getNumRecvers();
-    int tempsum;
-    int sums[s2];
-
-    // Sum number of data on each recv process, and find max
-    int maxsum = INT_MIN;
-    int maxjj = 0;
-    for(int jj=0;jj<s2;jj++)
-    {
-      tempsum = 0;
-      for(int kk=0;kk<s1;kk++)
-        tempsum += (*pattern)(kk,jj);
-      sums[jj] = tempsum; // Store sum
-      if(tempsum > maxsum)
-      {
-        maxsum = tempsum;
-        maxjj = jj;
-      }
-    }
-
+    int s1 = cp->getNumSenders();
+    int s2 = cp->getNumRecvers();
+    int cnts[s2];
+    getUnitsRecv(cp,cnts);
+    int mx = 0;
+    for(int ii = 0; ii < s2; ii++)
+      mx = cnts[ii] > mx ? cnts[ii] : mx;
     // Compute difference between max sum and other recv process's sums
-    std::vector<data_index> deltas;
-    deltas.resize(s2);
-    for(int jj=0;jj<s2;jj++)
+    unsigned prm[s2];
+    int dlts[s2];
+    for(int jj = 0; jj < s2; jj++)
     {
-      deltas[jj].first  = maxsum - sums[jj];
-      deltas[jj].second = jj;
+      dlts[jj] = mx - cnts[jj];
+      prm[jj] = jj;
     }
-
-    // Sort the deltas (while remembering index)
-    std::sort(deltas.begin(),deltas.end(),data_index_compare_greater);
-
+    // todo: TEST THIS
+//    std::sort(&prm[0],&prm[s2-1],permuteComp(&dlts[0],std::greater<int>()));
     // Fill pattern based on deltas
     // while ( there is still extra data and the loads aren't all even )
     //   add one data to all lightest loaded processes
-    bool done = false;
-    int jj = 0;
-    int ii = 0;
-
-    if (deltas[0].first==0) done = true; // All loads are even
-    while(ii<s1 && num[ii]==0)
-      ii++;
-    if (ii >= s1) done = true; // No data to add
-
-    while(!done){
-      int curDelta = deltas[0].first;
-      bool stepDone = false;
-      jj = 0;
-      while(!stepDone)
+    bool even = false;
+    bool all_assgnd = false;
+    // check if data is already evenly distributed, default to even spread
+    if(dlts[prm[0]] == 0)
+      even = true; // All loads are even
+    int idx = 0;
+    // get first sending index with data to add
+    while(idx < s1 && num[idx] == 0)
+      idx++;
+    // if there was nothing to add, then everything has been assigned
+    if(idx >= s1)
+      all_assgnd = true;
+    while(!even && !all_assgnd)
+    {
+      int add_cnt = dlts[prm[0]];
+      int jdx = 0;
+      bool assgnd = false;
+      while(!assgnd)
       {
         // Update patterns and data counts
-        (*pattern)(ii,deltas[jj].second) ++;
-        (*init)(ii,deltas[jj].second) ++;
-        num[ii]--;
-        deltas[jj].first--;
-
+        (*cp)(idx,prm[jdx])++;
+        (*init)(idx,prm[jdx])++;
+        num[idx]--;
+        dlts[prm[jdx]]--;
         // Check if there is still data to add
-        while(ii<s1 && num[ii]==0)
-          ii++;
-        if(ii >= s1)
+        while(idx < s1 && num[idx] == 0)
+          idx++;
+        if(idx >= s1)
         {
-          stepDone = true;
-          done = true;
+          all_assgnd = true;
+          assgnd = true;
         }
-
         // All lightest loads have had one added to them
-        if(deltas[jj+1].first != curDelta)
-          stepDone = true;
-
-        jj++;
-
+        if(dlts[prm[jdx+1]] != add_cnt)
+          assgnd = true;
+        jdx++;
       }
-
-      if (deltas[0].first==0) done=true;  // All loads are even
-
+      // Check if loads are now even
+      if (dlts[prm[0]]==0)
+        even = true;
     }
-
     // Distribute any remaining data by default algorithm
     int total_data = 0;
-    for(ii = 0; ii < s1; ii++)
-    {
+    for(int ii = 0; ii < s1; ii++)
       total_data += num[ii];
-    }
-
-    if (total_data == 0) return;
-
+    if (total_data == 0)
+      return;
     int even_distro = total_data / s2;
     int extra_distro = total_data % s2;
     int dst = 0;
     int dst_rcv = even_distro + (dst < extra_distro);
-
     for(int src = 0; src < s1; src++)
     {
       int src_count = num[src];
@@ -171,7 +141,7 @@ namespace amsi
         // if there are enough to send all needed to dst
         if(src_count >= dst_rcv)
         {
-          (*pattern)(src,dst) += dst_rcv;
+          (*cp)(src,dst) += dst_rcv;
           (*init)(src,dst) += dst_rcv;
           src_count -= dst_rcv;
           dst++;
@@ -179,29 +149,29 @@ namespace amsi
         }
         else if(src_count < dst_rcv)
         {
-          (*pattern)(src,dst) += src_count;
+          (*cp)(src,dst) += src_count;
           (*init)(src,dst) += src_count;
           dst_rcv -= src_count;
           src_count = 0;
         }
       }
     }
-
   }
-
-  void CommPattern_LoadBalance_Test(CommPattern * pattern, CommPattern * init, int * num,int rank)
+  void addData_randTest(CommPattern * cp, CommPattern * init, int * num)
   {
-    assert(pattern);
+    assert(cp);
     assert(init);
     assert(num);
-
-    int s2 = pattern->getNumRecvers();
-    srand(time(NULL));
-    for(int ii=0;ii<num[rank];ii++)
+    // assumes that that sending task of cp is related to local comm, which is true for the static process-set assignment case but would not be generally...
+    int rnk = -1;
+    MPI_Comm_rank(AMSI_COMM_LOCAL,&rnk);
+    int s2 = cp->getNumRecvers();
+    srand(8675309);
+    for(int ii = 0; ii < num[rnk]; ii++)
     {
       int addTo = rand()%s2;
-      (*pattern)(rank,addTo)++;
-      (*init)(rank,addTo)++;
+      (*cp)(rnk,addTo)++;
+      (*init)(rnk,addTo)++;
     }
   }
 } // namespace amsi

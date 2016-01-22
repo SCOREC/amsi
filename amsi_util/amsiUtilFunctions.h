@@ -1,8 +1,6 @@
 #ifndef UTILFUNCTIONS_H_
 #define UTILFUNCTIONS_H_
-
 #include <iostream>
-
 namespace amsi
 {
   /// Unreversible combination of two hashes. Currently only masks the upper 32 bits of hash a
@@ -38,9 +36,9 @@ namespace amsi
     {
       Container<D> * buffer; // pointer to buffer object
       void resize(int s)
-	{
-	  buffer->resize(buffer->size() + s);
-	}
+        {
+          buffer->resize(buffer->size() + s);
+        }
       D & operator[](int) {return (*buffer)[offset];}
       size_t offset;
     };

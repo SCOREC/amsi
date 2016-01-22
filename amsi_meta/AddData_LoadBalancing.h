@@ -1,15 +1,30 @@
 #ifndef ADDDATA_LOADBALANCING_H_
 #define ADDDATA_LOADBALANCING_H_
-#include <algorithm>
+#include <cassert>
+#include <iterator>
+#include <vector>
 namespace amsi
 {
   class CommPattern;
-  // Just a utility thing for the load balancing algorithm
-  typedef std::pair<int,int> data_index;
-  bool data_index_compare_greater(const data_index& i,const data_index& j); 
-  bool data_index_compare_less(const data_index& i,const data_index& j); 
-  void CommPattern_LoadBalance_Spread(CommPattern * pattern, CommPattern * init, int * num);
-  void CommPattern_LoadBalance_LeastFirst(CommPattern * pattern, CommPattern * init, int * num);
-  void CommPattern_LoadBalance_Test(CommPattern * pattern, CommPattern * init, int * num,int rank);
+  typedef void (*addDataFctn)(CommPattern * cp, CommPattern * dlta, int * num);
+  class DynamicAddAlgorithms
+  {
+  private:
+    std::vector<addDataFctn> algos;
+  public:
+    int addAlgo(addDataFctn algo)
+    {
+      algos.push_back(algo);
+      return std::distance(algos.begin(),algos.end());
+    }
+    addDataFctn getAlgo(int idx)
+    {
+      assert((unsigned) idx < algos.size());
+      return algos[idx];
+    }
+  };
+  void addData_evenSpread(CommPattern * cp, CommPattern * dlta, int * num);
+  void addData_leastFirst(CommPattern * cp, CommPattern * dlta, int * num);
+  void addData_randTest(CommPattern * cp, CommPattern * dlta, int * num);
 } // namespace amsi
 #endif

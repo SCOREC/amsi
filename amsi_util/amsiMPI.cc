@@ -8,5 +8,5 @@ MPI_Datatype mpi_type<double>(double) {return MPI_DOUBLE;}
 template <>
 MPI_Datatype mpi_type<int>(int) {return MPI_INT;}
 template <>
-MPI_Datatype mpi_type<bool>(bool) {return MPI_INT;}
+MPI_Datatype mpi_type<bool>(bool) {return MPI::BOOL;}
 }

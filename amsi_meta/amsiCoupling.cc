@@ -122,6 +122,24 @@ namespace amsi
       }
     }
   }
+  void getUnitsSent(const CommPattern * cp, int * snt)
+  {
+    for(int ii = 0; ii < cp->getNumSenders(); ii++)
+    {
+      snt[ii] = 0;
+      for(int jj = 0; jj < cp->getNumRecvers(); jj++)
+        snt[ii] += (*cp)(ii,jj);
+    }
+  }
+  void getUnitsRecv(const CommPattern * cp, int * rcv)
+  {
+    for(int jj = 0; jj < cp->getNumRecvers(); jj++)
+    {
+      rcv[jj] = 0;
+      for(int ii = 0; ii < cp->getNumSenders(); ii++)
+        rcv[jj] += (*cp)(ii,jj);
+    }
+  }
   void zeroCommPattern(CommPattern * cp)
   {
     for(int ii = 0; ii < cp->getNumSenders(); ii++)

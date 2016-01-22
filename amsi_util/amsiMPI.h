@@ -17,27 +17,27 @@ namespace amsi
     size_t sz = 1;
     if(tp == MPI_BYTE)
       sz *= sizeof(T);
-    MPI_Allreduce(&v,&sm,sz,mpi_type(v),MPI_SUM,cm);
+    MPI_Allreduce(&v,&sm,sz,mpi_type<T>(),MPI_SUM,cm);
     return sm;
   }
   template <typename T>
     T comm_min(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     T mn = 0;
-    MPI_Allreduce(&v,&mn,1,mpi_type(v),MPI_MIN,cm);
+    MPI_Allreduce(&v,&mn,1,mpi_type<T>(),MPI_MIN,cm);
     return mn;
   }
   template <typename T>
     T comm_max(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     T mx = 0;
-    MPI_Allreduce(&v,&mx,1,mpi_type(v),MPI_MAX,cm);
+    MPI_Allreduce(&v,&mx,1,mpi_type<T>(),MPI_MAX,cm);
     return mx;
   }
   template <typename T>
     void send(T * msg, int to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
-    MPI_Send(msg,cnt,mpi_type(msg),to,0,cm);
+    MPI_Send(msg,cnt,mpi_type<T>(),to,0,cm);
   }
   template <typename T>
     MPI_Request asend(T * msg, int to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
@@ -73,7 +73,7 @@ namespace amsi
     MPI_Request rqst;
     MPI_Irecv(msg,
               cnt,
-              mpi_type(msg),
+              mpi_type<T>(),
               frm,
               MPI_ANY_TAG,
               cm,

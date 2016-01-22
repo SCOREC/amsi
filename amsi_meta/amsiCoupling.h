@@ -50,7 +50,12 @@ namespace amsi
   void getUnitsSentTo(const CommPattern * cp, int rnk, int * sent_to);
   /// get the unit count for the specified rank to recv from the ranks given by getRanksRecvFrom()
   void getUnitsSentFrom(const CommPattern * cp, int rnk, int * recv_from);
-
+  /// get the unit count sums for each rnk the sending task
+  // essentially reconstruct the data dist the pattern is based on
+  void getUnitsSent(const CommPattern * cp, int * snd);
+  /// get the unit count sums for each rnk in the recving task
+  // construct the recving data dist the pattern is based on
+  void getUnitsRecv(const CommPattern * cp, int * recv);
   // TODO: pull these two functions into the CommPattern class,
   //  as their implementation should vary with different implementations
   //  of CommPatterns.
