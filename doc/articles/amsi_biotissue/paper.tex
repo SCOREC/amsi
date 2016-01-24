@@ -24,23 +24,26 @@
 \end{abstract}
 
 \section{Introduction}\label{introduction}
-[Need a couple sentences saying that multi-scale is important]
+[Need a couple sentences to talk about how multi-scale is important]
+Implementation of multi-scale numerical simulations typically rely on either an ad-hoc set of algorithms designed for a particular problem, or on large frameworks and runtimes. 
+Ad-hoc approaches, by their nature, are targeted to a particular multi-scale problem for a specific set of single-scale numerical codes, and thus offer no wider utility beyond their immediate usage as a simulation code.
+Framework and runtime approaches are more flexible and admit a broader range of reuse, but typically necessitate that single-scale operations be adapted to work in the ecosystem they create.
 
-
-
-Multi-scale influences can also be incorporated in a more strictly numerical or computational sense, combining implementations of established physical models operating at different scales referencing and effecting shared physical fields and values \cite{shenoy97} \cite{weinan2003heterogenous}. 
+Development of multi-scale simulations and methods to support the implementation of such simulations has been ongoing for several decades. 
+Some approaches begin with the specification of multi-scale contributions during the specification of mathematical model.
+However, multi-scale influences can be incorporated in a strictly numerical or computational sense, by combining implementations of established physical models operating at different scales referencing and effecting shared physical fields and values \cite{shenoy97} \cite{weinan2003heterogenous}. 
 
 % classes of multi-scale problems
-In order for a numerically multi-scale approach to be effective the domain associated with the scale of interest (the engineering scale) must be sufficiently large that conducting the entire simulation with terms and granularity orders of magnitude removed would make the simulation computationally intractable.
+In order for a numerically multi-scale approach to be effective the domain associated with the scale of interest (the engineering scale) must be of sufficient size that conducting the entire simulation with terms and granularity orders of magnitude removed would make the simulation computationally intractable.
 Thus some computationally reasonable subset of the engineering scale is assigned significantly finer scale(s) to simulate. 
 The choice of location of supporting fine-scale simulations is largely dependent on the specific mathematical models and numerical methods used to implement the engineering scale simulation.
 Two general classes of fine-scale simulation locality have been noted \cite{weinan2011principles}, 'A' type problems where local granularity requirements such as boundary layers or crack propagation necessitate use of localized fine-scale simulation, and 'B' type problems where fine-scale simulation is used to supplement or replace a continuum model at the engineering scale.
-For either case the subset of the engineering-scale domain associated with finer scales are areas of the domain where the fine-scale contributions have the greatest impact on the engineering scale simulation, in order to leverage the most utility from the multi-scale approach.
+For either case the subset of the engineering-scale domain associated with finer scales are areas of the domain where the fine-scale contributions have the greatest impact on the evolution of the engineering scale simulation, in order to leverage the most utility from the multi-scale approach.
 
 % types of numerical paradigms related to multi-scale, maybe mention that a problem using the concurrent multi-scale paradigm is discussed later in the paper?
-Numerical multi-scale simulations fall broadly into two categories.
+Numerical multi-scale simulations fall broadly into two parallel paradigms, distinct from the choice of subdomain assigned to fine scale simulation.
 In the sequential multi-scale paradigm, fine-scale computation is used to precompute quantities of interest for establishing an engineering-scale physical model, possibly using a lookup table or some other method to incorporate the multi-scale influences into the engineering scale \cite{weinan2011principles} \cite{garcia2008sequential}.
-In the concurrent multi-scale paradigm, all scales are computed simultaneously and the required inter-scale coupling values are provided just-in-time \cite{weinan2011principles} \cite{zeng2010concurrent}. 
+In the concurrent multi-scale paradigm, all scales are computed simultaneously and the required inter-scale coupling values are provided just-in-time \cite{weinan2011principles} \cite{zeng2010concurrent}.
 
 % introduce scale-coupling topic to be discussed further in AMSI and methods sections
 Numerically multi-scale simulations associate the computational implementations of single-scale physical models and cause them to interact by passing key physical terms between scales. 
@@ -128,10 +131,31 @@ Finalization of the creation of a CouplingPattern causes the creation of a DataD
 Determination of how a CouplingPattern should change based on changes to the underlying DataDistribution may differ for potentially each multi-scale use-case, so hooks are provided so the application program may correctly update CouplingPatterns for their specific use case.
 As both Scales in the ScaleCoupling must know about the modification in order to appropriately handle the modified scale-coupling data being communicated, all modifications to the CouplingPattern and DataDistribution are communicated from the producing Scale to the consuming Scale. 
 Due to this requirement it is best to update DataDistributions completely in a single operation following any adaptive procedures, since these are often parallel barriers already.
-
 Similar operations are provided for scale-sensitive load-balancing operations taking place on a sending or receiving scale in a ScaleCoupling, as the associated scale must be informed of the changes to the relevant DataDistribution.
 
+ScaleCoupling transformation functions are not currently supported by the AMSI libraries and must be implemented by the application programmer for the each specific multi-scale interaction.
+
 \subsection{Parallel Operations}\label{paralle_ops}
+
+Each Scale in AMSI represents some number of individual scale-tasks. 
+Scale-tasks are not an AMSI construct, merely an abstraction to allow grouping of multiple copies of the same single-scale simulation into a single Scale. 
+Minimally a Scale possess a single scale-task. 
+For example the biotissue simulation (discussed in Section \ref{biotissue}) the Macro Scale has a single scale-task, a parallelized finite element analysis simulation.
+However a Scale may also possess many scale-tasks, each a duplicate of a single-scale simulation.
+Again in the biotissue example case, the Micro_FO Scale has a number of scale-tasks (individual Representative Volume Element (RVE) simulations) related to the number of Macro mesh elements.
+The management of these scale-tasks the responsibility of the application programmer, though changes made that redistributed terms modelled in any DataDistributions should be noted and used to update appropriately once dynamic/adaptive operations have ceased. 
+Adding/removing terms from a DataDistribution may result in the requirement that scale-tasks be instantiated/deleted to accommodate the modification.
+
+When DataDistributions are modified the modifications must be reflected across the RankSet associated with the Scale on which the DataDistribution is defined. 
+This procedure is called Assembly, where each rank contributes the local (and hence valid) portion of the control data to arrive at a valid Scale-global value.
+In practice this reduces to an MPI_Allgather operation for the DataDistribution, but for other types of AMSI control data (most specifically the CouplingPattern) the implementation of the Assembly operation requires additional operations. 
+
+When CouplingPatterns are modified (as a result of a changing DataDistribution) the Scale informing the modification must also ensure that the coupled Scale receives the corrected CouplingPattern. 
+This process is called Reconciliation, and has two phases the inter-scale phase and the local-scale phase.
+In the inter-scale phase a sparse representation of the relevant CouplingPattern data (relevant meaning related to the rank receiving the data, informing that rank fully of only the role it plays in the communication) is communicated from the modifying scale to the modified scale. 
+In the scale-local phase a specialized Assembly operation is performed on the received partial updates to update the full CouplingPattern representation on all processes in the modified Scale.
+
+%% revised up to here, with sporadic edits after
 
 All communication and planning operations in the AMSI libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer. 
 Usage only of implicit ordering was decided upon in order to reduce the memory impact as the simulation scales, as any meta-data which scales with the simulation will necessarily pose a memory issue once scaling hits some threshold.
