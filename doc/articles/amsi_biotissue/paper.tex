@@ -4,11 +4,11 @@
 \documentclass[11pt]{article}
 \bibliographystyle{siam}
 
-\usepackage{comments}
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{mathtools}
+\usepackage{url}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
@@ -108,7 +108,7 @@ Implementing required numerical operations inside an existing framework is of co
 In order to construct a multi-scale simulation using the AMSI libraries the following must be specified: the Scales in the problem, the ScaleCouplings between individual scales, the DataDistribution of coupling data produced by each Scale in a coupling, and the CouplingPattern used to communicate coupling data during coupling operations. 
 
 A Scale is a data structure modelling the parallel state of a discrete simulation scale and all operations (or tasks) occurring at that scale. 
-All Scales have a set of MPI_Ranks associated with them through an intermediary structure called the RankSet. 
+All Scales have a set of MPI\_Ranks associated with them through an intermediary structure called the RankSet. 
 In the current implementation the RankSet of any two Scales in a simulation must be non-overlapping.  
 A Scale is required for the specification of all other data structures in the AMSI libraries. 
 
@@ -142,13 +142,13 @@ Scale-tasks are not an AMSI construct, merely an abstraction to allow grouping o
 Minimally a Scale possess a single scale-task. 
 For example the biotissue simulation (discussed in Section \ref{biotissue}) the Macro Scale has a single scale-task, a parallelized finite element analysis simulation.
 However a Scale may also possess many scale-tasks, each a duplicate of a single-scale simulation.
-Again in the biotissue example case, the Micro_FO Scale has a number of scale-tasks (individual Representative Volume Element (RVE) simulations) related to the number of Macro mesh elements.
+Again in the biotissue example case, the Micro\_FO Scale has a number of scale-tasks (individual Representative Volume Element (RVE) simulations) related to the number of Macro mesh elements.
 The management of these scale-tasks the responsibility of the application programmer, though changes made that redistributed terms modelled in any DataDistributions should be noted and used to update appropriately once dynamic/adaptive operations have ceased. 
 Adding/removing terms from a DataDistribution may result in the requirement that scale-tasks be instantiated/deleted to accommodate the modification.
 
 When DataDistributions are modified the modifications must be reflected across the RankSet associated with the Scale on which the DataDistribution is defined. 
 This procedure is called Assembly, where each rank contributes the local (and hence valid) portion of the control data to arrive at a valid Scale-global value.
-In practice this reduces to an MPI_Allgather operation for the DataDistribution, but for other types of AMSI control data (most specifically the CouplingPattern) the implementation of the Assembly operation requires additional operations. 
+In practice this reduces to an MPI\_Allgather operation for the DataDistribution, but for other types of AMSI control data (most specifically the CouplingPattern) the implementation of the Assembly operation requires additional operations. 
 
 When CouplingPatterns are modified (as a result of a changing DataDistribution) the Scale informing the modification must also ensure that the coupled Scale receives the corrected CouplingPattern. 
 This process is called Reconciliation, and has two phases the inter-scale phase and the local-scale phase.
