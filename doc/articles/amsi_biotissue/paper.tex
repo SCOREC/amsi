@@ -51,13 +51,7 @@ This scale-coupling operation and may require the application of transformer fun
 The primary purpose of such transformer functions is to convert physical coupling values produced by simulations operations at one scale to be meaningfully applied to simulation operations at the coupled, consuming scale. 
 These transformer functions are typified by conversions between the unit metrics used by coupled scales. 
 For example a micro-scale simulation will typically be implemented with units of $\mu$m while a macro-scale simulation might be implemented using units of cm.
-Scale-coupling transformer functions may also be used for any additional coupling-term operations required to account for differences between coupled scales, such as dimensionalizing terms calculated in a dimensionless domain.
-
-% introduce legacy component concept which should be discussed in AMSI and methods sections
-Decades of numerical simulation development have resulted in a large and diverse array of widely used codes for single-scale simulations. 
-This set of legacy codes represents a massive investment of development efforts, and thus leveraging the capabilities of such legacy codes for use in multi-scale simulations is desirable. 
-Incorporating such codes into a functional numerical implementation of a multi-scale model has been a largely ad-hoc, per-code affair. 
-Providing tools to ease the incorporation of legacy components into multi-scale simulations using general procedures while requiring minimal intervention in the legacy codebase results in less fracturing of the legacy codebases when incorporated into varied multi-scale simulations, and avoids the option of complete reimplementation of legacy code functionality in specialized multi-scale ad-hoc codes, or structured frameworks or runtimes.
+Scale-coupling transformer functions may also be used for any additional coupling-term operations required to account for differences between coupled scales \cite{weinan2003heterogenous}, such as dimensionalizing terms calculated in a dimensionless domain \cite{stylianopoulos2007volume} \cite{chandran2007deterministic}.
 
 Implementation of multi-scale simulations has fallen widely into two categories: purely ad-hoc implementations, and implementations supported by a structured framework or runtime. 
 In the case of an ad-hoc implementation all support for multi-scale interaction is hard-coded into the simulation code itself. 
@@ -66,6 +60,12 @@ The application programmer must tailor the numerical operations occurring at a d
 Ad-hoc implementations allow for overall optimizations at the cost of development time (and potentially complexity). 
 Framework/runtime implementations often have a component-based approach that breaks the implementation of a simulation (single- or multi-scale) into discrete interoperable components. 
 This approach requires that operations are implemented to work specifically within the set of interfaces understood by the framework/runtime.
+
+% introduce legacy component concept which should be discussed in AMSI and methods sections
+Decades of numerical simulation development have resulted in a large and diverse array of widely used codes for single-scale simulations. 
+This set of legacy codes represents a massive investment of development efforts, and thus leveraging the capabilities of such legacy codes for use in multi-scale simulations is desirable. 
+Incorporating such codes into a functional numerical implementation of a multi-scale model has been a largely ad-hoc, per-code affair. 
+Providing tools to ease the incorporation of legacy components into multi-scale simulations using general procedures while requiring minimal intervention in the legacy codebase results in less fracturing of the legacy codebases when incorporated into varied multi-scale simulations, and avoids the option of complete reimplementation of legacy code functionality in specialized multi-scale ad-hoc codes, or structured frameworks or runtimes.
 
 \section{Adaptive Multi-scale Simulation Infrastructure}\label{AMSI}
 The Adaptive Multi-scale Simulation Infrastructure (AMSI) is a set of libraries and tools developed by the Scientific Computation Research Center (SCOREC) at Rensselaer Polytechnic Institute. 
@@ -109,7 +109,7 @@ In order to construct a multi-scale simulation using the AMSI libraries the foll
 
 A Scale is a data structure modelling the parallel state of a discrete simulation scale and all operations (or tasks) occurring at that scale. 
 All Scales have a set of MPI\_Ranks associated with them through an intermediary structure called the RankSet. 
-In the current implementation the RankSet of any two Scales in a simulation must be non-overlapping.  
+In the current implementation the RankSet of all Scales in a simulation must be non-overlapping.  
 A Scale is required for the specification of all other data structures in the AMSI libraries. 
 
 A ScaleCoupling is an object denoting that scale-coupling communication will take place between two scales at some point during the simulation. 
@@ -135,6 +135,16 @@ Similar operations are provided for scale-sensitive load-balancing operations ta
 
 ScaleCoupling transformation functions are not currently supported by the AMSI libraries and must be implemented by the application programmer for the each specific multi-scale interaction.
 
+Constructing a new multi-scale simulation from a set of legacy single-scale simulation codes involves several steps.
+Each Scale in the simulation must have a 'main-like' function with the signature \verb|int (int *, char *[], MPI_Comm)| which initializes the various supporting libraries used by that single-scale code on the provided MPI\_Comm and then begins conducting the simulation at that Scale. 
+Typically this function can simply be adapted from a main function already used by the single-scale simulation code, but initializing on the provided MPI\_Comm rather than MPI\_Comm\_World. 
+Other MPI calls in the code operating on MPI\_COMM\_WORLD should be replaced with AMSI\_COMM\_LOCAL which is the current MPI\_Comm associated with the AMSI Scale associated with the single-scale code. 
+Multi-scale interaction points are determined and as wells as calls to create the appropriate DataDistributions and CouplingPatterns, which may be created during initialization for simplicity and modified later during execution.
+Calls to appropriately set DataDistribution values and modify CouplingPatterns should be added after adaptive procedures are conducted at the desired scale.
+AMSI does not treat any Scale as controlling any other Scale, thus care must be taken to avoid two Scales conducting adaptive procedures on the same CouplingPattern at the same time, though both Scales may conduct such procedures as long as all operations from adaptive procedures at one Scale are completed prior to starting adaptive procedures at the second Scale. 
+This allows the CouplingPattern to reach a globally valid state prior to undergoing additional modification. 
+When a Scale has many scale-tasks operating it is necessary to write new code to manage the instantiation and management of the various scale-tasks, and update the relevant DataDistributions as required.
+
 \subsection{Parallel Operations}\label{paralle_ops}
 
 Each Scale in AMSI represents some number of individual scale-tasks. 
@@ -155,10 +165,11 @@ This process is called Reconciliation, and has two phases the inter-scale phase 
 In the inter-scale phase a sparse representation of the relevant CouplingPattern data (relevant meaning related to the rank receiving the data, informing that rank fully of only the role it plays in the communication) is communicated from the modifying scale to the modified scale. 
 In the scale-local phase a specialized Assembly operation is performed on the received partial updates to update the full CouplingPattern representation on all processes in the modified Scale.
 
-%% revised up to here, with sporadic edits after
-
 All communication and planning operations in the AMSI libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer. 
 Usage only of implicit ordering was decided upon in order to reduce the memory impact as the simulation scales, as any meta-data which scales with the simulation will necessarily pose a memory issue once scaling hits some threshold.
+
+[major revisions end here, though there are sporadic edits herafter]
+%% revised up to here, with sporadic edits after
 
 Since scale-tasks are an abstraction the AMSI systems cannot provide direct operations on scale-tasks, but provide mechanisms for the application to inform AMSI of such operations when they occur.
 
