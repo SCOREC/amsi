@@ -86,10 +86,10 @@ AMSI provides mechanisms to assist in the implementation of run-time decision ma
 This design approach allows application developers to avoid centralized control decision bottlenecks.
 Control decisions and associated parallel communication (as with most adaptive procedures) are best implemented at locations in code already requiring parallel barriers for synchronization.
 
-In order to avoid the introduction of unnecessary parallel barriers into the code, AMSI control decisions are only  during operations which are already collective over the set of processes effected by a given control decision.
-
 % need to expand this substantially
-Frameworks and runtime systems have been developed which are intended for the development of specific multi-scale problems \cite{parker2006component} \cite{chopard2011framework} \cite{} and these frameworks have in some cases been expanded to facilitate the implementation of additional multi-scale problems \cite{berzins2010uintah}.
+Frameworks and runtime systems have been developed which are intended for the development of specific multi-scale problems \cite{davison2000uintah} \cite{parker2002component} \cite{chopard2011framework}.
+These frameworks have in some cases been expanded to facilitate the implementation of additional multi-scale problems \cite{berzins2010uintah} \cite{parker20026component}.
+Efforts have also been made to provide standard commponent interfaces to encourage more widespread component adoption in such systems \cite{armstrong1999toward}.
 
 Such systems require that the application developer cast the problem of interest into a set of predefined components (interfaces, tasks, etc.) or specify the problem through a high-level modelling language in order to take full advantage the services provided by the framework.
 Leveraging a component-based design is valuable from a software engineering perspective, as it allows composition of disparate components into a cohesive application.
@@ -139,14 +139,22 @@ Similar operations are provided for scale-sensitive load-balancing operations ta
 ScaleCoupling transformation functions are not currently supported by the AMSI libraries and must be implemented by the application programmer for the each specific multi-scale interaction.
 
 Constructing a new multi-scale simulation from a set of legacy single-scale simulation codes involves several steps.
-Each Scale in the simulation must have a 'main-like' function with the signature \verb|int (int *, char *[], MPI_Comm)| which initializes the various supporting libraries used by that single-scale code on the provided MPI\_Comm and then begins conducting the simulation at that Scale.
+Each Scale in the simulation must have a 'main-like' function with the signature
+\begin{verbatim}
+int (*xxx_main)(int *, char *[], MPI_Comm)
+\end{verbatim}
+which initializes the various supporting libraries used by that single-scale code on the provided MPI\_Comm and then begins conducting the simulation at that Scale.
 Typically this function can simply be adapted from a main function already used by the single-scale simulation code, but initializing on the provided MPI\_Comm rather than MPI\_Comm\_World.
-Other MPI calls in the code operating on MPI\_COMM\_WORLD should be replaced with AMSI\_COMM\_LOCAL which is the current MPI\_Comm associated with the AMSI Scale associated with the single-scale code.
+Other MPI calls in the code operating on MPI\_COMM\_WORLD should be replaced with AMSI\_COMM\_LOCAL which is the current MPI\_Comm currently associated with the AMSI Scale.
 Multi-scale interaction points are determined and as wells as calls to create the appropriate DataDistributions and CouplingPatterns, which may be created during initialization for simplicity and modified later during execution.
 Calls to appropriately set DataDistribution values and modify CouplingPatterns should be added after adaptive procedures are conducted at the desired scale.
 AMSI does not treat any Scale as controlling any other Scale, thus care must be taken to avoid two Scales conducting adaptive procedures on the same CouplingPattern at the same time, though both Scales may conduct such procedures as long as all operations from adaptive procedures at one Scale are completed prior to starting adaptive procedures at the second Scale.
 This allows the CouplingPattern to reach a globally valid state prior to undergoing additional modification.
 When a Scale has many scale-tasks operating it is necessary to write new code to manage the instantiation and management of the various scale-tasks, and update the relevant DataDistributions as required.
+
+As noted, AMSI has a flexible definition of what constitutes a scale-task.
+This allows application developers flexibility in their implementation, but it also prevents certain optimizations -- such as task scheduling -- that a stronger definition of a scale-task can provide.
+For instance, the UINTAH framework \cite{davison200uintah} has a more well-defined task definition which allows the runtime to make scheduling optimizations to reduce process idle time and increase overall parallel performance \cite{meng2010dynamic}.
 
 \subsection{Parallel Operations}\label{paralle_ops}
 
@@ -171,7 +179,7 @@ In the scale-local phase a specialized Assembly operation is performed on the re
 All communication and planning operations in the AMSI libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer.
 Usage only of implicit ordering was decided upon in order to reduce the memory impact as the simulation scales, as any meta-data which scales with the simulation will necessarily pose a memory issue once scaling hits some threshold.
 
-[major revisions end here, though there are sporadic edits herafter]
+\textbf{[major revisions end here, though there are sporadic edits herafter]}
 %% revised up to here, with sporadic edits after
 
 Since scale-tasks are an abstraction the AMSI systems cannot provide direct operations on scale-tasks, but provide mechanisms for the application to inform AMSI of such operations when they occur.
@@ -205,19 +213,21 @@ Specific quantities needed to compute the elemental tangent stiffness matrices a
 \end{figure}
 %
 
-The incremental displacements (deltas generated by the previous Newton-Raphson iteration) on each engineering-scale finite element node are used to distort the a dimensionless representative volume element (RVE) through a dimensionalized abstraction of the RVE embedded in the engineering domain and an associated displacement mapping term $\frac{d\mathbf{RVE}}{d\mathbf{FE}}$, the first order relation between the incremental displacement of an RVE with respect to the displacement of the associated mesh element. This results in each micro-scale node being displaced. Each RVE is a dimensionless unit cube containing a connected collagen fiber network, for the present results the fibers are implemented as truss elements and their distribution is generated using Delauney triangulation, resulting in a high coordination number at each node and consequently a numerically stable fiber network. The micro-scale boundary condition necessitates that the force exerted by each fiber network node located on the boundary of the RVE be zero. The micro-scale global Jacobian is formulated along with the force vector, wherein the boundary condition is enforced by setting specific rows of the force vector associated with boundary nodes to zero.
+The incremental displacements (deltas generated by the previous Newton-Raphson iteration) on each engineering-scale finite element node are used to distort the a dimensionless representative volume element (RVE) through a dimensionalized abstraction of the RVE embedded in the engineering domain and an associated displacement mapping term $\frac{d\mathbf{RVE}}{d\mathbf{FE}}$, the first order relation between the incremental displacement of an RVE with respect to the displacement of the associated mesh element. This results in each micro-scale node being displaced. Each RVE is a dimensionless unit cube containing a connected collagen fiber network, for the present results the fibers are implemented as truss elements and their distribution is generated using Delauney triangulation, resulting in a high coordination number at each node and consequently a numerically stable global Jacobian. The micro-scale boundary condition necessitates that the force exerted by each fiber network node located on the boundary of the RVE be zero. The micro-scale global Jacobian is formulated along with the force vector, wherein the boundary condition is enforced by setting specific rows of the force vector associated with boundary nodes to zero.
 
 Another Newton-Raphson iterative process occurs at micro-scale to converge to the set of displacements resulting in force equilibrium for all the fibers within the fiber network constituting the RVE. After a micro-scale simulation converges to a solution, the Jacobian and force vector are then evaluated again at the solution position, the force exerted along the boundary of the RVE is summed for each of the principal and shear components of a stress tensor, which is then dimensionalized and sent back to the engineering-scale for use in the elemental tangent stiffness matrix formulation. More detail into the derivation of this multi-scale system can be found in \cite{stylianopoulos2008thesis} \cite{agoram2001coupled} \cite{stylianopoulos2007multiscale} . Discussion of the dimensionalization of the dimensionless force terms produced by each fiber network can be found in \cite{stylianopoulos2007volume} \cite{chandran2007deterministic}.
 
-The simulation two nested Newton-Raphson operations occurring; during each macro-scale Newton iteration every micro-scale RVE must undergo a full Newton-Raphson convergence process.
+Thus the multi-scale simulation consists of two nested Newton-Raphson operations occurring; during each macro-scale Newton iteration every micro-scale RVE must undergo a full Newton-Raphson convergence process. Thus the micro-scale iterative processes will tend to dominate the total computational effort required to fully converge to a solution.
 
 \section{Results and Discussion}\label{results}
 The biotissue simulation was run on the AMOS BG/Q machine housed at the CCI facilities. Both strong and weak scaling studies were conducted up to an eighth of the total machine core count, or 16384 cores. The ratio of macro-scale to micro-scale assigned processes was held at 1:127, and the total core count was kept as an integer power of 2 in order for the SLURM job scheduler to submit the jobs to the compute nodes in a timely manner. The precise calculation used to determine macro and micro process counts is given by
 %
-\begin{lstlisting}[language=Bash,caption={process assignment calculation}]
-  NP=$(( $NUM_MACRO * 128))
-  NUM_MICRO=$(( $NP - $NUM_MACRO))
-\end{lstlisting}
+%\begin{lstlisting}[language=Bash,caption={process assignment calculation}]
+\begin{verbatim}
+NP=$(( $NUM_MACRO * 128))
+NUM_MICRO=$(( $NP - $NUM_MACRO))
+\end{verbatim}
+%\end{lstlisting}
 \label{macro micro ratio}
 %
 
@@ -260,6 +270,9 @@ Scale-sensitive load-balancing operations have been developed for the biotissue 
 Development of libraries concerned with higher levels of abstraction of the multi-scale problem will also be valuable in easing the development of new multi-scale simulations from the perspective of the application programmer. High level abstractions such as the Scale Separation Map in \cite{chopard2011framework} could provide mechanisms to provide initial configuration information to the AMSI system during the initialization phase, as well as assist in the implementation of (or usage of existing library-provided) up-/down-scaling operations.
 
 An RVE simulation taking into account inter-fibril matrix material has been developed \cite{lake2012mechanics} \cite{zhang2013cross} \cite{zhang2013coupled}. This alternative RVE will be incorporated into the multi-scale model as an alternative to the fiber-only RVE, to be used in areas of the macro-scale domain determined to be most critical to the overall evolution of the global system, or where error accumulation through model inaccuracy is to be minimized. As this fiber-matrix RVE represents a more significant source of computational complexity, it is independently parallelized -- in contrast to the fiber-only RVE -- and will represent a compelling use case for the parallel execution space discretization and scale-coupling communication management capabilities of the AMSI libraries.
+
+\section{Acknowledgements}
+
 \bibliography{citations}
 
 \end{document}
