@@ -5,12 +5,14 @@
 \bibliographystyle{siam}
 
 \usepackage{amsfonts}
+\usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage[outdir=./]{epstopdf}
 \usepackage{listings}
-\usepackage{mathtools}
+%\usepackage{mathtools}
 \usepackage{url}
-\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
-\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+%\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+%\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 \lstset{basicstyle=\small,
         stringstyle=\ttfamily,
@@ -25,17 +27,18 @@
 
 \section{Introduction}\label{introduction}
 [Need a couple sentences to talk about how multi-scale is important]
-Implementation of multi-scale numerical simulations typically rely on either an ad-hoc set of algorithms designed for a particular problem, or on large frameworks and runtimes. 
+
+Implementation of multi-scale numerical simulations typically rely on either an ad-hoc set of algorithms designed for a particular problem, or on large frameworks and runtimes.
 Ad-hoc approaches, by their nature, are targeted to a particular multi-scale problem for a specific set of single-scale numerical codes, and thus offer no wider utility beyond their immediate usage as a simulation code.
 Framework and runtime approaches are more flexible and admit a broader range of reuse, but typically necessitate that single-scale operations be adapted to work in the ecosystem they create.
 
-Development of multi-scale simulations and methods to support the implementation of such simulations has been ongoing for several decades. 
+Development of multi-scale simulations and methods to support the implementation of such simulations has been ongoing for several decades.
 Some approaches begin with the specification of multi-scale contributions during the specification of mathematical model.
-However, multi-scale influences can be incorporated in a strictly numerical or computational sense, by combining implementations of established physical models operating at different scales referencing and effecting shared physical fields and values \cite{shenoy97} \cite{weinan2003heterogenous}. 
+However, multi-scale influences can be incorporated in a strictly numerical or computational sense, by combining implementations of established physical models operating at different scales referencing and effecting shared physical fields and values \cite{shenoy97} \cite{weinan2003heterogenous}.
 
 % classes of multi-scale problems
 In order for a numerically multi-scale approach to be effective the domain associated with the scale of interest (the engineering scale) must be of sufficient size that conducting the entire simulation with terms and granularity orders of magnitude removed would make the simulation computationally intractable.
-Thus some computationally reasonable subset of the engineering scale is assigned significantly finer scale(s) to simulate. 
+Thus some computationally reasonable subset of the engineering scale is assigned significantly finer scale(s) to simulate.
 The choice of location of supporting fine-scale simulations is largely dependent on the specific mathematical models and numerical methods used to implement the engineering scale simulation.
 Two general classes of fine-scale simulation locality have been noted \cite{weinan2011principles}, 'A' type problems where local granularity requirements such as boundary layers or crack propagation necessitate use of localized fine-scale simulation, and 'B' type problems where fine-scale simulation is used to supplement or replace a continuum model at the engineering scale.
 For either case the subset of the engineering-scale domain associated with finer scales are areas of the domain where the fine-scale contributions have the greatest impact on the evolution of the engineering scale simulation, in order to leverage the most utility from the multi-scale approach.
@@ -46,39 +49,39 @@ In the sequential multi-scale paradigm, fine-scale computation is used to precom
 In the concurrent multi-scale paradigm, all scales are computed simultaneously and the required inter-scale coupling values are provided just-in-time \cite{weinan2011principles} \cite{zeng2010concurrent}.
 
 % introduce scale-coupling topic to be discussed further in AMSI and methods sections
-Numerically multi-scale simulations associate the computational implementations of single-scale physical models and cause them to interact by passing key physical terms between scales. 
-This scale-coupling operation and may require the application of transformer functions to account for key physical differences between disparate scales. 
-The primary purpose of such transformer functions is to convert physical coupling values produced by simulations operations at one scale to be meaningfully applied to simulation operations at the coupled, consuming scale. 
-These transformer functions are typified by conversions between the unit metrics used by coupled scales. 
+Numerically multi-scale simulations associate the computational implementations of single-scale physical models and cause them to interact by passing key physical terms between scales.
+This scale-coupling operation and may require the application of transformer functions to account for key physical differences between disparate scales.
+The primary purpose of such transformer functions is to convert physical coupling values produced by simulations operations at one scale to be meaningfully applied to simulation operations at the coupled, consuming scale.
+These transformer functions are typified by conversions between the unit metrics used by coupled scales.
 For example a micro-scale simulation will typically be implemented with units of $\mu$m while a macro-scale simulation might be implemented using units of cm.
 Scale-coupling transformer functions may also be used for any additional coupling-term operations required to account for differences between coupled scales \cite{weinan2003heterogenous}, such as dimensionalizing terms calculated in a dimensionless domain \cite{stylianopoulos2007volume} \cite{chandran2007deterministic}.
 
-Implementation of multi-scale simulations has fallen widely into two categories: purely ad-hoc implementations, and implementations supported by a structured framework or runtime. 
-In the case of an ad-hoc implementation all support for multi-scale interaction is hard-coded into the simulation code itself. 
-Frameworks and runtimes provide a robust set of scale-coupling operations, scale management,  and overall simulation management. 
+Implementation of multi-scale simulations has fallen widely into two categories: purely ad-hoc implementations, and implementations supported by a structured framework or runtime.
+In the case of an ad-hoc implementation all support for multi-scale interaction is hard-coded into the simulation code itself.
+Frameworks and runtimes provide a robust set of scale-coupling operations, scale management,  and overall simulation management.
 The application programmer must tailor the numerical operations occurring at a discrete scale to operate using a set of interfaces or high-level modelling language required by the framework/runtime.
-Ad-hoc implementations allow for overall optimizations at the cost of development time (and potentially complexity). 
-Framework/runtime implementations often have a component-based approach that breaks the implementation of a simulation (single- or multi-scale) into discrete interoperable components. 
+Ad-hoc implementations allow for overall optimizations at the cost of development time (and potentially complexity).
+Framework/runtime implementations often have a component-based approach that breaks the implementation of a simulation (single- or multi-scale) into discrete interoperable components.
 This approach requires that operations are implemented to work specifically within the set of interfaces understood by the framework/runtime.
 
 % introduce legacy component concept which should be discussed in AMSI and methods sections
-Decades of numerical simulation development have resulted in a large and diverse array of widely used codes for single-scale simulations. 
-This set of legacy codes represents a massive investment of development efforts, and thus leveraging the capabilities of such legacy codes for use in multi-scale simulations is desirable. 
-Incorporating such codes into a functional numerical implementation of a multi-scale model has been a largely ad-hoc, per-code affair. 
+Decades of numerical simulation development have resulted in a large and diverse array of widely used codes for single-scale simulations.
+This set of legacy codes represents a massive investment of development efforts, and thus leveraging the capabilities of such legacy codes for use in multi-scale simulations is desirable.
+Incorporating such codes into a functional numerical implementation of a multi-scale model has been a largely ad-hoc, per-code affair.
 Providing tools to ease the incorporation of legacy components into multi-scale simulations using general procedures while requiring minimal intervention in the legacy codebase results in less fracturing of the legacy codebases when incorporated into varied multi-scale simulations, and avoids the option of complete reimplementation of legacy code functionality in specialized multi-scale ad-hoc codes, or structured frameworks or runtimes.
 
 \section{Adaptive Multi-scale Simulation Infrastructure}\label{AMSI}
-The Adaptive Multi-scale Simulation Infrastructure (AMSI) is a set of libraries and tools developed by the Scientific Computation Research Center (SCOREC) at Rensselaer Polytechnic Institute. 
+The Adaptive Multi-scale Simulation Infrastructure (AMSI) is a set of libraries and tools developed by the Scientific Computation Research Center (SCOREC) at Rensselaer Polytechnic Institute.
 AMSI is designed to support the implementation and execution of dynamic concurrent multi-scale simulations on massively-parallel HPC machines.
-AMSI provides support for several key operations needed for concurrent multi-scale simulations: modelling and managing scales, scale-coupling parallel communication, adaptively adding/removing scale-tasks, and load-balancing coupled scales. 
+AMSI provides support for several key operations needed for concurrent multi-scale simulations: modelling and managing scales, scale-coupling parallel communication, adaptively adding/removing scale-tasks, and load-balancing coupled scales.
 A key goal in the design and implementation of these operations is a focus on general applicability and avoiding adherence to specific interfaces.
 
 The interfaces provided by the AMSI libraries are intended to facilitate the coupling of functional single-scale simulation codes.
 This approach is used in order to mitigate development overhead associated with casting a simulation into a set of framework-specific components, or developing an entire ad-hoc set of multi-scale operations each time a new multi-scale code is being developed.
-Several key multi-scale operations are planned and enacted by the AMSI libraries, allowing the application programmer (a programmer using the AMSI libraries to implement a new multi-scale code or interaction) to determine the most effective use of the tools provided. 
+Several key multi-scale operations are planned and enacted by the AMSI libraries, allowing the application programmer (a programmer using the AMSI libraries to implement a new multi-scale code or interaction) to determine the most effective use of the tools provided.
 All interfaces are designed to be physics-agnostic, operating only on computational quantities with no meta-model of the relation between a coupling term and the mathematical derivation of the multi-scale interaction.
 
-AMSI operates by maintaining a set of minimal simulation metadata in order to model various quantities of interest during simulation execution. 
+AMSI operates by maintaining a set of minimal simulation metadata in order to model various quantities of interest during simulation execution.
 AMSI provides mechanisms to assist in the implementation of run-time decision making and control decisions related to multi-scale execution, with a focus on allowing such adaptive procedures to be planned and implemented in a decentralized manner.
 This design approach allows application developers to avoid centralized control decision bottlenecks.
 Control decisions and associated parallel communication (as with most adaptive procedures) are best implemented at locations in code already requiring parallel barriers for synchronization.
@@ -88,16 +91,16 @@ In order to avoid the introduction of unnecessary parallel barriers into the cod
 % need to expand this substantially
 Frameworks and runtime systems have been developed which are intended for the development of specific multi-scale problems \cite{parker2006component} \cite{chopard2011framework} \cite{} and these frameworks have in some cases been expanded to facilitate the implementation of additional multi-scale problems \cite{berzins2010uintah}.
 
-Such systems require that the application developer cast the problem of interest into a set of predefined components (interfaces, tasks, etc.) or specify the problem through a high-level modelling language in order to take full advantage the services provided by the framework. 
-Leveraging a component-based design is valuable from a software engineering perspective, as it allows composition of disparate components into a cohesive application. 
+Such systems require that the application developer cast the problem of interest into a set of predefined components (interfaces, tasks, etc.) or specify the problem through a high-level modelling language in order to take full advantage the services provided by the framework.
+Leveraging a component-based design is valuable from a software engineering perspective, as it allows composition of disparate components into a cohesive application.
 This approach also introduces new complexities involved in defining the set of components and how they interoperate in the framework, shifting some complexity up the abstraction hierarchy.
 The core features of AMSI used for multi-scale simulation management and communication are provided with no requirements of adherence to a specific component definition.
 
-Typically simulation flow control is determined solely by a runtime system. 
-A framework may also limit specific features of the numerical implementation to those provided by the framework. 
+Typically simulation flow control is determined solely by a runtime system.
+A framework may also limit specific features of the numerical implementation to those provided by the framework.
 This includes domain discretization models and associated adaptive processes -- structured and unstructured meshing and associated refinement algorithms, particle-in-cell methods, etc. -- convergence algorithms for both the minimization of the relevant residuals (Newton-Raphson, etc.) as well as iterative solution of the resulting linear system (KSP, GMRES, ILU, etc.).
 
-AMSI supplies several numerical components consisting of an adaptive finite element system, linear algebraic solver, and nonlinear convergence operators available as both simple C++ class interface definitions, as well as implementations of these interfaces built on top of other software supplied by SCOREC \cite{core} for finite element analysis operations, Simmetrix mesh database software \cite{simmetrix}, and the PETSc linear algebraic solver \cite{petsc-web-page} \cite{petsc-user-ref} \cite{petsc-efficient}. 
+AMSI supplies several numerical components consisting of an adaptive finite element system, linear algebraic solver, and nonlinear convergence operators available as both simple C++ class interface definitions, as well as implementations of these interfaces built on top of other software supplied by SCOREC \cite{core} for finite element analysis operations, Simmetrix mesh database software \cite{simmetrix}, and the PETSc linear algebraic solver \cite{petsc-web-page} \cite{petsc-user-ref} \cite{petsc-efficient}.
 Usage of the supplied numerical components is not required to make use of the multi-scale capabilities of the AMSI libraries, but provide a jumping-off point for application developers needing to implement a new single-scale code to incorporate into a multi-scale simulation.
 
 Implementing required numerical operations inside an existing framework is of course possible, though it may prove an additional -- undesirable overhead for an application programmer interested only in utilizing the multi-scale framework to implement a simulation, rather than implementing the various numerical operations often optimized in widely available packages and libraries.
@@ -105,67 +108,67 @@ Implementing required numerical operations inside an existing framework is of co
 \section{Methods}\label{methods}
 
 \subsection{Simulation Construction with AMSI}
-In order to construct a multi-scale simulation using the AMSI libraries the following must be specified: the Scales in the problem, the ScaleCouplings between individual scales, the DataDistribution of coupling data produced by each Scale in a coupling, and the CouplingPattern used to communicate coupling data during coupling operations. 
+In order to construct a multi-scale simulation using the AMSI libraries the following must be specified: the Scales in the problem, the ScaleCouplings between individual scales, the DataDistribution of coupling data produced by each Scale in a coupling, and the CouplingPattern used to communicate coupling data during coupling operations.
 
-A Scale is a data structure modelling the parallel state of a discrete simulation scale and all operations (or tasks) occurring at that scale. 
-All Scales have a set of MPI\_Ranks associated with them through an intermediary structure called the RankSet. 
-In the current implementation the RankSet of all Scales in a simulation must be non-overlapping.  
-A Scale is required for the specification of all other data structures in the AMSI libraries. 
+A Scale is a data structure modelling the parallel state of a discrete simulation scale and all operations (or tasks) occurring at that scale.
+All Scales have a set of MPI\_Ranks associated with them through an intermediary structure called the RankSet.
+In the current implementation the RankSet of all Scales in a simulation must be non-overlapping.
+A Scale is required for the specification of all other data structures in the AMSI libraries.
 
-A ScaleCoupling is an object denoting that scale-coupling communication will take place between two scales at some point during the simulation. 
+A ScaleCoupling is an object denoting that scale-coupling communication will take place between two scales at some point during the simulation.
 All interacting Scales in a simulation must declare a ScaleCoupling between them.
 For generality the ScaleCoupling relationship is non-commutative, thus Scale A is related to Scale B if and only if A produces coupling data which will be sent to B.
 Symmetrical coupling relations therefore require two ScaleCouplings, one denoting the production of data by A for consumption by B and one denoting the reverse.
 Scales not related through a ScaleCoupling cannot create CouplingPatterns which are required for multi-scale communication and therefore cannot pass scale-coupling data through the AMSI libraries.
 
-A DataDistribution is a structure denoting the parallel distribution of terms produced by a scale for use in a ScaleCoupling relationship for a specific CouplingPattern. 
+A DataDistribution is a structure denoting the parallel distribution of terms produced by a scale for use in a ScaleCoupling relationship for a specific CouplingPattern.
 The DataDistribution is minimally described as a parallel array of integers on the RankSet associated with some Scale A, thus the length of the array is $|A|$ (the cardinality of the RankSet currently assigned to Scale A).
-The DataDistribution may be dynamically modified during the simulation to reflect single-scale adaptive procedures or specifically multi-scale adaptive features (such as selectively adding/removing specific fine-scale simulations). 
+The DataDistribution may be dynamically modified during the simulation to reflect single-scale adaptive procedures or specifically multi-scale adaptive features (such as selectively adding/removing specific fine-scale simulations).
 Each Scale may have many DataDistributions, and a DataDistribution is not tied to a particular ScaleCoupling, in the event that the same distribution characterizes the scale-coupling data produced by a Scale needed by multiple coupled scales.
 
-A CouplingPattern describes the parallel communication required to send scale-coupling data produced by the the sending Scale in a ScaleCoupling and described by a DataDistribution. 
-A CouplingPattern based on the ScaleCoupling of scale $A$ coupled to scale $B$ is described most simply as a matrix $C \in \mathbb{N}^{|A|\times|B|}$ (where $|X|$ is the cardinality of the RankSet currently assigned to scale X). 
+A CouplingPattern describes the parallel communication required to send scale-coupling data produced by the the sending Scale in a ScaleCoupling and described by a DataDistribution.
+A CouplingPattern based on the ScaleCoupling of scale $A$ coupled to scale $B$ is described most simply as a matrix $C \in \mathbb{N}^{|A|\times|B|}$ (where $|X|$ is the cardinality of the RankSet currently assigned to scale X).
 The quantity $C_{ij}$ represents the quantity of scale-coupling terms (of arbitrary type) to be sent from process $i$ in the process set assigned to $A$ to process $j$ in the process set assigned to $B$.
-As the DataDistribution upon which the CouplingPattern is based is allowed to change due to adaptive procedures, all CouplingPatterns related to a DataDistribution are updated when adding/removing terms from a DataDistribution. 
+As the DataDistribution upon which the CouplingPattern is based is allowed to change due to adaptive procedures, all CouplingPatterns related to a DataDistribution are updated when adding/removing terms from a DataDistribution.
 Finalization of the creation of a CouplingPattern causes the creation of a DataDistribution on the receiving Scale, as modifications to a DataDistribution may happen on either side of the ScaleCoupling, but the initial CouplingPattern must be created by the producing Scale.
 Determination of how a CouplingPattern should change based on changes to the underlying DataDistribution may differ for potentially each multi-scale use-case, so hooks are provided so the application program may correctly update CouplingPatterns for their specific use case.
-As both Scales in the ScaleCoupling must know about the modification in order to appropriately handle the modified scale-coupling data being communicated, all modifications to the CouplingPattern and DataDistribution are communicated from the producing Scale to the consuming Scale. 
+As both Scales in the ScaleCoupling must know about the modification in order to appropriately handle the modified scale-coupling data being communicated, all modifications to the CouplingPattern and DataDistribution are communicated from the producing Scale to the consuming Scale.
 Due to this requirement it is best to update DataDistributions completely in a single operation following any adaptive procedures, since these are often parallel barriers already.
 Similar operations are provided for scale-sensitive load-balancing operations taking place on a sending or receiving scale in a ScaleCoupling, as the associated scale must be informed of the changes to the relevant DataDistribution.
 
 ScaleCoupling transformation functions are not currently supported by the AMSI libraries and must be implemented by the application programmer for the each specific multi-scale interaction.
 
 Constructing a new multi-scale simulation from a set of legacy single-scale simulation codes involves several steps.
-Each Scale in the simulation must have a 'main-like' function with the signature \verb|int (int *, char *[], MPI_Comm)| which initializes the various supporting libraries used by that single-scale code on the provided MPI\_Comm and then begins conducting the simulation at that Scale. 
-Typically this function can simply be adapted from a main function already used by the single-scale simulation code, but initializing on the provided MPI\_Comm rather than MPI\_Comm\_World. 
-Other MPI calls in the code operating on MPI\_COMM\_WORLD should be replaced with AMSI\_COMM\_LOCAL which is the current MPI\_Comm associated with the AMSI Scale associated with the single-scale code. 
+Each Scale in the simulation must have a 'main-like' function with the signature \verb|int (int *, char *[], MPI_Comm)| which initializes the various supporting libraries used by that single-scale code on the provided MPI\_Comm and then begins conducting the simulation at that Scale.
+Typically this function can simply be adapted from a main function already used by the single-scale simulation code, but initializing on the provided MPI\_Comm rather than MPI\_Comm\_World.
+Other MPI calls in the code operating on MPI\_COMM\_WORLD should be replaced with AMSI\_COMM\_LOCAL which is the current MPI\_Comm associated with the AMSI Scale associated with the single-scale code.
 Multi-scale interaction points are determined and as wells as calls to create the appropriate DataDistributions and CouplingPatterns, which may be created during initialization for simplicity and modified later during execution.
 Calls to appropriately set DataDistribution values and modify CouplingPatterns should be added after adaptive procedures are conducted at the desired scale.
-AMSI does not treat any Scale as controlling any other Scale, thus care must be taken to avoid two Scales conducting adaptive procedures on the same CouplingPattern at the same time, though both Scales may conduct such procedures as long as all operations from adaptive procedures at one Scale are completed prior to starting adaptive procedures at the second Scale. 
-This allows the CouplingPattern to reach a globally valid state prior to undergoing additional modification. 
+AMSI does not treat any Scale as controlling any other Scale, thus care must be taken to avoid two Scales conducting adaptive procedures on the same CouplingPattern at the same time, though both Scales may conduct such procedures as long as all operations from adaptive procedures at one Scale are completed prior to starting adaptive procedures at the second Scale.
+This allows the CouplingPattern to reach a globally valid state prior to undergoing additional modification.
 When a Scale has many scale-tasks operating it is necessary to write new code to manage the instantiation and management of the various scale-tasks, and update the relevant DataDistributions as required.
 
 \subsection{Parallel Operations}\label{paralle_ops}
 
-Each Scale in AMSI represents some number of individual scale-tasks. 
-Scale-tasks are not an AMSI construct, merely an abstraction to allow grouping of multiple copies of the same single-scale simulation into a single Scale. 
-Minimally a Scale possess a single scale-task. 
+Each Scale in AMSI represents some number of individual scale-tasks.
+Scale-tasks are not an AMSI construct, merely an abstraction to allow grouping of multiple copies of the same single-scale simulation into a single Scale.
+Minimally a Scale possess a single scale-task.
 For example the biotissue simulation (discussed in Section \ref{biotissue}) the Macro Scale has a single scale-task, a parallelized finite element analysis simulation.
 However a Scale may also possess many scale-tasks, each a duplicate of a single-scale simulation.
 Again in the biotissue example case, the Micro\_FO Scale has a number of scale-tasks (individual Representative Volume Element (RVE) simulations) related to the number of Macro mesh elements.
-The management of these scale-tasks the responsibility of the application programmer, though changes made that redistributed terms modelled in any DataDistributions should be noted and used to update appropriately once dynamic/adaptive operations have ceased. 
+The management of these scale-tasks the responsibility of the application programmer, though changes made that redistributed terms modelled in any DataDistributions should be noted and used to update appropriately once dynamic/adaptive operations have ceased.
 Adding/removing terms from a DataDistribution may result in the requirement that scale-tasks be instantiated/deleted to accommodate the modification.
 
-When DataDistributions are modified the modifications must be reflected across the RankSet associated with the Scale on which the DataDistribution is defined. 
+When DataDistributions are modified the modifications must be reflected across the RankSet associated with the Scale on which the DataDistribution is defined.
 This procedure is called Assembly, where each rank contributes the local (and hence valid) portion of the control data to arrive at a valid Scale-global value.
-In practice this reduces to an MPI\_Allgather operation for the DataDistribution, but for other types of AMSI control data (most specifically the CouplingPattern) the implementation of the Assembly operation requires additional operations. 
+In practice this reduces to an MPI\_Allgather operation for the DataDistribution, but for other types of AMSI control data (most specifically the CouplingPattern) the implementation of the Assembly operation requires additional operations.
 
-When CouplingPatterns are modified (as a result of a changing DataDistribution) the Scale informing the modification must also ensure that the coupled Scale receives the corrected CouplingPattern. 
+When CouplingPatterns are modified (as a result of a changing DataDistribution) the Scale informing the modification must also ensure that the coupled Scale receives the corrected CouplingPattern.
 This process is called Reconciliation, and has two phases the inter-scale phase and the local-scale phase.
-In the inter-scale phase a sparse representation of the relevant CouplingPattern data (relevant meaning related to the rank receiving the data, informing that rank fully of only the role it plays in the communication) is communicated from the modifying scale to the modified scale. 
+In the inter-scale phase a sparse representation of the relevant CouplingPattern data (relevant meaning related to the rank receiving the data, informing that rank fully of only the role it plays in the communication) is communicated from the modifying scale to the modified scale.
 In the scale-local phase a specialized Assembly operation is performed on the received partial updates to update the full CouplingPattern representation on all processes in the modified Scale.
 
-All communication and planning operations in the AMSI libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer. 
+All communication and planning operations in the AMSI libraries use an implicit local numbering for data distribution terms, the index associated with the term in a local serialized buffer.
 Usage only of implicit ordering was decided upon in order to reduce the memory impact as the simulation scales, as any meta-data which scales with the simulation will necessarily pose a memory issue once scaling hits some threshold.
 
 [major revisions end here, though there are sporadic edits herafter]
