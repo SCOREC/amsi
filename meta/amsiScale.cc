@@ -1,4 +1,5 @@
 #include "amsiScale.h"
+#include "amsiRankSet.h"
 namespace amsi
 {
   void Scale::assignRanks(RankSet * rs, MPI_Comm cm)
@@ -40,5 +41,11 @@ namespace amsi
     if(rs->contains(rnk))
       result = true;
     return result;
+  }
+  void assignFirstN(const RankSet * rs, rank_t n, Scale * sc)
+  {
+    DefaultRankSet a, b;
+    takeN(rs,n,&a,&b);
+    sc->assignRanks(&a);
   }
 }

@@ -5,6 +5,7 @@
 #include <iostream>
 extern MPI_Comm AMSI_COMM_WORLD;
 extern MPI_Comm AMSI_COMM_LOCAL;
+typedef int rank_t;
 namespace amsi
 {
   template <typename T>
@@ -35,19 +36,19 @@ namespace amsi
     return mx;
   }
   template <typename T>
-    void send(T * msg, int to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    void send(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     MPI_Send(msg,cnt,mpi_type<T>(),to,0,cm);
   }
   template <typename T>
-    MPI_Request asend(T * msg, int to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    MPI_Request asend(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     MPI_Request rqst;
     MPI_Isend(msg,cnt,mpi_type<T>(),to,0,cm,&rqst);
     return rqst;
   }
   template <typename T>
-    MPI_Status recv(T * msg, int frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    MPI_Status recv(T * msg, rank_t frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     MPI_Status s;
     MPI_Recv(msg,cnt,mpi_type<T>(),frm,MPI_ANY_TAG,cm,&s);
@@ -55,7 +56,7 @@ namespace amsi
   }
   // test if there is a message from rank frm waiting to be recv'd return a sz > 0 if so
   template <typename T>
-    int arecv_sz(int & frm = MPI_ANY_SOURCE, MPI_Comm cm = AMSI_COMM_LOCAL)
+    int arecv_sz(rank_t & frm = MPI_ANY_SOURCE, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     int sz = 0;
     MPI_Status s;
@@ -68,7 +69,7 @@ namespace amsi
   }
   // asynchronously recv a message from frm with cnt elements
   template <typename T>
-    MPI_Request arecv(T * msg, int frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    MPI_Request arecv(T * msg, rank_t frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     MPI_Request rqst;
     MPI_Irecv(msg,

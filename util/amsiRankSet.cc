@@ -55,6 +55,16 @@ namespace amsi
                                        ns);
     insertFrom(rslt,ns,nsz);
   }
+  void takeN(const RankSet * src, rank_t nm, RankSet * a, RankSet * b)
+  {
+    int sz = src->size();
+    assert(nm < sz);
+    int rnks[sz];
+    src->toArray(rnks);
+    for(int ii = 0; ii < nm; ii++)
+      a->insert(rnks[ii]);
+    diff(src,a,b);
+  }
   void getGlobalRanks(RankSet * rslt, MPI_Comm cm)
   {
     int sz = 0;

@@ -1,8 +1,6 @@
 #ifndef AMSIHOST_H_
 #define AMSIHOST_H_
-
 #include "amsiUtilConfig.h"
-
 #ifdef BGQ
   #include <boost/unordered/unordered_map.hpp>
   #include <boost/functional/hash.hpp>

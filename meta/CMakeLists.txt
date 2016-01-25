@@ -4,6 +4,7 @@ set(meta_public_headers
   amsiAddData.h
   amsiCoupling.h
   amsiCreateCoupling.h
+  amsiScale.h
   ProcessSet.h
   ProcessAllocator.h
   DataDistribution.h
@@ -20,6 +21,7 @@ set(meta_source_files
   amsiAddData.cc
   amsiCoupling.cc
   amsiCreateCoupling.cc
+  amsiScale.cc
   ProcessSet.cc
   DataDistribution.cc
   Task.cc

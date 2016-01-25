@@ -34,9 +34,11 @@ namespace amsi
   void getGlobalRanks(RankSet*,MPI_Comm = AMSI_COMM_WORLD);
   /// note: collective on the RankSet if using MPI3 standard
   MPI_Comm makeComm(RankSet*);
+  /// todo: these need to be rewritten to avoid use of toArray, which might mean moving them into the class or something similar, but serializing the rank set will scale very poorly
   void intersection(const RankSet * a, const RankSet * b, RankSet * rslt);
   void merge(const RankSet * a, const RankSet * b, RankSet * rslt);
   void diff(const RankSet * a, const RankSet * b, RankSet * rslt);
+  void takeN(const RankSet * src, rank_t nm, RankSet * a, RankSet * b);
 }
-#endif
 #include "amsiRankSet_impl.h"
+#endif
