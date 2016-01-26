@@ -18,7 +18,7 @@ fi
 cd $BUILD_DIR
 
 notifybuild \
-"../amsi_util/ ../amsi_meta/ ../amsi_interface/ ../amsi_control/ ../test/test_interface/linear_elasticity/ ../test/test_interface/nonlinear_elasticity/ ../test/test_interface/partitioned_linear_elastic/ ../test/test_interface/mesh_adaptivity/" \
+"../util/ ../meta/ ../interface/ ../control/ ../test/interface/linear_elasticity/ ../test/interface/nonlinear_elasticity/ ../test/interface/partitioned_linear_elastic/ ../test/interface/mesh_adaptivity/" \
 '' \
 'make install' \
 "AMSI_$BUILD_TYPE"

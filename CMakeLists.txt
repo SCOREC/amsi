@@ -35,16 +35,16 @@ include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
 message(STATUS "Configuring amsi_util")
-add_subdirectory(amsi_util)
+add_subdirectory(util)
 
 message(STATUS "Configuring amsi_meta")
-add_subdirectory(amsi_meta)
+add_subdirectory(meta)
 
 message(STATUS "Configuring amsi_interface")
-add_subdirectory(amsi_interface)
+add_subdirectory(interface)
 
 message(STATUS "Configuring amsi_control")
-add_subdirectory(amsi_control)
+add_subdirectory(control)
 
 if(BUILD_TESTS)
   include(CTest)
