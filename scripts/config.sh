@@ -51,7 +51,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
 else
     module load openmpi/1.3.3
     module load simmetrix/simModSuite
-    module load $DEVROOT/petsc/petsc-3.6.3/ompi133-debug/lib/petsc/conf/modules/petsc/3.6.3
+    module load $DEVROOT/petsc-3.6.3/ompi133-debug/lib/petsc/conf/modules/petsc/3.6.3
 
     cmake \
 	-DCMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -59,7 +59,7 @@ else
 	-DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
 	-DCMAKE_C_COMPILER="mpicc" \
 	-DCMAKE_CXX_COMPILER="mpicxx" \
-	-DCORE_DIR=$DEVROOT/install/core-sim/openmpi-1.3.3 \
+	-DCORE_DIR=$DEVROOT/install/core/sim/openmpi-1.3.3 \
 	-DSIM_MPI=openmpi14 \
 	..
 
