@@ -3,6 +3,7 @@ set(meta_public_headers
   amsiMetaConfig.h
   amsiAddData.h
   amsiCoupling.h
+  amsiCouplingData.h
   amsiCreateCoupling.h
   amsiScale.h
   ProcessSet.h
