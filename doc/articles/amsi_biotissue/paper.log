@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2013.3.20)  25 JAN 2016 10:02
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2013.3.20)  27 JAN 2016 14:43
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -241,10 +241,10 @@ Overfull \hbox (5.33206pt too wide) in paragraph at lines 47--50
 
 [2] [3] [4]
 
-LaTeX Warning: Citation `core' on page 5 undefined on input line 101.
+LaTeX Warning: Citation `core' on page 5 undefined on input line 106.
 
 
-LaTeX Warning: Citation `simmetrix' on page 5 undefined on input line 101.
+LaTeX Warning: Citation `simmetrix' on page 5 undefined on input line 106.
 
 [5] [6] [7] [8] [9]
 Package epstopdf Info: Source file: <biotissue_visual_hierarchy.eps>
@@ -256,7 +256,7 @@ Package epstopdf Info: Source file: <biotissue_visual_hierarchy.eps>
 (epstopdf)                    size: 121688 bytes
 (epstopdf)             Command: <epstopdf --outfile=./biotissue_visual_hierarch
 y-eps-converted-to.pdf biotissue_visual_hierarchy.eps>
-(epstopdf)             \includegraphics on input line 203.
+(epstopdf)             \includegraphics on input line 212.
 Package epstopdf Info: Output file is already uptodate.
 
 <./biotissue_visual_hierarchy-eps-converted-to.pdf, id=41, 159.59625pt x 238.89
@@ -264,18 +264,18 @@ Package epstopdf Info: Output file is already uptodate.
 File: ./biotissue_visual_hierarchy-eps-converted-to.pdf Graphic file (type pdf)
 
  <use ./biotissue_visual_hierarchy-eps-converted-to.pdf>
-Overfull \hbox (11.57039pt too wide) in paragraph at lines 197--209
+Overfull \hbox (11.57039pt too wide) in paragraph at lines 206--218
 \OT1/cmr/m/n/10.95 sim-u-la-tions, which oc-cur at each nu-mer-i-cal in-te-gra-
 tion point in the engineering-
  []
 
 
-Overfull \hbox (2.86833pt too wide) in paragraph at lines 210--211
+Overfull \hbox (2.86833pt too wide) in paragraph at lines 219--220
 []\OT1/cmr/m/n/10.95 The in-cre-men-tal dis-place-ments (deltas gen-er-ated by 
 the pre-vi-ous Newton-
  []
 
-[10 <./biotissue_visual_hierarchy-eps-converted-to.pdf>] [11]
+[10] [11 <./biotissue_visual_hierarchy-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <ws_phil.eps>
 (epstopdf)                    date: 2016-01-13 11:41:46
 (epstopdf)                    size: 18224 bytes
@@ -284,7 +284,7 @@ Package epstopdf Info: Source file: <ws_phil.eps>
 (epstopdf)                    size: 9909 bytes
 (epstopdf)             Command: <epstopdf --outfile=./ws_phil-eps-converted-to.
 pdf ws_phil.eps>
-(epstopdf)             \includegraphics on input line 233.
+(epstopdf)             \includegraphics on input line 242.
 Package epstopdf Info: Output file is already uptodate.
 
 <./ws_phil-eps-converted-to.pdf, id=52, 992.70876pt x 708.6475pt>
@@ -299,20 +299,26 @@ Package epstopdf Info: Source file: <ss_phil.eps>
 (epstopdf)                    size: 9413 bytes
 (epstopdf)             Command: <epstopdf --outfile=./ss_phil-eps-converted-to.
 pdf ss_phil.eps>
-(epstopdf)             \includegraphics on input line 244.
+(epstopdf)             \includegraphics on input line 253.
 Package epstopdf Info: Output file is already uptodate.
 
 <./ss_phil-eps-converted-to.pdf, id=53, 867.24pt x 665.48625pt>
 File: ./ss_phil-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./ss_phil-eps-converted-to.pdf> [12 <./ws_phil-eps-converted-to.pdf>]
-[13 <./ss_phil-eps-converted-to.pdf>] (./paper.bbl
-Underfull \hbox (badness 1454) in paragraph at lines 9--14
+[13 <./ss_phil-eps-converted-to.pdf>] (./paper.bbl [14]
+Underfull \hbox (badness 1571) in paragraph at lines 9--14
+\OT1/cmr/m/sc/10.95 Smolin-ski\OT1/cmr/m/n/10.95 , \OT1/cmr/m/it/10.95 To-ward 
+a com-mon com-po-nent ar-chi-tec-ture for high-
+ []
+
+
+Underfull \hbox (badness 1454) in paragraph at lines 16--21
 \OT1/cmr/m/sc/10.95 Brown, Pe-ter Brune, Kris Buschel-man, Lisan-dro Dal-
  []
 
-[14] [15]
-Underfull \hbox (badness 2035) in paragraph at lines 73--77
+[15]
+Underfull \hbox (badness 2035) in paragraph at lines 91--95
 []\OT1/cmr/m/sc/10.95 V. B. Shenoy, R. Miller, E. B. Tad-mor, D. Rod-ney,
  []
 
@@ -320,12 +326,15 @@ Underfull \hbox (badness 2035) in paragraph at lines 73--77
 
 LaTeX Warning: There were undefined references.
 
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
  ) 
 Here is how much of TeX's memory you used:
- 3240 strings out of 495061
- 44549 string characters out of 1182621
- 105043 words of memory out of 3000000
- 6371 multiletter control sequences out of 15000+50000
+ 3243 strings out of 495061
+ 44606 string characters out of 1182621
+ 105055 words of memory out of 3000000
+ 6374 multiletter control sequences out of 15000+50000
  13096 words of font info for 49 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
  41i,11n,32p,1273b,258s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -342,7 +351,7 @@ ype1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type1/public/
 amsfonts/cm/cmti10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm
 /cmtt10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/symbols/msbm1
 0.pfb>
-Output written on paper.pdf (17 pages, 357300 bytes).
+Output written on paper.pdf (17 pages, 359298 bytes).
 PDF statistics:
  131 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

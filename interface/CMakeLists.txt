@@ -2,6 +2,7 @@ set(interface_public_headers
     amsiInterface.h
     amsiInterfaceConfig.h
     amsiBCDirichlet.h
+    amsiNonlinearAnalysis.h
     ElementalSystem.h
     ErrorEstimators.h
     MatrixUtil.h
@@ -28,6 +29,7 @@ set(interface_public_headers
 set(interface_src_files
     amsiInterface.cc
     amsiBCDirichlet.cc
+    amsiNonlinearAnalysis.cc
     MatrixUtil.h
     FullLULAS.cc
     FEA.cc
