@@ -96,9 +96,9 @@ Leveraging a component-based design is valuable from a software engineering pers
 This approach also introduces new complexities involved in defining the set of components and how they interoperate in the framework, shifting some complexity up the abstraction hierarchy.
 The core features of AMSI used for multi-scale simulation management and communication are provided with no requirements of adherence to a specific component definition.
 
-Typically simulation flow control is determined solely by a runtime system.
-A framework may also limit specific features of the numerical implementation to those provided by the framework.
-This includes domain discretization models and associated adaptive processes -- structured and unstructured meshing and associated refinement algorithms, particle-in-cell methods, etc. -- convergence algorithms for both the minimization of the relevant residuals (Newton-Raphson, etc.) as well as iterative solution of the resulting linear system (KSP, GMRES, ILU, etc.).
+%Typically simulation flow control is determined solely by a runtime system.
+%A framework may also limit specific features of the numerical implementation to those provided by the framework.
+%This includes domain discretization models and associated adaptive processes -- structured and unstructured meshing and associated refinement algorithms, particle-in-cell methods, etc. -- convergence algorithms for both the minimization of the relevant residuals (Newton-Raphson, etc.) as well as iterative solution of the resulting linear system (KSP, GMRES, ILU, etc.).
 
 AMSI supplies several numerical components consisting of an adaptive finite element system, linear algebraic solver, and nonlinear convergence operators available as both simple C++ class interface definitions, as well as implementations of these interfaces built on top of other software supplied by SCOREC \cite{core} for finite element analysis operations, Simmetrix mesh database software \cite{simmetrix}, and the PETSc linear algebraic solver \cite{petsc-web-page} \cite{petsc-user-ref} \cite{petsc-efficient}.
 Usage of the supplied numerical components is not required to make use of the multi-scale capabilities of the AMSI libraries, but provide a jumping-off point for application developers needing to implement a new single-scale code to incorporate into a multi-scale simulation.
