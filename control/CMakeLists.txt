@@ -1,12 +1,12 @@
 set(control_public_headers
   amsi.h
-  ControlService.h
-  ControlService_impl.h
+  amsiControlService.h
+  amsiControlService_impl.h
   Migration.h)
 
 set(control_source_files
   amsi.cc
-  ControlService.cc
+  amsiControlService.cc
   Migration.cc )
 
 add_library(control ${control_source_files})

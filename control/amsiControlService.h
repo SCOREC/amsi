@@ -14,8 +14,7 @@
 #include <string>
 namespace amsi
 {
-  /// Class decleration of the ControlService class (set to be renamed as MultiscaleManager or ScaleCouplingManager or...),
-  ///  used as the top-level interface to the task managing portions of the AMSI infrastructure.
+  /// this thing is a pile and all functionalities it provides (communication and migration, need to be factored out.
   class ControlService
   {
   public:
@@ -98,5 +97,5 @@ namespace amsi
     std::vector<int> m_recv_from;
   };
 } // namespace amsi
-#include "ControlService_impl.h"
+#include "amsiControlService_impl.h"
 #endif
