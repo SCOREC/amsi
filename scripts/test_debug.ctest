@@ -1,0 +1,35 @@
+set(CLIENT_MODE ${CTEST_SCRIPT_ARG})
+if(${CTEST_SCRIPT_ARG} MATCHES Experimental)
+  set(EXPERIMENTAL TRUE)
+elseif(${CTEST_SCRIPT_ARG} MATCHES Continous)
+  set(CONTINOUS TRUE)
+elseif(${CTEST_SCRIPT_ARG} MATHCHES Nightly)
+  set(NIGHTLY TRUE)
+endif()
+# startup
+if(EXPERIMENTAL)
+  set(CTEST_SOURCE_DIRECTORY "$ENV{DEVROOT}/amsi_sim")
+elseif(NIGHTLY)
+  set(CTEST_SOURCE_DIRECTORY "$ENV{DEVROOT}/nightly/amsi_sim")
+endif()
+set(CTEST_SITE scorec)
+set(CTEST_BUILD_NAME linux-ompi-1.3.3-debug)
+set(CTEST_BUILD_CONFIGURATION Debug)
+set(CTEST_BINARY_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/build_debug")
+# update
+find_program(CTEST_GIT_COMMAND git)
+if(NOT EXISTS "${CTEST_SOURCE_DIRECTORY}")
+  set(CTEST_CHEKOUT_COMMAND "${CTEST_GIT_COMMAND} clone git@github.com:tobinw/amsi_sim.git ${CTEST_SOURCE_DIRECTORY}")
+endif()
+set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
+# configure
+set(CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/scripts/config.sh Debug")
+# build
+# test
+ctest_start("${CLIENT_MODE}")
+ctest_update()
+ctest_configure()
+ctest_build()
+ctest_test()
+# memcheck,coverage goes here
+ctest_submit()

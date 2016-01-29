@@ -11,32 +11,40 @@ set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSIO
 list(APPEND CMAKE_MODULE_PATH $ENV{DEVROOT}/scripts/cmake ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 # prefer static libraries and force static linking
-set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
+set(CMAKE_FIND_LIBRARY_SUFFIXES .so .a)
 set(CMAKE_DEBUG_POSTFIX d)
 
 if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
   set(HOST BGQ)
-  list(APPEND CMAKE_CXX_FLAGS "-qlanglvl=extended")
-  set(CMAKE_EXE_LINKER_FLAGS -static)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qlanglvl=extended")
 else()
   set(HOST SCOREC)
   list(APPEND CMAKE_CXX_FLAGS "-std=c++0x -Wall")
 endif()
 
+SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE) 
+SET_PROPERTY(GLOBAL PROPERTY TARGET_ARCHIVES_MAY_BE_SHARED_LIBS FALSE)
+set(MAKE_EXE_LINK_DYNAMIC_C_FLAGS)       # remove -Wl,-Bdynamic
+set(CMAKE_EXE_LINK_DYNAMIC_CXX_FLAGS)
+set(CMAKE_SHARED_LIBRARY_C_FLAGS)         # remove -fPIC 
+set(CMAKE_SHARED_LIBRARY_CXX_FLAGS)
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)    # remove -rdynamic
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
+
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
 message(STATUS "Configuring amsi_util")
-add_subdirectory(amsi_util)
+add_subdirectory(util)
 
 message(STATUS "Configuring amsi_meta")
-add_subdirectory(amsi_meta)
+add_subdirectory(meta)
 
 message(STATUS "Configuring amsi_interface")
-add_subdirectory(amsi_interface)
+add_subdirectory(interface)
 
 message(STATUS "Configuring amsi_control")
-add_subdirectory(amsi_control)
+add_subdirectory(control)
 
 if(BUILD_TESTS)
   include(CTest)
