@@ -93,7 +93,10 @@ namespace amsi {
 	if(fs)
 	  delete fs;
 	fs = new FileSystemInfo(line);
-	printInfo(fs,std::cout);
+	int rnk = -1;
+	MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
+	if(rnk == 0)
+	  printInfo(fs,std::cout);
       }
     }
     if(!tm->lockConfiguration())

@@ -207,38 +207,6 @@ namespace amsi {
 	size_t id = getDD_ID(nm);
 	data[id]->Assemble(task_comm,local_rank);
       }
-      
-      /*
-      if(DataDist_Exists(nm))
-      {
-	size_t id = DataDist_GetID(nm);
-	if(task_comm != MPI_COMM_NULL){
-
-          int recv_from;
-          void* recv;
-          size_t recv_size;
-
-          // Replace MPI_Allgather with PCU calls
-          PCU_Switch_Comm(task_comm);
-          PCU_Comm_Begin();
-
-          for(int i=0;i<proc->size();i++){
-            if(i!=local_rank){
-              PCU_Comm_Write(i, &data[id]->operator[](local_rank), sizeof(int));
-            }
-          }
-
-          PCU_Comm_Send();
-
-          while(PCU_Comm_Read(&recv_from,&recv,&recv_size)){
-            data[id]->operator[](recv_from) = *(int*)recv;
-          }
-
-          data[id]->assembled=true;
-
-        }
-      }
-      */
     }
 
     /// @brief Get a DataDistribution's identifier from the unique name

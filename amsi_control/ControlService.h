@@ -142,7 +142,8 @@ namespace amsi {
       int task_rank = t->localRank();
       int data_size = data.NumPerRank();
  
-      MPI_Allgather(&data[task_rank],data_size,type,
+      D tmp = data[task_rank];
+      MPI_Allgather(&tmp,data_size,type,
 		    &data[0],data_size,type,
 		    task_comm);
     }

@@ -9,7 +9,7 @@
 #define VALUE(x) VALUE_TO_STRING(x)
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
 
-#define SCOREC
+#define BGQ
 
 #if TRUE == TRUE
 #  define CORE

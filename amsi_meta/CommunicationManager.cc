@@ -1,7 +1,7 @@
 #include "CommunicationManager.h"
 #include "Task.h"
 #include "TaskManager.h"
-
+#include <cstdlib>
 namespace amsi {
 
     // assumes static initialization of communication relations
