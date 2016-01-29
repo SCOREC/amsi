@@ -23,7 +23,7 @@ if(NOT EXISTS "${CTEST_SOURCE_DIRECTORY}")
 endif()
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 # configure
-set(CTEST_CONFIGURE_COMMAND ". ${CTEST_SOURCE_DIRECTORY}/scripts/config.sh Debug")
+set(CTEST_CONFIGURE_COMMAND "${CTEST_SOURCE_DIRECTORY}/scripts/config.sh Debug")
 # build
 # test
 ctest_start("${CLIENT_MODE}")
