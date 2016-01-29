@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # CMake config for AMSI
 #
 # usage: ./config.sh [build_type]
