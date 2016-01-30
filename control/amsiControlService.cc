@@ -543,8 +543,7 @@ namespace amsi
   {
     Task * t = task_man->Task_Get(t_id);
     MPI_Comm task_comm = t->comm();
-    if(!control_data->Assemble(task_comm))
-    {}
+    control_data->Assemble(task_comm);
   }
   void ControlService::Reconcile(size_t r_id, Reconcilable * control_data)
   {
