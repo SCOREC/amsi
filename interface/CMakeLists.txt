@@ -60,17 +60,17 @@ list(APPEND interface_src_files PetscLAS.cc)
 # will only be found if we're doing a simmetrix build
 if(SIMMODSUITE_FOUND)
   include(SimmetrixFiles.cmake)
-  list(APPEND interface_public_headers 
+  list(APPEND interface_public_headers
         SimFEA.h
         apfSimFEA.h
         Elasticity.h
         NonLinElasticity.h
         SimTensorFieldQuery.h)
 
-  list(APPEND interface_src_files 
+  list(APPEND interface_src_files
         SimFEA.cc
         apfSimFEA.cc
-        Elasticity.cc 
+        Elasticity.cc
         NonLinElasticity.cc)
 endif(SIMMODSUITE_FOUND)
 
@@ -83,22 +83,24 @@ add_library(interface ${interface_src_files})
 
 # properties for downstream packages
 target_include_directories(interface PUBLIC
-                                          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                          $<INSTALL_INTERFACE:include/amsi>)
+                                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                     $<INSTALL_INTERFACE:include/amsi>)
 
 target_link_libraries(interface PUBLIC util meta)
 
-target_include_directories(interface PUBLIC 
+target_include_directories(interface PUBLIC
+  ${PETSC_PACKAGE_INCLUDES}
   ${PETSC_INCLUDE_DIRS}
   ${CORE_INCLUDE_DIRS}
   ${SIMMODSUITE_INCLUDE_DIR})
-target_link_libraries(interface PUBLIC 
+target_link_libraries(interface PUBLIC
+  ${PETSC_PACKAGE_LIBS}
   ${PETSC_LIBRARIES}
   ${CORE_LIBS}
   ${SIMMODSUITE_LIBS})
 
 install(TARGETS interface
-        EXPORT amsiinterfaceTargets 
+        EXPORT amsiinterfaceTargets
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         INCLUDES DESTINATION include/amsi)

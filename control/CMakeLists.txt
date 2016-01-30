@@ -12,8 +12,8 @@ set(control_source_files
 add_library(control ${control_source_files})
 
 target_include_directories(control PUBLIC
-                                        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                        $<INSTALL_INTERFACE:include/amsi>)
+                                   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                   $<INSTALL_INTERFACE:include/amsi>)
 
 target_link_libraries(control PUBLIC util meta interface)
 
