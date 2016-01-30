@@ -32,7 +32,7 @@ namespace amsi
     FullCommPattern(int s1, int s2);
     virtual int& operator()(int,int);
     virtual int operator()(int,int) const;
-    virtual int Assemble(MPI_Comm);
+    virtual void Assemble(MPI_Comm);
   private:
     FullCommPattern();
     int * pattern;

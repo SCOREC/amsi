@@ -189,55 +189,47 @@ namespace amsi
   /// @param MPI_Comm The comm across which to assemble the CommPattern (should be the MPI_Comm containing the
   ///                 ranks associated with the sending task.
   /// @param rank The task-rank of the local process.
-  int FullCommPattern::Assemble(MPI_Comm cm)
+  void FullCommPattern::Assemble(MPI_Comm cm)
   {
     int result = 0;
-    if(!assembled)
+    int rnk = 0;
+    MPI_Comm_rank(cm,&rnk);
+    int sz = -1;
+    MPI_Comm_size(cm,&sz);
+    assert(sz != -1);
+    zeroNonLocal(this,rnk,SENDER);
+    int rnks_cnt = countRanksSentFrom(this,rnk);
+    std::vector<int> rnks_cnts(sz);
+    rnks_cnts[rnk] = rnks_cnt;
+    MPI_Allgather(&rnks_cnt,1,mpi_type(rnks_cnt),
+                  &rnks_cnts[0],1,mpi_type(rnks_cnt),
+                  cm);
+    std::vector<int> rnks(rnks_cnt);
+    std::vector<int> cnts(rnks_cnt);
+    getRanksSentFrom(this,rnk,&rnks[0]);
+    getUnitsSentFrom(this,rnk,&cnts[0]);
+    int ttl_cnt = rnks_cnts[0];
+    int offsets[sz];
+    offsets[0] = 0;
+    for(int ii = 1; ii < sz; ii++)
     {
-      int rnk = 0;
-      MPI_Comm_rank(cm,&rnk);
-      int sz = -1;
-      MPI_Comm_size(cm,&sz);
-      assert(sz != -1);
-      zeroNonLocal(this,rnk,SENDER);
-      int rnks_cnt = countRanksSentFrom(this,rnk);
-      std::vector<int> rnks_cnts(sz);
-      rnks_cnts[rnk] = rnks_cnt;
-      MPI_Allgather(&rnks_cnt,1,mpi_type(rnks_cnt),
-                    &rnks_cnts[0],1,mpi_type(rnks_cnt),
-                    cm);
-      std::vector<int> rnks(rnks_cnt);
-      std::vector<int> cnts(rnks_cnt);
-      getRanksSentFrom(this,rnk,&rnks[0]);
-      getUnitsSentFrom(this,rnk,&cnts[0]);
-      int ttl_cnt = rnks_cnts[0];
-      int offsets[sz];
-      offsets[0] = 0;
-      for(int ii = 1; ii < sz; ii++)
-      {
-        offsets[ii] = offsets[ii-1] + rnks_cnts[ii-1];
-        ttl_cnt += rnks_cnts[ii];
-      }
-      int all_rnks[ttl_cnt];
-      int all_cnts[ttl_cnt];
-      MPI_Allgatherv(&rnks[0],rnks_cnt,mpi_type<int>(),
-                     &all_rnks[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
-                     cm);
-      MPI_Allgatherv(&cnts[0],rnks_cnt,mpi_type<int>(),
-                     &all_cnts[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
-                     cm);
-      for(int ii = 0; ii < sz; ii++)
-      {
-        int cnt = rnks_cnts[ii];
-        for(int jj = 0; jj < cnt; jj++)
-          (*this)(ii,all_rnks[jj+offsets[ii]]) = all_cnts[jj+offsets[ii]];
-      }
-      assembled = true;
-      result = 0;
+      offsets[ii] = offsets[ii-1] + rnks_cnts[ii-1];
+      ttl_cnt += rnks_cnts[ii];
     }
-    else
-      result = 1;
-    return result;
+    int all_rnks[ttl_cnt];
+    int all_cnts[ttl_cnt];
+    MPI_Allgatherv(&rnks[0],rnks_cnt,mpi_type<int>(),
+                   &all_rnks[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
+                   cm);
+    MPI_Allgatherv(&cnts[0],rnks_cnt,mpi_type<int>(),
+                   &all_cnts[0],&rnks_cnts[0],&offsets[0],mpi_type<int>(),
+                   cm);
+    for(int ii = 0; ii < sz; ii++)
+    {
+      int cnt = rnks_cnts[ii];
+      for(int jj = 0; jj < cnt; jj++)
+        (*this)(ii,all_rnks[jj+offsets[ii]]) = all_cnts[jj+offsets[ii]];
+    }
   }
   std::ostream& operator<<(std::ostream& os, const CommPattern& obj)
   {

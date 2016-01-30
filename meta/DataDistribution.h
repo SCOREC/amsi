@@ -17,7 +17,7 @@ namespace amsi
   public:
     DataDistribution(int size);
     // Assemblable interface
-    virtual int Assemble(MPI_Comm);
+    virtual void Assemble(MPI_Comm);
     int operator[](unsigned index) const;
     int& operator[](unsigned index);
     // preliminary version to get weighted migration working, HACKY and poorly implemented
