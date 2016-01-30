@@ -1,9 +1,9 @@
 set(CLIENT_MODE ${CTEST_SCRIPT_ARG})
-if(${CTEST_SCRIPT_ARG} MATCHES Experimental)
+if(CTEST_SCRIPT_ARG MATCHES Experimental)
   set(EXPERIMENTAL TRUE)
-elseif(${CTEST_SCRIPT_ARG} MATCHES Continous)
+elseif(CTEST_SCRIPT_ARG MATCHES Continous)
   set(CONTINOUS TRUE)
-elseif(${CTEST_SCRIPT_ARG} MATHCHES Nightly)
+elseif(CTEST_SCRIPT_ARG MATHCHES Nightly)
   set(NIGHTLY TRUE)
 endif()
 # startup
