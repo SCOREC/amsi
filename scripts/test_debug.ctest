@@ -6,6 +6,7 @@ elseif(CTEST_SCRIPT_ARG MATCHES Continous)
 elseif(CTEST_SCRIPT_ARG MATHCHES Nightly)
   set(NIGHTLY TRUE)
 endif()
+set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 # startup
 if(EXPERIMENTAL)
   set(CTEST_SOURCE_DIRECTORY "$ENV{DEVROOT}/amsi")

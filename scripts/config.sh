@@ -17,7 +17,7 @@ if [ ! -d $BUILD_DIR ]; then
   mkdir $BUILD_DIR
 fi
 cd $BUILD_DIR
-rm -rf ./* #stupid and dangerous
+#rm -rf ./* #stupid and dangerous
 module load cmake
 HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
