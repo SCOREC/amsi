@@ -53,7 +53,7 @@ target_link_libraries(util PUBLIC
                            ${CORE_LIBS}
                            ${HWLOC_LIBRARIES})
 
-if("$ENV{HOST}" STREQUAL "q.ccni.rpi.edu")
+if("${HOST}" STREQUAL "BGQ")
   target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})
 endif()
 

@@ -50,7 +50,6 @@ namespace amsi
    */
   rank_t getNthRankOnNode(uuid n_id,
                           rank_t nth,
-                          rank_t rnk,
                           MPI_Comm c = AMSI_COMM_WORLD);
   /**
    * Get the nth rank of every machine node specified in the specified comm.

@@ -1,9 +1,8 @@
-#!/bin/bash -x
+#!/bin/bash
 # CMake config for AMSI
-#
 # usage: ./config.sh [build_type]
 #
-ROOT=$DEVROOT/amsi_sim
+ROOT=$DEVROOT/amsi
 if [ -z $1 ]; then
   BUILD_TYPE=Debug
 else
@@ -23,21 +22,18 @@ module load cmake
 HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
   module load xl
-  module load parmetis/xl/4.0.3
-  module load zoltan/xl/3.8
-  module unload parmetis/xl/4.0.3
-  module load /gpfs/u/home/PASC/PASCtbnw/barn-shared/petsc-3.5.2/arch-linux2-c-opt/lib/modules/3.5.2-arch-linux2-c-opt
+  module load /gpfs/u/home/PASC/PASCtbnw/barn-shared/petsc-3.6.3/arch-linux2-c-opt/lib/petsc/conf/modules/petsc/3.6.3
   module load proprietary/simmetrix/simModSuite/10.0-150716
   module load boost
-  export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/gpfs/u/home/PASC/PASCtbnw/barn-shared/install
+  # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/gpfs/u/home/PASC/PASCtbnw/barn-shared/install
    cmake \
-    -DCMAKE_TOOLCHAIN_FILE=$CMAKE_XL_TOOLCHAIN \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_C_COMPILER="mpicc" \
     -DCMAKE_CXX_COMPILER="mpicxx" \
     -DBUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/xl/ \
-    -DCORE_DIR=$DEVROOT/install \
+    -DCORE_DIR=$DEVROOT/install/core/sim/xl/ \
+    -DHWLOC_ROOT=$DEVROOT/install/hwloc/xl/ \
     -DSIM_MPI=bgmpi \
     -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
     ..
