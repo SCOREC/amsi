@@ -41,12 +41,15 @@ else
     module load openmpi/1.3.3
     module load simmetrix/simModSuite
     module load $DEVROOT/petsc/petsc-3.6.3/ompi133-debug/lib/petsc/conf/modules/petsc/3.6.3
+
+    CC=`which mpicc`
+    CXX=`which mpicxx`
     cmake \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=ON \
         -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
-        -DCMAKE_C_COMPILER="mpicc" \
-        -DCMAKE_CXX_COMPILER="mpicxx" \
+        -DCMAKE_C_COMPILER=$CC \
+        -DCMAKE_CXX_COMPILER=$CXX \
         -DHWLOC_ROOT=$DEVROOT/install/hwloc/ \
         -DCORE_DIR=$DEVROOT/install/core-sim/openmpi-1.3.3 \
         -DSIM_MPI=openmpi14 \
