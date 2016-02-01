@@ -1,5 +1,6 @@
 #include "amsiLocality.h"
 #include "amsiRankSet.h"
+#include "amsiMPI.h"
 #include <algorithm>
 namespace amsi
 {

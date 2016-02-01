@@ -1,24 +1,17 @@
 #include "amsiUtil.h"
 #include "amsiUtilConfig.h"
-
 #include <iostream>
-
 #ifdef CORE
 #include <PCU.h>
 #endif
-
 // TODO bill (m) : use MPI_Comm_dup during initialization...
-
 MPI_Comm AMSI_COMM_WORLD = MPI_COMM_WORLD;
 MPI_Comm AMSI_COMM_LOCAL = MPI_COMM_WORLD;
-
 namespace amsi
 {
   bool use_core = true;
   bool use_simmetrix = true;
-  
   amsiInitializer * initializer = NULL;
-
   void amsiInit(int argc, char ** argv)
   {
     if(!initializer)
@@ -26,12 +19,10 @@ namespace amsi
     else
       initializer->amsiInit(argc,argv);
   }
-
   void amsiFree()
   {
     initializer->amsiFree();
   }
-  
   void amsiUtilInit::amsiInit(int argc, char ** argv)
   {
     if(!util_init_call_count)
@@ -43,7 +34,6 @@ namespace amsi
     }
     util_init_call_count++;
   }
-
   void amsiUtilInit::amsiFree()
   {
     if(util_init_call_count == 1)
