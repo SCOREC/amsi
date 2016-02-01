@@ -20,24 +20,25 @@ namespace amsi
     , task_group()
     , proc(p)
     , data()
-    , rank()
     , local_rank()
     , id_gen()
   {
     // Create a comm for the task
     MPI_Group world_group;
-    MPI_Comm_group(MPI_COMM_WORLD,&world_group);
+    MPI_Comm_group(AMSI_COMM_WORLD,&world_group);
     int n = p->size();
     int pr[n];
-    for(int ii = 0; ii < n; ii++)
-      pr[ii] = (*p)[ii];
+    toArray(p,&pr[0]);
     MPI_Group_incl(world_group,n,pr,&task_group);
-    MPI_Comm_create(MPI_COMM_WORLD,task_group,&task_comm);
-    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    MPI_Comm_create(AMSI_COMM_WORLD,task_group,&task_comm);
     if(task_comm != MPI_COMM_NULL)
       MPI_Comm_rank(task_comm,&local_rank);
     else
-      local_rank = proc->indexOf(rank);
+    {
+      int gbl_rnk = -1;
+      MPI_Comm_rank(AMSI_COMM_WORLD,&gbl_rnk);
+      local_rank = proc->indexOf(gbl_rnk);
+    }
   }
   Task::~Task()
   {
@@ -103,67 +104,75 @@ namespace amsi
   /// @param nm A unique string identifying the DataDistribution
   size_t Task::createDD(const std::string & nm)
   {
-    size_t result = 0;
-    DataDistribution * dd = static_cast<DataDistribution*>(NULL);
-#   ifndef ZOLTAN
-    dd = new DataDistribution(proc->size());
-#   else
-    if(!proc->size())
-      dd = new DataDistribution(proc->size());
-    else
+    size_t id = 0;
+    if(assignedTo())
     {
-      Zoltan_Struct * zs = Zoltan_Create(task_comm);
-      dd = new DataDistribution(proc->size(),zs);
-      size_t s1 = sizeof(DataDistribution*);
-      size_t s2 = sizeof(int);
-      void * buffer = (void*) new char[s1+s2];
-      memcpy(buffer,&dd,s1);
-      memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
-      Zoltan_Set_Fn(zs,
-                    ZOLTAN_NUM_OBJ_FN_TYPE,
-                    (void(*)()) &DD_get,
-                    buffer);
-      Zoltan_Set_Fn(zs,
-                    ZOLTAN_OBJ_LIST_FN_TYPE,
-                    (void(*)()) &DD_describe,
-                    buffer);
+      DataDistribution * dd = static_cast<DataDistribution*>(NULL);
+#     ifndef ZOLTAN
+      dd = new DataDistribution(proc->size());
+#     else
+      if(!proc->size())
+        dd = new DataDistribution(proc->size());
+      else
+      {
+        Zoltan_Struct * zs = Zoltan_Create(task_comm);
+        dd = new DataDistribution(proc->size(),zs);
+        size_t s1 = sizeof(DataDistribution*);
+        size_t s2 = sizeof(int);
+        void * buffer = (void*) new char[s1+s2];
+        memcpy(buffer,&dd,s1);
+        memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
+        Zoltan_Set_Fn(zs,
+                      ZOLTAN_NUM_OBJ_FN_TYPE,
+                      (void(*)()) &DD_get,
+                      buffer);
+        Zoltan_Set_Fn(zs,
+                      ZOLTAN_OBJ_LIST_FN_TYPE,
+                      (void(*)()) &DD_describe,
+                      buffer);
+      }
+#     endif
+      id = getDD_ID(nm);
+      data[id] = dd;
     }
-#   endif
-    result = getDD_ID(nm);
-    assert(result);
-    data[result] = dd;
-    return result;
+    return id;
   }
   /// @brief Determine whether a DataDistribution with the given name exists
   /// @param nm A unique string identifying a DataDistribution (maybe)
   /// @return bool Whether a DataDistribution with the given name exists
   bool Task::verifyDD(const std::string & nm)
   {
-    size_t id = getDD_ID(nm);
-    return data.count(id) > 0;
+    bool exists = false;
+    if(assignedTo())
+      exists = data.count(getDD_ID(nm)) > 0;
+    return exists;
   }
   /// @brief Set the locally-owned data count for a given DataDistribution
   /// @param nm A unique string identifying the DataDistribution for which to set the count
   /// @param ct The locally-owned data count
   void Task::setLocalDDValue(const std::string & nm, int ct)
   {
-    size_t id = getDD_ID(nm);
-    if(id != 0)
-      data[id]->operator[](local_rank) = ct;
+    if(assignedTo())
+    {
+      size_t id = getDD_ID(nm);
+      if(id != 0)
+        data[id]->operator[](local_rank) = ct;
+    }
+    else
+    {
+      std::cout << "WARNING: Attempt to set data distribution value on non-local task!" << std::endl;
+    }
   }
   /// @brief Get the locally-owned data count
   /// @param dd_id A unique identifier for the DataDistribution
   /// @return int The locally-owned data count
   int Task::getLocalDDValue(size_t dd_id)
   {
-    int result = -1;
-    DataDistribution * dd = 0;
-    if(data.count(dd_id) > 0)
-    {
-      dd = data[dd_id];
-      result = (*dd)[local_rank];
-    }
-    return result;
+    int cnt = -1;
+    if(assignedTo())
+      if(data.count(dd_id) > 0)
+        cnt = (*data[dd_id])[local_rank];
+    return cnt;
   }
   /// @brief Assemble a DataDistribution defined on the ProcessSet associated with
   ///        this task, collective on that ProcessSet
@@ -171,10 +180,7 @@ namespace amsi
   void Task::assembleDD(const std::string & nm)
   {
     if(verifyDD(nm))
-    {
-      size_t id = getDD_ID(nm);
-      data[id]->Assemble(task_comm);
-    }
+      data[getDD_ID(nm)]->Assemble(task_comm);
   }
   /// @brief Get a DataDistribution's identifier from the unique name
   /// @param nm A string uniquely identifying the DataDistribution

@@ -19,6 +19,7 @@ namespace amsi
     Task(ProcessSet* p);
     ~Task();
     int localRank() {return local_rank;}
+    bool assignedTo() { return local_rank != -1; }
     int localToGlobalRank(int);
     int size();
     const MPI_Comm comm() {return task_comm;}
@@ -65,7 +66,6 @@ namespace amsi
     typedef std::map<size_t,DataDistribution*> datamap_t;
     datamap_t data;
   private:
-    int rank;
     int local_rank;
     ExecuteFunc exec;
     hash<std::string> id_gen;

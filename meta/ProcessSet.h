@@ -48,5 +48,11 @@ namespace amsi
   private:
     std::pair<int,int> val;
   };
+  inline void toArray(ProcessSet * ps, int * arr)
+  {
+    for(int ii = 0; ii < ps->size(); ii++)
+      arr[ii] = (*ps)[ii];
+  }
+
 } // namespace amsi
 #endif

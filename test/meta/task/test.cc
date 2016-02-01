@@ -1,8 +1,5 @@
-// in-build
-#include "../../test.h"
-// in-project
+#include "test.h"
 #include "amsiMeta.h"
-// standard
 #include <iostream>
 #include <utility>
 using namespace amsi;
@@ -31,7 +28,7 @@ int main(int argc, char * argv[])
   Task * t0 = new Task(ps0);
   failed += test_neq("Task(0)",static_cast<Task*>(NULL),t0);
   t0->createDD("t0_data");
-  failed += test(".verifyDD()",true,t0->verifyDD("t0_data"));
+  failed += test(".verifyDD()",false,t0->verifyDD("t0_data"));
   size_t dd_id0 = t0->getDD_ID("t0_data");
   failed += test_neq(".getDD_ID()",(size_t)0,dd_id0);
   failed += test(".localRank()",-1,t0->localRank());
@@ -40,7 +37,7 @@ int main(int argc, char * argv[])
   t0->setExecutionFunction(&task0);
   failed += test(".execute()",0,t0->execute(argc,argv));
   t0->setLocalDDValue("t0_data",rank % 3);
-  failed += test(".getLocalDDValue()",0,t0->getLocalDDValue(dd_id0));
+  failed += test(".getLocalDDValue()",-1,t0->getLocalDDValue(dd_id0));
   //t0->DataDist_Assemble("t0_data");
   // task manager allocates some free processes
   std::cout << "Creating ProcessSet with 0,size where size = "<<size<<std::endl;
