@@ -1,7 +1,6 @@
 set(util_public_headers
   amsiByteStream.h
   amsiDistributed.h
-  amsiFail.h
   amsiFileSys.h
   amsiUtil.h
   amsiUtilConfig.h
@@ -17,6 +16,7 @@ set(util_public_headers
   amsiReporter.h
   amsiUtilFunctions.h
   amsiUUID.h
+  amsiByteStream.h
   unordered_map.h
   pystring.h
   )
@@ -24,6 +24,7 @@ set(util_public_headers
 set(util_source_files
   amsiFileSys.cc
   amsiLocality.cc
+  amsiUtil.cc
   amsiMPI.cc
   amsiPArray.cc
   amsiRankSet.cc
@@ -44,16 +45,15 @@ add_library(util ${util_source_files})
 set_property(TARGET util PROPERTY VERSION ${AMSI_VERSION})
 
 target_include_directories(util PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:include/amsi>
-  ${CORE_INCLUDE_DIRS}
-  ${HWLOC_INCLUDE_DIR})
-
+                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                $<INSTALL_INTERFACE:include/amsi>
+                                ${CORE_INCLUDE_DIRS}
+                                ${HWLOC_INCLUDE_DIR})
 target_link_libraries(util PUBLIC
- ${CORE_LIBS}
- ${HWLOC_LIBRARIES})
+                           ${CORE_LIBS}
+                           ${HWLOC_LIBRARIES})
 
-if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
+if("${HOST}" STREQUAL "BGQ")
   target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})
 endif()
 

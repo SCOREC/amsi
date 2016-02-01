@@ -6,7 +6,7 @@
   #include <boost/functional/hash.hpp>
   using boost::hash;
   using boost::unordered_map;
-#elif defined SCOREC
+#else
   #include <unordered_map>
   #include <functional>
   using std::hash;

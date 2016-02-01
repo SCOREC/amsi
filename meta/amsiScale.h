@@ -64,7 +64,12 @@ namespace amsi
    *        .synchronize() in order to make the Scale valid (if necessary).
    */
   bool assignedTo(Scale * sc);
+  /// assign first n ranks from the rankset to the scale
   void assignFirstN(const RankSet * rs, rank_t n, Scale * sc);
+  /// assign specific counts from the rankset to the scales
+  void assignCounts(const RankSet * rs, rank_t nm, rank_t * cnts, Scale * scls[]);
+  /// assign ratios of ranks from the rankset to the scales
+  void assignRatios(const RankSet * rs, rank_t cnt, double * rts, Scale * scls[]);
   /**
    * Convenience function to get the size of the current rank set assigned to
    *  the provided scale.

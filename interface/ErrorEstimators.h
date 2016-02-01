@@ -61,6 +61,7 @@ namespace amsi
       bool inEntity(apf::MeshEntity * me)
       {
 	cme = me;
+	return true;
       }
       void outEntity() { }
       void atNode(int nd)

@@ -3,6 +3,7 @@
 #include "amsiDistributed.h"
 #include "amsiFail.h"
 #include "amsiMPI.h"
+#include <vector>
 namespace amsi
 {
   template <typename T>
@@ -11,22 +12,22 @@ namespace amsi
   protected:
     MPI_Comm cm;
     int sz;
-    T * arr;
+    std::vector<T> arr;
     T f;
   public:
-    PArray(MPI_Comm comm)
-      : Distributed(false)
+  PArray(MPI_Comm comm)
+    : Distributed(false)
       , cm(comm)
       , sz(0)
-      , arr(NULL)
+      , arr(0)
       , f()
     {
       if(cm != MPI_COMM_NULL)
       {
-	int s = 0;
+        int s = 0;
         MPI_Comm_size(comm,&s);
-	sz = s;
-        arr = new T[sz]();
+        sz = s;
+        arr.resize(sz);
       }
       f = fail<T>();
     }
@@ -39,14 +40,14 @@ namespace amsi
     {
       if(!isValid())
       {
-	int rnk = -1;
-	MPI_Comm_rank(cm,&rnk);
-	T vl = arr[rnk];
-	// todo (m) : convert to non-blocking
-	MPI_Allgather(&vl,1,mpi_type<T>(),
-		      &arr[0],1,mpi_type<T>(),
-		      cm);
-	setValid(true);
+        int rnk = -1;
+        MPI_Comm_rank(cm,&rnk);
+        T vl = arr[rnk];
+        // todo (m) : convert to non-blocking
+        MPI_Allgather(&vl,1,mpi_type<T>(),
+                      &arr[0],1,mpi_type<T>(),
+                      cm);
+        setValid(true);
       }
     }
   };

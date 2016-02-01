@@ -3,6 +3,12 @@
 #include "amsiMPI.h"
 namespace amsi
 {
+  /**
+   * Currently this seems more like assemblable...
+   * Distributed should probably be limited to determining whether the
+   *  MPI Comm the class operates on is valid and provide an interface
+   *  to make the comm valid if it is not..
+   */
   class Distributed
   {
   protected:

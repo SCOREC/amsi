@@ -56,7 +56,7 @@ namespace amsi
   }
   // test if there is a message from rank frm waiting to be recv'd return a sz > 0 if so
   template <typename T>
-    int arecv_sz(rank_t & frm = MPI_ANY_SOURCE, MPI_Comm cm = AMSI_COMM_LOCAL)
+    int arecv_sz(rank_t & frm, MPI_Comm cm = AMSI_COMM_LOCAL)
   {
     int sz = 0;
     MPI_Status s;

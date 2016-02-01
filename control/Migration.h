@@ -1,7 +1,7 @@
 #ifndef MIGRATION_H_
 #define MIGRATION_H_
 #include "amsiCoupling.h"
-#include "ControlService.h"
+#include "amsiControlService.h"
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif

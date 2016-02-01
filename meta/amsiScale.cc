@@ -1,5 +1,8 @@
 #include "amsiScale.h"
 #include "amsiRankSet.h"
+#include <cassert>
+#include <numeric>
+#include <vector>
 namespace amsi
 {
   void Scale::assignRanks(RankSet * rs, MPI_Comm cm)
@@ -47,5 +50,26 @@ namespace amsi
     DefaultRankSet a, b;
     takeN(rs,n,&a,&b);
     sc->assignRanks(&a);
+  }
+  void assignCounts(const RankSet * rs, rank_t nm, rank_t * cnts, Scale * scls[])
+  {
+    std::vector<DefaultRankSet> rmndr(nm);
+    std::vector<DefaultRankSet> sbsts(nm);
+    takeN(rs,cnts[0],&sbsts[0],&rmndr[0]);
+    scls[0]->assignRanks(&sbsts[0]);
+    for(int ii = 1; ii < nm; ii++)
+    {
+      takeN(&rmndr[ii-1],cnts[ii],&sbsts[ii],&rmndr[ii]);
+      scls[ii]->assignRanks(&sbsts[ii]);
+    }
+  }
+  void assignRatios(const RankSet * rs, rank_t cnt, double * rts, Scale * scls[])
+  {
+    rank_t sz = rs->size();
+    rank_t cnts[cnt];
+    for(int ii = 0; ii < cnt; ii++)
+      cnts[ii] = (rank_t)(((double)sz)*rts[ii]);
+    assert(std::accumulate(&cnts[0],&cnts[cnt-1],0) == sz);
+    assignCounts(rs,cnt,&cnts[0],scls);
   }
 }

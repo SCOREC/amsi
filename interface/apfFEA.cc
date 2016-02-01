@@ -156,7 +156,8 @@ namespace amsi {
 
     void apfFEA::WriteMesh(const std::string & nm)
     {
-      apf::writeVtkFiles(nm.c_str(),apf_mesh);
+      const char * prfx = nm.c_str();
+      apf::writeVtkFiles(prfx,apf_mesh);
     }
   }
 }

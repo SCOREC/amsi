@@ -8,7 +8,7 @@ namespace amsi {
    class Assemblable
    {
    public:
-     virtual int Assemble(MPI_Comm) = 0;
+     virtual void Assemble(MPI_Comm) = 0;
      bool isAssembled() {return assembled;}
    protected:
      void unassembled() {assembled = false;}

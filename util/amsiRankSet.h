@@ -39,6 +39,33 @@ namespace amsi
   void merge(const RankSet * a, const RankSet * b, RankSet * rslt);
   void diff(const RankSet * a, const RankSet * b, RankSet * rslt);
   void takeN(const RankSet * src, rank_t nm, RankSet * a, RankSet * b);
+  enum RankFormats
+  {
+    SET,
+    RANGE,
+    FNCTN
+  };
+  class RankRange
+  {
+  protected:
+    rank_t lw;
+    rank_t hgh;
+  public:
+    rank_t size() {return hgh - lw;}
+    void insert(rank_t vl)
+    {
+      if(vl == hgh+1)
+        hgh = vl;
+      else if (vl == lw-1)
+        lw = vl;
+      //else
+        // split into a tree with a range branch and a set branch
+    }
+    bool contains(rank_t vl)
+    {
+      return (vl > lw && vl <= hgh);
+    }
+  };
 }
 #include "amsiRankSet_impl.h"
 #endif

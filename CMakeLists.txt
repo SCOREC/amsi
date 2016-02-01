@@ -10,26 +10,32 @@ set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSIO
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH $ENV{DEVROOT}/scripts/cmake ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-# prefer static libraries and force static linking
-set(CMAKE_FIND_LIBRARY_SUFFIXES .so .a)
 set(CMAKE_DEBUG_POSTFIX d)
 
-if($ENV{HOST} STREQUAL "q.ccni.rpi.edu")
+set(HOSTNAME $ENV{HOSTNAME})
+if("$HOSTNAME" STREQUAL "")
+  set(HOSTNAME $ENV{HOST})
+endif("$HOSTNAME" STREQUAL "")
+message(STATUS "Configuring to build on" ${HOSTNAME})
+
+if("${HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
   set(HOST BGQ)
+  set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
+  SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE)
+  SET_PROPERTY(GLOBAL PROPERTY TARGET_ARCHIVES_MAY_BE_SHARED_LIBS FALSE)
+  #-D__GXX_EXPERIMENTAL_CXX0X__
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qlanglvl=extended")
+  set(CMAKE_EXE_LINK_DYNAMIC_C_FLAGS)       # remove -Wl,-Bdynamic
+  set(CMAKE_EXE_LINK_DYNAMIC_CXX_FLAGS)
+  set(CMAKE_SHARED_LIBRARY_C_FLAGS)         # remove -fPIC
+  set(CMAKE_SHARED_LIBRARY_CXX_FLAGS)
+  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)    # remove -rdynamic
+  set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 else()
   set(HOST SCOREC)
+  set(CMAKE_FIND_LIBRARY_SUFFIXES .so .a)
   list(APPEND CMAKE_CXX_FLAGS "-std=c++0x -Wall")
 endif()
-
-SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE) 
-SET_PROPERTY(GLOBAL PROPERTY TARGET_ARCHIVES_MAY_BE_SHARED_LIBS FALSE)
-set(MAKE_EXE_LINK_DYNAMIC_C_FLAGS)       # remove -Wl,-Bdynamic
-set(CMAKE_EXE_LINK_DYNAMIC_CXX_FLAGS)
-set(CMAKE_SHARED_LIBRARY_C_FLAGS)         # remove -fPIC 
-set(CMAKE_SHARED_LIBRARY_CXX_FLAGS)
-set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)    # remove -rdynamic
-set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
@@ -53,9 +59,9 @@ endif()
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in 
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
                  ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-  add_custom_target(doc 
+  add_custom_target(doc
                     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                     COMMENT "Generating API documentation with doxygen." VERBATIM)

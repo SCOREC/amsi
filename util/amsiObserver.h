@@ -22,9 +22,9 @@ namespace amsi
     void notify(Event event)
     {
       for(std::set<Observer*>::iterator it = observers.begin();
-	  it != observers.end();
-	  it++)
-	(*it)->onNotify(this, event);
+          it != observers.end();
+          it++)
+        (*it)->onNotify(this, event);
     }
   public:
     void addObserver(Observer * o)
@@ -35,7 +35,7 @@ namespace amsi
     {
       std::set<Observer*>::iterator it = observers.find(observer);
       if(it != observers.end())
-	observers.erase(it);
+        observers.erase(it);
     }
   };
 }
