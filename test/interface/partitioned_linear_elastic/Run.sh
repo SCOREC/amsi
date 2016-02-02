@@ -1,10 +1,8 @@
 #!/bin/bash
 
-EXEDIR=$DEVROOT/amsi_sim/build_debug/test/test_interface/partitioned_linear_elastic/
-FILEDIR=$DEVROOT/amsi_sim/test/test_interface/
+EXEDIR=$DEVROOT/amsi/build_debug/test/interface/partitioned_linear_elastic/
+FILEDIR=$DEVROOT/amsi/test/interface/
 
 $1 mpirun $2 -np 2 $EXEDIR/partitioned_linear_elastic \
-  -l /net/common/meshSim/license/ \
-  -g $DEVROOT/biotissue/macro/test/dogBone/models/mixed/dogBone_n_bc.smd \
-  -m $DEVROOT/biotissue/macro/test/dogBone/meshes/dogbone_2_parts.sms \
-  -p $FILEDIR/partitioned_linear_elasticity/petsc_options
+  -g $FILEDIR/models/cube_uniaxial_10kPa.smd \
+  -m $FILEDIR/meshes/cube_24_tets_2_parts.sms
