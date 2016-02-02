@@ -1,8 +1,6 @@
-// in-build
-#include "../../test.h"
-// in-project
+#include "test.h"
+#include "amsiMeta.h"
 #include "TaskManager.h"
-// standard
 #include <iostream>
 #include <utility>
 using namespace amsi;
@@ -21,15 +19,16 @@ int task1_run(int &, char **&, MPI_Comm)
 /// test entry point
 int main(int argc, char * argv[])
 {
+  initializer = new amsi::amsiMetaInit();
+  amsiInit(argc,argv);
   int failed = 0;
-  MPI_Init(&argc,&argv);
   int rank = -1;
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+  MPI_Comm_rank(AMSI_COMM_WORLD,&rank);
   int size;
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
+  MPI_Comm_size(AMSI_COMM_WORLD,&size);
   std::cout << "Initializing test object(s):" << std::endl;
   // Create a taskmanger test object using the world comm as the primary parallel execution space
-  TaskManager * tm = new TaskManager(MPI_COMM_WORLD);
+  TaskManager * tm = new TaskManager(AMSI_COMM_WORLD);
   // Make sure the task manager was successfully constructed
   failed += test_neq("TaskManager()",
                      static_cast<void*>(NULL),
@@ -59,9 +58,7 @@ int main(int argc, char * argv[])
   failed += test(".Task_GetLocal()",static_cast<void*>(NULL),static_cast<void*>(t3));
   t1->setExecutionFunction(&task1_run);
   tm->Execute(argc,argv);
-  t2 = tm->createTask("test_task_2",24);
-  failed += test_neq(".Task_Create()",static_cast<Task*>(NULL),t2);
   test("Number Failed",0,failed);
-  MPI_Finalize();
+  amsiFree();
   return failed;
 }
