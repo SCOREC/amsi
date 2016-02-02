@@ -86,11 +86,12 @@ namespace amsi {
   }
   int TaskManager::Execute(int& argc,char**& argv)
   {
-    int result = 0;
+    int result = -1;
     if(lockConfiguration())
+    {
+      if(local_task != NULL)
       result = local_task->execute(argc,argv);
-    else
-      result = -1;
+    }
     return result;
   }
 } // namespace amsi

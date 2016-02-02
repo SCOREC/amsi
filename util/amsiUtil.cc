@@ -5,8 +5,8 @@
 #include <PCU.h>
 #endif
 // TODO bill (m) : use MPI_Comm_dup during initialization...
-MPI_Comm AMSI_COMM_WORLD = MPI_COMM_WORLD;
-MPI_Comm AMSI_COMM_LOCAL = MPI_COMM_WORLD;
+MPI_Comm AMSI_COMM_WORLD;
+MPI_Comm AMSI_COMM_LOCAL;
 namespace amsi
 {
   bool use_core = true;
@@ -28,6 +28,8 @@ namespace amsi
     if(!util_init_call_count)
     {
       MPI_Init(&argc,&argv);
+      MPI_Comm_dup(MPI_COMM_WORLD,&AMSI_COMM_WORLD);
+      MPI_Comm_dup(MPI_COMM_WORLD,&AMSI_COMM_LOCAL);
 #     ifdef CORE
       PCU_Comm_Init();
 #    endif
