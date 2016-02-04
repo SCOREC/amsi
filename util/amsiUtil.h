@@ -3,6 +3,9 @@
 #include "amsiUtilConfig.h"
 namespace amsi
 {
+  void utilInit(int argc, char ** argv);
+  void utilFree();
+  
   void amsiInit(int argc, char ** argv);
   void amsiFree();
   class amsiInitializer

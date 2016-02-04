@@ -10,6 +10,8 @@ namespace amsi
   extern TaskManager * tm;
   extern CommunicationManager * cm;
   extern FileSystemInfo * fs;
+  void metaInit(int argc, char ** argv);
+  void metaFree();
   class amsiMetaInit : virtual public amsiUtilInit
   {
   public:

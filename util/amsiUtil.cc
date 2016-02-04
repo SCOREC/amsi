@@ -13,6 +13,10 @@ namespace amsi
     MPI_Comm_dup(MPI_COMM_WORLD,&AMSI_COMM_SCALE);
     MPI_Comm_dup(MPI_COMM_WORLD,&AMSI_COMM_WORLD);
   }
+  void utilFree()
+  {
+    MPI_Finalize();
+  }
   bool use_core = true;
   bool use_simmetrix = true;
   amsiInitializer * initializer = NULL;
