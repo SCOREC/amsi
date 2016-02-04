@@ -54,32 +54,23 @@ using namespace amsi::Analysis;
 int main (int argc, char ** argv)
 {
   int result = 0;
-  std::cout << "Attempting to read required command-line parameters: " << std::endl;
   if(parse_options(argc,argv))
   {
-    std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
-    amsi::initializer = new amsi::amsiInterfaceInit;
-    amsi::use_petsc = true;
     amsi::use_simmetrix = true;
-    amsi::amsiInit(argc,argv);
-    std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
+    amsi::use_petsc = true;
+    amsi::interfaceInit(argc,argv);
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
     amsi::initAttributeCase(model,"constraints");
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
-    std::cout << "Input files loaded, initializing analysis: " << std::endl;
     LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
     Elasticity * isotropic_linear_elasticity = new Elasticity(AMSI_COMM_SCALE,
                                                               model,
                                                               mesh,
                                                               43200000,0.23);
-    std::cout << "Analysis objects created, commencing analysis: " << std::endl;
     LinearSolver(isotropic_linear_elasticity,linear_system);
-    std::cout << "Analysis complete, writing results file(s):" << std::endl;
     isotropic_linear_elasticity->WriteMesh(std::string("isotropic_linear_elastic_result"));
-    std::cout << "Results file(s) written, shutting down 3rd-party libs" << std::endl;
-    amsi::amsiFree();
-    std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
+    amsi::interfaceFree();
   }
-  else result--;
+  else result++;
   return result;
 }

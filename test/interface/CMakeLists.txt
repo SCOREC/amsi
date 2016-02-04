@@ -4,6 +4,7 @@ set(MESH_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/meshes")
 message(STATUS "Test models located in ${MODEL_DIR}")
 message(STATUS "Test meshes located in ${MESH_DIR}")
 
+add_subdirectory(init)
 add_subdirectory(sim_attributes)
 add_subdirectory(linear_elasticity)
 add_subdirectory(nonlinear_elasticity)

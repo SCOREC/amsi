@@ -15,8 +15,7 @@ int task1(int&,char**&,MPI_Comm)
 }
 int main(int argc, char * argv[])
 {
-  initializer = new amsi::amsiMetaInit();
-  amsiInit(argc,argv);
+  metaInit(argc,argv);
   int rank = -1;
   MPI_Comm_rank(AMSI_COMM_SCALE,&rank);
   int size = 0;
@@ -56,6 +55,6 @@ int main(int argc, char * argv[])
   t1->setLocalDDValue("t1_data",rank % 3);
   failed += test(".getLocalDDValue()",rank % 3,t1->getLocalDDValue(dd_id));
   //t1->DataDist_Assemble("t1_data");
-  amsiFree();
+  metaFree();
   return failed;
 }

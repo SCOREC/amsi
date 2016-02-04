@@ -1,11 +1,9 @@
-// in-build
-#include "../../test.h"
-// in-project
+#include "test.h"
 #include "amsi.h"
+#include "amsiControl.h"
 #include "amsiControlService.h"
-// psuedo-standard
+#include "amsiMeta.h"
 #include <mpi.h>
-// standard
 #include <iostream>
 #include <utility>
 using namespace amsi;
@@ -111,7 +109,7 @@ int task2_run(int &, char **&, MPI_Comm)
   Task * lt = tm->getLocalTask();
   //int local_rank = lt->localRank();
   // Create a placeholder CommPattern to reconcile into
-  size_t pattern_id = cs->RecvCommPattern("micro_init","macro","micro","");
+  size_t pattern_id = cs->RecvCommPattern("micro_init","macro","","micro");
   failed += test_neq(".RecvCommPattern",static_cast<size_t>(0),pattern_id);
   // Reconcile the CommPattern from the other task
   cs->CommPattern_Reconcile(pattern_id);
@@ -135,10 +133,7 @@ int task2_run(int &, char **&, MPI_Comm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::use_petsc = false;
-  amsi::use_simmetrix = false;
-  amsi::initializer = new amsi::amsiControlInit;
-  amsi::amsiInit(argc,argv);
+  amsi::controlInit(argc,argv);
   std::cout << "Initializing test object(s):" << std::endl;
   // create an MPI datatypes used in the simulation as coupling data
   MPI_Type_contiguous(vsize,MPI_DOUBLE,&sigma_type);
@@ -157,6 +152,6 @@ int main(int argc, char * argv[])
   // Begin execution
   failed += cs->Execute(argc,argv);
   test("Number failed",0,failed);
-  amsi::amsiFree();
+  amsi::controlFree();
   return failed;
 }

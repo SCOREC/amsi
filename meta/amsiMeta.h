@@ -7,17 +7,11 @@
 #include <string>
 namespace amsi
 {
+  void metaInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void metaFree();
+  void configureFromFile(const std::string &);
   extern TaskManager * tm;
   extern CommunicationManager * cm;
   extern FileSystemInfo * fs;
-  void metaInit(int argc, char ** argv);
-  void metaFree();
-  class amsiMetaInit : virtual public amsiUtilInit
-  {
-  public:
-    virtual void amsiInit(int,char**);
-    virtual void amsiFree();
-  };
-  void configureFromFile(const std::string &);
 }
 #endif

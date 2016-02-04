@@ -1,3 +1,9 @@
+add_mpi_test(meta_init init/test.cc 1)
+target_link_libraries(meta_init util meta)
+
+add_mpi_test(reconcile_plan reconcile_plan/test.cc 1)
+target_link_libraries(reconcile_plan util meta)
+
 add_mpi_test(process_set process_set/test.cc 1)
 target_link_libraries(process_set util meta)
 

@@ -6,15 +6,13 @@
 namespace amsi
 {
   DataDistribution::DataDistribution(int size)
-    : assembled(false)
-    , valid(false)
+    : valid(false)
     , wgts(size)
     , dd(size)
   {  }
 # ifdef ZOLTAN
   DataDistribution::DataDistribution(int size, Zoltan_Struct * z)
-    : assembled(false)
-    , valid(false)
+    : valid(false)
     , wgts(size)
     , dd(size)
     , zs(z)
@@ -30,6 +28,7 @@ namespace amsi
                   comm);
     for(unsigned ii = 0; ii < dd.size(); ii++)
       wgts[ii].resize(dd[ii]);
+    assembled = true;
   }
   int DataDistribution::operator [](unsigned index) const
   {
@@ -37,7 +36,7 @@ namespace amsi
   }
   int& DataDistribution::operator [](unsigned index)
   {
-    assembled = false;
+    unassembled();
     return dd[index];
   }
   void DataDistribution::setWeight(unsigned index, unsigned sub_index, double value)

@@ -63,8 +63,8 @@ int main(int argc, char ** argv)
   int failed = 0;
   if(parse_options(argc,argv))
   {
-    amsi::initializer = new amsi::amsiInterfaceInit;
-    amsi::amsiInit(argc,argv);
+    amsi::use_simmetrix = true;
+    amsi::interfaceInit(argc,argv);
     apf::Mesh * apf_mesh = NULL;
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
     amsi::buildDirichletSpecFromStream(dirichlet_file,spec);
     // todo: need to use a subclass of apfFEA which initializes the apf_primary_field
     //fea.ApplyBC_Dirichlet(spec);
-    amsi::amsiFree();
+    amsi::interfaceFree();
   }
   return failed;
 }

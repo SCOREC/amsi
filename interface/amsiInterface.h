@@ -9,17 +9,17 @@
 #endif
 namespace amsi
 {
-  void petscInit(int argc, char ** argv, MPI_Comm cm = AMSI_COMM_SCALE);
-  void petscFree();
-  void simmetrixInit(int argc, char ** argv, MPI_Comm cm = AMSI_COMM_SCALE);
-  void simmetrixFree();
-  void interfaceInit(int argc, char ** argv, MPI_Comm cm = AMSI_COMM_SCALE);
+  void interfaceInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
   void interfaceFree();
-  class amsiInterfaceInit : virtual public amsiUtilInit
-  {
-  public:
-    virtual void amsiInit(int,char**);
-    virtual void amsiFree();
-  };
+# ifdef PETSC
+  void petscInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void petscFree();
+  extern bool use_petsc;
+# endif
+# ifdef SIM
+  void simmetrixInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void simmetrixFree();
+  extern bool use_simmetrix;
+# endif
 }
 #endif

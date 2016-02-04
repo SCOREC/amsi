@@ -29,7 +29,6 @@ namespace amsi
 #   endif
   protected:
     DataDistribution();
-    bool assembled;
     bool valid;
     std::valarray<std::vector<double> > wgts;
     std::valarray<int> dd;

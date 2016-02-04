@@ -16,6 +16,7 @@ namespace amsi
     : comm_man()
     , task_man()
     , rdd_map()
+    , suppress_output(false)
   {}
   /// @brief Set the CommunicationManager to be used by the AMSI ControlService
   /// @param cm A pointer to the CommunicationManager
@@ -77,9 +78,12 @@ namespace amsi
       // TODO: Change this so the user can specificy which processes to allow to output to stdout
       // redirect std::cout to /dev/null in silent processes,
       // supposedely just setting the failbit will suppress all standard library functions using cout
-      int local_rank = task_man->getLocalTask()->localRank();
-      if(local_rank > 0)
-        std::cout.setstate(std::ios_base::failbit);
+      if(suppress_output)
+      {
+        int local_rank = task_man->getLocalTask()->localRank();
+        if(local_rank > 0)
+          std::cout.setstate(std::ios_base::failbit);
+      }
 #       ifdef ZOLTAN
       float version = 0.0;
       Zoltan_Initialize(NULL,NULL,&version);
@@ -148,35 +152,31 @@ namespace amsi
     Task * t2 = task_man->Task_Get(t_ids.second);
     int t1s = taskSize(t1);
     int t2s = taskSize(t2);
-    int t2_per_t1 = t1s > 0 ? t2s / t1s : 0;
-    int extra_t2 = t1s > 0 ? t2s % t1s : 0;
-    // determine the task rank
     int task_rank = tl->localRank();
-    // switch to the correct communicator for this operation
 #   ifdef CORE
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
 #   endif
     if(tl == t1) // sending task
     {
-      // send pattern info to t2_per_t1 + -many ranks in t2
-      int to_send = t2_per_t1 + (task_rank < extra_t2);
-      for(int ii = 0; ii < to_send; ii++)
+      // retrieve pattern info relating to the current t2 rank
+      CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
+      int snd_cnt = getReconcileSendCount(t1s,t2s,task_rank);
+      // this might grow too much as the simulation does, could be better to switch to a functional version
+      int snd_rnks[snd_cnt];
+      getReconcileSendRanks(t1s,t2s,task_rank,&snd_rnks[0]);
+      for(int ii = 0; ii < snd_cnt; ii++)
       {
-        // task-rank of the recving task
-        int snd_to = task_rank*t2_per_t1 + ii;
-        // retrieve pattern info relating to the current t2 rank
-        CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
-        // vector of t1 ranks w/ counts for the current t2 rank
-        int num_rnks = countRanksSentTo(send_pattern,snd_to);
+        // extract only nonzero entries and corresponding ranks
+        int num_rnks = countRanksSentTo(send_pattern,snd_rnks[ii]);
         if(num_rnks > 0)
         {
           std::vector<int> rnks(num_rnks);
           std::vector<int> cnts(num_rnks);
-          getRanksSentTo(send_pattern,snd_to,&rnks[0]);
-          getUnitsSentTo(send_pattern,snd_to,&cnts[0]);
+          getRanksSentTo(send_pattern,snd_rnks[ii],&rnks[0]);
+          getUnitsSentTo(send_pattern,snd_rnks[ii],&cnts[0]);
           // intercomm rank of the recving task (hacky)
-          int inter_rnk = t1s+snd_to;
+          int inter_rnk = t1s+snd_rnks[ii];
 #         ifdef CORE
           int bfr_sz = 1+2*num_rnks;
           int bfr[bfr_sz];
@@ -217,7 +217,7 @@ namespace amsi
         int * hdr = (int*)rcv;
         int num_rcv_rnks = hdr[0];
         int * bfr = &hdr[1];
-        for(int ii = 0; ii < num_rcv_rnks; ii++)
+       for(int ii = 0; ii < num_rcv_rnks; ii++)
         {
           int rnk = bfr[ii];
           int cnt = bfr[num_rcv_rnks+ii];
@@ -547,7 +547,8 @@ namespace amsi
   }
   void ControlService::Reconcile(size_t r_id, Reconcilable * control_data)
   {
-    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
-    control_data->Reconcile();
+    //std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
+    MPI_Comm inter_comm = comm_man->CommRelation_GetInterComm(r_id);
+    control_data->Reconcile(inter_comm);
   }
 } // namespace amsi

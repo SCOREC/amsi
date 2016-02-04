@@ -30,22 +30,15 @@ namespace amsi {
     opterr = 1;
     return have_options;
   }
-  void metaInit(int argc, char ** argv)
+  void metaInit(int argc, char ** argv, MPI_Comm cm)
   {
+    utilInit(argc,argv,cm);
     if(parse_options(argc,argv))
       configureFromFile(options_filename);
   }
   void metaFree()
-  { }
-  void amsiMetaInit::amsiInit(int argc, char ** argv)
   {
-    amsiUtilInit::amsiInit(argc,argv);
-    if(parse_options(argc,argv))
-      configureFromFile(options_filename);
-  }
-  void amsiMetaInit::amsiFree()
-  {
-    amsiUtilInit::amsiFree();
+    utilFree();
   }
   void configureFromFile(const std::string & filename)
   {

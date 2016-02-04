@@ -22,11 +22,11 @@ bool parse_options (int argc, char ** argv)
   while(!exit_loop)
   {
     static struct option long_options[] =
-    {
-      {"help", no_argument, 0, 'h'},
-      {"model", required_argument, 0, 'g'},
-      {"mesh", required_argument, 0, 'm'}
-    };
+      {
+        {"help", no_argument, 0, 'h'},
+        {"model", required_argument, 0, 'g'},
+        {"mesh", required_argument, 0, 'm'}
+      };
     int option_index = 0;
     int option = getopt_long(argc,argv, "h:g:m:", long_options,&option_index);
     switch(option)
@@ -55,30 +55,23 @@ using namespace amsi::Analysis;
 int main (int argc, char ** argv)
 {
   int result = 0;
-  std::cout << "Attempting to read required command-line parameters: " << std::endl;
   if(parse_options(argc,argv))
   {
-    std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
-    amsi::initializer = new amsi::amsiInterfaceInit;
-    amsi::amsiInit(argc,argv);
+    amsi::use_simmetrix = true;
+    amsi::use_petsc = true;
+    amsi::interfaceInit(argc,argv);
     Sim_logOn("simmetrix_log");
-    std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
     amsi::initAttributeCase(model,"constraints");
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
-    std::cout << "Input files loaded, initializing analysis: " << std::endl;
     LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
     Elasticity * isotropic_linear_elasticity = new Elasticity(MPI_COMM_WORLD,
                                                               model,
                                                               mesh);
-    std::cout << "Analysis objects created, commencing analysis: " << std::endl;
     LinearSolver(isotropic_linear_elasticity,linear_system);
-    std::cout << "Analysis complete, writing results file(s):" << std::endl;
     isotropic_linear_elasticity->WriteMesh(std::string("isotropic_linear_elastic_result"));
-    std::cout << "Results file(s) written, shutting down 3rd-party libs" << std::endl;
     Sim_logOff();
-    amsi::amsiFree();
-    std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
+    amsi::interfaceFree();
   }
   else result--;
   return result;

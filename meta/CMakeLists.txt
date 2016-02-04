@@ -30,6 +30,7 @@ set(meta_source_files
   TaskManager.cc
   CommunicationManager.cc
   PlanMigration.cc
+  Assemblable.cc
   )
 
 find_package(PETSc)

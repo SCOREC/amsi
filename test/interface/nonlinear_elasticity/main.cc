@@ -54,32 +54,25 @@ using namespace amsi::Analysis;
 int main (int argc, char ** argv)
 {
   int result = 0;
-  std::cout << "Attempting to read required command-line parameters: " << std::endl;
   if(parse_options(argc,argv))
   {
-    std::cout << "Command-line parameters successfully parsed, initializing 3rd party libraries:" << std::endl;
-    amsi::initializer = new amsi::amsiInterfaceInit;
-    amsi::amsiInit(argc,argv);
+    amsi::use_simmetrix = true;
+    amsi::use_petsc = true;
+    amsi::interfaceInit(argc,argv);
     Sim_logOn("simmetrix_log");
-    std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
     amsi::initAttributeCase(model,"constraints");
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
-    std::cout << "Input files loaded, initializing analysis: " << std::endl;
     LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
     NonLinElasticity * nonlinear_elasticity = new NonLinElasticity(MPI_COMM_WORLD,
                                                                    model,
                                                                    mesh);
-    std::cout << "Analysis objects created, commencing analysis: " << std::endl;
     double residual_norm = 0.0;
     NewtonSolver(nonlinear_elasticity,linear_system,30,1e-8,1.0,residual_norm);
-    std::cout << "Analysis converged with residual norm " << residual_norm << ", writing results file(s):" << std::endl;
     nonlinear_elasticity->WriteMesh(std::string("isotropic_nonlinear_elastic_result"));
-    std::cout << "Results file(s) written, shutting down 3rd-party libs" << std::endl;
     Sim_logOff();
-    amsi::amsiFree();
-    std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
+    amsi::interfaceFree();
   }
-  else result--;
+  else result++;
   return result;
 }

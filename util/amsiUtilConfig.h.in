@@ -9,12 +9,11 @@
 #define @HOST@
 #if @CORE_FOUND@ == TRUE
 #  define CORE
-namespace amsi {extern bool use_core;}
 #endif
 #if @SIMMODSUITE_FOUND@ == TRUE
 #  define SIM
-namespace amsi{extern bool use_simmetrix;}
 #endif
+#define PETSC
 #ifndef NDEBUG
 #  define AMSI_DEBUG(EX) EX
 #else

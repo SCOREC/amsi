@@ -74,6 +74,10 @@ namespace amsi
       void couplingBroadcast(size_t r_id, T * buf);
     template <typename D, template <typename T,typename All = std::allocator<T> > class Container>
       void Communicate(size_t rdd_id,Container<D> & buffer,MPI_Datatype type);
+    void setSuppressOutput(bool s)
+    {
+      suppress_output = s;
+    }
   private:
     ControlService();
     ControlService(const ControlService &);
@@ -95,6 +99,7 @@ namespace amsi
     std::vector<int> m_index;
     std::vector<int> m_t1process;
     std::vector<int> m_recv_from;
+    bool suppress_output;
   };
 } // namespace amsi
 #include "amsiControlService_impl.h"

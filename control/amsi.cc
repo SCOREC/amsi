@@ -1,33 +1,13 @@
 #include "amsi.h"
-#include "amsiControlService.h"
-#include <TaskManager.h>
-#include <CommunicationManager.h>
-#include <amsiMeta.h>
-#include <amsiInterface.h>
+#include "amsiControl.h"
 namespace amsi
 {
-  void controlInit(int argc, char ** argv, MPI_Comm cm)
+  void amsiInit(int argc, char ** argv, MPI_Comm cm)
   {
-    ControlService * cs = ControlService::Instance();
-    cs->SetTaskManager(amsi::tm);
-    cs->SetCommunicationManager(amsi::cm);
+    controlInit(argc,argv,cm);
   }
-  void controlFree()
-  { }
-  void amsiControlInit::amsiInit(int argc, char ** argv)
+  void amsiFree()
   {
-    amsiMetaInit::amsiInit(argc,argv);
-    if(tm != NULL && cm != NULL)
-    {
-      ControlService * cs = ControlService::Instance();
-      cs->SetTaskManager(tm);
-      cs->SetCommunicationManager(cm);
-    }
-    amsiInterfaceInit::amsiInit(argc,argv);
-  }
-  void amsiControlInit::amsiFree()
-  {
-    amsiInterfaceInit::amsiFree();
-    amsiMetaInit::amsiFree();
+    controlFree();
   }
 }

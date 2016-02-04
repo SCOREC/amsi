@@ -1,11 +1,13 @@
 set(control_public_headers
   amsi.h
+  amsiControl.h
   amsiControlService.h
   amsiControlService_impl.h
   Migration.h)
 
 set(control_source_files
   amsi.cc
+  amsiControl.cc
   amsiControlService.cc
   Migration.cc )
 
