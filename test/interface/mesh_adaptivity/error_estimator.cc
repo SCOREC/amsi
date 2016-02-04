@@ -1,28 +1,23 @@
 #include "amsiInterface.h"
 #include "NonLinearElastic_UniformAdapt.h"
 #include "Solvers.h"
-
 #include <mpi.h>
-
 #include <getopt.h>
 #include <iostream>
-
 // option parameters
 std::string model_filename;
 std::string mesh_filename;
 std::string license_filename;
 std::string petsc_filename;
-
 void display_help_string ()
 {
   std::cout << "Usage: linear_elasticity [OPTIONS]" << std::endl
-	    << "[-h, --help]                      display this help text" << std::endl
-	    << "[-l, --lincense path_to_license]  path to directory containing Simmetrix license" << std::endl
-	    << "[-g, --geom model_file]           the model file (.smd)" << std::endl
-	    << "[-m, --mesh mesh_file]            the mesh files (.sms)" << std::endl
-	    << "[-p, --petsc options_file]        the PETSc options file" << std::endl;
+            << "[-h, --help]                      display this help text" << std::endl
+            << "[-l, --lincense path_to_license]  path to directory containing Simmetrix license" << std::endl
+            << "[-g, --geom model_file]           the model file (.smd)" << std::endl
+            << "[-m, --mesh mesh_file]            the mesh files (.sms)" << std::endl
+            << "[-p, --petsc options_file]        the PETSc options file" << std::endl;
 }
-
 bool parse_options (int argc, char ** argv)
 {
   bool result = true;
@@ -37,10 +32,8 @@ bool parse_options (int argc, char ** argv)
       {"mesh", required_argument, 0, 'm'},
       {"petsc", required_argument, 0, 'p'}
     };
-
     int option_index = 0;
     int option = getopt_long(argc,argv, "h:l:g:m:p:", long_options,&option_index);
-    
     switch(option)
     {
     case 'h':
@@ -69,7 +62,6 @@ bool parse_options (int argc, char ** argv)
   }
   return result;
 }
-
 using namespace amsi::Analysis;
 int main (int argc, char ** argv)
 {
@@ -81,33 +73,25 @@ int main (int argc, char ** argv)
     amsi::amsiInit(argc,argv);
     Sim_logOn("simmetrix_log");
     std::cout << "3rd-party libraries initialized, reading simulation input files:" << std::endl;
-
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
-    std::string cnstrnts("constraints");
-    initAttributeCase(model,cnstrnts);
+    amsi::initAttributeCase(model,"constraints");
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
-
     std::cout << "Input files loaded, initializing analysis: " << std::endl;
     LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
-
     NonLinElasticity * uniform_adapt =
       static_cast<NonLinElasticity*>(new amsi::UniformAdapt(MPI_COMM_WORLD,
-							    model,
-							    mesh));
-    
+                                                            model,
+                                                            mesh));
     std::cout << "Analysis objects created, commencing analysis: " << std::endl;
     double residual_norm = 0.0;
     NewtonSolver(uniform_adapt,linear_system,30,1e-8,1.0,residual_norm);
     std::cout << "Analysis converged with residual norm " << residual_norm << ", writing results file(s):" << std::endl;
-
     uniform_adapt->WriteMesh(std::string("isotropic_nonlinear_elastic_result"));
     std::cout << "Results file(s) written, shutting down 3rd-party libs" << std::endl;
-
     Sim_logOff();
     amsi::amsiFree();
     std::cout << "3rd-party libraries shut down, exiting analysis.." << std::endl;
   }
   else result--;
-  
   return result;
 }

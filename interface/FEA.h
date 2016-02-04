@@ -1,13 +1,3 @@
-/******************************************************************************
-
-  (c) 2015 Scientific Computation Research Center,
-      Rensselaer Polytechnic Institute. All rights reserved.
-
-  The LICENSE-SCOREC file included with this distribution describes the terms
-  of the SCOREC Non-Commercial License this program is distributed under.
-
-*******************************************************************************/
-
 #ifndef FEA_H_
 #define FEA_H_
 
@@ -33,7 +23,6 @@ namespace amsi {
 
     template <typename T>
       void Mesh_PrintInfo(T mesh, std::ostream & out);
-    
     class FEA {
     protected:
       // the number of dofs on this processor

@@ -1,5 +1,6 @@
 #include "amsiInterface.h"
-#include <amsiMPI.h>
+#include "sim.h"
+#include "amsiMPI.h"
 #include <gmi_null.h>
 #include <gmi_sim.h> // ifdef sim
 namespace amsi {

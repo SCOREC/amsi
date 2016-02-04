@@ -1,12 +1,10 @@
 #include "apfSimFEA.h"
-#include <amsiMPI.h>
-
+#include "simAttributes.h"
+#include "amsiMPI.h"
 #include <apfSIM.h>
 #include <apfSIMDataOf.h>
 #include <apfShape.h>
-
 #include <cassert>
-
 namespace amsi
 {
   namespace Analysis

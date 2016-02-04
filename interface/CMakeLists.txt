@@ -24,6 +24,8 @@ set(interface_public_headers
     NonLinearElasticIntegrator.h
     TrussIntegrator.h
     FollowForceIntegrator.h
+    sim.h
+    simAttributes.h
    )
 
 set(interface_src_files
@@ -47,6 +49,7 @@ set(interface_src_files
     NonLinearElasticIntegrator.cc
     TrussIntegrator.cc
     FollowForceIntegrator.cc
+    simAttributes.cc
    )
 
 find_package(PETSc REQUIRED)

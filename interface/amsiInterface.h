@@ -3,14 +3,7 @@
 
 #include "amsiInterfaceConfig.h"
 #include "amsiUtil.h"
-
-#ifdef SIM
-#include <MeshSim.h>
-#include <MeshSimAdapt.h>
-#include <SimPartitionedMesh.h>
-#include <SimField.h>
-#include <SimParallel.h>
-#endif
+#include "simAttributes.h"
 
 #ifdef PETSC
 #include <PetscLAS.h>

@@ -2,19 +2,15 @@
 #ifndef SIMFEA_H_
 #define SIMFEA_H_
 #include "FEA.h"
-#include "amsiInterface.h"
-pAManager SModel_attManager(pModel model);
-namespace amsi {
-  namespace Analysis {
+#include "sim.h"
+namespace amsi
+{
+  namespace Analysis
+  {
     void Model_GetClassifiedEntities(pMesh mesh,
                                      pGEntity entity,
                                      int dim,
                                      std::list<pEntity> & classified);
-    void initAttributeCase(pGModel model,const std::string & attr_cs);
-    void clearModelAttributes(pGModel mdl);
-    bool requiresIncrementalLoading(pGModel mdl, const char * attr);
-    bool hasAttribute(pGEntity entity, const char * attr);
-    void getWithAttribute(pGModel mdl, const char * attr, std::list<pGEntity> & ents);
     class SimFEA : public virtual FEA
     {
     protected:
@@ -45,6 +41,7 @@ namespace amsi {
       SimFEA(const std::string & in_analysis_name,
              pGModel in_model,
              pParMesh in_mesh);
+      pGModel getGeometricDomain() { return model; }
       std::string GetModelName() const {return model_name;}
       std::string GetMeshName() const {return mesh_name;}
       virtual void Adapt();
