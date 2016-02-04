@@ -26,8 +26,8 @@ namespace amsi
                          pGModel in_model,
                          const std::string & in_mesh_name,
                          pParMesh in_mesh)
-      : FEA(AMSI_COMM_LOCAL,in_analysis_name),
-        apfFEA(AMSI_COMM_LOCAL,apf::createMesh(in_mesh)),
+      : FEA(AMSI_COMM_SCALE,in_analysis_name),
+        apfFEA(AMSI_COMM_SCALE,apf::createMesh(in_mesh)),
         SimFEA(in_analysis_name,
                in_model_name,
                in_model,
@@ -39,8 +39,8 @@ namespace amsi
     apfSimFEA::apfSimFEA(const std::string & in_analysis_name,
                          pGModel in_model,
                          pParMesh in_mesh)
-      : FEA(AMSI_COMM_LOCAL,in_analysis_name),
-        apfFEA(AMSI_COMM_LOCAL,apf::createMesh(in_mesh)),
+      : FEA(AMSI_COMM_SCALE,in_analysis_name),
+        apfFEA(AMSI_COMM_SCALE,apf::createMesh(in_mesh)),
         SimFEA(in_analysis_name,
                in_model,
                in_mesh),

@@ -164,7 +164,7 @@ namespace amsi
     assert(num);
     // assumes that that sending task of cp is related to local comm, which is true for the static process-set assignment case but would not be generally...
     int rnk = -1;
-    MPI_Comm_rank(AMSI_COMM_LOCAL,&rnk);
+    MPI_Comm_rank(AMSI_COMM_SCALE,&rnk);
     int s2 = cp->getNumRecvers();
     srand(8675309);
     for(int ii = 0; ii < num[rnk]; ii++)

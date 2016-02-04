@@ -10,12 +10,12 @@ namespace amsi {
     amsiUtilInit::amsiInit(argc,argv);
     if(use_petsc)
     {
-      PETSC_COMM_WORLD = AMSI_COMM_LOCAL;
+      PETSC_COMM_WORLD = AMSI_COMM_SCALE;
       PetscInitialize(&argc,&argv,"petsc_options",PETSC_NULL);
     }
     if(use_simmetrix)
     {
-      PMU_setCommunicator(AMSI_COMM_LOCAL);
+      PMU_setCommunicator(AMSI_COMM_SCALE);
 #     ifdef BGQ
       Sim_readLicenseFile("/gpfs/u/software/bgq/proprietary/simmetrix//license/license.txt");
 #     elif defined SCOREC

@@ -1,4 +1,6 @@
 #include "amsiMPI.h"
+MPI_Comm AMSI_COMM_WORLD;
+MPI_Comm AMSI_COMM_SCALE;
 namespace amsi
 {
 template <typename T>

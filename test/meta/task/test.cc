@@ -18,9 +18,9 @@ int main(int argc, char * argv[])
   initializer = new amsi::amsiMetaInit();
   amsiInit(argc,argv);
   int rank = -1;
-  MPI_Comm_rank(AMSI_COMM_LOCAL,&rank);
+  MPI_Comm_rank(AMSI_COMM_SCALE,&rank);
   int size = 0;
-  MPI_Comm_size(AMSI_COMM_LOCAL,&size);
+  MPI_Comm_size(AMSI_COMM_SCALE,&size);
   int failed = 0;
   // allocated zero processes to task
   std::cout << "Creating ProcessSet with 0 processes" << std::endl;

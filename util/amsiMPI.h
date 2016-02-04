@@ -4,14 +4,14 @@
 #include <cstring> //memcpy
 #include <iostream>
 extern MPI_Comm AMSI_COMM_WORLD;
-extern MPI_Comm AMSI_COMM_LOCAL;
+extern MPI_Comm AMSI_COMM_SCALE;
 typedef int rank_t;
 namespace amsi
 {
   template <typename T>
     MPI_Datatype mpi_type(T t = NULL);
   template<typename T>
-    T comm_sum(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
+    T comm_sum(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     T sm = 0;
     MPI_Datatype tp = mpi_type(v);
@@ -22,33 +22,33 @@ namespace amsi
     return sm;
   }
   template <typename T>
-    T comm_min(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
+    T comm_min(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     T mn = 0;
     MPI_Allreduce(&v,&mn,1,mpi_type<T>(),MPI_MIN,cm);
     return mn;
   }
   template <typename T>
-    T comm_max(T v, MPI_Comm cm = AMSI_COMM_LOCAL)
+    T comm_max(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     T mx = 0;
     MPI_Allreduce(&v,&mx,1,mpi_type<T>(),MPI_MAX,cm);
     return mx;
   }
   template <typename T>
-    void send(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    void send(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     MPI_Send(msg,cnt,mpi_type<T>(),to,0,cm);
   }
   template <typename T>
-    MPI_Request asend(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    MPI_Request asend(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     MPI_Request rqst;
     MPI_Isend(msg,cnt,mpi_type<T>(),to,0,cm,&rqst);
     return rqst;
   }
   template <typename T>
-    MPI_Status recv(T * msg, rank_t frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    MPI_Status recv(T * msg, rank_t frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     MPI_Status s;
     MPI_Recv(msg,cnt,mpi_type<T>(),frm,MPI_ANY_TAG,cm,&s);
@@ -56,7 +56,7 @@ namespace amsi
   }
   // test if there is a message from rank frm waiting to be recv'd return a sz > 0 if so
   template <typename T>
-    int arecv_sz(rank_t & frm, MPI_Comm cm = AMSI_COMM_LOCAL)
+    int arecv_sz(rank_t & frm, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     int sz = 0;
     MPI_Status s;
@@ -69,7 +69,7 @@ namespace amsi
   }
   // asynchronously recv a message from frm with cnt elements
   template <typename T>
-    MPI_Request arecv(T * msg, rank_t frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_LOCAL)
+    MPI_Request arecv(T * msg, rank_t frm = MPI_ANY_SOURCE, int cnt = 1, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     MPI_Request rqst;
     MPI_Irecv(msg,

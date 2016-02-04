@@ -68,7 +68,7 @@ int main (int argc, char ** argv)
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
     std::cout << "Input files loaded, initializing analysis: " << std::endl;
     LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
-    Elasticity * isotropic_linear_elasticity = new Elasticity(AMSI_COMM_LOCAL,
+    Elasticity * isotropic_linear_elasticity = new Elasticity(AMSI_COMM_SCALE,
                                                               model,
                                                               mesh,
                                                               43200000,0.23);
