@@ -34,7 +34,6 @@ namespace amsi
       for(auto asc : mdl_ascs)
         cutPaste<pModelItem>(AMA_modelItems(asc),std::back_inserter(mdl_itms));
     }
-    /*
     void apply(DirichletApplier * app)
     {
       for(itm : mdl_itms)

@@ -1,72 +1,44 @@
-/******************************************************************************
-
-  (c) 2014 Scientific Computation Research Center,
-      Rensselaer Polytechnic Institute. All rights reserved.
-
-  The LICENSE-SCOREC file included with this distribution describes the terms
-  of the SCOREC Non-Commercial License this program is distributed under.
-
-*******************************************************************************/
-
 #ifndef PETSCITERATIVESOLVER_H_
 #define PETSCITERATIVESOLVER_H_
-
 #include "LAS.h"
-
 #include <petscksp.h>
 #include <petscmat.h>
-
 #include <vector>
-
 namespace amsi {
   namespace Analysis {
-
   class PetscLAS : public LAS
   {
   public:
     PetscLAS(int,int);
-
     void iter();
     void step();
-
     void Reinitialize(int, int, int, int*);
     void Reinitialize(int, int, int);
-
     void AddToMatrix(int,int,double);
     void AddToMatrix(int,int*,int,int*,double*);
-    
     void AddToVector(int,double);
     void AddToVector(int,int*,double*);
-
     void Solve();
-
     bool Zero();
-
     bool ZeroMatrix();
     bool ZeroVector();
-
     void GetVector(double *&);
     void SetVector(const double *);
-
     void GetVectorNorm(double &);
     void GetDotNorm(double &);
-
     void GetSolution(double *&);
     void GetSolutionNorm(double & n);
     void GetAccumSolutionNorm(double &);
-
     void PrintMatrix(std::ostream &);
     void PrintVector(std::ostream &);
-
     ~PetscLAS();
-
   private:
     Mat A;     // matrix
     Vec x_im;   // previous solution
     Vec x_i;     // current solution
     Vec x;
-    Vec b_i;     // current vector
     Vec b_im;   // previous vector
+    Vec b_i;     // current vector
     Vec b;
     Vec w;     // work vector
     double * x_arr, * b_arr;
@@ -78,8 +50,6 @@ namespace amsi {
     bool b_assembled, b_addMode;
     KSP solver;
   };
-
   }
-} 
-
+}
 #endif

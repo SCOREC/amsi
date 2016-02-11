@@ -16,6 +16,7 @@ namespace amsi
   {
   public:
     DataDistribution(int size);
+    virtual ~DataDistribution() {};
     // Assemblable interface
     virtual void Assemble(MPI_Comm);
     int operator[](unsigned index) const;

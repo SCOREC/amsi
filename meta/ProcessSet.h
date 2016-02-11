@@ -9,6 +9,7 @@ namespace amsi
   class ProcessSet
   {
   public:
+    virtual ~ProcessSet() { };
     virtual int operator[](int) const = 0;
     virtual int size() const = 0;
     virtual bool isIn(int) const = 0;

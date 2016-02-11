@@ -29,6 +29,8 @@ namespace amsi
       return 2;
     case Gregion:
       return 3;
+    default:
+      return -1;
     }
   }
 }
