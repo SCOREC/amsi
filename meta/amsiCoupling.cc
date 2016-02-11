@@ -191,7 +191,6 @@ namespace amsi
   /// @param rank The task-rank of the local process.
   void FullCommPattern::Assemble(MPI_Comm cm)
   {
-    int result = 0;
     int rnk = 0;
     MPI_Comm_rank(cm,&rnk);
     int sz = -1;

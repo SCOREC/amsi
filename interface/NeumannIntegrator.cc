@@ -27,7 +27,7 @@ namespace amsi
       bool reallocate = new_nedofs != nedofs;
       nedofs = new_nedofs;
       if(reallocate)
-	fe.setSize(nedofs);
+        fe.setSize(nedofs);
       fe.zero();
     }
   }

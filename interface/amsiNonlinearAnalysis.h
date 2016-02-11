@@ -13,6 +13,11 @@ namespace amsi
     virtual bool converged() = 0;
     virtual bool failed() {return false;}
   };
+  class LinearConvergence : public Convergence
+  {
+  public:
+    virtual bool converged() {return true;}
+  };
   bool numericalSolve(Iteration * it, Convergence * cn);
 }
 #endif

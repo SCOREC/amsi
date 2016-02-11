@@ -2,6 +2,8 @@ set(interface_public_headers
     amsiInterface.h
     amsiInterfaceConfig.h
     amsiBCDirichlet.h
+    amsiBoundaryConditions.h
+    amsiDirichletBC.h
     amsiNonlinearAnalysis.h
     ElementalSystem.h
     ErrorEstimators.h
@@ -25,7 +27,10 @@ set(interface_public_headers
     TrussIntegrator.h
     FollowForceIntegrator.h
     sim.h
+    simAnalysis.h
     simAttributes.h
+    simBoundaryConditions.h
+    simWrapper.h
    )
 
 set(interface_src_files
@@ -50,6 +55,8 @@ set(interface_src_files
     TrussIntegrator.cc
     FollowForceIntegrator.cc
     simAttributes.cc
+    simBoundaryConditions.cc
+    simWrapper.cc
    )
 
 find_package(PETSc REQUIRED)

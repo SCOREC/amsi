@@ -86,7 +86,7 @@ namespace amsi
       }
 #       ifdef ZOLTAN
       float version = 0.0;
-      Zoltan_Initialize(NULL,NULL,&version);
+      Zoltan_Initialize(0,NULL,&version);
 #       endif
       result += task_man->Execute(argc,argv);
     }

@@ -9,14 +9,9 @@ set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSIO
 
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH $ENV{DEVROOT}/scripts/cmake ${CMAKE_CURRENT_LIST_DIR}/cmake)
-
 set(CMAKE_DEBUG_POSTFIX d)
-
-set(HOSTNAME $ENV{HOSTNAME})
-if("$HOSTNAME" STREQUAL "")
-  set(HOSTNAME $ENV{HOST})
-endif("$HOSTNAME" STREQUAL "")
-message(STATUS "Configuring to build on" ${HOSTNAME})
+site_name(HOSTNAME)
+message(STATUS "Configuring to build on " ${HOSTNAME})
 
 if("${HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
   set(HOST BGQ)

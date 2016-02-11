@@ -1,12 +1,10 @@
 #ifndef AMSIBCDIRICHLET_H_
 #define AMSIBCDIRICHLET_H_
-
-#include <pystring.h> // from amsi_util
+#include "pystring.h"
 #include <iostream>
 #include <vector>
-
-namespace amsi {
-
+namespace amsi
+{
   struct DirichletSpecification
   {
     int type;      // the type of geometric entity (vertex,edge,face,region)
@@ -14,10 +12,7 @@ namespace amsi {
     int component; // which component of the field is fixed
     double value;  // the value to which the component is fixed
   };
-  
   void buildDirichletSpecFromStream(std::istream & in,
                                     std::vector<DirichletSpecification> & spec);
-
 }
-
 #endif

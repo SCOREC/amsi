@@ -35,92 +35,92 @@ namespace amsi {
 
     TensorFieldQueryT(pAttributeTensor1 t)
       : tensor(t),
-	is_space_const(false),
-	is_time_const(false),
-	dim(0),
-	num_args(0),
-	args_bound(0),
-	is_bound(0),
-	args(0),
-	last_result(0)
-	{
-	  dim = AttributeTensor1_dimension(tensor);
-	  last_result = new double[dim];
-	  
-	  is_space_const = true;
-	  is_time_const = AttributeTensor1_constant(tensor);
-	  
-	  num_args = is_space_const ? 0 : 3;
-	  num_args += is_time_const ? 0 : 1;
-	  
-	  if(num_args > 0)
-	  {
-	    is_bound = new bool[num_args];
-	    args = new double[num_args];
-	  }
-	}
+        is_space_const(false),
+        is_time_const(false),
+        dim(0),
+        num_args(0),
+        args_bound(0),
+        is_bound(0),
+        args(0),
+        last_result(0)
+        {
+          dim = AttributeTensor1_dimension(tensor);
+          last_result = new double[dim];
+          
+          is_space_const = true;
+          is_time_const = AttributeTensor1_constant(tensor);
+          
+          num_args = is_space_const ? 0 : 3;
+          num_args += is_time_const ? 0 : 1;
+          
+          if(num_args > 0)
+          {
+            is_bound = new bool[num_args];
+            args = new double[num_args];
+          }
+        }
 
       bool isSpaceConst() {return is_space_const;}
       bool isTimeConst() {return is_time_const;}
 
       double* operator()(int count,...)
       {
-	double * result = 0;
-	if(num_args == 0)
-	{
-	  for(int ii = 0; ii < dim; ii++)
-	    last_result[ii] = AttributeTensor1_value(tensor,ii);
-	  
-	  result = last_result;
-	}
-	else
-	{
-	  va_list ap;
-	  int ii = 0;
-	  va_start(ap,count);
-	  {
-	    while(is_bound[ii]) ii++;
-	    bind(ii,va_arg(ap,double));
-	  }
-	  va_end(ap);
-	  
-	  bool all_bound = true;
-	  for(int ii = 0; ii < num_args; ii++)
-	    all_bound = all_bound ? (is_bound[ii] ? true : false) : false;
-	  
-	  if(all_bound)
-	  {
-	    if(!is_space_const)
-	      AttributeTensor1_evalTensorDS(tensor,&args[0],last_result);
-	    
-	    if(!is_time_const)
-	      AttributeTensor1_evalTensorDT(tensor,args[0],last_result);
-	    
-	    result = last_result;
-	  }
-	}
-	return result;
+        double * result = 0;
+        if(num_args == 0)
+        {
+          for(int ii = 0; ii < dim; ii++)
+            last_result[ii] = AttributeTensor1_value(tensor,ii);
+          
+          result = last_result;
+        }
+        else
+        {
+          va_list ap;
+          int ii = 0;
+          va_start(ap,count);
+          {
+            while(is_bound[ii]) ii++;
+            bind(ii,va_arg(ap,double));
+          }
+          va_end(ap);
+          
+          bool all_bound = true;
+          for(int ii = 0; ii < num_args; ii++)
+            all_bound = all_bound ? (is_bound[ii] ? true : false) : false;
+          
+          if(all_bound)
+          {
+            if(!is_space_const)
+              AttributeTensor1_evalTensorDS(tensor,&args[0],last_result);
+            
+            if(!is_time_const)
+              AttributeTensor1_evalTensorDT(tensor,args[0],last_result);
+            
+            result = last_result;
+          }
+        }
+        return result;
       }
       
       void bind(int index, double value)
       {
-	if(index < num_args && index >= 0 && num_args > 0)
-	{
-	  args[index] = value;
-	  if(is_bound[index] == false)
-	  {
-	    args_bound++;
-	    is_bound[index] = true;
-	  }
-	}
+        if(index < num_args && index >= 0 && num_args > 0)
+        {
+          args[index] = value;
+          if(is_bound[index] == false)
+          {
+            args_bound++;
+            is_bound[index] = true;
+          }
+        }
       }
       
       void clear() 
       {
-	memset(last_result,0.0,sizeof(double)*dim);
-	
-	for(int ii = 0; ii < num_args; ii++)
-	  is_bound[ii] = false;
+        memset(last_result,0.0,sizeof(double)*dim);
+        
+        for(int ii = 0; ii < num_args; ii++)
+          is_bound[ii] = false;
       }
 
       int bound() {return args_bound;}

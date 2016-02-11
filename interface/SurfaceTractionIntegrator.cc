@@ -7,9 +7,9 @@
 
 namespace amsi {
   namespace Analysis {
-    
+
     SurfaceTractionIntegrator::SurfaceTractionIntegrator(apf::Field * field,
-							 int o) :
+                                                         int o) :
       NeumannIntegrator(field,o)
     {
       fs = apf::getShape(f);
@@ -28,10 +28,10 @@ namespace amsi {
       double z = xyz[2];
 
       double * F = tf->operator()(3,x,y,z);
-      
+
       for(int ii = 0; ii < nenodes; ii++)
-	for(int jj = 0; jj < num_field_components; jj++)
-	  fe(ii*num_field_components + jj) = N[ii] * F[jj] * w * dV;
+        for(int jj = 0; jj < num_field_components; jj++)
+          fe(ii*num_field_components + jj) = N[ii] * F[jj] * w * dV;
     }
 
   }

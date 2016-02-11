@@ -30,7 +30,7 @@ namespace amsi
   public:
     Scale()
       : Subject()
-      , Distributed(false)
+      , Distributed()
       , rnks(new DefaultRankSet)
       , comm()
     { }

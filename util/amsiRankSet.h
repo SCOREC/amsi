@@ -7,6 +7,7 @@ namespace amsi
   class RankSet
   {
   public:
+    virtual ~RankSet() {};
     virtual rank_t size() const = 0;
     virtual void insert(rank_t) = 0;
     virtual bool contains(rank_t) const = 0;

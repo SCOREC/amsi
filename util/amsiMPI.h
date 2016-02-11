@@ -9,7 +9,7 @@ typedef int rank_t;
 namespace amsi
 {
   template <typename T>
-    MPI_Datatype mpi_type(T t = NULL);
+    MPI_Datatype mpi_type(T t = 0);
   template<typename T>
     T comm_sum(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {

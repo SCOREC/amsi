@@ -1,4 +1,4 @@
-add_mpi_test(sim_attributes test.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms constraints)
+add_mpi_test(sim_attributes test.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms)
 target_link_libraries(sim_attributes util meta interface)
 
 #add_test(NAME sim_attributes_regression

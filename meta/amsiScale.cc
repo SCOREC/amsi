@@ -20,7 +20,7 @@ namespace amsi
     intersection(rnks,rs,&intrsctn);
     if(intrsctn.size() == rs->size())
       result = true;
-    return true;
+    return result;
   }
   void Scale::resignRanks(RankSet * rs, MPI_Comm cm)
   {

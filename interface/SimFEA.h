@@ -1,4 +1,3 @@
-// only included if being built with simmetrix libraries
 #ifndef SIMFEA_H_
 #define SIMFEA_H_
 #include "FEA.h"
@@ -13,6 +12,8 @@ namespace amsi
                                      std::list<pEntity> & classified);
     class SimFEA : public virtual FEA
     {
+    private:
+      void init();
     protected:
       const std::string model_name;
       const std::string mesh_name;

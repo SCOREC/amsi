@@ -1,22 +1,92 @@
 #include "simAttributes.h"
+#include <cassert>
 namespace amsi
 {
-  void initAttributeCase(pGModel model,const char * att_cs)
+  char const * sim_attr_css[] =
   {
-    pAManager attribute_manager = SModel_attManager(model);
-    pProgress progress = Progress_new();
-    pACase constraints = AMAN_findCase(attribute_manager,att_cs);
-    if(constraints)
+    "problem definition",
+    "output"
+  };
+  void initCase(pModel mdl, pACase cs)
+  {
+    pPList chdrn = AttNode_children(cs);
+    pACase chd = NULL;
+    void * it = NULL;
+    while((chd = (pACase)PList_next(chdrn,&it)))
+      AttCase_setModel(chd,mdl);
+    AttCase_setModel(cs,mdl);
+    AttCase_associate(cs,NULL);
+  }
+  void freeCase(pACase cs)
+  {
+    AttCase_unassociate(cs);
+  }
+  const char * attRepTypeString(AttRepType tp)
+  {
+    switch(tp)
     {
-      pPList children = AttNode_children(constraints);
+    case Att_case:
+      return "Att_case";
+    case Att_group:
+      return "Att_group";
+    case Att_model:
+      return "Att_model";
+    case Att_int:
+      return "Att_int";
+    case Att_double:
+      return "Att_double";
+    case Att_string:
+      return "Att_string";
+    case Att_void:
+      return "Att_void";
+    case Att_list:
+      return "Att_list";
+    case Att_refnode:
+      return "Att_refnode";
+    case Att_gentity:
+      return "Att_gentity";
+    case Att_tensor0:
+      return "Att_tensor0";
+    case Att_tensor1:
+      return "Att_tensor1";
+    case Att_tensor2:
+      return "Att_tensor2";
+    case Att_tensor3:
+      return "Att_tensor3";
+    case Att_tensor4:
+      return "Att_tensor4";
+    case Att_resource:
+      return "Att_resource";
+    case Att_process:
+      return "Att_process";
+    default:
+      return "Error: unknow AttRepType!";
+    };
+  }
+  void describeNode(pANode nd)
+  {
+    std::cout << "Attribute node name: " << AttNode_name(nd)
+              << " infotype: " << AttNode_infoType(nd)
+              << " imageclass: " << AttNode_imageClass(nd)
+              << " reptype: " << amsi::attRepTypeString(AttNode_repType(nd)) << std::endl;
+  }
+  void initAttributeCase(pGModel mdl,const char * att_cs)
+  {
+    std::cout << "Initializing attribute case " << att_cs << std::endl;
+    pACase cs = AMAN_findCase(SModel_attManager(mdl),att_cs);
+    if(cs)
+    {
+      pPList chdrn = AttNode_children(cs);
       pACase child;
       void * iter = NULL;
-      while((child = (pACase)PList_next(children,&iter)))
-        AttCase_setModel(child,model);
-      AttCase_setModel(constraints,model);
-      AttCase_associate(constraints,progress);
+      while((child = (pACase)PList_next(chdrn,&iter)))
+      {
+        AttCase_setModel(child,mdl);
+      }
+      AttCase_setModel(cs,mdl);
+      AttCase_associate(cs,NULL);
+      PList_delete(chdrn);
     }
-    Progress_delete(progress);
   }
   void clearModelAttributes(pGModel mdl)
   {
@@ -100,5 +170,10 @@ namespace amsi
   {
     pGModel mdl = fea->getGeometricDomain();
     applyRegionAttributes(mdl,fea);
+  }
+  void writeAttMan(pAManager attm, const char * fnm)
+  {
+    assert(fnm);
+    AMAN_write(attm,fnm,13);
   }
 }
