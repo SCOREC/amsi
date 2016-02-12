@@ -4,6 +4,7 @@
 #include "simAttributes.h"
 namespace amsi
 {
+  /// TODO: make this a wrapper and create a getClassifiedDimEnts,,,?
   template <typename O>
     void getClassifiedEnts(pMesh msh, pGEntity mdl_ent, int dm, O out)
   {

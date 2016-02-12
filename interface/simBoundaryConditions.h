@@ -1,5 +1,6 @@
 #ifndef SIM_BOUNDARY_CONDITIONS_H_
 #define SIM_BOUNDARY_CONDITIONS_H_
+#include "amsiBoundaryConditions.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
 #include <algorithm>
@@ -9,23 +10,6 @@
 #include <vector>
 namespace amsi
 {
-  enum BCTypes
-  {
-    DIRICHLET,
-    NEUMANN,
-    NUM_BC_TYPES
-  };
-  enum DirichletBCType
-  {
-    DISPLACEMENT,
-    NUM_DIRICHLET_TYPES
-  };
-  enum NeumannBCType
-  {
-    SURFACE_TRACTION,
-    PRESSURE,
-    NUM_NEUMANN_TYPES
-  };
   char const * getBCTypeString(int tp);
   char const * getBCSubtypeString(int tp, int sbpt);
   /**
@@ -42,6 +26,21 @@ namespace amsi
     int sbtp;
     pANode bc_nd;
     pModelItem itm; // the model entity
+  };
+  // a specialized displacement spec could negate the need for searching
+  class SimDisplacementSpec : public DirichletSpec
+  {
+  private:
+    SimBC * bc;
+    std::vector<pAttribute> atts;
+  public:
+    SimDisplacementSpec(SimBC * b);
+    virtual int numComps();
+    virtual bool isFixed(int ii);
+    virtual bool isConst(int ii);
+    virtual bool isTimeExpr(int ii);
+    virtual bool isSpaceExpr(int ii);
+    virtual double getValue(int ii, ...);
   };
   template <class O>
     void getDirichletBCAttributes(SimBC * bc, O out)

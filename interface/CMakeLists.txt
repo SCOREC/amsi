@@ -5,6 +5,7 @@ set(interface_public_headers
     amsiBoundaryConditions.h
     amsiDirichletBC.h
     amsiNonlinearAnalysis.h
+    apfBoundaryConditions.h
     ElementalSystem.h
     ErrorEstimators.h
     MatrixUtil.h
@@ -36,6 +37,7 @@ set(interface_public_headers
 set(interface_src_files
     amsiInterface.cc
     amsiBCDirichlet.cc
+    amsiBoundaryConditions.cc
     amsiNonlinearAnalysis.cc
     MatrixUtil.h
     FullLULAS.cc

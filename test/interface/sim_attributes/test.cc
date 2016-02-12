@@ -2,6 +2,9 @@
 #include "simAnalysis.h"
 #include "simAttributes.h"
 #include "simBoundaryConditions.h"
+#include "apf.h"
+#include "apfSIM.h"
+#include "apfBoundaryConditions.h"
 #include <cassert>
 #include <iterator>
 #include <vector>
@@ -17,6 +20,9 @@ int main(int argc, char * argv[])
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2], sthreadNone, mdl, NULL);
   pMesh sm_prt = PM_mesh(sm_msh,0);
+  apf::Mesh * msh = apf::createMesh(sm_msh);
+  apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
+  apf::Numbering * nm = apf::createNumbering(u);
   std::vector<pACase> css;
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",
                      std::back_inserter(css));
@@ -33,7 +39,19 @@ int main(int argc, char * argv[])
   std::vector<pAttribute> atts;
   amsi::getDirichletBCAttributes(dir_bcs[0],std::back_inserter(atts));
   failed += test("getDirichletAttributes()",3,(int)atts.size());
-  amsi::applyBC(dir_bcs[0],sm_prt);
+  //amsi::applyBC(dir_bcs[0],sm_prt);
+  for(auto bc : dir_bcs)
+  {
+    if(bc->sbtp == amsi::DISPLACEMENT)
+    {
+      amsi::SimDisplacementSpec spc(bc);
+      std::list<pEntity> ents;
+      int dm = amsi::modelItemTypeDim(GEN_type((pGEntity)bc->itm));
+      for(int d = dm; d >= 0; --d)
+        amsi::getClassifiedEnts(sm_prt,(pGEntity)bc->itm,d,std::back_inserter(ents));
+      amsi::applyDirichletBC(u,nm,ents.begin(),ents.end(),&spc,0.0);
+    }
+  }
   amsi::freeCase(css[0]);
   // below here taken care of by amsi free
   Sim_logOff();
