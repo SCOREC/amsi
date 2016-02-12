@@ -54,6 +54,7 @@ set(interface_src_files
     NonLinearElasticIntegrator.cc
     TrussIntegrator.cc
     FollowForceIntegrator.cc
+    simAnalysis.cc
     simAttributes.cc
     simBoundaryConditions.cc
     simWrapper.cc

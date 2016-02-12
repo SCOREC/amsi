@@ -26,14 +26,14 @@ int main(int argc, char * argv[])
   amsi::cutPaste<pACase>(AttCase_findChildrenByType(css[0],"problem definition"),
                          std::back_inserter(pd));
   failed += test("problem definition",1,(int)pd.size());
-  std::vector<amsi::SimDirichletBC*> dir_bcs;
+  std::vector<amsi::SimBC*> dir_bcs;
   amsi::buildDirichletBCs(pd[0],std::back_inserter(dir_bcs));
   failed += test("buildDirichletBCs()",1,(int)dir_bcs.size());
-  failed += test("dirichlet type",amsi::dir_bc_attrs[0],dir_bcs[0]->dir_tp);
+  failed += test("dirichlet type",(int)amsi::DISPLACEMENT,dir_bcs[0]->sbtp);
   std::vector<pAttribute> atts;
-  amsi::getDirichletAttributes(dir_bcs[0],std::back_inserter(atts));
+  amsi::getDirichletBCAttributes(dir_bcs[0],std::back_inserter(atts));
   failed += test("getDirichletAttributes()",3,(int)atts.size());
-  amsi::applyDirichletBC(dir_bcs[0],sm_prt);
+  amsi::applyBC(dir_bcs[0],sm_prt);
   amsi::freeCase(css[0]);
   // below here taken care of by amsi free
   Sim_logOff();

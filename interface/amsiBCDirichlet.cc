@@ -1,12 +1,10 @@
 #include "amsiBCDirichlet.h"
-
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <string>
-
-namespace amsi {
-
+namespace amsi
+{
   void buildDirichletSpecFromStream(std::istream & in,
                                     std::vector<DirichletSpecification> & spec)
   {
@@ -25,5 +23,4 @@ namespace amsi {
       spec.push_back(temp);
     }
   }
-
 }
