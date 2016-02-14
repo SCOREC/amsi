@@ -56,7 +56,7 @@ namespace amsi
     assert(tp < NUM_NEUMANN_TYPES);
     return neu_bc_attrs[tp];
   }
-  SimDisplacementSpec::SimDisplacementSpec(SimBC * b)
+  SimDisplacementQuery::SimDisplacementQuery(SimBC * b)
     : bc(b)
     , atts()
   {
@@ -66,28 +66,28 @@ namespace amsi
     for(auto att : rw)
       atts[findAttrIndex(dis_bc_attrs,3,Attribute_infoType(att))] = att;
   }
-  int SimDisplacementSpec::numComps()
+  int SimDisplacementQuery::numComps()
   {
     return numDirichletComponents(bc->sbtp);
   }
-  bool SimDisplacementSpec::isFixed(int ii)
+  bool SimDisplacementQuery::isFixed(int ii)
   {
     return atts[ii] != NULL;
   }
-  bool SimDisplacementSpec::isConst(int ii)
+  bool SimDisplacementQuery::isConst(int ii)
   {
     assert(isFixed(ii));
     return AttributeTensor0_constant((pAttributeTensor0)atts[ii]);
   }
-  bool SimDisplacementSpec::isTimeExpr(int ii)
+  bool SimDisplacementQuery::isTimeExpr(int ii)
   {
     return ! isConst(ii);
   }
-  bool SimDisplacementSpec::isSpaceExpr(int ii)
+  bool SimDisplacementQuery::isSpaceExpr(int)
   {
     return false;
   }
-  double SimDisplacementSpec::getValue(int ii, ...)
+  double SimDisplacementQuery::getValue(int ii, ...)
   {
     assert(isFixed(ii));
     double rslt = 0.0;
@@ -104,6 +104,40 @@ namespace amsi
       rslt = AttributeTensor0_evalDS((pAttributeTensor0)atts[ii],&args[0]);
     va_end(prms);
     return rslt;
+  }
+  SimValueQuery::SimValueQuery(SimBC * b)
+    : bc(b)
+    , att()
+  {
+    getBCAttributes(bc,&att);
+  }
+  int SimValueQuery::numComps()
+  {
+    return numNeumannComponents(bc->tp);
+  }
+  bool SimValueQuery::isFixed(int)
+  {
+    return false;
+  }
+  bool SimValueQuery::isConst(int)
+  {
+    return isAttrConst(att);
+  }
+  bool SimValueQuery::isTimeExpr(int ii)
+  {
+    return ! isConst(ii);
+  }
+  bool SimValueQuery::isSpaceExpr(int)
+  {
+    return false;
+  }
+  double SimTensor0Query::getValue(int ii, ...)
+  {
+    return 0.0;
+  }
+  double SimTensor1Query::getValue(int ii, ...)
+  {
+    return 0.0;
   }
   void applyBC(SimBC * bc, pMesh msh)
   {

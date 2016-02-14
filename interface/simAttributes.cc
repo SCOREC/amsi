@@ -2,6 +2,35 @@
 #include <cassert>
 namespace amsi
 {
+  bool isAttrConst(pAttribute att)
+  {
+    int tp = Attribute_repType(att);
+    switch(tp)
+    {
+    case Att_case:
+      return true;
+    case Att_int:
+      return true;
+    case Att_double:
+      return AttributeDouble_constant((pAttributeDouble)att);
+    case Att_string:
+      return true;
+    case Att_void:
+      return true;
+    case Att_list:
+      return true;
+    case Att_refnode:
+      return true;
+    case Att_tensor0:
+      return AttributeTensor0_constant((pAttributeTensor0)att);
+    case Att_tensor1:
+      return AttributeTensor1_constant((pAttributeTensor1)att);
+    case Att_tensor2:
+      return AttributeTensor2_constant((pAttributeTensor2)att);
+    default:
+      return true;
+    }
+  }
   char const * sim_attr_css[] =
   {
     "problem definition",
@@ -146,30 +175,6 @@ namespace amsi
     for(GVIter gviter = GM_vertexIter(mdl); (entity = GVIter_next(gviter)); )
       if(hasAttribute(entity,attr))
         ents.push_back(entity);
-  }
-  void applyRegionAttributes(pGModel mdl, Analysis::FEA * fea)
-  {
-    pGEntity rgn = NULL;
-    for(GRIter griter = GM_regionIter(mdl); (rgn = GRIter_next(griter)); )
-    {
-      int tg = GEN_tag(rgn);
-      std::cout << "Processing region " << tg << ":" << std::endl;
-      pPList atts = GEN_attributes(rgn,"");
-      pAttribute att = NULL;
-      void * iter = NULL;
-      while( (att = (pAttribute)PList_next(atts,&iter)) )
-      {
-        char * nm = Attribute_name(att);
-        char * inf_tp = Attribute_infoType(att);
-        std::cout << "\tAttribute " << nm << " of type " << inf_tp << std::endl;
-      }
-      PList_delete(atts);
-    }
-  }
-  void applyAttributes(Analysis::SimFEA* fea)
-  {
-    pGModel mdl = fea->getGeometricDomain();
-    applyRegionAttributes(mdl,fea);
   }
   void writeAttMan(pAManager attm, const char * fnm)
   {

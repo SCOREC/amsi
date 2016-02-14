@@ -19,8 +19,10 @@ namespace amsi
     PRESSURE,
     NUM_NEUMANN_TYPES
   };
+  int numBCComponents(int tp, int sbtp);
   int numDirichletComponents(int tp);
-  class DirichletSpec
+  int numNeumannComponents(int tp);
+  class BCQuery
   {
   public:
     virtual int numComps() = 0;

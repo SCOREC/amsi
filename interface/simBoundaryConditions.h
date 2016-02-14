@@ -10,6 +10,7 @@
 #include <vector>
 namespace amsi
 {
+  // bool canHandleSubtype(int tp, int sbtp);
   char const * getBCTypeString(int tp);
   char const * getBCSubtypeString(int tp, int sbpt);
   /**
@@ -28,13 +29,13 @@ namespace amsi
     pModelItem itm; // the model entity
   };
   // a specialized displacement spec could negate the need for searching
-  class SimDisplacementSpec : public DirichletSpec
+  class SimDisplacementQuery : public BCQuery
   {
   private:
     SimBC * bc;
     std::vector<pAttribute> atts;
   public:
-    SimDisplacementSpec(SimBC * b);
+    SimDisplacementQuery(SimBC * b);
     virtual int numComps();
     virtual bool isFixed(int ii);
     virtual bool isConst(int ii);
@@ -42,6 +43,36 @@ namespace amsi
     virtual bool isSpaceExpr(int ii);
     virtual double getValue(int ii, ...);
   };
+  class SimValueQuery : public BCQuery
+  {
+  private:
+    SimBC * bc;
+    pAttribute att;
+  public:
+    SimValueQuery(SimBC * b);
+    virtual int numComps();
+    virtual bool isFixed(int ii);
+    virtual bool isConst(int ii);
+    virtual bool isTimeExpr(int ii);
+    virtual bool isSpaceExpr(int ii);
+  };
+  class SimTensor0Query : public SimValueQuery
+  {
+  public:
+    SimTensor0Query(SimBC * b)
+      : SimValueQuery(b)
+    { };
+    virtual double getValue(int ii, ...);
+  };
+  class SimTensor1Query : public SimValueQuery
+  {
+  public:
+    SimTensor1Query(SimBC * b)
+      : SimValueQuery(b)
+    { }
+    virtual double getValue(int ii, ...);
+  };
+  BCQuery * buildSimQuery(SimBC * bc);
   template <class O>
     void getDirichletBCAttributes(SimBC * bc, O out)
   {
@@ -59,7 +90,11 @@ namespace amsi
     void getNeumannBCAttributes(SimBC * bc, O out)
   {
     pAttribute att = GEN_attrib((pGEntity)bc->itm,getBCSubtypeString(bc->tp,bc->sbtp));
-    *out++ = att;
+    switch(bc->sbtp)
+    {
+    default:
+      *out++ = att;
+    }
   }
   template <class O>
     void getBCAttributes(SimBC * bc, O out)
@@ -69,6 +104,35 @@ namespace amsi
       getDirichletBCAttributes(bc,out);
     else if(bc->tp == NEUMANN)
       getNeumannBCAttributes(bc,out);
+  }
+  template <class I, class O>
+    void buildBCs(pACase ac, int tp, I begin, I end, O out)
+  {
+    for(I bc_tp = begin; bc_tp != end; ++bc_tp)
+    {
+      std::vector<pANode> bcs;
+      amsi::getTypeNodes((pANode)ac,getBCSubtypeString(tp,*bc_tp),std::back_inserter(bcs));
+      for(auto bc : bcs)
+      {
+        std::vector<pModelAssoc> mdl_ascs;
+        cutPaste<pModelAssoc>(AttCase_findModelAssociations(ac,bc),
+                              std::back_inserter(mdl_ascs));
+        for(auto mdl_asc : mdl_ascs)
+        {
+          std::vector<pModelItem> mdl_itms;
+          cutPaste<pModelItem>(AMA_modelItems(mdl_asc),std::back_inserter(mdl_itms));
+          for(auto mdl_itm : mdl_itms)
+          {
+            SimBC * nw_bc = new SimBC;
+            nw_bc->tp = tp;
+            nw_bc->sbtp = *bc_tp;
+            nw_bc->bc_nd = bc;
+            nw_bc->itm = mdl_itm;
+            *out++ = nw_bc;
+          }
+        }
+      }
+    }
   }
   template <class O>
     void buildDirichletBCs(pACase ac, O out)
@@ -94,6 +158,35 @@ namespace amsi
             dir_bc->bc_nd = bc;
             dir_bc->itm = mdl_itm;
             *out++ = dir_bc;
+          }
+        }
+      }
+    }
+  }
+  template <class O>
+    void buildNeumannBCs(pACase ac, O out)
+  {
+    for(int ii = 0; ii < NUM_NEUMANN_TYPES; ii++)
+    {
+      std::vector<pANode> bcs;
+      amsi::getTypeNodes((pANode)ac,getNeumannTypeString(ii),std::back_inserter(bcs));
+      for(auto bc : bcs)
+      {
+        std::vector<pModelAssoc> mdl_ascs;
+        cutPaste<pModelAssoc>(AttCase_findModelAssociations(ac,bc),
+                              std::back_inserter(mdl_ascs));
+        for(auto mdl_asc : mdl_ascs)
+        {
+          std::vector<pModelItem> mdl_itms;
+          cutPaste<pModelItem>(AMA_modelItems(mdl_asc),std::back_inserter(mdl_itms));
+          for(auto mdl_itm : mdl_itms)
+          {
+            SimBC * neu_bc = new SimBC;
+            neu_bc->tp = NEUMANN;
+            neu_bc->sbtp = ii;
+            neu_bc->bc_nd = bc;
+            neu_bc->itm = mdl_itm;
+            *out++ = neu_bc;
           }
         }
       }

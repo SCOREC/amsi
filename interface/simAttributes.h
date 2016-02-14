@@ -9,7 +9,8 @@
 pAManager SModel_attManager(pModel model);
 namespace amsi
 {
-  extern char const * sim_attr_css[];
+  bool isAttrConst(pAttribute att);
+    //extern char const * sim_attr_css[];
   void initCase(pModel mdl, pACase cs);
   void freeCase(pACase cs);
   const char * attRepTypeString(AttRepType tp);
@@ -36,10 +37,6 @@ namespace amsi
   void getWithAttribute(pGModel mdl,
                         const char * attr,
                         std::list<pGEntity> & ents);
-  /**
-   * applyAttributes(SimFEA*);
-   */
-  void applyAttributes(Analysis::SimFEA* fea);
   void writeAttMan(pAManager attmn, const char * fnm);
   /**
    * Get the infotype of all attribute cases in the attribute manager

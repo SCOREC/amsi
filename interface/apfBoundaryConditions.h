@@ -7,7 +7,7 @@
 #include "apfNumbering.h"
 namespace amsi
 {
-  double getDirichletValue(DirichletSpec * spc,
+  double getDirichletValue(BCQuery * qry,
                            apf::Mesh * msh,
                            apf::MeshEntity * ent,
                            int nd,
@@ -15,11 +15,11 @@ namespace amsi
                            double t)
   {
     double val = 0.0;
-    if(spc->isConst(cmp))
-      val = spc->getValue(cmp);
+    if(qry->isConst(cmp))
+      val = qry->getValue(cmp);
     else
     {
-      if(spc->isSpaceExpr(cmp))
+      if(qry->isSpaceExpr(cmp))
       {
         // get parametric coordinate of nd
         apf::Vector3 pt;
@@ -28,13 +28,13 @@ namespace amsi
         apf::Vector3 xyz;
         apf::mapLocalToGlobal(apf::createMeshElement(msh,ent),pt,xyz);
         // check if also time expr
-        if(spc->isTimeExpr(cmp))
-          val = spc->getValue(t,xyz[0],xyz[1],xyz[2]);
+        if(qry->isTimeExpr(cmp))
+          val = qry->getValue(t,xyz[0],xyz[1],xyz[2]);
         else
-          val = spc->getValue(xyz[0],xyz[1],xyz[2]);
+          val = qry->getValue(xyz[0],xyz[1],xyz[2]);
       }
-      else if(spc->isTimeExpr(cmp))
-        val = spc->getValue(cmp,t);
+      else if(qry->isTimeExpr(cmp))
+        val = qry->getValue(cmp,t);
       else
         std::cerr << "Error: Non constant dirichlet boundary condition with "
                   << " no temporal or spatial dependencies." << std::endl;
@@ -47,14 +47,14 @@ namespace amsi
                          apf::Numbering * nm,
                          T begin,
                          T end,
-                         DirichletSpec * spc,
+                         BCQuery * qry,
                          double t)
   {
     int fxd = 0;
     apf::Mesh * msh = apf::getMesh(fld);
     apf::FieldShape * fs = apf::getShape(fld);
     int cmps = apf::countComponents(fld);
-    assert(spc->numComps() == cmps);
+    assert(qry->numComps() == cmps);
     for(T & it = begin; it != end; ++it)
     {
       // TODO : would prefer to implement a wrapper on the sim iterator...
@@ -65,11 +65,11 @@ namespace amsi
         double vls[cmps] = {};
         apf::getComponents(fld,ent,ii,vls);
         for(int jj = 0; jj < cmps; jj++)
-          if(spc->isFixed(jj))
+          if(qry->isFixed(jj))
           {
             apf::fix(nm,ent,ii,jj,true);
             fxd++;
-            vls[jj] = getDirichletValue(spc,msh,ent,ii,jj,t);
+            vls[jj] = getDirichletValue(qry,msh,ent,ii,jj,t);
           }
         apf::setComponents(fld,ent,ii,vls);
       }
