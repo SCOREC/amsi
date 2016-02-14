@@ -5,6 +5,7 @@ set(interface_public_headers
     amsiBoundaryConditions.h
     amsiDirichletBC.h
     amsiNonlinearAnalysis.h
+    amsiNeumannIntegrators.h
     apfBoundaryConditions.h
     ElementalSystem.h
     ErrorEstimators.h

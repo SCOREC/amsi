@@ -45,7 +45,7 @@ namespace amsi
   };
   class SimValueQuery : public BCQuery
   {
-  private:
+  protected:
     SimBC * bc;
     pAttribute att;
   public:

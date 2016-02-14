@@ -19,7 +19,6 @@ namespace amsi {
       // get the shape functions
       apf::NewArray<double> N;
       apf::getShapeValues(e,p,N);
-
       apf::Vector3 xyz;
       apf::mapLocalToGlobal(me,p,xyz);
 

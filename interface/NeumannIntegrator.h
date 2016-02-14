@@ -1,11 +1,8 @@
 #ifndef NEUMANNINTEGRATOR_H_
 #define NEUMANNINTEGRATOR_H_
-
 #include "TensorFieldQuery.h"
-
 #include <apf.h>
 #include <apfDynamicVector.h>
-
 namespace amsi
 {
   namespace Analysis
@@ -17,15 +14,12 @@ namespace amsi
       apf::MeshElement * me;
       apf::Element * e;
       apf::Field * f;
-
       int nedofs;
       int nenodes;
       int num_field_components;
-      
       TensorFieldQuery * tf;
     public:
       NeumannIntegrator(apf::Field * field, int o);
-
       void setTensorQuery(TensorFieldQuery * q) {delete tf; tf = q;}
       virtual void inElement(apf::MeshElement *);
       virtual void outElement() {};
@@ -35,5 +29,4 @@ namespace amsi
     };
   }
 }
-
 #endif
