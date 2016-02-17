@@ -25,7 +25,7 @@ namespace amsi
   int findAttrIndex(char const * arr[], int cnt, char const * itm)
   {
     for(int ii = 0; ii < cnt; ii++)
-      if(strcmp(itm,arr[ii]))
+      if(strcmp(itm,arr[ii]) == 0)
         return ii;
     return -1;
   }
@@ -94,7 +94,11 @@ namespace amsi
     std::vector<pAttribute> rw;
     getBCAttributes(bc,std::back_inserter(rw));
     for(auto att : rw)
-      atts[findAttrIndex(dis_bc_attrs,3,Attribute_infoType(att))] = att;
+    {
+      char * att_tp = Attribute_infoType(att);
+      atts[findAttrIndex(dis_bc_attrs,3,att_tp)] = att;
+      Sim_deleteString(att_tp);
+    }
   }
   int SimDisplacementQuery::numComps()
   {

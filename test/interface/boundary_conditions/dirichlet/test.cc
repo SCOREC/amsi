@@ -32,7 +32,8 @@ int main(int argc, char ** argv)
   std::vector<amsi::SimBCQuery*> dir_qrys;
   amsi::buildSimBCQueries(pd,amsi::DIRICHLET,&dsp,(&dsp)+1,std::back_inserter(dir_qrys));
   int fxd = amsi::applySimDirichletBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
-  std::cout << "Fixed " << fxd << " dofs" << std::endl;
+  failed += test_neq("Fixed dofs",0,fxd);
   amsi::freeCase(css[0]);
+  amsi::interfaceFree();
   return failed;
 }
