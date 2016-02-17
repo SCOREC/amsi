@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
       int dm = amsi::modelItemTypeDim(GEN_type((pGEntity)bc->itm));
       for(int d = dm; d >= 0; --d)
         amsi::getClassifiedEnts(sm_prt,(pGEntity)bc->itm,d,std::back_inserter(ents));
-      amsi::applyDirichletBC(u,nm,ents.begin(),ents.end(),&spc,0.0);
+      amsi::applyDirichletBC(nm,ents.begin(),ents.end(),&spc,0.0);
     }
   }
   std::vector<amsi::SimBC*> neu_bcs;

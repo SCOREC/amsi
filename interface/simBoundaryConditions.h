@@ -23,12 +23,20 @@ namespace amsi
   char const * getNeumannTypeString(int tp);
   struct SimBC
   {
-    int tp;
-    int sbtp;
-    pANode bc_nd;
+    int tp;         // bc type (neumann/dirichlet)
+    int sbtp;       // the bc subtype
+    pANode bc_nd;   // the attribute node
     pModelItem itm; // the model entity
   };
   BCQuery * buildSimBCQuery(SimBC * bc);
+  template <typename I, typename O>
+    void buildSimBCQueries(pACase pd, int tp, I bgn, I nd, O out)
+  {
+    std::vector<SimBC*> bcs;
+    //buildBCs(pd,tp,bgn,nd,std::back_inserter(bcs));
+    //for(auto bc : bcs)
+    // *out++ = buildSimBCQuery(bcs);
+  }
   class SimDisplacementQuery : public BCQuery
   {
   private:

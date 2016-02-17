@@ -15,7 +15,7 @@ namespace amsi
     metaInit(argc,argv,cm);
 #   ifdef PETSC
     if(use_petsc)
-      petscInit(argc,argv,cm);
+      petscInit(argc,argv,getLocal()->comm());
 #   endif
 #   ifdef SIM
     if(use_simmetrix)

@@ -17,6 +17,7 @@ int main(int argc, char ** argv)
   amsi::interfaceInit(argc,argv);
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+  pMesh prt = PM_mesh(sm_msh,0);
   // get all analysis cases
   std::vector<pACase> css;
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
@@ -24,17 +25,20 @@ int main(int argc, char ** argv)
   amsi::initCase(mdl,css[0]);
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
   int dsp[] = {amsi::DISPLACEMENT};
+  apf::Mesh * msh =  apf::createMesh(sm_msh);
+  apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
+  apf::Numbering * nm = apf::createNumbering(u);
   // wrap below here in function ?
+  int fxd = 0;
   std::vector<amsi::SimBC*> dir_bcs;
   amsi::buildBCs(pd,amsi::DIRICHLET,dsp,dsp+1,std::back_inserter(dir_bcs));
   for(auto dir_bc : dir_bcs)
   {
     amsi::BCQuery * qry = amsi::buildSimBCQuery(dir_bc);
+    std::list<pEntity> ents;
+    amsi::getClassifiedDimEnts(prt,(pGEntity)dir_bc->itm,0,3,std::back_inserter(ents));
+    fxd += amsi::applyDirichletBC(nm,ents.begin(),ents.end(),qry,0.0);
   }
-  
   amsi::freeCase(css[0]);
-  apf::Mesh * msh =  apf::createMesh(sm_msh);
-  apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
-  apf::Numbering * nm = apf::createNumbering(u);
   return failed;
 }

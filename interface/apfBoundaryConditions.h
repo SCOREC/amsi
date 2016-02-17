@@ -43,14 +43,14 @@ namespace amsi
   }
   // assume that an iterator is supplied which iterates over all the mesh entities
   template <typename T>
-    int applyDirichletBC(apf::Field * fld,
-                         apf::Numbering * nm,
+    int applyDirichletBC(apf::Numbering * nm,
                          T begin,
                          T end,
                          BCQuery * qry,
                          double t)
   {
     int fxd = 0;
+    apf::Field * fld = apf::getField(nm);
     apf::Mesh * msh = apf::getMesh(fld);
     apf::FieldShape * fs = apf::getShape(fld);
     int cmps = apf::countComponents(fld);
