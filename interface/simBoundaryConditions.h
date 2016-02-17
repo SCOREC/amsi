@@ -28,7 +28,7 @@ namespace amsi
     pANode bc_nd;
     pModelItem itm; // the model entity
   };
-  // a specialized displacement spec could negate the need for searching
+  BCQuery * buildSimBCQuery(SimBC * bc);
   class SimDisplacementQuery : public BCQuery
   {
   private:

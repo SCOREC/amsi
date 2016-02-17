@@ -56,6 +56,36 @@ namespace amsi
     assert(tp < NUM_NEUMANN_TYPES);
     return neu_bc_attrs[tp];
   }
+  BCQuery * buildSimDirichletBCQuery(SimBC * bc)
+  {
+    switch(bc->sbtp)
+    {
+    case DISPLACEMENT:
+      return new SimDisplacementQuery(bc);
+    default:
+      return NULL;
+    }
+  }
+  BCQuery * buildSimNeumannBCQuery(SimBC * bc)
+  {
+    switch(bc->sbtp)
+    {
+    case SURFACE_TRACTION:
+      return new SimTensor1Query(bc);
+    case PRESSURE:
+      return new SimTensor0Query(bc);
+    default:
+      return NULL;
+    }
+  }
+  BCQuery * buildSimBCQuery(SimBC * bc)
+  {
+    if(bc->tp == DIRICHLET)
+      return buildSimDirichletBCQuery(bc);
+    else if(bc->tp == NEUMANN)
+      return buildSimNeumannBCQuery(bc);
+    return NULL;
+  }
   SimDisplacementQuery::SimDisplacementQuery(SimBC * b)
     : bc(b)
     , atts()

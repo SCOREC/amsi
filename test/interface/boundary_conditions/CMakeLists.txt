@@ -1,1 +1,1 @@
-add_subdirectory(dirichlet_bc)
+add_subdirectory(dirichlet)
