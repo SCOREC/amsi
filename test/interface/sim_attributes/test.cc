@@ -32,13 +32,11 @@ int main(int argc, char * argv[])
   amsi::cutPaste<pACase>(AttCase_findChildrenByType(css[0],"problem definition"),
                          std::back_inserter(pd));
   failed += test("problem definition",1,(int)pd.size());
+  int dsp[] = {amsi::DISPLACEMENT};
   std::vector<amsi::SimBC*> dir_bcs;
-  amsi::buildDirichletBCs(pd[0],std::back_inserter(dir_bcs));
+  amsi::buildBCs(pd[0],amsi::DIRICHLET,dsp,dsp+1,std::back_inserter(dir_bcs));
   failed += test("buildDirichletBCs()",1,(int)dir_bcs.size());
   failed += test("dirichlet type",(int)amsi::DISPLACEMENT,dir_bcs[0]->sbtp);
-  int dsp[] = {amsi::DISPLACEMENT};
-  std::vector<amsi::SimBC*> dir_bcs2;
-  amsi::buildBCs(pd[0],amsi::DIRICHLET,dsp,dsp+1,std::back_inserter(dir_bcs2));
   std::vector<pAttribute> atts;
   amsi::getDirichletBCAttributes(dir_bcs[0],std::back_inserter(atts));
   failed += test("getDirichletAttributes()",3,(int)atts.size());

@@ -56,7 +56,7 @@ namespace amsi
     assert(tp < NUM_NEUMANN_TYPES);
     return neu_bc_attrs[tp];
   }
-  BCQuery * buildSimDirichletBCQuery(SimBC * bc)
+  SimBCQuery * buildSimDirichletBCQuery(SimBC * bc)
   {
     switch(bc->sbtp)
     {
@@ -66,7 +66,7 @@ namespace amsi
       return NULL;
     }
   }
-  BCQuery * buildSimNeumannBCQuery(SimBC * bc)
+  SimBCQuery * buildSimNeumannBCQuery(SimBC * bc)
   {
     switch(bc->sbtp)
     {
@@ -78,7 +78,7 @@ namespace amsi
       return NULL;
     }
   }
-  BCQuery * buildSimBCQuery(SimBC * bc)
+  SimBCQuery * buildSimBCQuery(SimBC * bc)
   {
     if(bc->tp == DIRICHLET)
       return buildSimDirichletBCQuery(bc);
@@ -87,7 +87,7 @@ namespace amsi
     return NULL;
   }
   SimDisplacementQuery::SimDisplacementQuery(SimBC * b)
-    : bc(b)
+    : SimBCQuery(b)
     , atts()
   {
     atts.assign(numDirichletComponents(bc->sbtp),NULL);
@@ -136,7 +136,7 @@ namespace amsi
     return rslt;
   }
   SimValueQuery::SimValueQuery(SimBC * b)
-    : bc(b)
+    : SimBCQuery(b)
     , att()
   {
     getBCAttributes(bc,&att);
@@ -168,14 +168,5 @@ namespace amsi
   double SimTensor1Query::getValue(int ii, ...)
   {
     return 0.0;
-  }
-  void applyBC(SimBC * bc, pMesh msh)
-  {
-    std::vector<pAttribute> atts;
-    getBCAttributes(bc,std::back_inserter(atts));
-    std::list<pEntity> ents;
-    int dm = modelItemTypeDim(GEN_type((pGEntity)bc->itm));
-    for(int d = dm; d >= 0; d--)
-      getClassifiedEnts(msh,(pGEntity)bc->itm,d,std::back_inserter(ents));
   }
 }

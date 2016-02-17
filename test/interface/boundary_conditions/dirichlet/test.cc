@@ -24,21 +24,15 @@ int main(int argc, char ** argv)
   // only run the first attribute case
   amsi::initCase(mdl,css[0]);
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
-  int dsp[] = {amsi::DISPLACEMENT};
+  int dsp = amsi::DISPLACEMENT;
   apf::Mesh * msh =  apf::createMesh(sm_msh);
   apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
   apf::Numbering * nm = apf::createNumbering(u);
   // wrap below here in function ?
-  int fxd = 0;
-  std::vector<amsi::SimBC*> dir_bcs;
-  amsi::buildBCs(pd,amsi::DIRICHLET,dsp,dsp+1,std::back_inserter(dir_bcs));
-  for(auto dir_bc : dir_bcs)
-  {
-    amsi::BCQuery * qry = amsi::buildSimBCQuery(dir_bc);
-    std::list<pEntity> ents;
-    amsi::getClassifiedDimEnts(prt,(pGEntity)dir_bc->itm,0,3,std::back_inserter(ents));
-    fxd += amsi::applyDirichletBC(nm,ents.begin(),ents.end(),qry,0.0);
-  }
+  std::vector<amsi::SimBCQuery*> dir_qrys;
+  amsi::buildSimBCQueries(pd,amsi::DIRICHLET,&dsp,(&dsp)+1,std::back_inserter(dir_qrys));
+  int fxd = amsi::applySimDirichletBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
+  std::cout << "Fixed " << fxd << " dofs" << std::endl;
   amsi::freeCase(css[0]);
   return failed;
 }

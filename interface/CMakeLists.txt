@@ -7,6 +7,7 @@ set(interface_public_headers
     amsiNonlinearAnalysis.h
     amsiNeumannIntegrators.h
     apfBoundaryConditions.h
+    apfBoundaryConditions_impl.h
     ElementalSystem.h
     ErrorEstimators.h
     MatrixUtil.h
@@ -32,6 +33,7 @@ set(interface_public_headers
     simAnalysis.h
     simAttributes.h
     simBoundaryConditions.h
+    simBoundaryConditions_impl.h
     simWrapper.h
    )
 
@@ -40,6 +42,7 @@ set(interface_src_files
     amsiBCDirichlet.cc
     amsiBoundaryConditions.cc
     amsiNonlinearAnalysis.cc
+    apfBoundaryConditions.cc
     MatrixUtil.h
     FullLULAS.cc
     FEA.cc
