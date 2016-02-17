@@ -1,9 +1,10 @@
 #ifndef SIM_BOUNDARY_CONDITIONS_H_
 #define SIM_BOUNDARY_CONDITIONS_H_
 #include "amsiBoundaryConditions.h"
+#include "LAS.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
-#include "apfNumbering.h"
+#include <apfNumbering.h>
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -132,6 +133,11 @@ namespace amsi
    */
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t);
+  /**
+   *
+   */
+  template <typename I>
+    void applySimNeumannBCs(Analysis::LAS * las, apf::Field * fld, pMesh msh, I bgn, I nd, double t);
   /**
    * Get the underlying simmetrix attributes relevant
    *  to the specific SimBC.

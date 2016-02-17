@@ -42,6 +42,7 @@ set(interface_src_files
     amsiBCDirichlet.cc
     amsiBoundaryConditions.cc
     amsiNonlinearAnalysis.cc
+    amsiNeumannIntegrators.cc
     apfBoundaryConditions.cc
     MatrixUtil.h
     FullLULAS.cc

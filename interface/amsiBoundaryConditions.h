@@ -26,11 +26,11 @@ namespace amsi
   {
   public:
     virtual int numComps() = 0;
-    virtual bool isFixed(int ii) = 0;
-    virtual bool isConst(int ii) = 0;
-    virtual bool isTimeExpr(int ii) = 0;
-    virtual bool isSpaceExpr(int ii) = 0;
-    virtual double getValue(int ii, ...) = 0;
+    virtual bool isFixed(int ii = 0) = 0;
+    virtual bool isConst(int ii = 0) = 0;
+    virtual bool isTimeExpr(int ii = 0) = 0;
+    virtual bool isSpaceExpr(int ii = 0) = 0;
+    virtual double getValue(int ii = 0, ...) = 0;
   };
 }
 #endif

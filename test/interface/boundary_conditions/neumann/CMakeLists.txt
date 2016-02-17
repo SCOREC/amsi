@@ -1,4 +1,4 @@
-add_mpi_test(dirichlet_test test.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms)
+add_mpi_test(neumann_test test.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms)
 target_link_libraries(dirichlet_test util meta interface)
 
 #add_test(NAME dirichlet_bc_regression

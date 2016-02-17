@@ -4,9 +4,10 @@
 #include "apfFunctions.h"
 #include <apf.h>
 #include <apfDynamicVector.h>
+#include <cassert>
 namespace amsi
 {
-  class NeummanIntegrator : public apf::Integrator
+  class NeumannIntegrator : public apf::Integrator
   {
   protected:
     apf::DynamicVector fe;
@@ -29,7 +30,7 @@ namespace amsi
       , nedofs()
       , nenodes()
       , nfcmps(apf::countComponents(fld))
-      , t()
+      , tm()
       , vls(nfcmps)
       , qry(q)
     { }
@@ -42,18 +43,12 @@ namespace amsi
       me = m;
       e = apf::createElement(fld,me);
       nenodes = apf::countNodes(e);
-      assert(nfcmp == qry->numComps());
-      int nnedofs = nenodes * nfcmp;
+      assert(nfcmps == qry->numComps());
+      int nnedofs = nenodes * nfcmps;
       if(nnedofs != nedofs)
         fe.setSize(nnedofs);
       nedofs = nnedofs;
       fe.zero();
-    }
-    void integrate(double (*intop)(int,int))
-    {
-      for(int ii = 0; ii < nenodes; ii++)
-        for(int jj = 0; jj < nfcmps; jj++)
-          fe(ii*nfcmps + jj) = (*intop)(ii,jj);
     }
     virtual void outElement()
     {
@@ -71,10 +66,10 @@ namespace amsi
         apf::mapLocalToGlobal(me,p,xyz);
         if(qry->isTimeExpr())
           for(int ii = 0; ii < nfcmps; ii++)
-            vls[ii] = qry->getValue(ii,tm,x,y,z);
+            vls[ii] = qry->getValue(ii,tm,xyz[0],xyz[1],xyz[2]);
         else
           for(int ii = 0; ii < nfcmps; ii++)
-            vls[ii] = qry->getValue(ii,x,y,z);
+            vls[ii] = qry->getValue(ii,xyz[0],xyz[1],xyz[2]);
       }
       else if(qry->isTimeExpr())
         for(int ii = 0; ii < nfcmps; ii++)
@@ -93,8 +88,10 @@ namespace amsi
       apf::NewArray<double> N;
       apf::getShapeValues(e,p,N);
       double wxdV = w * dV;
-      auto intop = [&](int ii, int jj) -> double {return N[ii] * F[jj] * wxdV};
-      integrate(intop);
+      auto intop = [&](int ii, int jj) -> double { return N[ii] * vls[jj] * wxdV; };
+      for(int ii = 0; ii < nenodes; ii++)
+        for(int jj = 0; jj < nfcmps; jj++)
+          fe(ii*nfcmps + jj) = intop(ii,jj);
     }
   };
   class Pressure : public NeumannIntegrator
@@ -110,7 +107,7 @@ namespace amsi
     void inElement(apf::MeshElement * m)
     {
       NeumannIntegrator::inElement(m);
-      ent = apf::getMeshEntity();
+      ent = apf::getMeshEntity(m);
     }
     void atPoint(apf::Vector3 const & p, double w, double dV)
     {
@@ -122,9 +119,12 @@ namespace amsi
       vls[1] *= nrml.y();
       vls[2] *= nrml.z();
       double wxdV = w * dV;
-      auto intop = [&](int ii, int jj) -> double { return N[ii] * vls[jj] * wxdV; }
-      integrate(intop);
+      auto intop = [&](int ii, int jj) -> double { return N[ii] * vls[jj] * wxdV; };
+      for(int ii = 0; ii < nenodes; ii++)
+        for(int jj = 0; jj < nfcmps; jj++)
+          fe(ii*nfcmps + jj) = intop(ii,jj);
     }
   };
+  NeumannIntegrator * buildNeumannIntegrator(apf::Field * fld, int o, BCQuery * qry, int tp);
 }
 #endif
