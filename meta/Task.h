@@ -34,12 +34,7 @@ namespace amsi
 #       ifdef CORE
         PCU_Switch_Comm(task_comm);
 #       endif
-
         result +=  (*exec)(argc,argv,task_comm);
-
-#       ifdef CORE
-        PCU_Switch_Comm(AMSI_COMM_WORLD);
-#       endif
       }
       return result;
     };

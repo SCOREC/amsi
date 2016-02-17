@@ -38,21 +38,21 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
     ..
 else
-    module load openmpi/1.3.3
-    module load simmetrix/simModSuite
-    module load $DEVROOT/petsc/petsc-3.6.3/ompi133-debug/lib/petsc/conf/modules/petsc/3.6.3
+    module load $DEVROOT/module/openmpi/1.10.0
+    module load $DEVROOT/module/simmetrix/simModSuite/10.0-151221beta
+    module load $DEVROOT/petsc/petsc-3.6.3/ompi110-debug/lib/petsc/conf/modules/petsc/3.6.3
 
     CC=`which mpicc`
     CXX=`which mpicxx`
     cmake \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=ON \
-        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.3.3/ \
+        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.10.0/ \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
         -DHWLOC_ROOT=$DEVROOT/install/hwloc/ \
-        -DCORE_DIR=$DEVROOT/install/core-sim/openmpi-1.3.3 \
-        -DSIM_MPI=openmpi14 \
+        -DCORE_DIR=$DEVROOT/install/core-sim/openmpi-1.10.0 \
+        -DSIM_MPI=openmpi110 \
         ..
 #    -DSIMMETRIX_LIB_DIR=$DEVROOT/simPartitionWrapper/PartitionWrapper/lib \
 #    --debug-output \

@@ -103,12 +103,10 @@ target_include_directories(interface PUBLIC
 target_link_libraries(interface PUBLIC util meta)
 
 target_include_directories(interface PUBLIC
-  ${PETSC_PACKAGE_INCLUDES}
   ${PETSC_INCLUDE_DIRS}
   ${CORE_INCLUDE_DIRS}
   ${SIMMODSUITE_INCLUDE_DIR})
 target_link_libraries(interface PUBLIC
-  ${PETSC_PACKAGE_LIBS}
   ${PETSC_LIBRARIES}
   ${CORE_LIBS}
   ${SIMMODSUITE_LIBS})

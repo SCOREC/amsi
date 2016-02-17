@@ -176,6 +176,23 @@ namespace amsi
       if(hasAttribute(entity,attr))
         ents.push_back(entity);
   }
+  template <typename O>
+  void getWithAttr(pGModel mdl, char const * attr, O out)
+  {
+    pGEntity entity;
+    for(GRIter griter = GM_regionIter(mdl); (entity = GRIter_next(griter)); )
+      if(hasAttribute(entity,attr))
+        *out++ = entity;
+    for(GFIter gfiter = GM_faceIter(mdl); (entity = GFIter_next(gfiter)); )
+      if(hasAttribute(entity,attr))
+        *out++ = entity;
+    for(GEIter geiter = GM_edgeIter(mdl); (entity = GEIter_next(geiter)); )
+      if(hasAttribute(entity,attr))
+        *out++ = entity;
+    for(GVIter gviter = GM_vertexIter(mdl); (entity = GVIter_next(gviter)); )
+      if(hasAttribute(entity,attr))
+        *out++ = entity;
+  }
   void writeAttMan(pAManager attm, const char * fnm)
   {
     assert(fnm);

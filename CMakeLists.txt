@@ -28,7 +28,7 @@ if("${HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
   set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 else()
   set(HOST SCOREC)
-  set(CMAKE_FIND_LIBRARY_SUFFIXES .so .a)
+  set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
   list(APPEND CMAKE_CXX_FLAGS "-std=c++0x -Wall")
 endif()
 

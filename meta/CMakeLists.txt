@@ -33,7 +33,7 @@ set(meta_source_files
   Assemblable.cc
   )
 
-find_package(PETSc)
+#find_package(PETSc)
 find_package(zoltan)
 find_package(Core COMPONENTS Sim)
 
