@@ -1,5 +1,5 @@
-#ifndef LAS_H_
-#define LAS_H_
+#ifndef AMSI_LAS_H_
+#define AMSI_LAS_H_
 #include <ostream>
 namespace amsi
 {
@@ -24,7 +24,7 @@ namespace amsi
     /// solve the system
     virtual void Solve () = 0;
     /// zero the system
-    virtual bool Zero() {return false;}
+    virtual bool Zero() {return ZeroVector() && ZeroMatrix();}
     /// retrieve the solution
     virtual void GetSolution(double *&) = 0;
     virtual void GetSolutionNorm(double &) = 0;

@@ -1,6 +1,6 @@
 #ifndef FULLLULINEARSYSTEMSOLVER_H_
 #define FULLLULINEARSYSTEMSOLVER_H_
-#include "LAS.h"
+#include "amsiLAS.h"
 #include <cstring> // memset
 #include <vector>
 namespace amsi

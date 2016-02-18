@@ -1,7 +1,7 @@
 #ifndef SIM_BOUNDARY_CONDITIONS_H_
 #define SIM_BOUNDARY_CONDITIONS_H_
 #include "amsiBoundaryConditions.h"
-#include "LAS.h"
+#include "amsiLAS.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
 #include <apfNumbering.h>
@@ -85,7 +85,6 @@ namespace amsi
     pAttribute att;
   public:
     SimValueQuery(SimBC * b);
-    virtual int numComps();
     virtual bool isFixed(int ii);
     virtual bool isConst(int ii);
     virtual bool isTimeExpr(int ii);
@@ -101,6 +100,7 @@ namespace amsi
     SimTensor0Query(SimBC * b)
       : SimValueQuery(b)
     { };
+    virtual int numComps() {return 1;}
     virtual double getValue(int ii, ...);
   };
   /**
@@ -113,6 +113,7 @@ namespace amsi
     SimTensor1Query(SimBC * b)
       : SimValueQuery(b)
     { }
+    virtual int numComps() {return 3;}
     virtual double getValue(int ii, ...);
   };
   /**
@@ -137,7 +138,7 @@ namespace amsi
    *
    */
   template <typename I>
-    void applySimNeumannBCs(LAS * las, apf::Field * fld, pMesh msh, I bgn, I nd, double t);
+    void applySimNeumannBCs(LAS * las, apf::Numbering * nm, pMesh msh, I bgn, I nd, double t);
   /**
    * Get the underlying simmetrix attributes relevant
    *  to the specific SimBC.

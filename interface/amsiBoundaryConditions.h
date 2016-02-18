@@ -15,9 +15,14 @@ namespace amsi
   };
   enum NeumannBCType
   {
-    SURFACE_TRACTION,
-    PRESSURE,
+    FORCE,
     NUM_NEUMANN_TYPES
+  };
+  enum ForceBCType
+  {
+    SURFACE_TRACTION,
+    FOLLOW_FORCE,
+    NUM_FORCE_TYPES
   };
   int numBCComponents(int tp, int sbtp);
   int numDirichletComponents(int tp);

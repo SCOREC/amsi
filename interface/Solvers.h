@@ -1,7 +1,7 @@
 #ifndef FEASOLVERS_H_
 #define FEASOLVERS_H_
 #include "FEA.h"
-#include "LAS.h"
+#include "amsiLAS.h"
 #include "amsiNonlinearAnalysis.h"
 #include <string>
 namespace amsi {

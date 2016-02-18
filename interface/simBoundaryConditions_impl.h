@@ -29,23 +29,19 @@ namespace amsi
     return fxd;
   }
   template <typename I>
-    void applySimNeumannBCs(LAS * las, apf::Field * fld, pMesh msh, I bgn, I nd, double t)
+    void applySimNeumannBCs(LAS * las, apf::Numbering * nm, pMesh msh, I bgn, I nd, double t)
   {
+    apf::Field * fld = apf::getField(nm);
     for(auto it = bgn; it != nd; it++)
     {
       SimBCQuery * neu_bc = *it;
       SimBC * sim_bc = neu_bc->getSimBC();
       assert(sim_bc->tp == NEUMANN);
-      NeumannIntegrator * intgrtr = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
+      NeumannIntegrator * i = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
       std::list<pEntity> ents;
-      int dm = amsi::modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
+      int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
       getClassifiedDimEnts(msh,(pGEntity)sim_bc->itm,0,dm,std::back_inserter(ents));
-      for(auto ent : ents)
-      {
-        intgrtr->process(apf::createMeshElement(apf::getMesh(fld),apf::castEntity(ent)));
-        // assemble into vector
-
-      }
+      applyNeumannBC(las,nm,ents.begin(),ents.end(),i,t);
     }
   }
   template <class O>
@@ -86,7 +82,7 @@ namespace amsi
     for(I bc_tp = begin; bc_tp != end; ++bc_tp)
     {
       std::vector<pANode> bcs;
-      amsi::getTypeNodes((pANode)ac,getBCSubtypeString(tp,*bc_tp),std::back_inserter(bcs));
+      getTypeNodes((pANode)ac,getBCSubtypeString(tp,*bc_tp),std::back_inserter(bcs));
       for(auto bc : bcs)
       {
         std::vector<pModelAssoc> mdl_ascs;

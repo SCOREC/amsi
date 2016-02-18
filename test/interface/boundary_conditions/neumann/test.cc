@@ -1,11 +1,13 @@
 #include "test.h"
 #include "amsiInterface.h"
+#include "amsiDummyLAS.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
 #include "simBoundaryConditions.h"
-#include "apf.h"
-#include "apfSIM.h"
 #include "apfBoundaryConditions.h"
+#include <apf.h>
+#include <apfNumbering.h>
+#include <apfSIM.h>
 #include <mpi.h>
 #include <cassert>
 #include <fstream>
@@ -27,10 +29,15 @@ int main(int argc, char ** argv)
   apf::Mesh * msh =  apf::createMesh(sm_msh);
   apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
   apf::Numbering * nm = apf::createNumbering(u);
-  int tps[] = {amsi::SURFACE_TRACTION, amsi::PRESSURE};
+  int dofs = apf::NaiveOrder(nm);
+  amsi::DummyLAS las(dofs);
+  int tps[] = {amsi::FORCE};
   std::vector<amsi::SimBCQuery*> neu_qrys;
-  amsi::buildSimBCQueries(pd,amsi::NUEMANN,&tps,&tps+2,std::back_inserter(neu_qrys));
-  amsi::applySimNeumannBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
+  amsi::buildSimBCQueries(pd,amsi::NEUMANN,&tps[0],(&tps[0])+1,std::back_inserter(neu_qrys));
+  amsi::applySimNeumannBCs((amsi::LAS*)&las,nm,prt,neu_qrys.begin(),neu_qrys.end(),0.0);
+  double nrm = 0.0;
+  las.GetVectorNorm(nrm);
+  failed += test_neq("Force vector norm",0.0,nrm);
   amsi::freeCase(css[0]);
   amsi::interfaceFree();
   return failed;

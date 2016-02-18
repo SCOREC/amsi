@@ -54,30 +54,6 @@ namespace amsi
       numbered = true;
     }
   }
-  void apfFEA::ApplyBC_Dirichlet(std::vector<DirichletSpecification> & spec)
-  {
-    fixed_dofs = 0;
-    APF_ITERATE(std::vector<DirichletSpecification>,spec,entry)
-    {
-      apf::ModelEntity * ent = apf_mesh->findModelEntity(entry->type,entry->tag);
-      fixed_dofs += Entity_ApplyBC_Dirichlet(ent,entry->component,entry->value);
-    }
-  }
-  int apfFEA::Entity_ApplyBC_Dirichlet(apf::ModelEntity * ent, int component, double value)
-  {
-    apf::DynamicArray<apf::Node> nodes;
-    apf::getNodesOnClosure(apf_mesh,ent,nodes);
-    int num_comps = apf::countComponents(apf_primary_field);
-    APF_ITERATE(apf::DynamicArray<apf::Node>,nodes,node)
-    {
-      double * comps = new double[num_comps]();
-      apf::getComponents(apf_primary_field,node->entity,node->node,comps);
-      comps[component] = value;
-      apf::setComponents(apf_primary_field,node->entity,node->node,comps);
-      apf::fix(apf_primary_numbering,node->entity,node->node,component,true);
-    }
-    return nodes.getSize();
-  }
   void apfFEA::Assemble(LAS * las)
   {
     assert(elemental_system);

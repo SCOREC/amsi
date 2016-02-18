@@ -1,7 +1,6 @@
 #ifndef FEA_H_
 #define FEA_H_
-#include "amsiDirichletBC.h"
-#include "LAS.h"
+#include "amsiLAS.h"
 #include <cstring> // memset
 #include <iostream>
 #include <list>

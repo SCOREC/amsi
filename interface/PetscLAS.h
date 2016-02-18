@@ -1,6 +1,6 @@
 #ifndef PETSCITERATIVESOLVER_H_
 #define PETSCITERATIVESOLVER_H_
-#include "LAS.h"
+#include "amsiLAS.h"
 #include <petscksp.h>
 #include <petscmat.h>
 #include <vector>

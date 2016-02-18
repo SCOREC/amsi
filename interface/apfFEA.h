@@ -1,7 +1,6 @@
 #ifndef APFFEA_H_
 #define APFFEA_H_
 #include "FEA.h"
-#include "amsiBCDirichlet.h"
 #include "ElementalSystem.h"
 #include "NeumannIntegrator.h"
 #include <apf.h>
@@ -72,7 +71,6 @@ namespace amsi
         analysis_dim = apf_mesh->getDimension();
       };
     void RenumberDOFs();
-    void ApplyBC_Dirichlet(std::vector<DirichletSpecification>&);
     void Assemble(LAS*);
     void UpdateDOFs(const double*);
     void WriteMesh(const std::string &);

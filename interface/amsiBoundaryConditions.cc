@@ -26,7 +26,7 @@ namespace amsi
     {
     case SURFACE_TRACTION:
       return 3;
-    case PRESSURE:
+    case FOLLOW_FORCE:
       return 1;
     default:
       return 0;

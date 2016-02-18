@@ -1,8 +1,8 @@
 #ifndef AMSI_NEUMANN_INTEGRATORS_H_
 #define AMSI_NEUMANN_INTEGRATORS_H_
 #include "amsiBoundaryConditions.h"
+#include "amsiLAS.h"
 #include "apfFunctions.h"
-#include "LAS.h"
 #include <apf.h>
 #include <apfDynamicVector.h>
 #include <cassert>
@@ -20,6 +20,7 @@ namespace amsi
     int nenodes;
     int nfcmps;
     double tm;
+    std::vector<int> dofs;
     std::vector<double> vls;
     BCQuery * qry;
   public:
@@ -38,6 +39,8 @@ namespace amsi
       , qry(q)
     { }
     void setTime(double t) { tm = t; }
+    int getnedofs() { return nedofs; }
+    apf::DynamicVector & getFe() { return fe; }
     virtual void inElement(apf::MeshElement * m)
     {
       me = m;
@@ -51,9 +54,7 @@ namespace amsi
       fe.zero();
     }
     virtual void outElement()
-    {
-      // maybe just assemble here...
-    }
+    {  }
   protected:
     void updateBCQueryValues(apf::Vector3 const & p)
     {

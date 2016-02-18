@@ -54,14 +54,14 @@ int main(int argc, char * argv[])
     }
   }
   std::vector<amsi::SimBC*> neu_bcs;
-  int frc[] = {amsi::SURFACE_TRACTION, amsi::PRESSURE};
+  int frc[] = {amsi::SURFACE_TRACTION, amsi::FOLLOW_FORCE};
   amsi::buildBCs(pd[0],amsi::NEUMANN,frc,frc+2,std::back_inserter(neu_bcs));
   for(auto bc : neu_bcs)
   {
     amsi::BCQuery * qry = NULL;
     if(bc->sbtp == amsi::SURFACE_TRACTION)
       qry = new amsi::SimTensor1Query(bc);
-    else if(bc->sbtp == amsi::PRESSURE)
+    else if(bc->sbtp == amsi::FOLLOW_FORCE)
       qry = new amsi::SimTensor0Query(bc);
     assert(qry);
     // build the correct integrator instead of the query above...

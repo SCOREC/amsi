@@ -1,9 +1,9 @@
 set(interface_public_headers
     amsiInterface.h
     amsiInterfaceConfig.h
-    amsiBCDirichlet.h
     amsiBoundaryConditions.h
-    amsiDirichletBC.h
+    amsiDummyLAS.h
+    amsiLAS.h
     amsiNonlinearAnalysis.h
     amsiNeumannIntegrators.h
     apfBoundaryConditions.h
@@ -12,7 +12,6 @@ set(interface_public_headers
     ErrorEstimators.h
     MatrixUtil.h
     FullLULAS.h
-    LAS.h
     FEA.h
     Solvers.h
     TensorFieldQuery.h
@@ -29,6 +28,7 @@ set(interface_public_headers
     NonLinearElasticIntegrator.h
     TrussIntegrator.h
     FollowForceIntegrator.h
+    MatrixUtil.h
     sim.h
     simAnalysis.h
     simAttributes.h
@@ -39,7 +39,6 @@ set(interface_public_headers
 
 set(interface_src_files
     amsiInterface.cc
-    amsiBCDirichlet.cc
     amsiBoundaryConditions.cc
     amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc
@@ -61,6 +60,7 @@ set(interface_src_files
     NonLinearElasticIntegrator.cc
     TrussIntegrator.cc
     FollowForceIntegrator.cc
+    MatrixUtil.cc
     simAnalysis.cc
     simAttributes.cc
     simBoundaryConditions.cc

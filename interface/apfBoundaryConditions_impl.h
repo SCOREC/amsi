@@ -4,10 +4,10 @@
 #include <cassert>
 namespace amsi
 {
-  template <typename T>
+  template <typename I>
     int applyDirichletBC(apf::Numbering * nm,
-                         T begin,
-                         T end,
+                         I begin,
+                         I end,
                          BCQuery * qry,
                          double t)
   {
@@ -17,7 +17,7 @@ namespace amsi
     apf::FieldShape * fs = apf::getShape(fld);
     int cmps = apf::countComponents(fld);
     assert(qry->numComps() == cmps);
-    for(T & it = begin; it != end; ++it)
+    for(I it = begin; it != end; ++it)
     {
       // TODO : would prefer to implement a wrapper on the sim iterator...
       apf::MeshEntity * ent = reinterpret_cast<apf::MeshEntity*>(*it);
@@ -37,5 +37,23 @@ namespace amsi
       }
     }
     return fxd;
+  }
+  template <typename I>
+    void applyNeumannBC(LAS * las,
+                        apf::Numbering * nm,
+                        I bgn,
+                        I nd,
+                        NeumannIntegrator * i,
+                        double t)
+  {
+    apf::Field * fld = apf::getField(nm);
+    for(I it = bgn; it != nd; ++it)
+    {
+      apf::MeshEntity * ent = reinterpret_cast<apf::MeshEntity*>(*it);
+      i->process(apf::createMeshElement(apf::getMesh(fld),ent));
+      apf::NewArray<int> dofs;
+      apf::getElementNumbers(nm,ent,dofs);
+      las->AddToVector(i->getnedofs(),&dofs[0],&i->getFe()[0]);
+    }
   }
 }

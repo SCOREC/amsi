@@ -13,6 +13,10 @@ namespace amsi
   };
   char const * neu_bc_attrs[] =
   {
+    "force"
+  };
+  char const * frc_bc_attrs[] =
+  {
     "surface traction",
     "pressure"
   };
@@ -22,6 +26,13 @@ namespace amsi
     "y",
     "z"
   };
+  int getForceType(char const * nm)
+  {
+    for(int ii = 0; ii < NUM_FORCE_TYPES; ++ii)
+      if(strcmp(frc_bc_attrs[ii],nm) == 0)
+        return ii;
+    return -1;
+  }
   int findAttrIndex(char const * arr[], int cnt, char const * itm)
   {
     for(int ii = 0; ii < cnt; ii++)
@@ -48,12 +59,12 @@ namespace amsi
   }
   char const * getDirichletTypeString(int tp)
   {
-    assert(tp < NUM_DIRICHLET_TYPES);
+    assert(tp < NUM_DIRICHLET_TYPES && tp >= 0);
     return dir_bc_attrs[tp];
   }
   char const * getNeumannTypeString(int tp)
   {
-    assert(tp < NUM_NEUMANN_TYPES);
+    assert(tp < NUM_NEUMANN_TYPES && tp >= 0);
     return neu_bc_attrs[tp];
   }
   SimBCQuery * buildSimDirichletBCQuery(SimBC * bc)
@@ -66,17 +77,29 @@ namespace amsi
       return NULL;
     }
   }
-  SimBCQuery * buildSimNeumannBCQuery(SimBC * bc)
+  SimBCQuery * buildForceBCQuery(SimBC * bc, int tp)
   {
-    switch(bc->sbtp)
+    switch(tp)
     {
     case SURFACE_TRACTION:
       return new SimTensor1Query(bc);
-    case PRESSURE:
+    case FOLLOW_FORCE:
       return new SimTensor0Query(bc);
     default:
       return NULL;
     }
+  }
+  SimBCQuery * buildSimNeumannBCQuery(SimBC * bc)
+  {
+    char * clss = AttNode_imageClass(bc->bc_nd);
+    switch(bc->sbtp)
+    {
+    case FORCE:
+      return buildForceBCQuery(bc,getForceType(clss));
+    default:
+      return NULL;
+    }
+    Sim_deleteString(clss);
   }
   SimBCQuery * buildSimBCQuery(SimBC * bc)
   {
@@ -144,10 +167,6 @@ namespace amsi
     , att()
   {
     getBCAttributes(bc,&att);
-  }
-  int SimValueQuery::numComps()
-  {
-    return numNeumannComponents(bc->tp);
   }
   bool SimValueQuery::isFixed(int)
   {
