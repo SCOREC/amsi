@@ -6,6 +6,9 @@ elseif(CTEST_SCRIPT_ARG MATCHES Continous)
 elseif(CTEST_SCRIPT_ARG MATHCHES Nightly)
   set(NIGHTLY TRUE)
 endif()
+set(CTEST_ENVIRONMENT
+  "DEVROOT=/fasttmp/wtobin/develop/"
+  )
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 # startup
 if(EXPERIMENTAL)
