@@ -3,9 +3,8 @@
 #include <ostream>
 namespace amsi
 {
-  namespace Analysis
+  class LAS
   {
-  class LAS {
   public:
     virtual void iter() {};
     virtual void step() {};
@@ -41,6 +40,30 @@ namespace amsi
     virtual void PrintVector(std::ostream &) {};
     virtual ~LAS() {};
   };
-  }
+  /*
+    class VectorAccess
+    {
+    private:
+    LAS * las;
+    int rw;
+    public:
+    VectorAdder(LAS * l)
+    : las(l)
+    , rw(-1)
+    { }
+    VectorAdder & operator[](int r)
+    {
+    rw = r;
+    }
+    double operator+=(double val)
+    {
+    las->addToVector(rw,val);
+    }
+    };
+    class MatrixAccess
+    {
+
+    };
+  */
 }
 #endif

@@ -2,6 +2,7 @@
 #define AMSI_NEUMANN_INTEGRATORS_H_
 #include "amsiBoundaryConditions.h"
 #include "apfFunctions.h"
+#include "LAS.h"
 #include <apf.h>
 #include <apfDynamicVector.h>
 #include <cassert>
@@ -10,6 +11,7 @@ namespace amsi
   class NeumannIntegrator : public apf::Integrator
   {
   protected:
+    LAS * las;
     apf::DynamicVector fe;
     apf::Field * fld;
     apf::MeshElement * me;
@@ -21,8 +23,9 @@ namespace amsi
     std::vector<double> vls;
     BCQuery * qry;
   public:
-    NeumannIntegrator(apf::Field * f, int o, BCQuery * q)
+  NeumannIntegrator(LAS * l, apf::Field * f, int o, BCQuery * q, double t = 0.0)
       : apf::Integrator(o)
+      , las(l)
       , fe()
       , fld(f)
       , me()
@@ -30,14 +33,11 @@ namespace amsi
       , nedofs()
       , nenodes()
       , nfcmps(apf::countComponents(fld))
-      , tm()
+      , tm(t)
       , vls(nfcmps)
       , qry(q)
     { }
-    void setTime(double t)
-    {
-      tm = t;
-    }
+    void setTime(double t) { tm = t; }
     virtual void inElement(apf::MeshElement * m)
     {
       me = m;
@@ -79,8 +79,8 @@ namespace amsi
   class SurfaceTraction : public NeumannIntegrator
   {
   public:
-    SurfaceTraction(apf::Field * f, int o, BCQuery * q)
-      : NeumannIntegrator(f,o,q)
+    SurfaceTraction(LAS * l, apf::Field * f, int o, BCQuery * q, double t = 0.0)
+      : NeumannIntegrator(l,f,o,q,t)
     { }
     void atPoint(apf::Vector3 const & p, double w, double dV)
     {
@@ -100,8 +100,8 @@ namespace amsi
     apf::Mesh * msh;
     apf::MeshEntity * ent;
   public:
-    Pressure(apf::Field * f, int o, BCQuery * q)
-      : NeumannIntegrator(f,o,q)
+    Pressure(LAS * l, apf::Field * f, int o, BCQuery * q, double t)
+      : NeumannIntegrator(l,f,o,q,t)
       , msh(apf::getMesh(f))
     { }
     void inElement(apf::MeshElement * m)
@@ -114,7 +114,7 @@ namespace amsi
       updateBCQueryValues(p);
       apf::NewArray<double> N;
       apf::Vector3 nrml;
-      Analysis::faceNormal(msh,ent,nrml);
+      faceNormal(msh,ent,nrml);
       vls[0] *= nrml.x();
       vls[1] *= nrml.y();
       vls[2] *= nrml.z();
@@ -125,6 +125,11 @@ namespace amsi
           fe(ii*nfcmps + jj) = intop(ii,jj);
     }
   };
-  NeumannIntegrator * buildNeumannIntegrator(apf::Field * fld, int o, BCQuery * qry, int tp);
+  NeumannIntegrator * buildNeumannIntegrator(LAS * las,
+                                             apf::Field * fld,
+                                             int o,
+                                             BCQuery * qry,
+                                             int tp,
+                                             double t = 0.0);
 }
 #endif

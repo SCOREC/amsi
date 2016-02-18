@@ -29,14 +29,14 @@ namespace amsi
     return fxd;
   }
   template <typename I>
-    void applySimNeumannBCs(Analysis::LAS * las, apf::Field * fld, pMesh msh, I bgn, I nd, double t)
+    void applySimNeumannBCs(LAS * las, apf::Field * fld, pMesh msh, I bgn, I nd, double t)
   {
     for(auto it = bgn; it != nd; it++)
     {
       SimBCQuery * neu_bc = *it;
       SimBC * sim_bc = neu_bc->getSimBC();
       assert(sim_bc->tp == NEUMANN);
-      NeumannIntegrator * intgrtr = buildNeumannIntegrator(fld,1,neu_bc,sim_bc->sbtp);
+      NeumannIntegrator * intgrtr = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
       std::list<pEntity> ents;
       int dm = amsi::modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
       getClassifiedDimEnts(msh,(pGEntity)sim_bc->itm,0,dm,std::back_inserter(ents));
@@ -44,6 +44,7 @@ namespace amsi
       {
         intgrtr->process(apf::createMeshElement(apf::getMesh(fld),apf::castEntity(ent)));
         // assemble into vector
+
       }
     }
   }

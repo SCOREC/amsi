@@ -4,52 +4,49 @@
 #include "sim.h"
 namespace amsi
 {
-  namespace Analysis
+  void Model_GetClassifiedEntities(pMesh mesh,
+                                   pGEntity entity,
+                                   int dim,
+                                   std::list<pEntity> & classified);
+  class SimFEA : public virtual FEA
   {
-    void Model_GetClassifiedEntities(pMesh mesh,
-                                     pGEntity entity,
-                                     int dim,
-                                     std::list<pEntity> & classified);
-    class SimFEA : public virtual FEA
-    {
-    private:
-      void init();
-    protected:
-      const std::string model_name;
-      const std::string mesh_name;
-      pGModel model;
-      pParMesh mesh;
-      pMesh part;
-      bool should_adapt;
-      pField sim_size_field;
-      pPList fields_to_map;
-    public:
-      SimFEA(MPI_Comm comm,
-             const std::string & in_analysis_name,
-             const std::string & in_model_name,
-             pGModel in_model,
-             const std::string & in_mesh_name,
-             pParMesh in_mesh);
-      SimFEA(MPI_Comm comm,
-             const std::string & in_analysis_name,
-             pGModel in_model,
-             pParMesh in_mesh);
-      SimFEA(const std::string & in_analysis_name,
-             const std::string & in_model_name,
-             pGModel in_model,
-             const std::string & in_mesh_name,
-             pParMesh in_mesh);
-      SimFEA(const std::string & in_analysis_name,
-             pGModel in_model,
-             pParMesh in_mesh);
-      pGModel getGeometricDomain() { return model; }
-      std::string GetModelName() const {return model_name;}
-      std::string GetMeshName() const {return mesh_name;}
-      virtual void Adapt();
-      virtual void addFieldToMap(pField);
-      friend std::ostream& operator<<(std::ostream& out, const SimFEA & analysis);
-    private:
-    };
-  }
+  private:
+    void init();
+  protected:
+    const std::string model_name;
+    const std::string mesh_name;
+    pGModel model;
+    pParMesh mesh;
+    pMesh part;
+    bool should_adapt;
+    pField sim_size_field;
+    pPList fields_to_map;
+  public:
+    SimFEA(MPI_Comm comm,
+           const std::string & in_analysis_name,
+           const std::string & in_model_name,
+           pGModel in_model,
+           const std::string & in_mesh_name,
+           pParMesh in_mesh);
+    SimFEA(MPI_Comm comm,
+           const std::string & in_analysis_name,
+           pGModel in_model,
+           pParMesh in_mesh);
+    SimFEA(const std::string & in_analysis_name,
+           const std::string & in_model_name,
+           pGModel in_model,
+           const std::string & in_mesh_name,
+           pParMesh in_mesh);
+    SimFEA(const std::string & in_analysis_name,
+           pGModel in_model,
+           pParMesh in_mesh);
+    pGModel getGeometricDomain() { return model; }
+    std::string GetModelName() const {return model_name;}
+    std::string GetMeshName() const {return mesh_name;}
+    virtual void Adapt();
+    virtual void addFieldToMap(pField);
+    friend std::ostream& operator<<(std::ostream& out, const SimFEA & analysis);
+  private:
+  };
 }
 #endif

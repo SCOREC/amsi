@@ -30,8 +30,7 @@ int main(int argc, char ** argv)
   int tps[] = {amsi::SURFACE_TRACTION, amsi::PRESSURE};
   std::vector<amsi::SimBCQuery*> neu_qrys;
   amsi::buildSimBCQueries(pd,amsi::NUEMANN,&tps,&tps+2,std::back_inserter(neu_qrys));
-  int fxd = amsi::applySimNeumannBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
-  failed += test_neq("Fixed dofs",0,fxd);
+  amsi::applySimNeumannBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
   amsi::freeCase(css[0]);
   amsi::interfaceFree();
   return failed;

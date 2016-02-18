@@ -59,6 +59,7 @@ namespace amsi
       amsi::getClassifiedEnts(msh,mdl_ent,d,out);
   }
 
+  /*
   struct SimAnalysis
   {
     pGModel mdl;
@@ -91,5 +92,6 @@ namespace amsi
         *out++ = new SimAnalysis(mdl,cs);
     }
   }
+  */
 }
 #endif

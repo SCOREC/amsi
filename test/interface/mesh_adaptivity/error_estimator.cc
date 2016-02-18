@@ -4,7 +4,6 @@
 #include <mpi.h>
 #include <getopt.h>
 #include <iostream>
-using namespace amsi::Analysis;
 int main (int argc, char ** argv)
 {
   amsi::use_simmetrix = true;
@@ -14,11 +13,11 @@ int main (int argc, char ** argv)
   pGModel model = GM_load(argv[1],0,NULL);
   amsi::initAttributeCase(model,"constraints");
   pParMesh mesh = PM_load(argv[2],sthreadNone,model,NULL);
-  LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
-  NonLinElasticity * uniform_adapt =
-    static_cast<NonLinElasticity*>(new amsi::UniformAdapt(MPI_COMM_WORLD,
-                                                          model,
-                                                          mesh));
+  //amsi::LAS * linear_system = static_cast<amsi::LAS*>(new amsi::PetscLAS(0,0));
+  amsi::NonLinElasticity * uniform_adapt =
+    static_cast<amsi::NonLinElasticity*>(new amsi::UniformAdapt(MPI_COMM_WORLD,
+                                                                model,
+                                                                mesh));
   double residual_norm = 0.0;
   //currently fails during the second adaptation when retreiving dofgroups
   //NewtonSolver(uniform_adapt,linear_system,30,1e-8,1.0,residual_norm);

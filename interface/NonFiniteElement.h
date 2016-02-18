@@ -2,8 +2,8 @@
 #define H_NONLINFINITEELEMENT
 #include "apf.h"
 #include "apfDynamicMatrix.h"
-namespace amsi {
-  namespace Analysis {
+namespace amsi
+{
   void linearStiffnessK0(int num_nodes,
                          apf::DynamicMatrix & B0,
                          apf::Matrix<6,6> & hookes,
@@ -32,7 +32,6 @@ namespace amsi {
   void nonLinearStrainDisp(int num_nodes,
                            apf::NewArray<apf::Vector3> & shape_deriv,
                            apf::DynamicMatrix & B);
-  }
 }
 #endif
 

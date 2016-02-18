@@ -51,7 +51,6 @@ bool parse_options (int argc, char ** argv)
   }
   return result;
 }
-using namespace amsi::Analysis;
 int main (int argc, char ** argv)
 {
   int result = 0;
@@ -64,11 +63,11 @@ int main (int argc, char ** argv)
     pGModel model = GM_load(model_filename.c_str(),0,NULL);
     amsi::initAttributeCase(model,"constraints");
     pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
-    LAS * linear_system = static_cast<LAS*>(new PetscLAS(0,0));
-    Elasticity * isotropic_linear_elasticity = new Elasticity(MPI_COMM_WORLD,
-                                                              model,
-                                                              mesh);
-    LinearSolver(isotropic_linear_elasticity,linear_system);
+    amsi::LAS * linear_system = static_cast<amsi::LAS*>(new amsi::PetscLAS(0,0));
+    amsi::Elasticity * isotropic_linear_elasticity = new amsi::Elasticity(MPI_COMM_WORLD,
+                                                                    model,
+                                                                    mesh);
+    amsi::LinearSolver(isotropic_linear_elasticity,linear_system);
     isotropic_linear_elasticity->WriteMesh(std::string("isotropic_linear_elastic_result"));
     Sim_logOff();
     amsi::interfaceFree();

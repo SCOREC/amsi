@@ -4,8 +4,8 @@
 #include <petscksp.h>
 #include <petscmat.h>
 #include <vector>
-namespace amsi {
-  namespace Analysis {
+namespace amsi
+{
   class PetscLAS : public LAS
   {
   public:
@@ -50,6 +50,5 @@ namespace amsi {
     bool b_assembled, b_addMode;
     KSP solver;
   };
-  }
 }
 #endif
