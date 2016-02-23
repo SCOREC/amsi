@@ -56,65 +56,17 @@ namespace amsi
     }
     }
   }
-  void SimFEA::init()
-  { }
-  SimFEA::SimFEA(MPI_Comm comm,
-                 const std::string & in_analysis_name,
-                 const std::string & in_model_name,
-                 pGModel in_model,
-                 const std::string & in_mesh_name,
-                 pParMesh in_mesh)
-    : FEA(comm,in_analysis_name)
-    , model_name(in_model_name)
-    , mesh_name(in_mesh_name)
-    , model(in_model)
-    , mesh(in_mesh)
-    , part(PM_mesh(mesh,0))
+  SimFEA::SimFEA(pGModel imdl,
+                 pParMesh imsh,
+                 pACase pd,
+                 MPI_Comm cm)
+    : FEA(cm)
+    , model(imdl)
+    , mesh(imsh)
+    , part(PM_mesh(imsh,0))
     , should_adapt(false)
     , sim_size_field()
     , fields_to_map(PList_new())
-  { }
-  SimFEA::SimFEA(MPI_Comm comm,
-                 const std::string & in_analysis_name,
-                 pGModel in_model,
-                 pParMesh in_mesh) :
-    FEA(comm,in_analysis_name),
-    model_name("[unavailable]"),
-    mesh_name("[unavailable]"),
-    model(in_model),
-    mesh(in_mesh),
-    part(PM_mesh(in_mesh,0)),
-    should_adapt(false),
-    sim_size_field(),
-    fields_to_map(PList_new())
-  { }
-  SimFEA::SimFEA(const std::string & in_analysis_name,
-                 const std::string & in_model_name,
-                 pGModel in_model,
-                 const std::string & in_mesh_name,
-                 pParMesh in_mesh) :
-    FEA(MPI_COMM_WORLD, in_analysis_name),
-    model_name(in_model_name),
-    mesh_name(in_mesh_name),
-    model(in_model),
-    mesh(in_mesh),
-    part(PM_mesh(in_mesh,0)),
-    should_adapt(false),
-    sim_size_field(),
-    fields_to_map(PList_new())
-  {  }
-  SimFEA::SimFEA(const std::string & in_analysis_name,
-                 pGModel in_model,
-                 pParMesh in_mesh) :
-    FEA(MPI_COMM_WORLD, in_analysis_name),
-    model_name("[unavailable]"),
-    mesh_name("[unavailable]"),
-    model(in_model),
-    mesh(in_mesh),
-    part(PM_mesh(in_mesh,0)),
-    should_adapt(false),
-    sim_size_field(),
-    fields_to_map(PList_new())
   {  }
   void SimFEA::Adapt()
   {

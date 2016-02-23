@@ -2,26 +2,30 @@
 #include "NonLinearElastic_UniformAdapt.h"
 #include "Solvers.h"
 #include <mpi.h>
-#include <getopt.h>
+#include <cassert>
 #include <iostream>
 int main (int argc, char ** argv)
 {
+  assert(argc == 3);
   amsi::use_simmetrix = true;
   amsi::use_petsc = true;
   amsi::interfaceInit(argc,argv);
-  Sim_logOn("simmetrix_log");
-  pGModel model = GM_load(argv[1],0,NULL);
-  amsi::initAttributeCase(model,"constraints");
-  pParMesh mesh = PM_load(argv[2],sthreadNone,model,NULL);
-  //amsi::LAS * linear_system = static_cast<amsi::LAS*>(new amsi::PetscLAS(0,0));
-  amsi::NonLinElasticity * uniform_adapt =
-    static_cast<amsi::NonLinElasticity*>(new amsi::UniformAdapt(MPI_COMM_WORLD,
-                                                                model,
-                                                                mesh));
-  double residual_norm = 0.0;
-  //currently fails during the second adaptation when retreiving dofgroups
-  //NewtonSolver(uniform_adapt,linear_system,30,1e-8,1.0,residual_norm);
-  uniform_adapt->WriteMesh(std::string("error_estimation"));
+  Sim_logOn("sim.log");
+  {
+    pGModel mdl = GM_load(argv[1],0,NULL);
+    pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+    std::vector<pACase> css;
+    amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
+    amsi::initCase(mdl,css[0]);
+    pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
+    amsi::PetscLAS las(0,0);
+    amsi::UniformAdapt fea(mdl,msh,pd);
+    //XFdouble nrm = 0.0;
+    //currently fails during the second adaptation when retreiving dofgroups
+    //NewtonSolver(fea,las,30,1e-8,1.0,nrm);
+    fea.WriteMesh(std::string("error_estimation"));
+    amsi::freeCase(css[0]);
+  }
   Sim_logOff();
   amsi::interfaceFree();
   return 0;

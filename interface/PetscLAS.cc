@@ -126,6 +126,8 @@ namespace amsi
     MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);
     KSPSetOperators(solver,A,A);
     KSPSetFromOptions(solver);
+    //PetscObjectDereference((PetscObject)A);
+    //PetscObjectDereference((PetscObject)A);
     /*
       MatView(A, PETSC_VIEWER_STDOUT_WORLD);
       VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
@@ -266,6 +268,7 @@ namespace amsi
    */
   PetscLAS::~PetscLAS()
   {
+    KSPDestroy(&solver);
     MatDestroy(&A);
     VecDestroy(&x);
     VecDestroy(&x_i);
@@ -274,7 +277,6 @@ namespace amsi
     VecDestroy(&b_i);
     VecDestroy(&b_im);
     VecDestroy(&w);
-    KSPDestroy(&solver);
     delete[] x_arr;
     delete[] b_arr;
   }

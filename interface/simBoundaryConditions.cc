@@ -147,6 +147,8 @@ namespace amsi
   double SimDisplacementQuery::getValue(int ii, ...)
   {
     assert(isFixed(ii));
+    if(isConst(ii))
+      return AttributeTensor0_value((pAttributeTensor0)atts[ii]);
     double rslt = 0.0;
     int arg_cnt = isTimeExpr(ii) ? 1 : 0;
     arg_cnt += isSpaceExpr(ii) ? 3 : 0;
@@ -186,10 +188,40 @@ namespace amsi
   }
   double SimTensor0Query::getValue(int ii, ...)
   {
-    return 0.0;
+    if(isConst(ii))
+      return AttributeTensor0_value((pAttributeTensor0)att);
+    double rslt = 0.0;
+    int arg_cnt = isTimeExpr(ii) ? 1 : 0;
+    arg_cnt += isSpaceExpr(ii) ? 3 : 0;
+    double args[arg_cnt] = {};
+    va_list prms;
+    va_start(prms,ii);
+    for(int ii = 0; ii < arg_cnt; ii++)
+      args[ii] = va_arg(prms,double);
+    if(isTimeExpr(ii))
+      rslt = AttributeTensor0_evalDT((pAttributeTensor0)att,args[0]);
+    else if(isSpaceExpr(ii))
+      rslt = AttributeTensor0_evalDS((pAttributeTensor0)att,&args[0]);
+    va_end(prms);
+    return rslt;
   }
   double SimTensor1Query::getValue(int ii, ...)
   {
-    return 0.0;
+    if(isConst(ii))
+      return AttributeTensor1_value((pAttributeTensor1)att,ii);
+    double rslt = 0.0;
+    int arg_cnt = isTimeExpr(ii) ? 1 : 0;
+    arg_cnt += isSpaceExpr(ii) ? 3 : 0;
+    double args[arg_cnt] = {};
+    va_list prms;
+    va_start(prms,ii);
+    for(int ii = 0; ii < arg_cnt; ii++)
+      args[ii] = va_arg(prms,double);
+    if(isTimeExpr(ii))
+      rslt = AttributeTensor1_evalDT((pAttributeTensor1)att,ii,args[0]);
+    else if(isSpaceExpr(ii))
+      rslt = AttributeTensor1_evalDS((pAttributeTensor1)att,ii,&args[0]);
+    va_end(prms);
+    return rslt;
   }
 }

@@ -3,6 +3,7 @@ set(interface_public_headers
     amsiInterfaceConfig.h
     amsiBoundaryConditions.h
     amsiDummyLAS.h
+    amsiFEA.h
     amsiLAS.h
     amsiNonlinearAnalysis.h
     amsiNeumannIntegrators.h
@@ -12,26 +13,24 @@ set(interface_public_headers
     ErrorEstimators.h
     MatrixUtil.h
     FullLULAS.h
-    FEA.h
     Solvers.h
     TensorFieldQuery.h
     NonFiniteElement.h
     ConvenienceFunctions.h
     ElementalSystem.h
-    NeumannIntegrator.h
     apfFunctions.h
     apfFEA.h
     LinearElasticIntegrator.h
     StressStrainIntegrator.h
-    SurfaceTractionIntegrator.h
     NonLinElasticIntegrator.h
     NonLinearElasticIntegrator.h
     TrussIntegrator.h
-    FollowForceIntegrator.h
     MatrixUtil.h
     sim.h
     simAnalysis.h
+    simAnalysis_impl.h
     simAttributes.h
+    simAttributes_impl.h
     simBoundaryConditions.h
     simBoundaryConditions_impl.h
     simWrapper.h
@@ -40,26 +39,23 @@ set(interface_public_headers
 set(interface_src_files
     amsiInterface.cc
     amsiBoundaryConditions.cc
+    amsiFEA.cc
     amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc
     apfBoundaryConditions.cc
     MatrixUtil.h
     FullLULAS.cc
-    FEA.cc
     Solvers.cc
     NonFiniteElement.cc
     ConvenienceFunctions.cc
     ElementalSystem.cc
-    NeumannIntegrator.cc
     apfFunctions.cc
     apfFEA.cc
     LinearElasticIntegrator.cc
     StressStrainIntegrator.cc
-    SurfaceTractionIntegrator.cc
     NonLinElasticIntegrator.cc
     NonLinearElasticIntegrator.cc
     TrussIntegrator.cc
-    FollowForceIntegrator.cc
     MatrixUtil.cc
     simAnalysis.cc
     simAttributes.cc
@@ -77,13 +73,11 @@ list(APPEND interface_src_files PetscLAS.cc)
 
 # will only be found if we're doing a simmetrix build
 if(SIMMODSUITE_FOUND)
-  include(SimmetrixFiles.cmake)
   list(APPEND interface_public_headers
         SimFEA.h
         apfSimFEA.h
         Elasticity.h
-        NonLinElasticity.h
-        SimTensorFieldQuery.h)
+        NonLinElasticity.h)
 
   list(APPEND interface_src_files
         SimFEA.cc

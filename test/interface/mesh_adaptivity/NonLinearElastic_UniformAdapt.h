@@ -8,11 +8,12 @@ namespace amsi
   class UniformAdapt : public NonLinElasticity
   {
   public:
-    UniformAdapt(MPI_Comm comm,
-                 pGModel in_model,
-                 pParMesh in_mesh) :
-    FEA(comm,"uniform_adapt"),
-    NonLinElasticity(comm,in_model,in_mesh)
+    UniformAdapt(pGModel imdl,
+                 pParMesh imsh,
+                 pACase pd,
+                 MPI_Comm cm = AMSI_COMM_SCALE)
+      : FEA(cm)
+      , NonLinElasticity(imdl,imsh,pd,cm)
     {
       mesh_size_field = apf::createSIMLagrangeField(apf_mesh,"mesh_size",apf::SCALAR,1);
     }

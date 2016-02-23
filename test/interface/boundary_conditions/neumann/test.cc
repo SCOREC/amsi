@@ -17,6 +17,7 @@ int main(int argc, char ** argv)
   assert(argc == 3);
   amsi::use_simmetrix = true;
   amsi::interfaceInit(argc,argv);
+  Sim_logOn("simlog");
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2],sthreadNone,mdl,NULL);
   pMesh prt = PM_mesh(sm_msh,0);
@@ -34,11 +35,12 @@ int main(int argc, char ** argv)
   int tps[] = {amsi::FORCE};
   std::vector<amsi::SimBCQuery*> neu_qrys;
   amsi::buildSimBCQueries(pd,amsi::NEUMANN,&tps[0],(&tps[0])+1,std::back_inserter(neu_qrys));
-  amsi::applySimNeumannBCs((amsi::LAS*)&las,nm,prt,neu_qrys.begin(),neu_qrys.end(),0.0);
+  amsi::applySimNeumannBCs(&las,nm,prt,neu_qrys.begin(),neu_qrys.end(),1.0);
   double nrm = 0.0;
   las.GetVectorNorm(nrm);
   failed += test_neq("Force vector norm",0.0,nrm);
   amsi::freeCase(css[0]);
+  Sim_logOff();
   amsi::interfaceFree();
   return failed;
 }

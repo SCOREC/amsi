@@ -10,6 +10,7 @@ namespace amsi {
   TaskManager * tm = NULL;
   CommunicationManager * cm = NULL;
   FileSystemInfo * fs = NULL;
+  bool from_file = false;
   std::string options_filename;
   bool parse_options(int argc,char ** argv)
   {
@@ -33,7 +34,8 @@ namespace amsi {
   void metaInit(int argc, char ** argv, MPI_Comm cm)
   {
     utilInit(argc,argv,cm);
-    if(parse_options(argc,argv))
+    from_file = parse_options(argc,argv);
+    if(from_file)
       configureFromFile(options_filename);
   }
   void metaFree()

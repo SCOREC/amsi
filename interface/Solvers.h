@@ -1,6 +1,6 @@
 #ifndef FEASOLVERS_H_
 #define FEASOLVERS_H_
-#include "FEA.h"
+#include "amsiFEA.h"
 #include "amsiLAS.h"
 #include "amsiNonlinearAnalysis.h"
 #include <string>

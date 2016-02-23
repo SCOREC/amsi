@@ -50,10 +50,12 @@ namespace amsi
     for(I it = bgn; it != nd; ++it)
     {
       apf::MeshEntity * ent = reinterpret_cast<apf::MeshEntity*>(*it);
-      i->process(apf::createMeshElement(apf::getMesh(fld),ent));
+      apf::MeshElement * mnt = apf::createMeshElement(apf::getMesh(fld),ent);
+      i->process(mnt);
       apf::NewArray<int> dofs;
       apf::getElementNumbers(nm,ent,dofs);
       las->AddToVector(i->getnedofs(),&dofs[0],&i->getFe()[0]);
+      apf::destroyMeshElement(mnt);
     }
   }
 }

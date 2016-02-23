@@ -1,4 +1,4 @@
-add_mpi_test(nonlinear_elastic main.cc 1 -g ${MODEL_DIR}/cube_uniaxial_10kPa.smd -m ${MESH_DIR}/cube_24_tets.sms 2>&1 > output)
+add_mpi_test(nonlinear_elastic main.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms)
 target_link_libraries(nonlinear_elastic util meta interface)
 
 #add_test(NAME nonlinear_elastic_regression

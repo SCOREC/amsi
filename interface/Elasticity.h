@@ -5,17 +5,20 @@
 #include <apfNumbering.h>
 #include <apfShape.h>
 #include <apfSIM.h>
-namespace amsi {
+namespace amsi
+{
   class Elasticity : public apfSimFEA
   {
   protected:
     double youngs_modulus;
     double poisson_ratio;
   public:
-    Elasticity(MPI_Comm comm,
-               pGModel in_model,
+    Elasticity(pGModel in_model,
                pParMesh in_mesh,
-               double E = 20000, double v = 0.3);
+               pACase pd,
+               MPI_Comm cm = AMSI_COMM_SCALE,
+               double E = 20000,
+               double v = 0.3);
   };
 }
 #endif

@@ -3,75 +3,30 @@
 #include "Elasticity.h"
 #include "Solvers.h"
 #include <mpi.h>
-#include <getopt.h>
+#include <cassert>
 #include <iostream>
-// option parameters
-std::string model_filename;
-std::string mesh_filename;
-void display_help_string ()
-{
-  std::cout << "Usage: linear_elasticity [OPTIONS]" << std::endl
-            << "[-h, --help]                      display this help text" << std::endl
-            << "[-g, --geom model_file]           the model file (.smd)" << std::endl
-            << "[-m, --mesh mesh_file]            the mesh files (.sms)" << std::endl;
-}
-bool parse_options (int argc, char ** argv)
-{
-  bool result = true;
-  bool exit_loop = false;
-  while(!exit_loop)
-  {
-    static struct option long_options[] =
-      {
-        {"help", no_argument, 0, 'h'},
-        {"model", required_argument, 0, 'g'},
-        {"mesh", required_argument, 0, 'm'}
-      };
-    int option_index = 0;
-    int option = getopt_long(argc,argv, "h:g:m:", long_options,&option_index);
-    switch(option)
-    {
-    case 'h':
-      display_help_string();
-      result = false;
-      break;
-    case 'g':
-      model_filename = optarg;
-      break;
-    case 'm':
-      mesh_filename = optarg;
-      break;
-    case '?':
-      display_help_string();
-      result = false;
-    case -1:
-      exit_loop = true;
-      break;
-    }
-  }
-  return result;
-}
 int main (int argc, char ** argv)
 {
+  assert(argc == 3);
   int result = 0;
-  if(parse_options(argc,argv))
+  amsi::use_simmetrix = true;
+  amsi::use_petsc = true;
+  amsi::interfaceInit(argc,argv);
   {
-    amsi::use_simmetrix = true;
-    amsi::use_petsc = true;
-    amsi::interfaceInit(argc,argv);
-    Sim_logOn("simmetrix_log");
-    pGModel model = GM_load(model_filename.c_str(),0,NULL);
-    amsi::initAttributeCase(model,"constraints");
-    pParMesh mesh = PM_load(mesh_filename.c_str(),sthreadNone,model,NULL);
-    amsi::LAS * linear_system = static_cast<amsi::LAS*>(new amsi::PetscLAS(0,0));
-    amsi::Elasticity * isotropic_linear_elasticity = new amsi::Elasticity(MPI_COMM_WORLD,
-                                                                    model,
-                                                                    mesh);
-    amsi::LinearSolver(isotropic_linear_elasticity,linear_system);
-    isotropic_linear_elasticity->WriteMesh(std::string("isotropic_linear_elastic_result"));
+    Sim_logOn("sim.log");
+    pGModel mdl = GM_load(argv[1],0,NULL);
+    pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+    std::vector<pACase> css;
+    amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
+    amsi::initCase(mdl,css[0]);
+    pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
+    amsi::PetscLAS las(0,0);
+    amsi::Elasticity iso_lin(mdl,msh,pd,AMSI_COMM_SCALE);
+    amsi::LinearSolver(&iso_lin,&las);
+    iso_lin.WriteMesh(std::string("isotropic_linear_elastic_result"));
+    amsi::freeCase(css[0]);
     Sim_logOff();
-    amsi::interfaceFree();
-  }
-  else result--;
+  } // destroys all stack-allocated objects before deinitialization of libraries
+  amsi::interfaceFree();
   return result;
 }

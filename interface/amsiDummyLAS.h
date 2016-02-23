@@ -5,7 +5,7 @@
 #include <cmath>
 namespace amsi
 {
-  class DummyLAS
+  class DummyLAS : public LAS
   {
   private:
     double ** mtx;
@@ -18,7 +18,10 @@ namespace amsi
       , vc(new double[dofs])
       , sl(new double[dofs])
       , dof(dofs)
-    { }
+    {
+      memset(vc,0.0,sizeof(double)*dof);
+      memset(sl,0.0,sizeof(double)*dof);
+    }
     ~DummyLAS()
     {
       free_matrix(mtx);

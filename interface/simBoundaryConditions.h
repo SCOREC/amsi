@@ -2,8 +2,7 @@
 #define SIM_BOUNDARY_CONDITIONS_H_
 #include "amsiBoundaryConditions.h"
 #include "amsiLAS.h"
-#include "simAnalysis.h"
-#include "simAttributes.h"
+#include "sim.h"
 #include <apfNumbering.h>
 #include <algorithm>
 #include <cassert>
@@ -12,6 +11,11 @@
 #include <vector>
 namespace amsi
 {
+  /**
+   * Get the enum value of a force boundary condition by c-string description.
+   * @todo Eliminate the need for this
+   */
+  int getForceType(char const * nm);
   /**
    * Get a c-style string describing the boundary condition type;
    */

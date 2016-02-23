@@ -1,9 +1,8 @@
-#ifndef SIM_ATTRIBUTES_H_
-#define SIM_ATTRIBUTES_H_
+#ifndef AMSI_SIM_ATTRIBUTES_H_
+#define AMSI_SIM_ATTRIBUTES_H_
 #include "sim.h"
-#include "SimFEA.h"
-#include "simWrapper.h"
 #include <apfDynamicArray.h>
+#include <list>
 #include <vector>
 // external decleration of simmetrix api function for visibility
 pAManager SModel_attManager(pModel model);
@@ -15,6 +14,7 @@ namespace amsi
   void freeCase(pACase cs);
   const char * attRepTypeString(AttRepType tp);
   void describeNode(pANode nd);
+  void describeAttribute(pAttribute at);
   /**
    * Associate an attribute case given by attr_cs with the given model.
    */
@@ -33,6 +33,8 @@ namespace amsi
   bool hasAttribute(pGEntity entity, const char * attr);
   /**
    * Get all entities with the specified attribute
+   * @note only here for legacy purposes
+   * @todo should be refactored into iterator version when convenient
    */
   void getWithAttribute(pGModel mdl,
                         const char * attr,
@@ -40,44 +42,17 @@ namespace amsi
   void writeAttMan(pAManager attmn, const char * fnm);
   /**
    * Get the infotype of all attribute cases in the attribute manager
+   * @note this will leak memory unless Sim_deleteString is called on each returned c-string
    */
   template <class O>
-    void getCasesInfoType(pAManager attm, O out)
-  {
-    std::vector<pACase> css;
-    cutPaste<pACase>(AMAN_cases(attm),std::back_inserter(css));
-    for(auto cs : css)
-      *out++ = AttNode_infoType(cs);
-    /*
-    pPList lst = AMAN_cases(attm);
-    auto nd = end<pACase>(lst);
-    for(auto cs = begin<pACase>(lst); cs != nd; ++cs)
-      *output++ = AttNode_infoType(*cs);
-    PList_delete(lst);
-    */
-  }
+    void getCasesInfoType(pAManager attm, O out);
   /**
    * Get all cases managed by the attribute manager with infotype tp
    */
   template <class O>
-    void getTypeCases(pAManager attm, const char * tp, O out)
-  {
-    cutPaste<pACase>(AMAN_findCasesByType(attm,tp),out);
-    /*
-    pPList lst = AMAN_findCasesByType(attm,tp);
-    std::copy(begin<pACase>(lst), end<pACase>(lst), out);
-    PList_delete(lst);
-    */
-  }
+    void getTypeCases(pAManager attm, const char * tp, O out);
   template <class O>
-    void getTypeNodes(pANode nd, const char * tp, O out)
-  {
-    cutPaste<pANode>(AttNode_childrenByType(nd,tp),out);
-    /*
-    pPList lst = AttNode_childrenByType(nd,tp);
-    std::copy(begin<pANode>(lst), end<pANode>(lst), out);
-    PList_delete(lst);
-    */
-  }
+    void getTypeNodes(pANode nd, const char * tp, O out);
 }
+#include "simAttributes_impl.h"
 #endif

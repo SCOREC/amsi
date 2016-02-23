@@ -1,6 +1,8 @@
-#ifndef FEA_H_
-#define FEA_H_
+#ifndef AMSI_FEA_H_
+#define AMSI_FEA_H_
+#include "amsiBoundaryConditions.h"
 #include "amsiLAS.h"
+#include "amsiMPI.h"
 #include <cstring> // memset
 #include <iostream>
 #include <list>
@@ -17,17 +19,6 @@ namespace amsi
     void Model_PrintInfo(T model, std::ostream & out);
   template <typename T>
     void Mesh_PrintInfo(T mesh, std::ostream & out);
-  class FiniteElementAnalysis
-  {
-    void applyDirichletBCs();
-    void applyNeumannBCs();
-    void numberDofs();
-    ldof_type getLocalDofCount();
-    gdof_type getGlobalDofCount();
-    gdof_type getGlobalDofOffset();
-    void updateFields();
-    void assemble();
-  };
   class FEA
   {
   protected:
@@ -49,11 +40,10 @@ namespace amsi
     int analysis_dim;
     // mpi communicator containing only those processes undertaking this analysis
     MPI_Comm analysis_comm;
-    //std::vector<DirichletBC*> essntl_bcs;
-    //std::vector<NeumannBC*> ntrl_bcs;
+    std::vector<BCQuery*> dir_bcs;
+    std::vector<BCQuery*> neu_bcs;
   public:
-    FEA(MPI_Comm comm, const std::string & analysis_name);
-    std::string getName() const { return name; }
+    FEA(MPI_Comm cm = AMSI_COMM_SCALE);
     virtual void Adapt() {};
     virtual void ApplyBC_Dirichlet() {};
     virtual void ApplyBC_Neumann(LAS *) {};

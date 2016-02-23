@@ -2,21 +2,22 @@
 #include "NonLinearElastic_UniformAdapt.h"
 #include "Solvers.h"
 #include <mpi.h>
-#include <getopt.h>
+#include <cassert>
 #include <iostream>
 int main (int argc, char ** argv)
 {
+  assert(argc == 3);
   amsi::use_simmetrix = true;
   amsi::interfaceInit(argc,argv);
   Sim_logOn("simmetrix_log");
-  pParMesh mesh = PM_load(argv[1],sthreadNone,NULL,NULL);
-  amsi::NonLinElasticity * uniform_adapt =
-    static_cast<amsi::NonLinElasticity*>(new amsi::UniformAdapt(MPI_COMM_WORLD,
-                                                                NULL,
-                                                                mesh));
-  uniform_adapt->Adapt();
-  uniform_adapt->WriteMesh(std::string("uniformly_adapted_mesh"));
-  Sim_logOff();
+  {
+    pGModel mdl = GM_load(argv[1],0,NULL);
+    pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+    amsi::UniformAdapt fea(mdl,msh,NULL);
+    fea.Adapt();
+    fea.WriteMesh(std::string("uniformly_adapted_mesh"));
+    Sim_logOff();
+  }
   amsi::interfaceFree();
   return 0;
 }

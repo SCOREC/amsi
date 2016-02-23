@@ -38,6 +38,8 @@ namespace amsi
   };
   void initCase(pModel mdl, pACase cs)
   {
+    char * nm = AttNode_name(cs);
+    std::cout << "Initializing analysis case " << nm << std::endl;
     pPList chdrn = AttNode_children(cs);
     pACase chd = NULL;
     void * it = NULL;
@@ -45,6 +47,7 @@ namespace amsi
       AttCase_setModel(chd,mdl);
     AttCase_setModel(cs,mdl);
     AttCase_associate(cs,NULL);
+    Sim_deleteString(nm);
   }
   void freeCase(pACase cs)
   {
@@ -94,10 +97,29 @@ namespace amsi
   }
   void describeNode(pANode nd)
   {
-    std::cout << "Attribute node name: " << AttNode_name(nd)
-              << " infotype: " << AttNode_infoType(nd)
-              << " imageclass: " << AttNode_imageClass(nd)
+    char * nm = AttNode_name(nd);
+    char * tp = AttNode_infoType(nd);
+    char * mg = AttNode_imageClass(nd);
+    std::cout << "Attribute node name: " << nm
+              << " infotype: " << tp
+              << " imageclass: " << mg
               << " reptype: " << amsi::attRepTypeString(AttNode_repType(nd)) << std::endl;
+    Sim_deleteString(nm);
+    Sim_deleteString(tp);
+    Sim_deleteString(mg);
+  }
+  void describeAttribute(pAttribute at)
+  {
+    char * nm = Attribute_name(at);
+    char * tp = Attribute_infoType(at);
+    char * mg = Attribute_imageClass(at);
+    std::cout << "Attribute name: " << nm
+              << " infotype: " << tp
+              << " imageclass: " << mg
+              << " reptype: " << amsi::attRepTypeString(Attribute_repType(at)) << std::endl;
+    Sim_deleteString(nm);
+    Sim_deleteString(tp);
+    Sim_deleteString(mg);
   }
   void initAttributeCase(pGModel mdl,const char * att_cs)
   {

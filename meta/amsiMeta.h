@@ -13,5 +13,6 @@ namespace amsi
   extern TaskManager * tm;
   extern CommunicationManager * cm;
   extern FileSystemInfo * fs;
+  extern bool from_file;
 }
 #endif

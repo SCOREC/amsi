@@ -1,8 +1,8 @@
-#ifndef APFFEA_H_
-#define APFFEA_H_
-#include "FEA.h"
+#ifndef AMSI_APFFEA_H_
+#define AMSI_APFFEA_H_
+#include "amsiFEA.h"
 #include "ElementalSystem.h"
-#include "NeumannIntegrator.h"
+#include "amsiBoundaryConditions.h"
 #include <apf.h>
 #include <apfField.h>
 #include <apfMesh.h>
@@ -39,34 +39,13 @@ namespace amsi
     apf::Field * apf_primary_field;
     apf::Numbering * apf_primary_numbering;
     ElementalSystem * elemental_system;
-    NeumannIntegrator * neumann_integrator;
-    int Entity_ApplyBC_Dirichlet(apf::ModelEntity*,int,double);
-    //void Entity_ApplyBC_Neumann(LAS*,apf::ModelEntity*,int);
   public:
-  apfFEA() :
-    FEA(MPI_COMM_WORLD,"[apf_fea]"),
-      apf_mesh(NULL),
-      apf_primary_field(NULL),
-      apf_primary_numbering(NULL),
-      elemental_system(NULL),
-      neumann_integrator(NULL)
-      {};
-  apfFEA(MPI_Comm comm) :
-    FEA(comm,"[apf_fea]"),
-      apf_mesh(NULL),
-      apf_primary_field(NULL),
-      apf_primary_numbering(NULL),
-      elemental_system(NULL),
-      neumann_integrator(NULL)
-      {};
-  apfFEA(MPI_Comm comm,
-         apf::Mesh * in_mesh) :
-    FEA(comm,"[apf_fea]"),
-      apf_mesh(in_mesh),
-      apf_primary_field(NULL),
-      apf_primary_numbering(NULL),
-      elemental_system(NULL),
-      neumann_integrator(NULL)
+    apfFEA(apf::Mesh * in_mesh, MPI_Comm cm = AMSI_COMM_SCALE)
+      : FEA(cm)
+      , apf_mesh(in_mesh)
+      , apf_primary_field(NULL)
+      , apf_primary_numbering(NULL)
+      , elemental_system(NULL)
       {
         analysis_dim = apf_mesh->getDimension();
       };
