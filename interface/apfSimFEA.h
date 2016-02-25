@@ -17,9 +17,9 @@ namespace amsi
               MPI_Comm cm = AMSI_COMM_SCALE);
     virtual void Adapt();
     virtual void addFieldToMap(apf::Field *);
-    void ApplyBC_Dirichlet();
+    virtual void ApplyBC_Dirichlet();
     virtual void ApplyBC_Neumann(LAS * las);
-    void Assemble(LAS * las);
+    virtual void Assemble(LAS * las);
   private:
   };
 }

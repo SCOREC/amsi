@@ -6,6 +6,17 @@
 #include <apfSIM.h>
 namespace amsi
 {
+  template <typename I>
+    SimBCQuery * findSimBCQueryOn(I bgn, I nd, pGEntity ent)
+  {
+    for(auto it = bgn; it != nd; it++)
+    {
+      SimBCQuery * qry = reinterpret_cast<SimBCQuery*>(*it);
+      if(ent == (pGEntity)qry->getSimBC()->itm)
+        return qry;
+    }
+    return NULL;
+  }
   template <typename I, typename O>
     void buildSimBCQueries(pACase pd, int tp, I bgn, I nd, O out)
   {

@@ -15,7 +15,7 @@ int main (int argc, char ** argv)
     pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
     amsi::UniformAdapt fea(mdl,msh,NULL);
     fea.Adapt();
-    fea.WriteMesh(std::string("uniformly_adapted_mesh"));
+    apf::writeVtkFiles("uniformly_adapted_mesh",fea.getMesh());
     Sim_logOff();
   }
   amsi::interfaceFree();

@@ -28,8 +28,6 @@ namespace amsi
     pGModel getGeometricDomain() { return model; }
     virtual void Adapt();
     virtual void addFieldToMap(pField);
-    friend std::ostream& operator<<(std::ostream& out, const SimFEA & analysis);
-  private:
   };
 }
 #endif

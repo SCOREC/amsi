@@ -109,9 +109,4 @@ namespace amsi
     }
     apf::synchronize(apf_primary_field);
   }
-  void apfFEA::WriteMesh(const std::string & nm)
-  {
-    const char * prfx = nm.c_str();
-    apf::writeVtkFiles(prfx,apf_mesh);
-  }
 }

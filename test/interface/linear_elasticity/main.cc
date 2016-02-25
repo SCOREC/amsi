@@ -23,7 +23,8 @@ int main (int argc, char ** argv)
     amsi::PetscLAS las(0,0);
     amsi::Elasticity iso_lin(mdl,msh,pd,AMSI_COMM_SCALE);
     amsi::LinearSolver(&iso_lin,&las);
-    iso_lin.WriteMesh(std::string("isotropic_linear_elastic_result"));
+    apf::writeVtkFiles("isotropic_linear_elastic_result",
+                       iso_lin.getMesh());
     amsi::freeCase(css[0]);
     Sim_logOff();
   } // destroys all stack-allocated objects before deinitialization of libraries

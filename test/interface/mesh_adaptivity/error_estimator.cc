@@ -23,7 +23,7 @@ int main (int argc, char ** argv)
     //XFdouble nrm = 0.0;
     //currently fails during the second adaptation when retreiving dofgroups
     //NewtonSolver(fea,las,30,1e-8,1.0,nrm);
-    fea.WriteMesh(std::string("error_estimation"));
+    apf::writeVtkFiles("error_estimation",fea.getMesh());
     amsi::freeCase(css[0]);
   }
   Sim_logOff();

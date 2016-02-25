@@ -1,6 +1,7 @@
 set(interface_public_headers
     amsiInterface.h
     amsiInterfaceConfig.h
+    amsiAnalysis.h
     amsiBoundaryConditions.h
     amsiDummyLAS.h
     amsiFEA.h

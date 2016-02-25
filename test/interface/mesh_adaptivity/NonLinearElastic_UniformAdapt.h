@@ -29,7 +29,6 @@ namespace amsi
         apfSimFEA::Adapt();
         numbered = false;
         should_adapt = false;
-        WriteMesh("post_adapt_mapped");
       }
     }
   };

@@ -44,6 +44,8 @@ namespace amsi {
       las->Reinitialize(local_dof_count,global_dof_count,first_local_dof);
       las->Zero();
       fem->Assemble(las);
+      double nrm = 0.0;
+      las->GetVectorNorm(nrm);
       las->Solve();
       double * solution = NULL;
       las->GetSolution(solution);

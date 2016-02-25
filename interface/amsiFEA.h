@@ -63,7 +63,7 @@ namespace amsi
       offset = first_local_dof;
     };
     virtual void RenumberDOFs() {};
-    virtual void UpdateDOFs(const double * sol) {};
+    virtual void UpdateDOFs(const double * sol) = 0;
   private:
   };
   template <typename NODE_TYPE>

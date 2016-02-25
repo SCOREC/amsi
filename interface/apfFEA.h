@@ -46,13 +46,13 @@ namespace amsi
       , apf_primary_field(NULL)
       , apf_primary_numbering(NULL)
       , elemental_system(NULL)
-      {
-        analysis_dim = apf_mesh->getDimension();
-      };
-    void RenumberDOFs();
-    void Assemble(LAS*);
-    void UpdateDOFs(const double*);
-    void WriteMesh(const std::string &);
+    {
+      analysis_dim = apf_mesh->getDimension();
+    };
+    apf::Mesh * getMesh() { return apf_mesh; }
+    virtual void RenumberDOFs();
+    virtual void Assemble(LAS*);
+    virtual void UpdateDOFs(const double*);
   };
 }
 #endif

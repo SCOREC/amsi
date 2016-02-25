@@ -126,6 +126,12 @@ namespace amsi
    */
   SimBCQuery * buildSimBCQuery(SimBC * bc);
   /**
+   * Search a range of SimBCQuery objects for one associated
+   *  with the given geometric entity, linear search time.
+   */
+  template <typename I>
+    SimBCQuery * findSimBCQueryOnEnt(I bgn, I nd, pGEntity ent);
+  /**
    * Build the appropriate boundary condition queries
    *  for the specified boundary condition type, and specified
    *  boundary condition subtypes in range [bgn, nd).

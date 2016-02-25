@@ -193,6 +193,59 @@ namespace amsi
       PCU_Switch_Comm(tl->comm());
 #       endif
     }
+  template <typename IO>
+    void ControlService::Communicate(size_t rdd_id, IO bfr, size_t * szs)
+  {
+    std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
+    Task * tl = task_man->getLocalTask();
+    int task_rank = tl->localRank();
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
+    PCU_Comm_Begin();
+    if(tl == t1)
+    {
+      CommPattern * ptrn = t1->getLocalDDValue(r_dd_id.second);
+      unsigned cnt_snt_frm = countRanksSentFrom(ptrn,task_rank);
+      std::vector<int> snt_rnks(cnt_snt_frm);
+      getRanksSentFrom(ptrn,task_rank,&snt_rnks[0]);
+      std::vector<int> snt_cnts(cnt_snt_frm);
+      getUnitsSentFrom(ptrn,task_rank,&snt_cnts[0]);
+      int cnt = 0;
+      size_t offset = 0;
+      for(unsigned ii = 0; ii < cnt_snt_frm; ii++)
+      {
+        int rnk = t1s+snt_rnks[ii]; //hacky and awful
+        size_t sz = 0;
+        for(int jj = 0; jj < snt_cnts[ii]; jj++)
+        {
+          sz += szs[cnt];
+          cnt++;
+        }
+        PCU_Comm_Write(rnk,&bfr[offset],sz);
+        offset += snt_cnts[ii];
+      }
+      PCU_Comm_Send();
+      int frm = -1;
+      void * rcv = NULL;
+      size_t rcv_sz = 0;
+      while(PCU_Comm_Read(&frm,&rcv,&rcv_sz)) { }
+    }
+    else
+    {
+      PCU_Comm_Send();
+      size_t bfr_sz = 0;
+      size_t bfr_hd = 0;
+      size_t rcv_sz = 0;
+      int frm = -1;
+      void * rcv = NULL;
+      while(PCU_Comm_Read(&frm,&rcv,&rcv_sz))
+      {
+      }
+    }
+  }
 
 
   // This function adds data while load balancing

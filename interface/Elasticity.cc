@@ -24,6 +24,8 @@ namespace amsi
     amsi::buildSimBCQueries(pd,amsi::DIRICHLET,&dir_tps[0],(&dir_tps[0])+1,std::back_inserter(dir_bcs));
     int neu_tps[] = {amsi::FORCE};
     amsi::buildSimBCQueries(pd,amsi::NEUMANN,&neu_tps[0],(&neu_tps[0])+1,std::back_inserter(neu_bcs));
+    //int fei_tps[] = {amsi::ISO_LIN_ELASTIC};
+    //amsi::buildSimFeis(pd,&feis[0],(&feis[0])+1),std::back_inserter(feis));
     simulation_time = 1.0;
   }
 }

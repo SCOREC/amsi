@@ -13,7 +13,6 @@ int main (int argc, char ** argv)
   Sim_logOn("sim.log");
   {
     pGModel mdl = GM_load(argv[1],0,NULL);
-    amsi::initAttributeCase(mdl,"constraints");
     pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
     std::vector<pACase> css;
     amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
@@ -22,8 +21,8 @@ int main (int argc, char ** argv)
     amsi::PetscLAS las(0,0);
     amsi::NonLinElasticity iso_non(mdl,msh,pd);
     double nrm = 0.0;
-    amsi::NewtonSolver(&iso_non,&las,30,1e-8,1.0,nrm);
-    iso_non.WriteMesh(std::string("isotropic_nonlinear_elastic_result"));
+    amsi::NewtonSolver(&iso_non,&las,30,1e-4,1.0,nrm);
+    apf::writeVtkFiles("isotropic_nonlinear_elastic_result",iso_non.getMesh());
     amsi::freeCase(css[0]);
   }
   Sim_logOff();

@@ -27,9 +27,6 @@ namespace amsi
       int neu_tps[] = {amsi::FORCE};
       amsi::buildSimBCQueries(pd,amsi::NEUMANN,&neu_tps[0],(&neu_tps[0])+1,std::back_inserter(neu_bcs));
     }
-  }
-  void NonLinElasticity::UpdateDOFs(const double * solution)
-  {
-    apfFEA::UpdateDOFs(solution);
+    simulation_time = 0.01;
   }
 }

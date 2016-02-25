@@ -10,7 +10,6 @@ namespace amsi
     double youngs_modulus;
   public:
     NonLinElasticity(pGModel in_model, pParMesh in_mesh, pACase pd, MPI_Comm cm = AMSI_COMM_SCALE);
-    void UpdateDOFs(const double *);
   };
 }
 #endif
