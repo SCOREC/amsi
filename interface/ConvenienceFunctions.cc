@@ -7,26 +7,7 @@ namespace amsi
   const int Voigt3x3[3][3] = {{0,5,4},
                               {5,1,3},
                               {4,3,2}};
-  void FiberAxialForce(double A, double B,
-                       double stretch_ratio,
-                       double init_length,
-                       double & dforce_dlength,
-                       double & fiber_force)
-  {
-    double ratio_limit = 1.4;
-    double ratio = stretch_ratio > ratio_limit ? ratio_limit : stretch_ratio;
-    double exp_term = exp(B * (ratio * ratio - 1));
-    double ratio_sqrd = ratio * ratio;
-    // = A^2 s^2 exp(B (s^2 - 1))
-    fiber_force = (A * ratio_sqrd) * exp_term;
-    // = 2 A s/l ( exp(B (s^2 - 1)) - 1 + B s^2 exp(B (s^2 - 1)) )
-    dforce_dlength = 2 * A * (ratio / init_length) *
-      ( exp_term - 1 + B * ratio_sqrd * exp_term );
-  }
-  void DeformationGradient(apf::Element * e,
-                           const apf::Vector3 & p,
-                           apf::Matrix3x3 & grad,
-                           double & grad_det)
+  void calcDefGrad(apf::Element * e, const apf::Vector3 & p, apf::Matrix3x3 & grad, double & grad_det)
   {
     apf::NewArray<apf::Vector3> u;
     apf::getVectorNodes(e,u);
@@ -136,23 +117,5 @@ namespace amsi
       for(int jj = 0; jj < num_elemental_dofs; jj++)
         stream << fe[jj] << std::endl;
     }
-  }
-  double* DynamicMatrix2Double(apf::DynamicMatrix & matrix)
-  {
-    int cols = matrix.getColumns();
-    int rows = matrix.getRows();
-    double * result = new double[cols*rows];
-    for(int ii = 0; ii < cols; ii++)
-      for(int jj = 0; jj < rows; jj++)
-        result[ii*cols + jj] = matrix(ii,jj);
-    return result;
-  }
-  double* DynamicVector2Double(apf::DynamicVector& vector)
-  {
-    int size = vector.getSize();
-    double * result = new double[size];
-    for(int ii = 0; ii < size; ii++)
-      result[ii] = vector(ii);
-    return result;
   }
 }

@@ -52,7 +52,7 @@ namespace amsi
     apf::getShapeGrads(e,p,shape_derivs);
     apf::Matrix3x3 grad;
     double detgrad;
-    DeformationGradient(e,p,grad,detgrad);
+    calcDefGrad(e,p,grad,detgrad);
     apf::Matrix3x3 C;
     RightCauchy(grad,C);
     apf::Matrix<6,6> hookes;

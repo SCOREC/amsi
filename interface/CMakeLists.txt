@@ -26,7 +26,6 @@ set(interface_public_headers
     StressStrainIntegrator.h
     NonLinElasticIntegrator.h
     NonLinearElasticIntegrator.h
-    TrussIntegrator.h
     MatrixUtil.h
     sim.h
     simAnalysis.h
@@ -58,7 +57,6 @@ set(interface_src_files
     StressStrainIntegrator.cc
     NonLinElasticIntegrator.cc
     NonLinearElasticIntegrator.cc
-    TrussIntegrator.cc
     MatrixUtil.cc
     simAnalysis.cc
     simAttributes.cc

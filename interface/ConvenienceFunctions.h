@@ -7,15 +7,7 @@ namespace amsi
 {
   extern const apf::Matrix3x3 Identity3x3;
   extern const int Voigt3x3[3][3];
-  void FiberAxialForce(double A, double B,
-                       double stretch_ratio,
-                       double init_length,
-                       double & dforce_dlength,
-                       double & fiber_force);
-  void DeformationGradient(apf::Element * e,
-                           const apf::Vector3 & p,
-                           apf::Matrix3x3 & grad,
-                           double & grad_det);
+  void calcDefGrad(apf::Element * e,const apf::Vector3 & p,apf::Matrix3x3 & grad,double & grad_det);
   void LeftCauchy(const apf::Matrix3x3 & F,
                   apf::Matrix3x3 & B);
   void RightCauchy(const apf::Matrix3x3 & F,
@@ -35,7 +27,5 @@ namespace amsi
                             const int * dof_numbers,
                             const double * Ke,
                             const double * fe);
-  double* DynamicMatrix2Double(apf::DynamicMatrix&);
-  double* DynamicVector2Double(apf::DynamicVector&);
 }
 #endif
