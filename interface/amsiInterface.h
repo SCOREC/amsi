@@ -2,10 +2,12 @@
 #define AMSIINTERFACE_H_
 #include "amsiInterfaceConfig.h"
 #include "amsiUtil.h"
-#include "simAttributes.h"
 #include "amsiMPI.h"
 #ifdef PETSC
-#include <PetscLAS.h>
+#include "amsiPETScLAS.h"
+#endif
+#ifdef SIM
+#include "simAttributes.h"
 #endif
 namespace amsi
 {

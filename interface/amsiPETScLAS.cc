@@ -1,4 +1,4 @@
-#include "PetscLAS.h"
+#include "amsiPETScLAS.h"
 #include <assert.h>
 #include <iostream>
 #include <limits>

@@ -8,6 +8,7 @@ set(interface_public_headers
     amsiLAS.h
     amsiNonlinearAnalysis.h
     amsiNeumannIntegrators.h
+    amsiPETScLAS.h
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
     ElementalSystem.h
@@ -43,6 +44,7 @@ set(interface_src_files
     amsiFEA.cc
     amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc
+    amsiPETScLAS.cc
     apfBoundaryConditions.cc
     MatrixUtil.h
     FullLULAS.cc
@@ -68,9 +70,6 @@ find_package(PETSc REQUIRED)
 find_package(zoltan)
 find_package(Core COMPONENTS Sim)
 find_package(SimModSuite REQUIRED)
-
-list(APPEND interface_public_headers PetscLAS.h)
-list(APPEND interface_src_files PetscLAS.cc)
 
 # will only be found if we're doing a simmetrix build
 if(SIMMODSUITE_FOUND)
