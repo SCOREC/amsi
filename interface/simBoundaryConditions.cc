@@ -113,13 +113,14 @@ namespace amsi
     : SimBCQuery(b)
     , atts()
   {
-    atts.assign(numDirichletComponents(bc->sbtp),NULL);
+    atts.assign(numDirichletComponents(bc->sbtp),(pAttribute)NULL);
     std::vector<pAttribute> rw;
     getBCAttributes(bc,std::back_inserter(rw));
-    for(auto att : rw)
+    auto nd = rw.end();
+    for(auto att = rw.begin(); att != nd; ++att)
     {
-      char * att_tp = Attribute_infoType(att);
-      atts[findAttrIndex(dis_bc_attrs,3,att_tp)] = att;
+      char * att_tp = Attribute_infoType(*att);
+      atts[findAttrIndex(dis_bc_attrs,3,att_tp)] = *att;
       Sim_deleteString(att_tp);
     }
   }
@@ -154,7 +155,7 @@ namespace amsi
     arg_cnt += isSpaceExpr(ii) ? 3 : 0;
     va_list prms;
     va_start(prms,ii);
-    double args[arg_cnt] = {};
+    double * args = new double[arg_cnt];
     for(int ii = 0; ii < arg_cnt; ii++)
       args[ii] = va_arg(prms, double);
     if(isTimeExpr(ii))
@@ -162,6 +163,7 @@ namespace amsi
     else if(isSpaceExpr(ii))
       rslt = AttributeTensor0_evalDS((pAttributeTensor0)atts[ii],&args[0]);
     va_end(prms);
+    delete [] args;
     return rslt;
   }
   SimValueQuery::SimValueQuery(SimBC * b)
@@ -193,7 +195,7 @@ namespace amsi
     double rslt = 0.0;
     int arg_cnt = isTimeExpr(ii) ? 1 : 0;
     arg_cnt += isSpaceExpr(ii) ? 3 : 0;
-    double args[arg_cnt] = {};
+    double * args = new double[arg_cnt];
     va_list prms;
     va_start(prms,ii);
     for(int ii = 0; ii < arg_cnt; ii++)
@@ -203,6 +205,7 @@ namespace amsi
     else if(isSpaceExpr(ii))
       rslt = AttributeTensor0_evalDS((pAttributeTensor0)att,&args[0]);
     va_end(prms);
+    delete args;
     return rslt;
   }
   double SimTensor1Query::getValue(int ii, ...)
@@ -212,7 +215,7 @@ namespace amsi
     double rslt = 0.0;
     int arg_cnt = isTimeExpr(ii) ? 1 : 0;
     arg_cnt += isSpaceExpr(ii) ? 3 : 0;
-    double args[arg_cnt] = {};
+    double * args = new double[arg_cnt];
     va_list prms;
     va_start(prms,ii);
     for(int ii = 0; ii < arg_cnt; ii++)
@@ -222,6 +225,7 @@ namespace amsi
     else if(isSpaceExpr(ii))
       rslt = AttributeTensor1_evalDS((pAttributeTensor1)att,ii,&args[0]);
     va_end(prms);
+    delete [] args;
     return rslt;
   }
 }

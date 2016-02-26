@@ -22,8 +22,9 @@ namespace amsi
   {
     std::vector<SimBC*> bcs;
     buildBCs(pd,tp,bgn,nd,std::back_inserter(bcs));
-    for(auto bc : bcs)
-     *out++ = buildSimBCQuery(bc);
+    auto bc_nd = bcs.end();
+    for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
+     *out++ = buildSimBCQuery(*bc);
   }
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t)
@@ -99,22 +100,25 @@ namespace amsi
     {
       std::vector<pANode> bcs;
       getTypeNodes((pANode)ac,getBCSubtypeString(tp,*bc_tp),std::back_inserter(bcs));
-      for(auto bc : bcs)
+      auto bc_nd = bcs.end();
+      for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
       {
         std::vector<pModelAssoc> mdl_ascs;
-        cutPaste<pModelAssoc>(AttCase_findModelAssociations(ac,bc),
+        cutPaste<pModelAssoc>(AttCase_findModelAssociations(ac,*bc),
                               std::back_inserter(mdl_ascs));
-        for(auto mdl_asc : mdl_ascs)
+	auto mdl_asc_nd = mdl_ascs.end();
+        for(auto mdl_asc = mdl_ascs.begin(); mdl_asc != mdl_asc_nd; ++mdl_asc)
         {
           std::vector<pModelItem> mdl_itms;
-          cutPaste<pModelItem>(AMA_modelItems(mdl_asc),std::back_inserter(mdl_itms));
-          for(auto mdl_itm : mdl_itms)
+          cutPaste<pModelItem>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
+	  auto mdl_itm_nd = mdl_itms.end();
+          for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
           {
             SimBC * nw_bc = new SimBC;
             nw_bc->tp = tp;
             nw_bc->sbtp = *bc_tp;
-            nw_bc->bc_nd = bc;
-            nw_bc->itm = mdl_itm;
+            nw_bc->bc_nd = *bc;
+            nw_bc->itm = *mdl_itm;
             *out++ = nw_bc;
           }
         }

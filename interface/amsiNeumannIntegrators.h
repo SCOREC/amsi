@@ -89,10 +89,9 @@ namespace amsi
       apf::NewArray<double> N;
       apf::getShapeValues(e,p,N);
       double wxdV = w * dV;
-      auto intop = [&](int ii, int jj) -> double { return N[ii] * vls[jj] * wxdV; };
       for(int ii = 0; ii < nenodes; ii++)
         for(int jj = 0; jj < nfcmps; jj++)
-          fe(ii*nfcmps + jj) = intop(ii,jj);
+          fe(ii*nfcmps + jj) = N[ii] * vls[jj] * wxdV;
     }
   };
   class Pressure : public NeumannIntegrator
@@ -120,10 +119,9 @@ namespace amsi
       vls[1] *= nrml.y();
       vls[2] *= nrml.z();
       double wxdV = w * dV;
-      auto intop = [&](int ii, int jj) -> double { return N[ii] * vls[jj] * wxdV; };
       for(int ii = 0; ii < nenodes; ii++)
         for(int jj = 0; jj < nfcmps; jj++)
-          fe(ii*nfcmps + jj) = intop(ii,jj);
+          fe(ii*nfcmps + jj) = N[ii] * vls[jj] * wxdV;
     }
   };
   NeumannIntegrator * buildNeumannIntegrator(LAS * las,

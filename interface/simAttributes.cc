@@ -1,5 +1,6 @@
 #include "simAttributes.h"
 #include <cassert>
+#include <iostream>
 namespace amsi
 {
   bool isAttrConst(pAttribute att)

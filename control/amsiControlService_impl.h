@@ -196,6 +196,7 @@ namespace amsi
   template <typename IO>
     void ControlService::Communicate(size_t rdd_id, IO bfr, size_t * szs)
   {
+    /*
     std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
     Task * tl = task_man->getLocalTask();
@@ -245,6 +246,7 @@ namespace amsi
       {
       }
     }
+    */
   }
 
 
