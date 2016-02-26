@@ -8,7 +8,7 @@ namespace amsi
     cutPaste<pACase>(AMAN_cases(attm),std::back_inserter(css));
     auto nd = css.end();
     for(auto cs = css.begin(); cs != nd; ++cs)
-      *out++ = AttNode_infoType(cs);
+      *out++ = AttNode_infoType(*cs);
   }
   template <class O>
     void getTypeCases(pAManager attm, const char * tp, O out)

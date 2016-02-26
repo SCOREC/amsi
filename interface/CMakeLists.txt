@@ -11,6 +11,7 @@ set(interface_public_headers
     amsiPETScLAS.h
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
+    apfWrapper.h
     ElementalSystem.h
     ErrorEstimators.h
     MatrixUtil.h
@@ -45,6 +46,7 @@ set(interface_src_files
     amsiNeumannIntegrators.cc
     amsiPETScLAS.cc
     apfBoundaryConditions.cc
+    apfWrapper.cc
     MatrixUtil.h
     FullLULAS.cc
     Solvers.cc
