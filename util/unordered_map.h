@@ -8,7 +8,7 @@ namespace amsi {
   class CommPattern;
   class Task;
   
-  typedef unordered_map<size_t,CommPattern*> commpatternmap_type;
+  typedef std::map<size_t,CommPattern*> commpatternmap_type;
   
   template <class T>
     inline void hash_combine(std::size_t& seed, const T& v)

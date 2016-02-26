@@ -16,6 +16,7 @@ namespace amsi
     apf::Mesh * msh = apf::getMesh(fld);
     apf::FieldShape * fs = apf::getShape(fld);
     int cmps = apf::countComponents(fld);
+    double * vls = new double[cmps];
     assert(qry->numComps() == cmps);
     for(I it = begin; it != end; ++it)
     {
@@ -24,18 +25,20 @@ namespace amsi
       int nds = fs->countNodesOn(msh->getType(ent));
       for(int ii = 0; ii < nds; ii++)
       {
-        double vls[cmps] = {};
         apf::getComponents(fld,ent,ii,vls);
         for(int jj = 0; jj < cmps; jj++)
+	{
           if(qry->isFixed(jj))
           {
             apf::fix(nm,ent,ii,jj,true);
             fxd++;
             vls[jj] = getDirichletValue(qry,msh,ent,ii,jj,t);
           }
+	}
         apf::setComponents(fld,ent,ii,vls);
       }
     }
+    delete [] vls;
     return fxd;
   }
   template <typename I>

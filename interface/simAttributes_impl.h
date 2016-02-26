@@ -6,7 +6,8 @@ namespace amsi
   {
     std::vector<pACase> css;
     cutPaste<pACase>(AMAN_cases(attm),std::back_inserter(css));
-    for(auto cs : css)
+    auto nd = css.end();
+    for(auto cs = css.begin(); cs != nd; ++cs)
       *out++ = AttNode_infoType(cs);
   }
   template <class O>
