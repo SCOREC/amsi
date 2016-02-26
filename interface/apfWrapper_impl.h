@@ -1,0 +1,4 @@
+namepace amsi
+{
+
+}
