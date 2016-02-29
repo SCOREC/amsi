@@ -7,7 +7,7 @@ namespace amsi
     {
     case SURFACE_TRACTION:
       return new SurfaceTraction(las,fld,o,qry,t);
-    case FOLLOW_FORCE:
+    case NORMAL_PRESSURE:
       return new Pressure(las,fld,o,qry,t);
     default:
       return NULL;

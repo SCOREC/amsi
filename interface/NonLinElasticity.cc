@@ -24,7 +24,7 @@ namespace amsi
     {
       int dir_tps[] = {amsi::DISPLACEMENT};
       amsi::buildSimBCQueries(pd,amsi::DIRICHLET,&dir_tps[0],(&dir_tps[0])+1,std::back_inserter(dir_bcs));
-      int neu_tps[] = {amsi::FORCE};
+      int neu_tps[] = {amsi::SURFACE_TRACTION,amsi::NORMAL_PRESSURE};
       amsi::buildSimBCQueries(pd,amsi::NEUMANN,&neu_tps[0],(&neu_tps[0])+1,std::back_inserter(neu_bcs));
     }
     simulation_time = 0.01;

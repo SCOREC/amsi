@@ -77,7 +77,8 @@ namespace amsi
     pAttribute att = GEN_attrib((pGEntity)bc->itm,getBCSubtypeString(bc->tp,bc->sbtp));
     switch(bc->sbtp)
     {
-    case FORCE:
+    case SURFACE_TRACTION:
+    case NORMAL_PRESSURE:
       cutPaste<pAttribute>(Attribute_children(att),out); // either direction or magnitude (traction or follow force)
       break;
     default:
