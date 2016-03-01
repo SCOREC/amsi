@@ -1,6 +1,7 @@
 #ifndef MPI_T_H_
 #define MPI_T_H_
 #include <mpi.h>
+#include <cassert>
 #include <cstring> //memcpy
 #include <iostream>
 extern MPI_Comm AMSI_COMM_WORLD;
@@ -34,6 +35,14 @@ namespace amsi
     T mx = 0;
     MPI_Allreduce(&v,&mx,1,mpi_type<T>(),MPI_MAX,cm);
     return mx;
+  }
+  template <typename T>
+    T comm_avg(T v, int c, MPI_Comm cm = AMSI_COMM_SCALE)
+  {
+    T vl = comm_sum(v,cm);
+    int cnt = comm_sum(c,cm);
+    assert(cnt != 0);
+    return vl / cnt;
   }
   template <typename T>
     void send(T * msg, rank_t to, int cnt = 1, MPI_Comm cm = AMSI_COMM_SCALE)

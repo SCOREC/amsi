@@ -1,3 +1,4 @@
+#include <amsiMPI.h>
 #include <apfMesh.h>
 #include <apfShape.h>
 #include <iostream>
@@ -18,8 +19,7 @@ namespace amsi
       for(int ii = 0; ii < nd_cnt; ii++)
         *avg += apf::getScalar(fld,ent,ii);
     }
-    if(cnt > 0)
-      *avg /= cnt;
+    *avg = comm_avg(*avg,cnt);
   }
   template <class I>
     void getAvgVectorFieldValue(apf::Field * fld, I bgn, I nd, double * avg)
@@ -42,8 +42,8 @@ namespace amsi
           avg[jj] += val[jj];
       }
     }
-    for(int ii = 0; ii < 3 && cnt > 0; ii++)
-      avg[ii] /= cnt;
+    for(int ii = 0; ii < 3; ii++)
+      avg[ii] = comm_avg(avg[ii],cnt);
   }
   template <class I>
     void getAvgMatrixFieldValue(apf::Field * fld, I bgn, I nd, double * avg)
@@ -66,8 +66,8 @@ namespace amsi
           avg[jj] += val[jj / 3][jj % 3];
       }
     }
-    for(int ii = 0 ; ii < 9 && cnt > 0 ; ii++)
-      avg[ii] /= cnt;
+    for(int ii = 0 ; ii < 9; ii++)
+      avg[ii] = comm_avg(avg[ii],cnt);
   }
   template <class I>
     void getAvgFieldValue(apf::Field * fld, I bgn, I nd, double * avg)
