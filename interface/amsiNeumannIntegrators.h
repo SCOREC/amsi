@@ -113,6 +113,7 @@ namespace amsi
     {
       updateBCQueryValues(p);
       apf::NewArray<double> N;
+      apf::getShapeValues(e,p,N);
       apf::Vector3 nrml;
       faceNormal(msh,ent,nrml);
       vls[0] *= nrml.x();

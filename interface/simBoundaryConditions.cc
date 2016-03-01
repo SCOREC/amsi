@@ -13,10 +13,6 @@ namespace amsi
   };
   char const * neu_bc_attrs[] =
   {
-    "force"
-  };
-  char const * frc_bc_attrs[] =
-  {
     "surface traction",
     "pressure"
   };
