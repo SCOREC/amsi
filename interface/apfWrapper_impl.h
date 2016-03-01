@@ -18,7 +18,8 @@ namespace amsi
       for(int ii = 0; ii < nd_cnt; ii++)
         *avg += apf::getScalar(fld,ent,ii);
     }
-    *avg /= cnt;
+    if(cnt > 0)
+      *avg /= cnt;
   }
   template <class I>
     void getAvgVectorFieldValue(apf::Field * fld, I bgn, I nd, double * avg)
@@ -41,7 +42,7 @@ namespace amsi
           avg[jj] += val[jj];
       }
     }
-    for(int ii = 0; ii < 3; ii++)
+    for(int ii = 0; ii < 3 && cnt > 0; ii++)
       avg[ii] /= cnt;
   }
   template <class I>
@@ -65,7 +66,7 @@ namespace amsi
           avg[jj] += val[jj / 3][jj % 3];
       }
     }
-    for(int ii = 0 ; ii < 9 ; ii++)
+    for(int ii = 0 ; ii < 9 && cnt > 0 ; ii++)
       avg[ii] /= cnt;
   }
   template <class I>
