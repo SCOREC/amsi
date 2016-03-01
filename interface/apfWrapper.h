@@ -4,5 +4,15 @@
 namespace amsi
 {
   void getDofValues(apf::Field * fld, apf::Element * elmt, double * vls);
+  template <class I>
+    void getAvgFieldValue(apf::Field * fld, I bgn, I nd, double * avg);
+  class TagIterator
+  {
+  private:
+  public:
+    bool operator++();
+    bool operator==(const TagIterator & o);
+  };
 };
+#include "apfWrapper_impl.h"
 #endif

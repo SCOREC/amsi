@@ -43,5 +43,5 @@ namespace amsi
       getMatrixDofValues(elmt,vls);
       break;
     }
-  };
+  }
 }

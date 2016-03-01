@@ -12,6 +12,7 @@ set(interface_public_headers
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
     apfWrapper.h
+    apfWrapper_impl.h
     ElementalSystem.h
     ErrorEstimators.h
     MatrixUtil.h

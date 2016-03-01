@@ -28,6 +28,17 @@ int main(int argc, char * argv[])
   amsi::getWithAttribute(mdl,"force",ents);
   pAttribute att2 = GEN_attrib(ents.front(),"force");
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
+  pACase op = (pACase)AttNode_childByType((pANode)css[0],"output");
+  pANode frc_op = AttNode_childByType((pANode)op,"output force");
+  pANode dsp_op = AttNode_childByType((pANode)op,"output displacement");
+  std::vector<pModelItem> frc_itms;
+  std::vector<pModelItem> dsp_itms;
+  amsi::getAssociatedModelItems(op,frc_op,std::back_inserter(frc_itms));
+  amsi::getAssociatedModelItems(op,dsp_op,std::back_inserter(dsp_itms));
+  std::vector<pModelItem> frc_itms2;
+  amsi::getTrackedModelItems(css[0],"output force",std::back_inserter(frc_itms2));
+  std::vector<pModelItem> dsp_itms2;
+  amsi::getTrackedModelItems(css[0],"output displacement",std::back_inserter(dsp_itms2));
   std::vector<pANode> bcs;
   amsi::getTypeNodes((pANode)pd,"force",std::back_inserter(bcs));
   std::vector<pModelAssoc> mdl_ascs;

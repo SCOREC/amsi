@@ -130,7 +130,7 @@ namespace amsi
    *  with the given geometric entity, linear search time.
    */
   template <typename I>
-    SimBCQuery * findSimBCQueryOnEnt(I bgn, I nd, pGEntity ent);
+    SimBCQuery * findSimBCQueryOn(I bgn, I nd, pGEntity ent);
   /**
    * Build the appropriate boundary condition queries
    *  for the specified boundary condition type, and specified
@@ -155,6 +155,12 @@ namespace amsi
    */
   template <class O>
     void getBCAttributes(SimBC * bc, O out);
+  /**
+   * Get the model items associated with a specific node
+   *  of an associated attribute case.
+   */
+  template <class O>
+    void getAssociatedModelItems(pACase cs, pANode nd, O out);
   /**
    * Build SimBC structures for boundary conditions of type tp,
    *  and subtypes in the range [begin,end).
