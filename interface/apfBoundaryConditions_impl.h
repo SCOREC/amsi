@@ -27,14 +27,14 @@ namespace amsi
       {
         apf::getComponents(fld,ent,ii,vls);
         for(int jj = 0; jj < cmps; jj++)
-	{
+        {
           if(qry->isFixed(jj))
           {
             apf::fix(nm,ent,ii,jj,true);
             fxd++;
             vls[jj] = getDirichletValue(qry,msh,ent,ii,jj,t);
           }
-	}
+        }
         apf::setComponents(fld,ent,ii,vls);
       }
     }

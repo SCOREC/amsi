@@ -17,6 +17,7 @@ namespace amsi
     SENDER = 0,
     RECVER = 1
   };
+  typedef std::map<size_t,CommPattern*> commpatternmap_type;
   class CommunicationManager
   {
   public:

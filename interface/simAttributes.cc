@@ -32,11 +32,17 @@ namespace amsi
       return true;
     }
   }
-  char const * sim_attr_css[] =
+  char const * getSimCaseAttributeDesc(int tp)
   {
-    "problem definition",
-    "output"
-  };
+    static const char * sim_attr_css[] =
+    {
+      "problem definition",
+      "solution strategy",
+      "output"
+    };
+    assert(tp >= 0 && tp < NUM_SIM_CASE_ATTRS);
+    return sim_attr_css[tp];
+  }
   void initCase(pModel mdl, pACase cs)
   {
     char * nm = AttNode_name(cs);
@@ -52,7 +58,10 @@ namespace amsi
   }
   void freeCase(pACase cs)
   {
+    char * nm = AttNode_name(cs);
+    std::cout << "Freeing analysis case " << nm << std::endl;
     AttCase_unassociate(cs);
+    Sim_deleteString(nm);
   }
   const char * attRepTypeString(AttRepType tp)
   {

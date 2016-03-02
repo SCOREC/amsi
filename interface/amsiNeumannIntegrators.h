@@ -46,7 +46,7 @@ namespace amsi
       me = m;
       e = apf::createElement(fld,me);
       nenodes = apf::countNodes(e);
-      assert(nfcmps == qry->numComps());
+      //assert(nfcmps == qry->numComps());
       int nnedofs = nenodes * nfcmps;
       if(nnedofs != nedofs)
         fe.setSize(nnedofs);
@@ -113,6 +113,7 @@ namespace amsi
     {
       updateBCQueryValues(p);
       apf::NewArray<double> N;
+      apf::getShapeValues(e,p,N);
       apf::Vector3 nrml;
       faceNormal(msh,ent,nrml);
       vls[0] *= nrml.x();

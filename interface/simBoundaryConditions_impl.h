@@ -1,4 +1,5 @@
 #include "apfBoundaryConditions.h"
+//#include "amsiConversionIterator.h"
 #include "amsiNeumannIntegrators.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
@@ -24,7 +25,7 @@ namespace amsi
     buildBCs(pd,tp,bgn,nd,std::back_inserter(bcs));
     auto bc_nd = bcs.end();
     for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
-     *out++ = buildSimBCQuery(*bc);
+      *out++ = buildSimBCQuery(*bc);
   }
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t)
@@ -77,7 +78,8 @@ namespace amsi
     pAttribute att = GEN_attrib((pGEntity)bc->itm,getBCSubtypeString(bc->tp,bc->sbtp));
     switch(bc->sbtp)
     {
-    case FORCE:
+    case SURFACE_TRACTION:
+    case NORMAL_PRESSURE:
       cutPaste<pAttribute>(Attribute_children(att),out); // either direction or magnitude (traction or follow force)
       break;
     default:
@@ -93,6 +95,21 @@ namespace amsi
     else if(bc->tp == NEUMANN)
       getNeumannBCAttributes(bc,out);
   }
+  template <class O>
+    void getAssociatedModelItems(pACase cs, pANode nd, O out)
+  {
+    std::vector<pModelAssoc> mdl_ascs;
+    cutPaste<pModelAssoc>(AttCase_findModelAssociations(cs,nd),std::back_inserter(mdl_ascs));
+    auto mdl_asc_nd = mdl_ascs.end();
+    for(auto mdl_asc = mdl_ascs.begin(); mdl_asc != mdl_asc_nd; ++mdl_asc)
+    {
+      std::vector<pModelItem> mdl_itms;
+      cutPaste<pModelItem>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
+      auto mdl_itm_nd = mdl_itms.end();
+      for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
+        *out++ = *mdl_itm;
+    }
+  }
   template <class I, class O>
     void buildBCs(pACase ac, int tp, I begin, I end, O out)
   {
@@ -103,24 +120,17 @@ namespace amsi
       auto bc_nd = bcs.end();
       for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
       {
-        std::vector<pModelAssoc> mdl_ascs;
-        cutPaste<pModelAssoc>(AttCase_findModelAssociations(ac,*bc),
-                              std::back_inserter(mdl_ascs));
-	auto mdl_asc_nd = mdl_ascs.end();
-        for(auto mdl_asc = mdl_ascs.begin(); mdl_asc != mdl_asc_nd; ++mdl_asc)
+        std::vector<pModelItem> mdl_itms;
+        getAssociatedModelItems(ac,*bc,std::back_inserter(mdl_itms));
+        auto mdl_itm_nd = mdl_itms.end();
+        for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
         {
-          std::vector<pModelItem> mdl_itms;
-          cutPaste<pModelItem>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
-	  auto mdl_itm_nd = mdl_itms.end();
-          for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
-          {
-            SimBC * nw_bc = new SimBC;
-            nw_bc->tp = tp;
-            nw_bc->sbtp = *bc_tp;
-            nw_bc->bc_nd = *bc;
-            nw_bc->itm = *mdl_itm;
-            *out++ = nw_bc;
-          }
+          SimBC * nw_bc = new SimBC;
+          nw_bc->tp = tp;
+          nw_bc->sbtp = *bc_tp;
+          nw_bc->bc_nd = *bc;
+          nw_bc->itm = *mdl_itm;
+          *out++ = nw_bc;
         }
       }
     }

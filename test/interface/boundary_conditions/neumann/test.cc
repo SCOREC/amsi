@@ -32,7 +32,7 @@ int main(int argc, char ** argv)
   apf::Numbering * nm = apf::createNumbering(u);
   int dofs = apf::NaiveOrder(nm);
   amsi::DummyLAS las(dofs);
-  int tps[] = {amsi::FORCE};
+  int tps[] = {amsi::SURFACE_TRACTION,amsi::NORMAL_PRESSURE};
   std::vector<amsi::SimBCQuery*> neu_qrys;
   amsi::buildSimBCQueries(pd,amsi::NEUMANN,&tps[0],(&tps[0])+1,std::back_inserter(neu_qrys));
   amsi::applySimNeumannBCs(&las,nm,prt,neu_qrys.begin(),neu_qrys.end(),1.0);

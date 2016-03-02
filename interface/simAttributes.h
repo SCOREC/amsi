@@ -9,7 +9,14 @@ pAManager SModel_attManager(pModel model);
 namespace amsi
 {
   bool isAttrConst(pAttribute att);
-    //extern char const * sim_attr_css[];
+  enum SimCaseAttributes
+  {
+    PROBLEM_DEFINITION = 0,
+    SOLUTION_STRATEGY = 1,
+    OUTPUT = 2,
+    NUM_SIM_CASE_ATTRS = 3
+  };
+  const char * getSimCaseAttributeDesc(int tp);
   void initCase(pModel mdl, pACase cs);
   void freeCase(pACase cs);
   const char * attRepTypeString(AttRepType tp);
@@ -53,6 +60,8 @@ namespace amsi
     void getTypeCases(pAManager attm, const char * tp, O out);
   template <class O>
     void getTypeNodes(pANode nd, const char * tp, O out);
+  template <class O>
+    void getTrackedModelItems(pACase cs, const char * tp, O out);
 }
 #include "simAttributes_impl.h"
 #endif

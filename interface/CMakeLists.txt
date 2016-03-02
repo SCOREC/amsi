@@ -11,6 +11,8 @@ set(interface_public_headers
     amsiPETScLAS.h
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
+    apfWrapper.h
+    apfWrapper_impl.h
     ElementalSystem.h
     ErrorEstimators.h
     MatrixUtil.h
@@ -26,7 +28,6 @@ set(interface_public_headers
     StressStrainIntegrator.h
     NonLinElasticIntegrator.h
     NonLinearElasticIntegrator.h
-    TrussIntegrator.h
     MatrixUtil.h
     sim.h
     simAnalysis.h
@@ -46,6 +47,7 @@ set(interface_src_files
     amsiNeumannIntegrators.cc
     amsiPETScLAS.cc
     apfBoundaryConditions.cc
+    apfWrapper.cc
     MatrixUtil.h
     FullLULAS.cc
     Solvers.cc
@@ -58,7 +60,6 @@ set(interface_src_files
     StressStrainIntegrator.cc
     NonLinElasticIntegrator.cc
     NonLinearElasticIntegrator.cc
-    TrussIntegrator.cc
     MatrixUtil.cc
     simAnalysis.cc
     simAttributes.cc

@@ -1,4 +1,6 @@
 #include "simWrapper.h"
+#include "simBoundaryConditions.h"
+#include <cassert>
 namespace amsi
 {
   template <class O>
@@ -8,7 +10,7 @@ namespace amsi
     cutPaste<pACase>(AMAN_cases(attm),std::back_inserter(css));
     auto nd = css.end();
     for(auto cs = css.begin(); cs != nd; ++cs)
-      *out++ = AttNode_infoType(cs);
+      *out++ = AttNode_infoType(*cs);
   }
   template <class O>
     void getTypeCases(pAManager attm, const char * tp, O out)
@@ -19,5 +21,14 @@ namespace amsi
     void getTypeNodes(pANode nd, const char * tp, O out)
   {
     cutPaste<pANode>(AttNode_childrenByType(nd,tp),out);
+  }
+  template <class O>
+    void getTrackedModelItems(pACase cs, const char * tp, O out)
+  {
+    pACase op = (pACase)AttNode_childByType((pANode)cs,"output");
+    assert(op);
+    pANode tp_op = AttNode_childByType((pANode)op,tp);
+    assert(tp_op);
+    amsi::getAssociatedModelItems(op,tp_op,out);
   }
 }
