@@ -1,5 +1,6 @@
 #ifndef SIMWRAPPER_H_
 #define SIMWRAPPER_H_
+#include "amsiHost.h"
 #include <SimAttribute.h>
 #include <iterator>
 namespace amsi
@@ -10,14 +11,18 @@ namespace amsi
   {
   private:
     void * ent;
-    void * tmp;
+    union {
+      int v[2];
+      void * it;
+    } tmp; // assumes sizeof(void*) == 2*sizeof(int)
     pPList lst;
   public:
     ListIterator(pPList l, int n = 0)
       : ent(NULL)
-      , tmp(NULL)
+      , tmp()
       , lst(l)
     {
+      tmp.it = NULL;
       operator++();
       int sz = PList_size(lst);
       if(n > 0)
@@ -27,7 +32,7 @@ namespace amsi
           PList_append(lst,NULL);
           sz++;
         }
-        tmp = reinterpret_cast<void*>(sz);
+	tmp.v[0] = sz;
         ent = PList_item(lst,n);
       }
     }
@@ -37,12 +42,12 @@ namespace amsi
     }
     ListIterator & operator++()
     {
-      ent = PList_next(lst,&tmp);
+      ent = PList_next(lst,&tmp.it);
       return *this;
     }
     bool operator==(ListIterator o)
     {
-      return (o.lst == lst) && (o.tmp == tmp) && (o.ent == ent);
+      return (o.lst == lst) && (o.tmp.it == tmp.it) && (o.ent == ent);
     }
     bool operator!=(ListIterator o)
     {

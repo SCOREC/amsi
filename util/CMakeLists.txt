@@ -5,6 +5,7 @@ set(util_public_headers
   amsiUtil.h
   amsiUtilConfig.h
   amsiHost.h
+  amsiHost_impl.h
   amsiLocality.h
   amsiObserver.h
   amsiMPI.h
@@ -23,6 +24,7 @@ set(util_public_headers
 
 set(util_source_files
   amsiFileSys.cc
+  amsiHost.cc
   amsiLocality.cc
   amsiUtil.cc
   amsiMPI.cc
