@@ -3,7 +3,10 @@ set(interface_public_headers
     amsiInterfaceConfig.h
     amsiAnalysis.h
     amsiBoundaryConditions.h
+    amsiBoundaryConditions_impl.h
     amsiDummyLAS.h
+    amsiFiniteElementAnalysis.h
+    amsiFields.h
     amsiFEA.h
     amsiLAS.h
     amsiNonlinearAnalysis.h
@@ -42,6 +45,8 @@ set(interface_public_headers
 set(interface_src_files
     amsiInterface.cc
     amsiBoundaryConditions.cc
+    amsiFiniteElementAnalysis.cc
+    amsiFields.cc
     amsiFEA.cc
     amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc

@@ -3,8 +3,16 @@
 #include <apf.h>
 namespace amsi
 {
+  /**
+   * Get the values (scalar, vector, or matrix) of all DOFs
+   *  effecting the element in canonical order.
+   */
   void getDofValues(apf::Field * fld, apf::Element * elmt, double * vls);
-  // note : collective on AMSI_COMM_SCALE
+  /**
+   * Get the mean value of the field values (scalar, vector, or matrix)
+   *  on all nodes on all mesh entities in range [bgn,nd).
+   * @note Collective on AMSI_COMM_SCALE
+   */
   template <class I>
     void getAvgFieldValue(apf::Field * fld, I bgn, I nd, double * avg);
   class TagIterator

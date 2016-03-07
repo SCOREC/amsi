@@ -1,6 +1,6 @@
 #include "apfBoundaryConditions.h"
-//#include "amsiConversionIterator.h"
 #include "amsiNeumannIntegrators.h"
+#include "amsiFields.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
 #include "simWrapper.h"
@@ -22,7 +22,7 @@ namespace amsi
     void buildSimBCQueries(pACase pd, int tp, I bgn, I nd, O out)
   {
     std::vector<SimBC*> bcs;
-    buildBCs(pd,tp,bgn,nd,std::back_inserter(bcs));
+    buildSimBCs(pd,tp,bgn,nd,std::back_inserter(bcs));
     auto bc_nd = bcs.end();
     for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
       *out++ = buildSimBCQuery(*bc);
@@ -111,7 +111,7 @@ namespace amsi
     }
   }
   template <class I, class O>
-    void buildBCs(pACase ac, int tp, I begin, I end, O out)
+    void buildSimBCs(pACase ac, int tp, I begin, I end, O out)
   {
     for(I bc_tp = begin; bc_tp != end; ++bc_tp)
     {

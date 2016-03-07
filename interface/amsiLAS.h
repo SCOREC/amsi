@@ -22,7 +22,7 @@ namespace amsi
     /// add multiple elements to the right hand side
     virtual void AddToVector(int num_rows, int * rows, double * values) = 0;
     /// solve the system
-    virtual void Solve () = 0;
+    virtual void solve () = 0;
     /// zero the system
     virtual bool Zero() {return ZeroVector() && ZeroMatrix();}
     /// retrieve the solution

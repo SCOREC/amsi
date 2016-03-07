@@ -166,7 +166,12 @@ namespace amsi
    *  and subtypes in the range [begin,end).
    */
   template <class I, class O>
-    void buildBCs(pACase ac, int tp, I begin, I end, O out);
+    void buildSimBCs(pACase ac, int tp, I begin, I end, O out);
+  /**
+   *
+   */
+  template <class O>
+    void buildApplicableSimBCQueries(pACase cs, int fld_tp, int bc_tp, O out);
 }
 #include "simBoundaryConditions_impl.h"
 #endif

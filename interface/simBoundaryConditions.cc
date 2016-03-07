@@ -1,4 +1,5 @@
 #include "simBoundaryConditions.h"
+#include "amsiFields.h"
 #include <cstdarg>
 namespace amsi
 {
@@ -6,10 +7,6 @@ namespace amsi
   {
     "dirichlet",
     "neumann"
-  };
-  char const * dir_bc_attrs[] =
-  {
-    "displacement"
   };
   char const * neu_bc_attrs[] =
   {
@@ -39,17 +36,13 @@ namespace amsi
     switch(tp)
     {
     case DIRICHLET:
-      return getDirichletTypeString(sbtp);
+      // the field name and name of the dirichlet boundary condition type are the same
+      return getFieldString(sbtp);
     case NEUMANN:
       return getNeumannTypeString(sbtp);
     default:
       return NULL;
     }
-  }
-  char const * getDirichletTypeString(int tp)
-  {
-    assert(tp < NUM_DIRICHLET_TYPES && tp >= 0);
-    return dir_bc_attrs[tp];
   }
   char const * getNeumannTypeString(int tp)
   {

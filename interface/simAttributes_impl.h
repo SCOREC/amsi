@@ -26,9 +26,7 @@ namespace amsi
     void getTrackedModelItems(pACase cs, const char * tp, O out)
   {
     pACase op = (pACase)AttNode_childByType((pANode)cs,"output");
-    assert(op);
     pANode tp_op = AttNode_childByType((pANode)op,tp);
-    assert(tp_op);
     amsi::getAssociatedModelItems(op,tp_op,out);
   }
 }

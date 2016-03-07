@@ -1,4 +1,5 @@
 #include "apfFEA.h"
+#include "apfFunctions.h"
 #include <apfShape.h>
 #include <maShape.h>
 #include <cassert>
@@ -79,6 +80,9 @@ namespace amsi
   // use solution vector to update displacement dofs associated with locally-owned nodes
   void apfFEA::UpdateDOFs(const double * solution)
   {
+    ApplyVector aplr(apf_primary_numbering,solution,first_local_dof,new FreeApplyOp(apf_primary_numbering,new WriteOp));
+    aplr.apply(apf_primary_field);
+    /*
     int num_components = apf::countComponents(apf_primary_field);
     apf::MeshEntity * mesh_ent = NULL;
     for(int ii = 0; ii < analysis_dim; ii++)
@@ -107,6 +111,7 @@ namespace amsi
         }
       }
     }
+    */
     apf::synchronize(apf_primary_field);
   }
 }

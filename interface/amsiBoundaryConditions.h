@@ -8,11 +8,6 @@ namespace amsi
     NEUMANN,
     NUM_BC_TYPES
   };
-  enum DirichletBCType
-  {
-    DISPLACEMENT,
-    NUM_DIRICHLET_TYPES
-  };
   enum NeumannBCType
   {
     SURFACE_TRACTION,
@@ -32,5 +27,13 @@ namespace amsi
     virtual bool isSpaceExpr(int ii = 0) = 0;
     virtual double getValue(int ii = 0, ...) = 0;
   };
+  class BCQueryBuilder
+  {
+  public:
+    BCQuery * buildQuery();
+  };
+  template <typename O>
+    void getApplicableBCTypesForField(int fld_tp, int bc_tp, O out);
 }
+#include "amsiBoundaryConditions_impl.h"
 #endif

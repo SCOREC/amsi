@@ -18,6 +18,7 @@ namespace amsi
     pParMesh mesh;
     pMesh part;
     bool should_adapt;
+    pACase prob_def;
     pField sim_size_field;
     pPList fields_to_map;
   public:

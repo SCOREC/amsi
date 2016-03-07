@@ -49,7 +49,7 @@ namespace amsi
       for(int ii = 0; ii < rw_cnt; ++ii)
         vc[rws[ii]] += vls[ii];
     }
-    virtual void Solve () {};
+    virtual void solve () {};
     virtual void GetSolution(double *& sol)
     {
       sol = sl;

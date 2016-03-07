@@ -65,6 +65,7 @@ namespace amsi
     , mesh(imsh)
     , part(PM_mesh(imsh,0))
     , should_adapt(false)
+    , prob_def(pd)
     , sim_size_field()
     , fields_to_map(PList_new())
   {  }

@@ -20,7 +20,7 @@ namespace amsi {
     double nrm = 0.0;
     las->GetVectorNorm(nrm);
     // solve linear system
-    las->Solve();
+    las->solve();
     // update analysis with solution
     double * solution = NULL;
     las->GetSolution(solution);
@@ -46,7 +46,7 @@ namespace amsi {
       fem->Assemble(las);
       double nrm = 0.0;
       las->GetVectorNorm(nrm);
-      las->Solve();
+      las->solve();
       double * solution = NULL;
       las->GetSolution(solution);
       fem->UpdateDOFs(solution);

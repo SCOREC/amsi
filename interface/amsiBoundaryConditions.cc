@@ -1,4 +1,5 @@
 #include "amsiBoundaryConditions.h"
+#include "amsiFields.h"
 namespace amsi
 {
   int numBCComponents(int tp, int sbtp)

@@ -18,7 +18,7 @@ namespace amsi
     void AddToMatrix(int,int*,int,int*,double*);
     void AddToVector(int,double);
     void AddToVector(int,int*,double*);
-    void Solve();
+    void solve();
     bool Zero();
     bool ZeroMatrix();
     bool ZeroVector();

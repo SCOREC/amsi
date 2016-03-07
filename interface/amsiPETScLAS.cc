@@ -114,7 +114,7 @@ namespace amsi
   /**
    *@brief Solve the Linear System.
    */
-  void PetscLAS::Solve()
+  void PetscLAS::solve()
   {
     if (!b_assembled)
     {

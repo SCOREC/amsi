@@ -4,6 +4,12 @@
 #include "sim.h"
 namespace amsi
 {
+  struct SimDomain
+  {
+    pModel mdl;
+    pParMesh pmsh;
+    pMesh msh;
+  };
   /**
    * Get all mesh entities with dimensionality dm classified on the specified geometric entity.
    */
