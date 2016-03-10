@@ -121,7 +121,7 @@ namespace amsi
       apf::getComponents(frm,me,nde,&frmdofs[0]);
       apf::getComponents(to,me,nde,&todofs[0]);
       for(int ii = 0; ii < fldcmp; ii++)
-        op->apply(me,nde,ii,fldcmp,todofs[0],frmdofs[0]);
+        op->apply(me,nde,ii,fldcmp,todofs[ii],frmdofs[ii]);
       apf::setComponents(to,me,nde,&todofs[0]);
     }
     void outEntity()
@@ -172,7 +172,7 @@ namespace amsi
         if(apf::isNumbered(nm,me,nde,ii))
         {
           int dof = apf::getNumber(nm,me,nde,ii);
-          op->apply(me,nde,ii,fldcmp,cmps[0],dofs[dof - dof0]);
+          op->apply(me,nde,ii,fldcmp,cmps[ii],dofs[dof - dof0]);
         }
       apf::setComponents(fld,me,nde,&cmps[0]);
     }
