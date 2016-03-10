@@ -6,7 +6,7 @@
 #include <list>
 namespace amsi
 {
-  class DiscreteAnalaysis
+  class DiscreteAnalysis
   {
   public:
     virtual void applyDirichletBCs() = 0;
@@ -15,8 +15,8 @@ namespace amsi
     virtual void applySolution(LAS * ls) = 0;
     virtual void calculateDOFInfo(long & gbl, long & lcl, long & ffst) = 0;
   };
-/*
-  oclass FiniteElementAnalysis : public DiscreteAnalysis
+  /*
+  class FiniteElementAnalysis : public DiscreteAnalysis
   {
   protected:
     std::list<BCQuery*> dir_bcs;
@@ -28,16 +28,16 @@ namespace amsi
     virtual void applySolution(LAS * ls);
     virtual void calculateDOFInfo(long & gbl, long & lcl, long & ffst);
   };
-*/
-  void reinitializeLinearSystem(DiscreteAnalaysis * nlss, LAS * ls);
-  class DiscreteAnalaysisIteration : public Iteration
+  */
+  //void reinitializeLinearSystem(DiscreteAnalaysis * nlss, LAS * ls);
+  class DiscreteAnalysisIteration : public Iteration
   {
   protected:
-    DiscreteAnalaysis * pde;
+    DiscreteAnalysis * pde;
     LAS * ls;
     int itr;
   public:
-    DiscreteAnalaysisIteration(DiscreteAnalaysis * f, LAS * l)
+    DiscreteAnalysisIteration(DiscreteAnalysis * f, LAS * l)
       : pde(f)
       , ls(l)
       , itr(0)
@@ -45,7 +45,7 @@ namespace amsi
     virtual void iterate()
     {
       pde->applyDirichletBCs();
-      reinitializeLinearSystem(pde,ls);
+      //reinitializeLinearSystem(pde,ls);
       pde->applyNeumannBCs(ls);
       pde->assembleLinearSystem(ls);
       ls->solve();

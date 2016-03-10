@@ -23,6 +23,13 @@ namespace amsi
     return sm;
   }
   template <typename T>
+    T comm_scan(T v, MPI_Op op, MPI_Comm cm = AMSI_COMM_SCALE)
+  {
+    T scn = 0;
+    MPI_Scan(&v,&scn,1,mpi_type<T>(),op,cm);
+    return scn;
+  }
+  template <typename T>
     T comm_min(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     T mn = 0;

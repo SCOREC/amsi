@@ -25,6 +25,7 @@ namespace amsi {
     double * solution = NULL;
     las->GetSolution(solution);
     fem->UpdateDOFs(solution);
+    //las->PrintSolution(std::cout);
   }
   void NewtonSolver(FEA * fem,
                     LAS * las,

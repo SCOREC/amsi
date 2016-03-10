@@ -17,6 +17,12 @@ int main(int argc, char * argv[])
   SimPartitionedMesh_start(NULL,NULL);
   Sim_logOn("sim.log");
   // above here taken care of by amsi init
+  pPList lst = PList_new();
+  void * itm = NULL;
+  PList_append(lst,itm);
+  std::vector<void*> cpy;
+  amsi::cutPaste<void*>(lst,std::back_inserter(cpy));
+  failed += test("PList move",(int)cpy.size(),1);
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2], sthreadNone, mdl, NULL);
   pMesh sm_prt = PM_mesh(sm_msh,0);
@@ -24,9 +30,6 @@ int main(int argc, char * argv[])
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",
                      std::back_inserter(css));
   amsi::initCase(mdl,css[0]);
-  std::list<pGEntity> ents;
-  amsi::getWithAttribute(mdl,"force",ents);
-  pAttribute att2 = GEN_attrib(ents.front(),"force");
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
   pACase op = (pACase)AttNode_childByType((pANode)css[0],"output");
   pANode frc_op = AttNode_childByType((pANode)op,"output force");
@@ -39,16 +42,6 @@ int main(int argc, char * argv[])
   amsi::getTrackedModelItems(css[0],"output force",std::back_inserter(frc_itms2));
   std::vector<pModelItem> dsp_itms2;
   amsi::getTrackedModelItems(css[0],"output displacement",std::back_inserter(dsp_itms2));
-  std::vector<pANode> bcs;
-  amsi::getTypeNodes((pANode)pd,"force",std::back_inserter(bcs));
-  std::vector<pModelAssoc> mdl_ascs;
-  amsi::cutPaste<pModelAssoc>(AttCase_findModelAssociations(pd,bcs[0]),std::back_inserter(mdl_ascs));
-  std::vector<pModelItem> mdl_itms;
-  amsi::cutPaste<pModelItem>(AMA_modelItems(mdl_ascs[0]),std::back_inserter(mdl_itms));
-  pAttribute att = GEN_attrib((pGEntity)mdl_itms[0],"force");
-  std::vector<pAttribute> atts;
-  amsi::cutPaste<pAttribute>(Attribute_children(att),std::back_inserter(atts));
-  amsi::describeAttribute(atts[0]);
   amsi::freeCase(css[0]);
   // below here taken care of by amsi free
   Sim_logOff();

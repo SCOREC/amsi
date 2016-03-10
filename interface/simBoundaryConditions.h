@@ -141,6 +141,7 @@ namespace amsi
   /**
    * Apply the SimBCQueries in range [bgn,nd) as dirichlet boundary conditions
    *  to the numbering and the field the numbering applies to for time t.
+   * @todo no reason that should have to use a numbered field technically, so allow to pass in a field and a numbering
    */
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t);
@@ -172,6 +173,23 @@ namespace amsi
    */
   template <class O>
     void buildApplicableSimBCQueries(pACase cs, int fld_tp, int bc_tp, O out);
+  class SimDirichletBCApplier : public DirichletBCApplier
+  {
+  protected:
+    std::vector<SimBCQuery*> dir_bcs;
+  public:
+    SimDirichletBCApplier(pACase pd, int fld_tp)
+      : dir_bcs()
+    {
+      std::vector<int> app_dir;
+      getApplicableBCTypesForField(fld_tp,amsi::DIRICHLET,std::back_inserter(app_dir));
+      buildSimBCQueries(pd,amsi::DIRICHLET,app_dir.begin(),app_dir.end(),std::back_inserter(dir_bcs));
+    }
+    virtual int apply()
+    {
+      return 0;
+    }
+  };
 }
 #include "simBoundaryConditions_impl.h"
 #endif

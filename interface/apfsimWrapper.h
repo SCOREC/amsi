@@ -1,7 +1,18 @@
 #ifndef APF_SIM_WRAPPER_H_
 #define APF_SIM_WRAPPER_H_
+#include "sim.h"
+#include "simAnalysis.h"
+#include "simBoundaryConditions.h"
+#include <apf.h>
+#include <apfMesh.h>
+#include <list>
 namespace amsi
 {
+  class Sim2ApfDirichletBCApplier : public SimDirichletBCApplier
+  {
+    
+  };
+  /*
   template <int dim>
     class SimIterator
   {
@@ -30,7 +41,6 @@ namespace amsi
     }
     MeshIterator & operator++()
     {
-      
     }
   };
   class ClassifiedIterator
@@ -43,8 +53,10 @@ namespace amsi
   public:
     ClassifiedIterator & operator++()
     {
-      
+
     }
   };
+  */
+  void applyUniqueRegionTags(pGModel mdl, pMesh msh, apf::Mesh * apfmsh);
 }
 #endif

@@ -8,6 +8,9 @@
 #include <ostream>
 namespace amsi
 {
+  template <typename I>
+    void setEntitiesNode(apf::Field * fld, double vl, I bgn, I nd);
+  // move below here into a fieldops-specific header or something
   /**
    * The way this is currently structured sucks as the component loop is in the applier classes, so the
    *  apply op, which involves at least one virtual function lookup, is called multiple times per node,
@@ -159,21 +162,59 @@ namespace amsi
     {
       delete [] cmps;
     }
-    bool inEntity(apf::MeshEntity * m) { me = m; return true;}
+    bool inEntity(apf::MeshEntity * m) { me = m; return apf::getMesh(fld)->isOwned(me);}
     void outEntity() {}
     void atNode(int nde)
     {
       memset(&cmps[0],0.0,sizeof(double)*fldcmp);
       apf::getComponents(fld,me,nde,&cmps[0]);
       for(int ii = 0; ii < fldcmp; ii++)
-        if(apf::isNumbered(nm,me,nde,0))
+        if(apf::isNumbered(nm,me,nde,ii))
         {
-          int dof = apf::getNumber(nm,me,nde,0);
+          int dof = apf::getNumber(nm,me,nde,ii);
           op->apply(me,nde,ii,fldcmp,cmps[0],dofs[dof - dof0]);
         }
       apf::setComponents(fld,me,nde,&cmps[0]);
     }
+    void run() { apply(fld); }
   };
+  /*
+  class ConstructVector : public apf::FieldOp
+  {
+  protected:
+    apf::MeshEntity * me;
+    apf::Numbering * nm;
+    apf::Field * fld;
+    std::vector<double> vec;
+    int fld_cmps;
+    double * cmps;
+  public:
+  ConstructVector(apf::Numbering * n, int sz)
+      : me(NULL)
+      , nm(n)
+      , vec(sz)
+      , fld_cmps(apf::countComponents(apf::getField(n)))
+      , cmps(new double [fld_cmps])
+    { }
+    ~ConstructVector()
+    {
+      delete [] cmps;
+    }
+    bool inEntity(apf::MeshEntity * m) { me = m; return true; }
+    void outEntity() {}
+    void atNode(int nde)
+    {
+      memset(&cmps,0.0,sizeof(double)*fld_cmps);
+      apf::getComponents(fld,me,nde,&cmps[0]);
+      if(apf::isNumbered())
+    }
+    double * getVector()
+    {
+      return &vec[0];
+    }
+      vod
+  };
+  */
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);
@@ -186,4 +227,5 @@ namespace amsi
   void VoigtVectorToSymmMatrix(const apf::Vector<6> & vec, apf::Matrix3x3 & mat);
   void VoigtVectorToSymmMatrix(const apf::DynamicVector & vec, apf::Matrix3x3 & mat);
 }
+#include "apfFunctions_impl.h"
 #endif

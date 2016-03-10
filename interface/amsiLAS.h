@@ -38,6 +38,7 @@ namespace amsi
     virtual void GetDotNorm(double &) = 0;
     virtual void PrintMatrix(std::ostream &) {};
     virtual void PrintVector(std::ostream &) {};
+    virtual void PrintSolution(std::ostream &) {};
     virtual ~LAS() {};
   };
   /*

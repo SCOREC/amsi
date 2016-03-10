@@ -2,6 +2,17 @@
 #define AMSI_BOUNDARY_CONDITIONS_H_
 namespace amsi
 {
+  class LAS;
+  class DirichletBCApplier
+  {
+  public:
+    virtual int apply() = 0;
+  };
+  class NeumannBCApplier
+  {
+  public:
+    virtual void apply(LAS * ls) = 0;
+  };
   enum BCTypes
   {
     DIRICHLET,
@@ -26,11 +37,6 @@ namespace amsi
     virtual bool isTimeExpr(int ii = 0) = 0;
     virtual bool isSpaceExpr(int ii = 0) = 0;
     virtual double getValue(int ii = 0, ...) = 0;
-  };
-  class BCQueryBuilder
-  {
-  public:
-    BCQuery * buildQuery();
   };
   template <typename O>
     void getApplicableBCTypesForField(int fld_tp, int bc_tp, O out);

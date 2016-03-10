@@ -29,8 +29,9 @@ namespace amsi
     void GetSolution(double *&);
     void GetSolutionNorm(double & n);
     void GetAccumSolutionNorm(double &);
-    void PrintMatrix(std::ostream &);
-    void PrintVector(std::ostream &);
+    virtual void PrintMatrix(std::ostream &);
+    virtual void PrintVector(std::ostream &);
+    virtual void PrintSolution(std::ostream &);
     ~PetscLAS();
   private:
     Mat A;     // matrix

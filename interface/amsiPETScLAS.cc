@@ -25,8 +25,6 @@ namespace amsi
       b_arr = new double[n];
       VecCreateMPI(PETSC_COMM_WORLD,n,N,&b_i);
       VecSetOption(b_i, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-      std::cout << "Local equations = " << n
-                << ", Global Equations = " << N << std::endl;
       MatCreateAIJ(PETSC_COMM_WORLD,n,n,N,N,300,PETSC_NULL,300,PETSC_NULL,&A);
       //MatMPIAIJSetPreallocation(A,300,PETSC_NULL,300,PETSC_NULL); // This is done in previous line
       MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
@@ -40,6 +38,7 @@ namespace amsi
       VecDuplicate(b_i,&w);
       VecGetOwnershipRange(b_i,&vec_low,&vec_high);
       MatGetOwnershipRange(A,&mat_low,&mat_high);
+      std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;
       std::cout << "Vector ownership range: " << vec_low << "-" << vec_high << std::endl;
       std::cout << "Matrix ownership range: " << mat_low << "-" << mat_high << std::endl;
       std::cout << "(Re)initialized the matrix, vectors and the solver" << std::endl;
@@ -307,9 +306,9 @@ namespace amsi
     , solver()
   {}
   /**
-   *@brief Print the associated matrix to the specified output.
+   * @brief Print the associated matrix to the specified output.
    *
-   *@param[in] Currently this does not effect where the matrix is printed.
+   * @param[in] Currently this does not effect where the matrix is printed.
    */
   void PetscLAS::PrintMatrix(std::ostream &)
   {
@@ -325,5 +324,11 @@ namespace amsi
     VecAssemblyBegin(b_i);
     VecAssemblyEnd(b_i);
     VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
+  }
+  void PetscLAS::PrintSolution(std::ostream &)
+  {
+    VecAssemblyBegin(x_i);
+    VecAssemblyEnd(x_i);
+    VecView(x_i,PETSC_VIEWER_STDOUT_WORLD);
   }
 } // end of namespace SCOREC_Solver
