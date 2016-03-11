@@ -80,7 +80,6 @@ namespace amsi
   // use solution vector to update displacement dofs associated with locally-owned nodes
   void apfFEA::UpdateDOFs(const double * solution)
   {
-    /*
     int num_components = apf::countComponents(apf_primary_field);
     apf::MeshEntity * mesh_ent = NULL;
     for(int ii = 0; ii < analysis_dim; ii++)
@@ -109,7 +108,6 @@ namespace amsi
         }
       }
     }
-    */
     apf::synchronize(apf_primary_field);
   }
 }

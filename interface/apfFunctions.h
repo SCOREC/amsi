@@ -147,10 +147,10 @@ namespace amsi
     double * cmps;
     ApplyOp * op;
   public:
-    ApplyVector(apf::Numbering * n, const double * s, int d, ApplyOp * o)
+    ApplyVector(apf::Numbering * n, apf::Field * f, const double * s, int d, ApplyOp * o)
       : apf::FieldOp()
       , nm(n)
-      , fld(apf::getField(nm))
+      , fld(f)
       , me(NULL)
       , dofs(s)
       , fldcmp(apf::countComponents(fld))

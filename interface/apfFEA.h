@@ -7,6 +7,7 @@
 #include <apfField.h>
 #include <apfMesh.h>
 #include <apfNumbering.h>
+#include <iomanip>
 namespace amsi
 {
   apf::Field * analyzeMeshQuality(apf::Mesh * mesh, apf::Field * disp_field);
@@ -21,6 +22,7 @@ namespace amsi
   PrintField(apf::Field * field, std::ostream & str) : f(field), me(), os(str), nc(0)
     {
       nc = f->countComponents();
+      os << std::setprecision(16);
     }
     virtual bool inEntity(apf::MeshEntity* e) {me = e; return true;}
     virtual void outEntity() {}
@@ -30,6 +32,11 @@ namespace amsi
       apf::getComponents(f,me,node,&cmps[0]);
       for(int ii = 0; ii < nc; ii++)
         os << cmps[ii] << std::endl;
+      os << std::endl;
+    }
+    void run()
+    {
+      apply(f);
     }
   };
   class apfFEA : public virtual FEA
