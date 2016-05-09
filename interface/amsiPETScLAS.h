@@ -32,8 +32,10 @@ namespace amsi
     virtual void PrintMatrix(std::ostream &);
     virtual void PrintVector(std::ostream &);
     virtual void PrintSolution(std::ostream &);
+    double MatrixMax();
     ~PetscLAS();
   private:
+    void freeMem();
     Mat A;     // matrix
     Vec x_im;   // previous solution
     Vec x_i;     // current solution

@@ -37,6 +37,8 @@ namespace amsi
       int analysis_size, analysis_rank;
       MPI_Comm_rank(analysis_comm,&analysis_rank);
       MPI_Comm_size(analysis_comm,&analysis_size);
+      if(analysis_size - 1 == analysis_rank)
+        local_dof_count += constraint_dofs;
       int dofs[analysis_size];
       memset(&dofs[0],0,analysis_size*sizeof(int));
       dofs[analysis_rank] = local_dof_count;

@@ -193,10 +193,9 @@ namespace amsi
       PCU_Switch_Comm(tl->comm());
 #       endif
     }
-  template <typename IO>
-    void ControlService::Communicate(size_t rdd_id, IO bfr, size_t * szs)
+  template <typename PRT_IO, typename DATA_IO>
+    void ControlService::Communicate(size_t rdd_id, PRT_IO cnts, DATA_IO bfr, MPI_Datatype tp)
   {
-    /*
     std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
     Task * tl = task_man->getLocalTask();
@@ -204,29 +203,40 @@ namespace amsi
     Task * t1 = task_man->Task_Get(t_ids.first);
     Task * t2 = task_man->Task_Get(t_ids.second);
     int t1s = taskSize(t1);
+    int tp_sz = 0;
+    MPI_Type_size(tp,&tp_sz);
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
+    CommPattern * ptrn = t1->getLocalDDValue(r_dd_id.second);
     if(tl == t1)
     {
-      CommPattern * ptrn = t1->getLocalDDValue(r_dd_id.second);
       unsigned cnt_snt_frm = countRanksSentFrom(ptrn,task_rank);
       std::vector<int> snt_rnks(cnt_snt_frm);
       getRanksSentFrom(ptrn,task_rank,&snt_rnks[0]);
       std::vector<int> snt_cnts(cnt_snt_frm);
       getUnitsSentFrom(ptrn,task_rank,&snt_cnts[0]);
-      int cnt = 0;
+      int unt = 0;
       size_t offset = 0;
-      for(unsigned ii = 0; ii < cnt_snt_frm; ii++)
+      for(unsigned ii = 0; ii < cnt_snt_frm; ii++)     // for each rank recving from this one
       {
         int rnk = t1s+snt_rnks[ii]; //hacky and awful
-        size_t sz = 0;
-        for(int jj = 0; jj < snt_cnts[ii]; jj++)
+        size_t cnt = 0;
+        size_t * prts = new size_t[snt_cnts[ii]];
+        for(int jj = 0; jj < snt_cnts[ii]; jj++)       // for each unit being sent to the foreign rank
         {
-          sz += szs[cnt];
-          cnt++;
+          prts[jj] = cnts[unt];
+          cnt += cnts[unt];                            // add the number of parts for the unit to the ammount being sent
+          unt++;                                       // on to the next unit
         }
-        PCU_Comm_Write(rnk,&bfr[offset],sz);
-        offset += snt_cnts[ii];
+        size_t prts_sz = snt_cnts[ii] * sizeof(size_t);
+        size_t rnk_bfr_sz = cnt*tp_sz;
+        char * rnk_bfr = new char[prts_sz+rnk_bfr_sz];
+        memcpy(&prts[0],&rnk_bfr[0],prts_sz);
+        memcpy(&bfr[offset],&rnk_bfr[0]+prts_sz,rnk_bfr_sz);
+        PCU_Comm_Write(rnk,&rnk_bfr[offset],prts_sz+rnk_bfr_sz);    // send all parts of all units being sent to the foreign rank
+        offset += cnt;                                              // update the buffer offset
+        delete [] prts;
+        delete [] rnk_bfr;
       }
       PCU_Comm_Send();
       int frm = -1;
@@ -239,14 +249,40 @@ namespace amsi
       PCU_Comm_Send();
       size_t bfr_sz = 0;
       size_t bfr_hd = 0;
+      size_t prt_hd = 0;
       size_t rcv_sz = 0;
       int frm = -1;
+      int lst_frm = -1;
       void * rcv = NULL;
+      std::vector<int> cnts(t1s);
+      getUnitsSentFrom(ptrn,frm,&cnts[0]);
       while(PCU_Comm_Read(&frm,&rcv,&rcv_sz))
-      {
+      { // need to make sure order is consistent, order by sending rank
+        unsigned rcv_cnt = cnts[frm];
+        size_t old_sz = bfr_sz;
+        size_t old_cnt_sz = cnts.size();
+        bfr_sz += rcv_cnt;
+        bfr.resize(bfr.size()+rcv_cnt); // this is stupid and awful
+        cnts.resize(cnts.size()+rcv_cnt); // this is also stupid and awful
+        size_t prt_sz = rcv_cnt * sizeof(size_t);
+        if(frm > lst_frm)
+        {
+          memcpy(&cnts[prt_hd],rcv,prt_sz);
+          memcpy(&bfr[bfr_hd],rcv+prt_sz,rcv_sz-prt_sz);
+        }
+        else
+        {
+          // this also is stupid and awful
+          memcpy(&cnts[prt_hd],&cnts[0],old_cnt_sz);
+          memcpy(&cnts[0],rcv,prt_sz);
+          memcpy(&bfr[bfr_hd],&bfr[0],old_sz);
+          memcpy(&bfr[0],rcv+prt_sz,rcv_sz-prt_sz);
+        }
+        bfr_hd += rcv_cnt;
+        prt_hd += rcv_cnt;
+        lst_frm = frm;
       }
     }
-    */
   }
 
 

@@ -74,8 +74,8 @@ namespace amsi
       void couplingBroadcast(size_t r_id, T * buf);
     template <typename D, template <typename T,typename All = std::allocator<T> > class Container>
       void Communicate(size_t rdd_id,Container<D> & buffer,MPI_Datatype type);
-    template <typename IO>
-      void Communicate(size_t rdd_id, IO bfr, size_t * szs);
+    template <typename PRT_IO, typename DATA_IO>
+      void Communicate(size_t rdd_id, PRT_IO cnts, DATA_IO bfr, MPI_Datatype tp);
     void setSuppressOutput(bool s)
     {
       suppress_output = s;

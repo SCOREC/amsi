@@ -39,6 +39,7 @@ namespace amsi
     virtual void PrintMatrix(std::ostream &) {};
     virtual void PrintVector(std::ostream &) {};
     virtual void PrintSolution(std::ostream &) {};
+    virtual double MatrixMax() { return 0.0; }
     virtual ~LAS() {};
   };
   /*

@@ -15,10 +15,12 @@ namespace amsi
                               int num_global_unknowns,
                               int global_offset)
   {
-    if(num_local_unknowns != vec_high - vec_low ||
-       num_global_unknowns != globalNumEqs ||
-       global_offset != vec_low)
+    int rsz = num_local_unknowns != vec_high - vec_low || global_offset != vec_low;
+    MPI_Allreduce(&rsz,&rsz,1,MPI_INTEGER,MPI_SUM,PETSC_COMM_WORLD);
+    if(rsz)
     {
+      if(x_arr)
+        freeMem();
       int N = globalNumEqs = num_global_unknowns;
       int n = num_local_unknowns;
       x_arr = new double[n];
@@ -127,10 +129,8 @@ namespace amsi
     KSPSetFromOptions(solver);
     //PetscObjectDereference((PetscObject)A);
     //PetscObjectDereference((PetscObject)A);
-    /*
-      MatView(A, PETSC_VIEWER_STDOUT_WORLD);
-      VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
-    */
+    MatView(A, PETSC_VIEWER_STDOUT_WORLD);
+    //VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
     // solve the system
     KSPSolve(solver,b_i,x_i);
     /*
@@ -267,6 +267,10 @@ namespace amsi
    */
   PetscLAS::~PetscLAS()
   {
+    freeMem();
+  }
+  void PetscLAS::freeMem()
+  {
     KSPDestroy(&solver);
     MatDestroy(&A);
     VecDestroy(&x);
@@ -331,4 +335,14 @@ namespace amsi
     VecAssemblyEnd(x_i);
     VecView(x_i,PETSC_VIEWER_STDOUT_WORLD);
   }
-} // end of namespace SCOREC_Solver
+  double PetscLAS::MatrixMax()
+  {
+    MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);
+    double rslt = 0.0;
+    PetscInt idx[globalNumEqs];
+    MatGetRowMax(A,w,idx);
+    VecMax(w,NULL,&rslt);
+    return rslt;
+  }
+}

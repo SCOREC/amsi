@@ -22,6 +22,8 @@ namespace amsi
   class FEA
   {
   protected:
+    // additional global dofs from constraints
+    int constraint_dofs;
     // the number of dofs on this processor
     int local_dof_count;
     // the first locally-owned dof (using the global numbering)
@@ -66,6 +68,16 @@ namespace amsi
     virtual void UpdateDOFs(const double * sol) = 0;
   private:
   };
+  void assembleMatrix(LAS * las,
+                      int rw_cnt,
+                      int * rw_nms,
+                      int cl_cnt,
+                      int * cl_nms,
+                      double * Ke);
+  void assembleVector(LAS * las,
+                      int rw_cnt,
+                      int * rw_nms,
+                      double * fe);
   template <typename NODE_TYPE>
     void FEA::AssembleDOFs(LAS * las,
                            int num_elemental_dofs,
@@ -94,14 +106,15 @@ namespace amsi
             }
           }
         }
-        las->AddToVector(num_elemental_dofs,dof_numbers,&bf[0]);
+        assembleVector(las,num_elemental_dofs,dof_numbers,&bf[0]);
         delete [] bf;
       }
-      las->AddToMatrix(num_elemental_dofs,dof_numbers,
-                       num_elemental_dofs,dof_numbers,
-                       &Ke[0]);
+      assembleMatrix(las,
+                     num_elemental_dofs,dof_numbers,
+                     num_elemental_dofs,dof_numbers,
+                     &Ke[0]);
     }
-    las->AddToVector(num_elemental_dofs,dof_numbers,&fe[0]);
+    assembleVector(las,num_elemental_dofs,dof_numbers,&fe[0]);
   }
 }
 #endif
