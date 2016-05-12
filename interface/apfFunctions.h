@@ -57,6 +57,20 @@ namespace amsi
       to = frm;
     }
   };
+  class SquareApplyOp : public ApplyOp
+  {
+  protected:
+    ApplyOp * op;
+  public:
+    SquareApplyOp(ApplyOp * o)
+      : op(o)
+    {}
+    virtual void apply(apf::MeshEntity * me, int nde, int cmp, int cmps, double & to, const double & frm)
+    {
+      double sqrd = frm * frm;
+      op->apply(me,nde,cmp,cmps,to,sqrd);
+    }
+  };
   class AccumOp : public ApplyOp
   {
   public:
@@ -77,6 +91,49 @@ namespace amsi
     {
       to = abs(frm) < eps ? to : frm;
     }
+  };
+  class ExtractOp : public apf::FieldOp
+  {
+  protected:
+    apf::Field * frm;
+    int fldcmp;
+    double to;
+    double * frmdofs;
+    ApplyOp * op;
+    apf::MeshEntity * me;
+  public:
+    ExtractOp(apf::Field * f, ApplyOp * p)
+      : frm(f)
+      , fldcmp(apf::countComponents(frm))
+      , to()
+      , frmdofs(new double[fldcmp])
+      , op(p)
+      , me()
+    {
+      op->setApplier(this);
+    }
+    ~ExtractOp()
+    {
+      delete [] frmdofs;
+    }
+    bool inEntity(apf::MeshEntity * e)
+    {
+      me = e;
+      return true;
+    }
+    void atNode(int nde)
+    {
+      memset(&frmdofs[0],0.0,sizeof(double)*fldcmp);
+      apf::getComponents(frm,me,nde,&frmdofs[0]);
+      for(int ii = 0; ii < fldcmp; ii++)
+        op->apply(me,nde,ii,fldcmp,to,frmdofs[ii]);
+    }
+    void outEntity()
+    {
+      me = NULL;
+    }
+    void run() { apply(frm); }
+    double getExtractedValue() { return to; }
   };
   /**
    * Apply an ApplyOp to a source and destination field.
@@ -179,7 +236,7 @@ namespace amsi
     void run() { apply(fld); }
   };
   /*
-  class ConstructVector : public apf::FieldOp
+  class RecoverVector : public apf::FieldOp
   {
   protected:
     apf::MeshEntity * me;
