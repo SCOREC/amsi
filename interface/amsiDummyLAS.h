@@ -61,10 +61,9 @@ namespace amsi
         nrm += sl[ii] * sl[ii];
       nrm = sqrt(nrm);
     }
+    // stubb
     virtual void GetAccumSolutionNorm(double & nrm)
-    {
-      GetSolutionNorm(nrm);
-    }
+    {   }
     virtual bool ZeroMatrix()
     {
       for(int ii = 0; ii < dof; ++ii)
@@ -91,6 +90,10 @@ namespace amsi
         nrm += vc[ii] * vc[ii];
       nrm = sqrt(nrm);
     }
+    // stubb
+    virtual void GetAccumVectorNorm(double & nrm)
+    {   }
+    // stubb
     virtual void GetDotNorm(double &)
     {   }
   };

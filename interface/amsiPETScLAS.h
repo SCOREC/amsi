@@ -25,6 +25,7 @@ namespace amsi
     void GetVector(double *&);
     void SetVector(const double *);
     void GetVectorNorm(double &);
+    void GetAccumVectorNorm(double &);
     void GetDotNorm(double &);
     void GetSolution(double *&);
     void GetSolutionNorm(double & n);

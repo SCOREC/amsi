@@ -262,6 +262,10 @@ namespace amsi
   {
     VecNorm(x,NORM_2,&norm);
   }
+  void PetscLAS::GetAccumVectorNorm(double & nrm)
+  {
+    VecNorm(b,NORM_2,&nrm);
+  }
   /**
    *@brief Destructor.
    */

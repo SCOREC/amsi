@@ -35,6 +35,7 @@ namespace amsi
     virtual void GetVector(double *&) = 0;
     virtual void SetVector(const double *) = 0;
     virtual void GetVectorNorm(double &) = 0;
+    virtual void GetAccumVectorNorm(double &) = 0;
     virtual void GetDotNorm(double &) = 0;
     virtual void PrintMatrix(std::ostream &) {};
     virtual void PrintVector(std::ostream &) {};
