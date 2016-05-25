@@ -15,6 +15,7 @@ namespace amsi
       vol += apf::measure(mnt);
       apf::destroyMeshElement(mnt);
     }
+    vol = amsi::comm_sum(vol);
     return vol;
   }
   double measureDisplacedEntity(pGEntity ent, pMesh msh, apf::Field * u)
@@ -24,6 +25,7 @@ namespace amsi
     getClassifiedEnts(msh,ent,3,std::back_inserter(ents));
     for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
       vol += measureDisplaced(apf::castEntity(*ent),u);
+    vol = amsi::comm_sum(vol);
     return vol;
   }
   void applyUniqueRegionTags(pGModel mdl, pMesh msh, apf::Mesh * apfmsh)
