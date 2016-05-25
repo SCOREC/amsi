@@ -25,6 +25,7 @@ namespace amsi
       int n = num_local_unknowns;
       x_arr = new double[n];
       b_arr = new double[n];
+      b_i_arr = new double[n];
       VecCreateMPI(PETSC_COMM_WORLD,n,N,&b_i);
       VecSetOption(b_i, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
       MatCreateAIJ(PETSC_COMM_WORLD,n,n,N,N,300,PETSC_NULL,300,PETSC_NULL,&A);
@@ -198,19 +199,23 @@ namespace amsi
    *
    *@todo Construct a test case.
    */
-  void PetscLAS::GetVector(double * & vec)
+  void PetscLAS::GetVector(double * & vc)
   {
-    PetscScalar * temp;
-    VecScatter ctx;
-    VecScatterCreateToAll(b_i,&ctx,&w);
-    VecScatterBegin(ctx,b_i,w,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(ctx,b_i,w,INSERT_VALUES,SCATTER_FORWARD);
-    VecGetArray(w,&temp);
-    memcpy(b_arr,(double*)temp,globalNumEqs*sizeof(PetscScalar));
-    VecRestoreArray(w,&temp);
-    VecScatterDestroy(&ctx);
-    VecZeroEntries(w);
-    vec = b_arr;
+    PetscScalar * Bi;
+    VecGetArray(b_i,&Bi);
+    int n = vec_high-vec_low;
+    memcpy(b_i_arr,(double*)Bi,n*sizeof(PetscScalar));
+    VecRestoreArray(b_i,&Bi);
+    vc = &b_i_arr[0];
+  }
+  void PetscLAS::GetAccumVector(double * & vc)
+  {
+    PetscScalar * B;
+    VecGetArray(b,&B);
+    int n = vec_high-vec_low;
+    memcpy(b_arr,(double*)B,n*sizeof(PetscScalar));
+    VecRestoreArray(b,&B);
+    vc = &b_arr[0];
   }
   /**
    *@brief Overwrite the values in the associated vector with those from the provided array.
@@ -286,6 +291,7 @@ namespace amsi
     VecDestroy(&w);
     delete[] x_arr;
     delete[] b_arr;
+    delete[] b_i_arr;
   }
   /**
    *@brief Constructor.
@@ -304,6 +310,7 @@ namespace amsi
     , w()
     , x_arr(NULL)
     , b_arr(NULL)
+    , b_i_arr(NULL)
     , globalNumEqs(N)
     , vec_low(0)
     , vec_high(0)

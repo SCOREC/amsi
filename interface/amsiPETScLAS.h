@@ -25,6 +25,7 @@ namespace amsi
     void GetVector(double *&);
     void SetVector(const double *);
     void GetVectorNorm(double &);
+    void GetAccumVector(double *&);
     void GetAccumVectorNorm(double &);
     void GetDotNorm(double &);
     void GetSolution(double *&);
@@ -34,6 +35,9 @@ namespace amsi
     virtual void PrintVector(std::ostream &);
     virtual void PrintSolution(std::ostream &);
     double MatrixMax();
+    virtual int GlobalDOFs() { return globalNumEqs; }
+    virtual int LocalDOFs() { return vec_high - vec_low; }
+    virtual int LocalOffset() { return vec_low; }
     ~PetscLAS();
   private:
     void freeMem();
@@ -45,7 +49,7 @@ namespace amsi
     Vec b_i;     // current vector
     Vec b;
     Vec w;     // work vector
-    double * x_arr, * b_arr;
+    double * x_arr, * b_arr, * b_i_arr;
     int globalNumEqs;
     int vec_low;
     int vec_high;

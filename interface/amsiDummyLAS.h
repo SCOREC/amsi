@@ -79,6 +79,9 @@ namespace amsi
     {
       vec = vc;
     }
+    // stubb
+    virtual void GetAccumVector(double *&)
+    {    }
     virtual void SetVector(const double * vec)
     {
       memcpy(&vc[0],&vec[0],dof*sizeof(double));

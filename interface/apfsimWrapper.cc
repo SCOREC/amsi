@@ -1,6 +1,31 @@
 #include "apfsimWrapper.h"
+#include "apfFunctions.h"
+#include "simAnalysis.h"
 namespace amsi
 {
+  double measureEntity(pGEntity ent, pMesh msh, apf::Mesh * apf_msh)
+  {
+    // todo : determine dimension of entity
+    double vol = 0.0;
+    std::list<pEntity> ents;
+    getClassifiedEnts(msh,ent,3,std::back_inserter(ents));
+    for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
+    {
+      apf::MeshElement * mnt = apf::createMeshElement(apf_msh,apf::castEntity(*ent));
+      vol += apf::measure(mnt);
+      apf::destroyMeshElement(mnt);
+    }
+    return vol;
+  }
+  double measureDisplacedEntity(pGEntity ent, pMesh msh, apf::Field * u)
+  {
+    double vol = 0.0;
+    std::list<pEntity> ents;
+    getClassifiedEnts(msh,ent,3,std::back_inserter(ents));
+    for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
+      vol += measureDisplaced(apf::castEntity(*ent),u);
+    return vol;
+  }
   void applyUniqueRegionTags(pGModel mdl, pMesh msh, apf::Mesh * apfmsh)
   {
     pGEntity rgn = NULL;

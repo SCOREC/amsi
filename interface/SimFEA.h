@@ -27,6 +27,7 @@ namespace amsi
            pACase pd,
            MPI_Comm cm = AMSI_COMM_SCALE);
     pGModel getGeometricDomain() { return model; }
+    pMesh getPart() { return part; }
     virtual void Adapt();
     virtual void addFieldToMap(pField);
   };

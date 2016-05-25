@@ -35,12 +35,16 @@ namespace amsi
     virtual void GetVector(double *&) = 0;
     virtual void SetVector(const double *) = 0;
     virtual void GetVectorNorm(double &) = 0;
+    virtual void GetAccumVector(double *&) = 0;
     virtual void GetAccumVectorNorm(double &) = 0;
     virtual void GetDotNorm(double &) = 0;
     virtual void PrintMatrix(std::ostream &) {};
     virtual void PrintVector(std::ostream &) {};
     virtual void PrintSolution(std::ostream &) {};
     virtual double MatrixMax() { return 0.0; }
+    virtual int GlobalDOFs() { return 0; }
+    virtual int LocalDOFs() { return 0; }
+    virtual int LocalOffset() { return 0; }
     virtual ~LAS() {};
   };
   /*
