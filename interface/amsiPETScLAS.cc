@@ -131,12 +131,12 @@ namespace amsi
     //PetscObjectDereference((PetscObject)A);
     //PetscObjectDereference((PetscObject)A);
     //MatView(A, PETSC_VIEWER_STDOUT_WORLD);
-    //VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
+//    VecView(b_i, PETSC_VIEWER_STDOUT_WORLD);
     // solve the system
     KSPSolve(solver,b_i,x_i);
-    /*
-      VecView(x_i,PETSC_VIEWER_STDOUT_WORLD);
-    */
+    
+//    VecView(x_i,PETSC_VIEWER_STDOUT_WORLD);
+    
   }
   /**
    *@brief Zero out the Matrix and Vector associated with the linear system, without changing their underlying nonzero structures.

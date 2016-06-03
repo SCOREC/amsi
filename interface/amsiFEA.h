@@ -114,6 +114,21 @@ namespace amsi
                      num_elemental_dofs,dof_numbers,
                      &Ke[0]);
     }
+    /// Modification of fe to correctly account for nonzero dirichlet boundary conditions
+    double * dirichletValue = new double[num_elemental_dofs]();
+    for (int ii = 0; ii < num_elemental_dofs; ii++)
+    {
+      if (dof_numbers[ii] < 0)
+	dirichletValue[ii] = node_values[ii / analysis_dim][ii % analysis_dim];
+    }
+    double * dfe = new double[num_elemental_dofs]();
+    for (int ii = 0; ii < num_elemental_dofs; ii++)
+      for (int jj = 0 ; jj < num_elemental_dofs; jj++)
+	dfe[ii] = dfe[ii] + Ke[ii * num_elemental_dofs + jj] * dirichletValue[ii];    
+    for (int ii = 0; ii < num_elemental_dofs; ii++)
+      fe[ii] = fe[ii] + dfe[ii];
+    delete [] dirichletValue;
+    delete [] dfe;
     assembleVector(las,num_elemental_dofs,dof_numbers,&fe[0]);
   }
 }
