@@ -105,7 +105,8 @@ namespace amsi
   bool SimDisplacementQuery::isConst(int ii)
   {
     assert(isFixed(ii));
-    return AttributeTensor0_constant((pAttributeTensor0)atts[ii]);
+    bool iscnt = AttributeTensor0_constant((pAttributeTensor0)atts[ii]);
+    return iscnt;
   }
   bool SimDisplacementQuery::isTimeExpr(int ii)
   {

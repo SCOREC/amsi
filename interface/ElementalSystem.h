@@ -2,7 +2,8 @@
 #define ELEMENTALSYSTEM_H_
 #include <apf.h>
 #include <apfDynamicMatrix.h>
-namespace amsi {
+namespace amsi
+{
   class ElementalSystem : public apf::Integrator
   {
   protected:
