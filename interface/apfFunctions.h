@@ -5,6 +5,7 @@
 #include <apfField.h>
 #include <apfNumbering.h>
 #include <cstring>
+#include <cmath>
 #include <ostream>
 namespace amsi
 {
@@ -89,7 +90,7 @@ namespace amsi
     { }
     virtual void apply(apf::MeshEntity*, int, int, int, double & to, const double & frm)
     {
-      to = abs(frm) < eps ? to : frm;
+      to = std::abs(frm) < eps ? to : frm;
     }
   };
   class ExtractOp : public apf::FieldOp

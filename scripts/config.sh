@@ -23,7 +23,7 @@ HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
   module load xl
   module load /gpfs/u/home/PASC/PASCtbnw/barn-shared/petsc-3.6.3/arch-linux2-c-opt/lib/petsc/conf/modules/petsc/3.6.3
-  module load proprietary/simmetrix/simModSuite/10.0-150716
+  module load proprietary/simmetrix/simModSuite/10.0-160608-xl 
   module load boost
   # export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:/gpfs/u/home/PASC/PASCtbnw/barn-shared/install
    cmake \

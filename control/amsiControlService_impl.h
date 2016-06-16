@@ -207,7 +207,7 @@ namespace amsi
     MPI_Type_size(tp,&tp_sz);
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
-    CommPattern * ptrn = t1->getLocalDDValue(r_dd_id.second);
+    CommPattern * ptrn = NULL; //t1->getLocalDDValue(r_dd_id.second);
     if(tl == t1)
     {
       unsigned cnt_snt_frm = countRanksSentFrom(ptrn,task_rank);
@@ -268,7 +268,7 @@ namespace amsi
         if(frm > lst_frm)
         {
           memcpy(&cnts[prt_hd],rcv,prt_sz);
-          memcpy(&bfr[bfr_hd],rcv+prt_sz,rcv_sz-prt_sz);
+          memcpy(&bfr[bfr_hd],(void*)((size_t)rcv+prt_sz),rcv_sz-prt_sz);
         }
         else
         {
@@ -276,7 +276,7 @@ namespace amsi
           memcpy(&cnts[prt_hd],&cnts[0],old_cnt_sz);
           memcpy(&cnts[0],rcv,prt_sz);
           memcpy(&bfr[bfr_hd],&bfr[0],old_sz);
-          memcpy(&bfr[0],rcv+prt_sz,rcv_sz-prt_sz);
+          memcpy(&bfr[0],(void*)((size_t)rcv+prt_sz),rcv_sz-prt_sz);
         }
         bfr_hd += rcv_cnt;
         prt_hd += rcv_cnt;
