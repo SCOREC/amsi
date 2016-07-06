@@ -13,7 +13,7 @@ namespace amsi
   double getSincePost(Log *);
   double getElapsedTime(Log *);
   double getInitialTime(Log *);
-  void flush2FStream(Log *, const std::string &);
-  void flush2MPI(Log *, const std::string &);
+  void writeToStream(Log *, std::ostream &);
+  void flushToStream(Log *, std::ostream &);
 }
 #endif

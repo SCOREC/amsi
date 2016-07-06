@@ -30,7 +30,7 @@ namespace amsi {
       creation_time = MPI_Wtime();
       last_post = creation_time;
     }
-    std::iostream & getStream()
+    std::stringstream & getStream()
     {
       return stream;
     }
@@ -54,23 +54,8 @@ namespace amsi {
     {
       stream.str("");
     }
-    void writeFStream(const std::string & filename) const
-    {
-      std::fstream out;
-      out.open(filename.c_str(), std::fstream::out | std::fstream::app);
-      assert(out.is_open());
-      out << stream.str();
-      out.flush();
-      out.close();
-    }
-    void writeMPI(const std::string & filename) const
-    {
-	
-    }
   };
-
   std::map<std::string,Log*> logs;
-
   Log * makeLog(const std::string & nm)
   {
     Log * result = NULL;
@@ -79,7 +64,6 @@ namespace amsi {
       result = logs[nm] = new Log();
     return result;
   }
-
   int deleteLog(Log * l)
   {
     assert(l);
@@ -87,50 +71,39 @@ namespace amsi {
     result += (logs.erase(l->getName()) == 0);
     return result;
   }
-
   std::iostream & log(Log * l)
   {
     assert(l);
     return l->getStream();
   }
-
   double post(Log * l)
   {
     assert(l);
     return l->post();
   }
-
   double getSincePost(Log * l)
   {
     assert(l);
     return l->sincePost();
   }
-
   double getElapsedTime(Log * l)
   {
     assert(l);
     return l->elapsed();
   }
-
   double getInitialTime(Log * l)
   {
     assert(l);
     return l->getCreation();
   }
-
-  void flush2FStream(Log * l, const std::string & out)
+  void writeToStream(Log * l, std::ostream & out)
   {
-    std::string fnm(out);
-    l->writeFStream(fnm);
+    out << l->getStream().str();
+    out.flush();
+  }
+  void flushToStream(Log * l, std::ostream & out)
+  {
+    writeToStream(l,out);
     l->clear();
   }
-
-  void flush2MPI(Log * l, const std::string & out)
-  {
-    l->writeMPI(out);
-    l->clear();
-  }
-
-
-  
 }
