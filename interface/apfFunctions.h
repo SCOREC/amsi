@@ -276,15 +276,24 @@ namespace amsi
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);
+  void faceNormal(const apf::Vector3 & pt_a,
+		  const apf::Vector3 & pt_b,
+		  const apf::Vector3 & pt_c,
+		  apf::Vector3 & normal);
   void vertexNormal(apf::Mesh *,
                     apf::MeshEntity *,
                     apf::Vector3 & n);
+  double edgeLength(const apf::Vector3 & pt_a, const apf::Vector3 & pt_b);
+  double triangleArea(const apf::Vector3 & pt_a,
+		      const apf::Vector3 & pt_b,
+		      const apf::Vector3 & pt_c);
   void displaceMesh(apf::Field * displacement_field);
   void printNumbering(std::ostream & out, apf::Numbering * numbering);
   void SymmMatrixToVoigtVector(const apf::Matrix3x3 & mat, apf::Vector<6> & vec);
   void VoigtVectorToSymmMatrix(const apf::Vector<6> & vec, apf::Matrix3x3 & mat);
   void VoigtVectorToSymmMatrix(const apf::DynamicVector & vec, apf::Matrix3x3 & mat);
   double measureDisplaced(apf::MeshEntity * ment, apf::Field * u);
+  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u);
 }
 #include "apfFunctions_impl.h"
 #endif

@@ -10,6 +10,7 @@ namespace amsi
 {
   double measureEntity(pGEntity ent, pMesh msh, apf::Mesh * apf_mesh);
   double measureDisplacedEntity(pGEntity ent, pMesh msh, apf::Field * u);
+  double measureDisplacedEntityFromSurf(pGEntity ent, pMesh msh, apf::Field * u);
   class Sim2ApfDirichletBCApplier : public SimDirichletBCApplier
   {  };
   /*
