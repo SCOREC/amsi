@@ -18,6 +18,21 @@ namespace amsi
     vol = amsi::comm_sum(vol);
     return vol;
   }
+  double measureEntityFromSurf(pGEntity ent, pMesh msh, apf::Mesh * apf_msh)
+  {
+    // todo : determine dimension of entity
+    double vol = 0.0;
+    std::list<pEntity> ents;
+    getClassifiedEnts(msh,ent,2,std::back_inserter(ents));
+    for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
+    {
+      apf::MeshElement * mnt = apf::createMeshElement(apf_msh,apf::castEntity(*ent));
+      vol += apf::measure(mnt);
+      apf::destroyMeshElement(mnt);
+    }
+    vol = amsi::comm_sum(vol);
+    return vol;
+  }  
   double measureDisplacedEntity(pGEntity ent, pMesh msh, apf::Field * u)
   {
     double vol = 0.0;
