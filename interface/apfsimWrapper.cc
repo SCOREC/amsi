@@ -18,21 +18,6 @@ namespace amsi
     vol = amsi::comm_sum(vol);
     return vol;
   }
-  double measureEntityFromSurf(pGEntity ent, pMesh msh, apf::Mesh * apf_msh)
-  {
-    // todo : determine dimension of entity
-    double vol = 0.0;
-    std::list<pEntity> ents;
-    getClassifiedEnts(msh,ent,2,std::back_inserter(ents));
-    for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
-    {
-      apf::MeshElement * mnt = apf::createMeshElement(apf_msh,apf::castEntity(*ent));
-      vol += apf::measure(mnt);
-      apf::destroyMeshElement(mnt);
-    }
-    vol = amsi::comm_sum(vol);
-    return vol;
-  }  
   double measureDisplacedEntity(pGEntity ent, pMesh msh, apf::Field * u)
   {
     double vol = 0.0;
@@ -46,7 +31,7 @@ namespace amsi
   double measureDisplacedEntityFromSurf(pGEntity ent, pMesh msh, apf::Field * u)
   {
     /**
-     * pGEntity ent:   region entity of geometric model.
+     * pGEntity ent:   face entity of geometric model.
      * pMesh msh:      partitioned mesh.
      * apf::Field * u: displacement field. */
     double vol = 0.0;
@@ -74,7 +59,8 @@ namespace amsi
     int surf_elem = 0;
     for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
     {
-//      std::cout<<"surf_elem:"<<surf_elem<<" belongs to "<<tags[surf_elem]<<std::endl;
+//      std::cout<<"surf_elem:"<<surf_elem<<" belongs to face "<<tags[surf_elem]
+//	       <<std::endl;
       vol += measureDisplacedFromSurf(apf::castEntity(*ent),u);
       surf_elem++;
     }

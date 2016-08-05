@@ -257,7 +257,7 @@ namespace amsi
       }
       double area = triangleArea(pt0, pt1, pt2);
       //faceNormal(pt0, pt1, pt2, normal);
-      faceNormal(mesh, apf::getMeshEntity(me), normal);  
+      faceNormal(mesh, apf::getMeshEntity(me), normal);
       for (int jj = 0; jj < dim; jj++)
       {
 	vol += normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
