@@ -28,34 +28,26 @@ namespace amsi
     vol = amsi::comm_sum(vol);
     return vol;
   }
-  double measureDisplacedEntityFromSurf(pGEntity ent, pMesh msh, apf::Field * u)
+  double measureVol_pGFace(pGFace pGF, pMesh msh, apf::Field * u)
   {
     /**
-     * pGEntity ent:   face entity of geometric model.
+     * pGFace ent:     face entity of geometric model.
      * pMesh msh:      partitioned mesh.
      * apf::Field * u: displacement field. */
     double vol = 0.0;
-    /** Extract face entities that are adjacent to region entity of geometric model */
-    pPList adjpGFaces = GR_faces((pGRegion)ent);
-    std::cout<<"number of adjacent faces is "<<PList_size(adjpGFaces)<<std::endl;
     /** Extract face entities of mesh that lie on face entities of geometric model */
     std::list<pEntity> ents;
-    std::vector<int> tags;
-    void* iter = 0;
-    void* pGF;
+    getClassifiedEnts(msh,pGF,2,std::back_inserter(ents));
+    /** for debugging purposes */
+    /*
+    std::vector<int> tags; 
     int ent_size = 0;
-    while (pGF = PList_next(adjpGFaces,&iter))
+    for (int ii=ent_size; ii<ents.size(); ii++)
     {
-      getClassifiedEnts(msh,(pGFace)pGF,2,std::back_inserter(ents));
-      for (int ii=ent_size; ii<ents.size(); ii++)
-      {
-	tags.push_back(GEN_tag((pGFace)pGF));
-	ent_size = ents.size();
-      }
+      tags.push_back(GEN_tag(pGF));
+      ent_size = ents.size();
     }
-    PList_delete(adjpGFaces);
-
-//    getClassifiedEnts(msh,ent,2,std::back_inserter(ents));
+    */
     int surf_elem = 0;
     for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
     {
