@@ -214,10 +214,11 @@ namespace amsi
   class MeasureDisplacedFromSurf : public amsi::ElementalSystem
   {
   public:
-    MeasureDisplacedFromSurf(apf::Field * field, int o)
+    MeasureDisplacedFromSurf(apf::Field * field, int o, int normal_dir)
       : ElementalSystem(field,o)
       , dim(0)
       , vol(0)
+      , norm_dir(normal_dir)
     {}
     void inElement(apf::MeshElement * me)
     {
@@ -256,21 +257,23 @@ namespace amsi
 	pt2[jj] = xyz(2,jj);
       }
       double area = triangleArea(pt0, pt1, pt2);
-      //faceNormal(pt0, pt1, pt2, normal);
-      faceNormal(mesh, apf::getMeshEntity(me), normal);
+      faceNormal(pt0, pt1, pt2, normal);
+      vol = 0.0; //<reinitialize volume.
       for (int jj = 0; jj < dim; jj++)
       {
-	vol += normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
+	vol += norm_dir * normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
       }
       vol *= area/3.0;
       vol *= 1.0/3.0;
     }
     double getVol(){return vol;}
+    int getNormDir(){return norm_dir;}
   private:
     int dim;
     apf::FieldShape * fs;
     apf::EntityShape * es;
     double vol;
+    int norm_dir;
   };  
   double measureDisplaced(apf::MeshEntity * ment, apf::Field * u)
   {
@@ -283,10 +286,10 @@ namespace amsi
     apf::destroyMeshElement(mlm);
     return volume;
   }
-  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u)
+  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u, int norm_dir)
   {
     //todo : derive integration order from field order
-    MeasureDisplacedFromSurf elemental_volume(u,1);
+    MeasureDisplacedFromSurf elemental_volume(u,1,norm_dir);
     apf::Mesh * msh = apf::getMesh(u);
     apf::MeshElement * mlm = apf::createMeshElement(msh,ment);
     elemental_volume.process(mlm);
