@@ -293,7 +293,7 @@ namespace amsi
   void VoigtVectorToSymmMatrix(const apf::Vector<6> & vec, apf::Matrix3x3 & mat);
   void VoigtVectorToSymmMatrix(const apf::DynamicVector & vec, apf::Matrix3x3 & mat);
   double measureDisplaced(apf::MeshEntity * ment, apf::Field * u);
-  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u);
+  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u, int norm_dir);
 }
 #include "apfFunctions_impl.h"
 #endif
