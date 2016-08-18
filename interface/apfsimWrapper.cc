@@ -69,13 +69,14 @@ namespace amsi
           normal_dir = 1;
         else
           normal_dir = -1;
-
+/*
         AMSI_DEBUG (
           std::cout<<"surf_elem:"<<surf_elem<<" belongs to face: "<<tags[surf_elem]
           <<" Rgn "<<GRgn0_tag<<" inside,"
           <<" Rgn "<<GRgn1_tag<<" outside,"
           <<" normal direction "<<normal_dir<<std::endl;
           )
+*/
         vol += measureDisplacedFromSurf(apf::castEntity(*ent),u,normal_dir);
         surf_elem++;
       }
