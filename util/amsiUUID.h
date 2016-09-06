@@ -19,7 +19,7 @@ namespace amsi
   }
   template <class T>
     inline uuid generateRangeUUID(const T & begin,
-				  const T & end)
+                                  const T & end)
   {
     uuid result = 0;
     for(T it = begin; it != end; it++)

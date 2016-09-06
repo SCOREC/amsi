@@ -34,12 +34,12 @@ namespace amsi
      * pGFace ent:     face entity of geometric model.
      * pMesh msh:      partitioned mesh.
      * apf::Field * u: displacement field. */
-     double vol = 0.0;
+    double vol = 0.0;
     /** Extract face entities of mesh that lie on face entities of geometric model */
-     std::list<pEntity> ents;
-     getClassifiedEnts(msh,pGF,2,std::back_inserter(ents));
+    std::list<pEntity> ents;
+    getClassifiedEnts(msh,pGF,2,std::back_inserter(ents));
     /** for debugging purposes */
-     AMSI_DEBUG (
+    AMSI_DEBUG (
       std::vector<int> tags;
       int ent_size = 0;
       for (int ii=ent_size; ii<ents.size(); ii++)
@@ -47,11 +47,11 @@ namespace amsi
         tags.push_back(GEN_tag(pGF));
         ent_size = ents.size();
       }
-      )
-     int surf_elem = 0;
-     apf::Mesh * apfmsh = apf::getMesh(u);
-     for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
-     {
+    )
+    int surf_elem = 0;
+    apf::Mesh * apfmsh = apf::getMesh(u);
+    for(std::list<pEntity>::iterator ent = ents.begin(); ent != ents.end(); ++ent)
+    {
       if(apfmsh->isOwned(apf::castEntity(*ent)))
       {
         pRegion mshRgn0 = F_region((pFace)(*ent),0);
@@ -69,14 +69,12 @@ namespace amsi
           normal_dir = 1;
         else
           normal_dir = -1;
-/*
         AMSI_DEBUG (
           std::cout<<"surf_elem:"<<surf_elem<<" belongs to face: "<<tags[surf_elem]
           <<" Rgn "<<GRgn0_tag<<" inside,"
           <<" Rgn "<<GRgn1_tag<<" outside,"
           <<" normal direction "<<normal_dir<<std::endl;
-          )
-*/
+        )
         vol += measureDisplacedFromSurf(apf::castEntity(*ent),u,normal_dir);
         surf_elem++;
       }

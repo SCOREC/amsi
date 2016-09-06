@@ -6,6 +6,7 @@ message(STATUS "Test meshes located in ${MESH_DIR}")
 
 add_subdirectory(init)
 add_subdirectory(loading)
+add_subdirectory(analysis)
 add_subdirectory(sim_attributes)
 add_subdirectory(boundary_conditions)
 add_subdirectory(linear_elasticity)
