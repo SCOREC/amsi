@@ -14,8 +14,10 @@ if [ ! -d $BUILD_DIR ]; then
   mkdir $BUILD_DIR
 fi
 cd $BUILD_DIR
-INSTALL_DIR=$DEVROOT/install/amsi/sim/bgq/xl
+INSTALL_DIR=$DEVROOT/install/amsi/sim/bgq/xl/
 rm -rf $INSTALL_DIR
 make install
-chmod -R g+rw $INSTALL_DIR
-chmod -R g+rw $BUILD_DIR
+if [ "$?" == 0 ] ; then
+  chmod -R g+rw $INSTALL_DIR
+  chmod -R g+rw $BUILD_DIR
+fi
