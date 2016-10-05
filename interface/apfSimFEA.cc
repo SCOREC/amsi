@@ -25,7 +25,7 @@ namespace amsi
                                             dir_bcs.begin(),
                                             dir_bcs.end(),
                                             simulation_time);
-    std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;
+    std::cout << "There are " << fixed_dofs << " dofs fixed by essential bound ary conditions." << std::endl;
   }
   void apfSimFEA::ApplyBC_Neumann(LAS * las)
   {
