@@ -38,7 +38,6 @@ set(util_source_files
   )
 
 find_package(hwloc REQUIRED)
-find_package(Core COMPONENTS Sim)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h
@@ -50,11 +49,8 @@ set_property(TARGET util PROPERTY VERSION ${AMSI_VERSION})
 target_include_directories(util PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                 $<INSTALL_INTERFACE:include/amsi>
-                                ${CORE_INCLUDE_DIRS}
                                 ${HWLOC_INCLUDE_DIR})
-target_link_libraries(util PUBLIC
-                           ${CORE_LIBS}
-                           ${HWLOC_LIBRARIES})
+target_link_libraries(util PUBLIC ${HWLOC_LIBRARIES})
 
 if("${HOST}" STREQUAL "BGQ")
   target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})

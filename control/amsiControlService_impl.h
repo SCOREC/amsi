@@ -1,3 +1,4 @@
+#include <PCU.h>
 namespace amsi
 {
   template <typename D>
@@ -115,10 +116,8 @@ namespace amsi
       // Get type size
       int tp_sz = 0;
       MPI_Type_size(type,&tp_sz);
-#       ifdef CORE
       PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
       PCU_Comm_Begin();
-#       endif
       if(tl == t1) // if the local task is the sending task
       {
         //unsigned local_count = t1->getLocalDDValue(r_dd_id.second);
@@ -129,36 +128,25 @@ namespace amsi
         getRanksSentFrom(send_pattern,task_rank,&snt_rnks[0]);
         getUnitsSentFrom(send_pattern,task_rank,&snt_cnts[0]);
         size_t offset = 0;
-#         ifndef CORE
         buffer_offset<D> bo;
         bo.buffer = &buffer[0];
-#         endif
         for(unsigned ii = 0; ii < num_snt_frm; ii++)
         {
-#           ifdef CORE
           int inter_rnk = t1s+snt_rnks[ii]; // hacky and awful
           PCU_Comm_Write(inter_rnk,
                          &buffer[offset],
                          snt_cnts[ii]*tp_sz);
-#           else
-          bo.s = to_send;
-          bo.offset = offset;
-          t_send(bo,type,t2->localToGlobalRank(ii));
-#           endif
           offset += snt_cnts[ii];
         }
-#         ifdef CORE
         PCU_Comm_Send();
         int recvfrom = -1;
         void * recv;
         size_t recv_size;
         while(PCU_Comm_Read(&recvfrom,&recv,&recv_size))
         { }
-#         endif
       }
       else if (t2 == tl)// recv'ing
       {
-#         ifdef CORE
         PCU_Comm_Send();
         size_t bfr_sz = 0;
         size_t bfr_hd = 0;
@@ -173,25 +161,9 @@ namespace amsi
           memcpy(&buffer[bfr_hd],rcv,rcv_sz);
           bfr_hd += rcv_cnt;
         }
-#         else
-        recv_buffer_offset<D, Container> buffer_offset;
-        buffer_offset.buffer = &buffer;
-        buffer_offset.offset = 0;
-        for(size_t ii = 0; ii < recv_from.size(); ii++)
-        {
-          int to_recv = recv_from[ii];
-          {
-            if(to_recv > 0)
-              buffer_offset.offset += t_recv(buffer,type,t1->localToGlobalRank(ii));
-          }
-        }
-#         endif
       }
-
-#       ifdef CORE
       // Switch pcu comms back to task
       PCU_Switch_Comm(tl->comm());
-#       endif
     }
   template <typename PRT_IO, typename DATA_IO>
     void ControlService::Communicate(size_t rdd_id, PRT_IO cnts, DATA_IO bfr, MPI_Datatype tp)
@@ -454,10 +426,8 @@ namespace amsi
       void* recv;
       size_t recv_size;
 
-#     ifdef CORE
       PCU_Switch_Comm(task_comm);
       PCU_Comm_Begin();
-#     endif
 
       CommPattern * pattern = comm_man->getCommPattern(rdd_id);
 
@@ -489,13 +459,9 @@ namespace amsi
             memcpy( migration_data[current_send].data() + migration_data[current_send].size() - sizeof(int),
                     &jj,
                     sizeof(int) );
-#           ifdef CORE
             PCU_Comm_Write(m_send_to[current_send],
                            migration_data[current_send].data(),
                            migration_data[current_send].size());
-#           else
-
-#           endif
             current_send++;
 
           }
@@ -504,10 +470,7 @@ namespace amsi
         }
 
       }
-#     ifdef CORE
       PCU_Comm_Send();
-#     endif
-
       // ***** UPDATE COMM PATTERN ***** //
 
       // Update local comm pattern with removed data
@@ -539,7 +502,6 @@ namespace amsi
       m_send_to.clear();
 
       // ***** RECEIVE MIGRATION DATA ***** //
-#     ifdef CORE
       int kk = 0;
       while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
       {
@@ -560,7 +522,6 @@ namespace amsi
         memcpy(migration_data[kk].data(), recv, recv_size - 2*sizeof(int));
         kk++;
       }
-#     endif
 
       // ***** REORDER MIGRATION DATA AND INSERT OBJECTS ***** //
 
@@ -640,15 +601,12 @@ namespace amsi
       int t1s = taskSize(t1);
       int t2s = taskSize(t2);
 
-#     ifdef CORE
       int recv_from;
       void* recv;
       size_t recv_size;
 
       PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
       PCU_Comm_Begin();
-#     endif
-
       CommPattern * pattern = comm_man->getCommPattern(rdd_id);
 
       // If receiver in comm pattern rdd_id, then send
@@ -661,19 +619,13 @@ namespace amsi
           int dataToSend[2];
           dataToSend[0] = m_index[ii]; // 'old' pattern element index
           dataToSend[1] = m_recv_from[ii];   // old task 2 process
-
-#         ifdef CORE
           PCU_Comm_Write(m_t1process[ii],dataToSend,2*sizeof(int));
-#         else
 
-#         endif
         }
 
-#       ifdef CORE
         PCU_Comm_Send();
         while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
         { }
-#       endif
 
         // Get updated comm pattern from task 1
         CommPattern_Reconcile(rdd_id);
@@ -690,7 +642,6 @@ namespace amsi
         std::vector<int> oldT2proc;
         std::vector<int> oldCompIndex;
 
-#       ifdef CORE
         PCU_Comm_Send();
 
         while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
@@ -699,7 +650,6 @@ namespace amsi
           oldCompIndex.push_back( ((int*)recv)[0] );
           oldT2proc.push_back( ((int*)recv)[1] );
         }
-#       endif
 
         int numMigration = newT2proc.size();
         Container<D> tempObj;
@@ -766,8 +716,6 @@ namespace amsi
       }
 
       // Switch pcu comms back to task
-#     ifdef CORE
       PCU_Switch_Comm(tl->comm());
-#     endif
     }
 }

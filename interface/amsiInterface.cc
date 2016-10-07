@@ -2,12 +2,8 @@
 #include "amsiMeta.h"
 #include "sim.h"
 #include "amsiMPI.h"
-#ifdef CORE
 #include <gmi_null.h>
-#ifdef SIM
-#include <gmi_sim.h> // ifdef sim
-#endif
-#endif
+#include <gmi_sim.h>
 namespace amsi
 {
   void interfaceInit(int argc, char ** argv, MPI_Comm cm)
@@ -22,22 +18,14 @@ namespace amsi
         petscInit(argc,argv,cm);
     }
 #   endif
-#   ifdef SIM
     if(use_simmetrix)
       simmetrixInit(argc,argv,cm);
-#   elif defined CORE
-    gmi_start();
-#   endif
-#   ifdef CORE
     gmi_register_null();
-#   endif
   }
   void interfaceFree()
   {
-#   ifdef SIM
     if(use_simmetrix)
       simmetrixFree();
-#   endif
 #   ifdef PETSC
     if(use_petsc)
       petscFree();
@@ -56,7 +44,6 @@ namespace amsi
     PetscFinalize();
   }
 # endif
-# ifdef SIM
   bool use_simmetrix = false;
   void simmetrixInit(int argc, char ** argv, MPI_Comm cm)
   {
@@ -71,16 +58,12 @@ namespace amsi
 #   ifdef SCOREC
     SimField_start();
 #   endif
-#   ifdef SIM
     gmi_sim_start();
     gmi_register_sim();
-#   endif
   }
   void simmetrixFree()
   {
-#   ifdef CORE
     gmi_sim_stop();
-#   endif
 #   ifdef SCOREC
     SimField_stop();
 #   endif
@@ -88,5 +71,4 @@ namespace amsi
     SimPartitionedMesh_stop();
     Sim_unregisterAllKeys();
   }
-# endif
 }

@@ -33,9 +33,7 @@ set(meta_source_files
   Assemblable.cc
   )
 
-#find_package(PETSc)
 find_package(zoltan)
-find_package(Core COMPONENTS Sim)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h
@@ -45,9 +43,8 @@ add_library(meta ${meta_source_files})
 
 target_include_directories(meta PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                $<INSTALL_INTERFACE:include/amsi>
-                                ${CORE_INCLUDE_DIRS})
-target_link_libraries(meta PUBLIC util ${CORE_LIBS})
+                                $<INSTALL_INTERFACE:include/amsi>)
+target_link_libraries(meta PUBLIC util)
 
 if(ZOLTAN_FOUND)
   target_link_libraries(meta PUBLIC ${ZOLTAN_LIBRARIES})

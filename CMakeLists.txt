@@ -9,6 +9,7 @@ set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSIO
 
 # add FindPACKAGE.cmake files to path
 list(APPEND CMAKE_MODULE_PATH $ENV{DEVROOT}/scripts/cmake ${CMAKE_CURRENT_LIST_DIR}/cmake)
+include($ENV{DEVROOT}/scripts/cmake/util.cmake)
 set(CMAKE_DEBUG_POSTFIX d)
 site_name(HOSTNAME)
 message(STATUS "Configuring to build on " ${HOSTNAME})
@@ -35,16 +36,18 @@ endif()
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
-message(STATUS "Configuring amsi_util")
+find_package(SCOREC CONFIG REQUIRED)
+
+message(STATUS "Configuring util")
 add_subdirectory(util)
 
-message(STATUS "Configuring amsi_meta")
+message(STATUS "Configuring meta")
 add_subdirectory(meta)
 
-message(STATUS "Configuring amsi_interface")
+message(STATUS "Configuring interface")
 add_subdirectory(interface)
 
-message(STATUS "Configuring amsi_control")
+message(STATUS "Configuring control")
 add_subdirectory(control)
 
 if(BUILD_TESTS)

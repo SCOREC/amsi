@@ -5,6 +5,7 @@
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
+#include <PCU.h>
 #include <fstream>
 #include <algorithm>
 #include <cstring> //memcpy
@@ -153,10 +154,8 @@ namespace amsi
     int t1s = taskSize(t1);
     int t2s = taskSize(t2);
     int task_rank = tl->localRank();
-#   ifdef CORE
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
-#   endif
     if(tl == t1) // sending task
     {
       // retrieve pattern info relating to the current t2 rank
@@ -177,26 +176,20 @@ namespace amsi
           getUnitsSentTo(send_pattern,snd_rnks[ii],&cnts[0]);
           // intercomm rank of the recving task (hacky)
           int inter_rnk = t1s+snd_rnks[ii];
-#         ifdef CORE
           int bfr_sz = 1+2*num_rnks;
           int bfr[bfr_sz];
           bfr[0] = num_rnks;
           memcpy(&bfr[1],&rnks[0],sizeof(int)*num_rnks);
           memcpy(&bfr[1+num_rnks],&cnts[0],sizeof(int)*num_rnks);
           PCU_Comm_Write(inter_rnk,&bfr,sizeof(int)*bfr_sz);
-#         else
-          t_isend(recvfrom,MPI_INTEGER,t2->localToGlobalRank(send_to));
-#         endif
         }
       }
-#     ifdef CORE
       // All processes must call PCU Send and Read, makes this blocking which is bad
       PCU_Comm_Send();
       int rcv_frm = -1;
       void * rcv = NULL;
       size_t rcv_sz = 0;
       while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz)) {}
-#     endif
     }
     else //recving task
     {
@@ -204,7 +197,6 @@ namespace amsi
       CommPattern * recv_pattern = comm_man->getCommPattern(rdd_id);
       // since only nonzeros are sent the pattern needs to start from zero
       zeroCommPattern(recv_pattern);
-#     ifdef CORE
       // All processes must call PCU Send
       PCU_Comm_Send();
       int rcv_frm = -1;
@@ -226,14 +218,7 @@ namespace amsi
           (*local_dd)[task_rank] += cnt;
         }
       }
-#     else
-      t_recv(recv_count,MPI_INTEGER,t1->localToGlobalRank(recv_from));
-#     endif
     }
-#   ifdef CORE
-    // Switch pcu comms back to task
-    PCU_Switch_Comm(tl->comm());
-#   endif
   }
   // To allow easy access to comm pattern and task sizes for outputing load info
   void ControlService::getPatternInfo(size_t rdd_id,int & t1s,int & t2s, CommPattern *& cp)
@@ -265,13 +250,11 @@ namespace amsi
     assert(t1 == tl || t2 == tl);
     int task_rank = tl->localRank();
     int tls = taskSize(tl);
-#     ifdef CORE
     int recv_from;
     void* recv;
     size_t recv_size;
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
-#endif
     if(tl == t1)
     {
       CommPattern * pattern = comm_man->getCommPattern(rdd_id);
@@ -299,9 +282,7 @@ namespace amsi
           {
             std::vector<int> count(1,(*pattern)(task_rank,ct));
             count.insert(count.begin()+1,indices.begin(),indices.end());
-#             ifdef CORE
             PCU_Comm_Write(tls+ct,count.data(),count.size()*sizeof(int));
-#             endif
             indices.clear();
             update = false;
           }
@@ -310,23 +291,18 @@ namespace amsi
           num += (*pattern)(task_rank,ct); // TODO: Reading out of bounds?
         }
       }
-#       ifdef CORE
       PCU_Comm_Send();
       while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
       { }
-#       endif
       // Need to have comm pattern assembled accross this task
       CommPattern_Assemble(rdd_id);
     }
     else if (tl == t2)
     {
       CommPattern * pattern = comm_man->getCommPattern(rdd_id);
-#       ifdef CORE
       PCU_Comm_Send();
-#       endif
       std::vector<int> recvproc;
       std::vector<int> recvpat;
-#       ifdef CORE
       while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
       {
         int total = 0;
@@ -339,17 +315,13 @@ namespace amsi
         for(unsigned jj=1;jj<recv_size/sizeof(int);jj++)
           data.push_back( ((int*)(recv))[jj] + total );
       }
-#       else
-#       endif
       // Update comm pattern
       for(unsigned ii=0;ii<recvproc.size();ii++)
         (*pattern)(recvproc[ii],task_rank) = recvpat[ii];
       // Returned indices may be out of order
     }
-#     ifdef CORE
     // Switch pcu comms back to task
     PCU_Switch_Comm(tl->comm());
-#     endif
   }
   // assumes that each process have definitive information about the sends it is responsible for
   //template <typename T> // to deal with different commpattern implementations...

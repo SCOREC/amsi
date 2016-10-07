@@ -42,6 +42,10 @@ set(interface_public_headers
     simBoundaryConditions.h
     simBoundaryConditions_impl.h
     simWrapper.h
+    SimFEA.h
+    apfSimFEA.h
+    Elasticity.h
+    NonLinElasticity.h
    )
 
 set(interface_src_files
@@ -73,27 +77,16 @@ set(interface_src_files
     simAttributes.cc
     simBoundaryConditions.cc
     simWrapper.cc
+    SimFEA.cc
+    apfSimFEA.cc
+    Elasticity.cc
+    NonLinElasticity.cc
    )
 
 find_package(PETSc REQUIRED)
 find_package(zoltan)
-find_package(Core COMPONENTS Sim)
-find_package(SimModSuite REQUIRED)
-
-# will only be found if we're doing a simmetrix build
-if(SIMMODSUITE_FOUND)
-  list(APPEND interface_public_headers
-        SimFEA.h
-        apfSimFEA.h
-        Elasticity.h
-        NonLinElasticity.h)
-
-  list(APPEND interface_src_files
-        SimFEA.cc
-        apfSimFEA.cc
-        Elasticity.cc
-        NonLinElasticity.cc)
-endif(SIMMODSUITE_FOUND)
+find_package(SCOREC CONFIG REQUIRED)
+#find_package(SimModSuite REQUIRED)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiInterfaceConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiInterfaceConfig.h
@@ -107,16 +100,9 @@ target_include_directories(interface PUBLIC
                                      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                      $<INSTALL_INTERFACE:include/amsi>)
 
-target_link_libraries(interface PUBLIC util meta)
+target_link_libraries(interface PUBLIC util meta SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LIBRARIES})
+target_include_directories(interface PUBLIC ${PETSC_INCLUDE_DIRS})
 
-target_include_directories(interface PUBLIC
-  ${PETSC_INCLUDE_DIRS}
-  ${CORE_INCLUDE_DIRS}
-  ${SIMMODSUITE_INCLUDE_DIR})
-target_link_libraries(interface PUBLIC
-  ${PETSC_LIBRARIES}
-  ${CORE_LIBS}
-  ${SIMMODSUITE_LIBS})
 
 install(TARGETS interface
         EXPORT amsiinterfaceTargets

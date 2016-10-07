@@ -1,5 +1,5 @@
-#ifndef AMSIUTILCONFIG_H_IN_
-#define AMSIUTILCONFIG_H_IN_
+#ifndef AMSI_UTILCONFIG_H_IN_
+#define AMSI_UTILCONFIG_H_IN_
 #define AMSI_MAJOR_VERSION @AMSI_MAJOR_VERSION@
 #define AMSI_MINOR_VERSION @AMSI_MINOR_VERSION@
 #define AMSI_PATCH_VERSION @AMSI_PATCH_VERSION@
@@ -7,12 +7,8 @@
 #define VALUE(x) VALUE_TO_STRING(x)
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
 #define @HOST@
-#if @CORE_FOUND@ == TRUE
-#  define CORE
-#endif
-#if @SIMMODSUITE_FOUND@ == TRUE
-#  define SIM
-#endif
+#define SCOREC
+#define SIM
 #define PETSC
 #ifndef NDEBUG
 #  define AMSI_DEBUG(EX) EX

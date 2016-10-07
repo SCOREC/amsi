@@ -1,18 +1,14 @@
-#ifndef AMSIUTILCONFIG_H_IN_
-#define AMSIUTILCONFIG_H_IN_
+#ifndef AMSI_UTILCONFIG_H_IN_
+#define AMSI_UTILCONFIG_H_IN_
 #define AMSI_MAJOR_VERSION 1
 #define AMSI_MINOR_VERSION 0
 #define AMSI_PATCH_VERSION 0
 #define VALUE_TO_STRING(x) #x
 #define VALUE(x) VALUE_TO_STRING(x)
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
-#define BGQ
-#if TRUE == TRUE
-#  define CORE
-#endif
-#if TRUE == TRUE
-#  define SIM
-#endif
+#define SCOREC
+#define SCOREC
+#define SIM
 #define PETSC
 #ifndef NDEBUG
 #  define AMSI_DEBUG(EX) EX
