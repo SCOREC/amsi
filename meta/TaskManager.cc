@@ -91,9 +91,7 @@ namespace amsi {
     {
       if(local_task != NULL)
       result = local_task->execute(argc,argv);
-#     ifdef CORE
       PCU_Switch_Comm(AMSI_COMM_WORLD);
-#     endif
     }
     return result;
   }

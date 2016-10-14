@@ -4,9 +4,7 @@
 #include "amsiMetaConfig.h"
 #include "CommunicationManager.h"
 #include <mpi.h>
-#ifdef CORE
 #include <PCU.h>
-#endif
 #include <ostream>
 #include <vector>
 namespace amsi

@@ -219,6 +219,7 @@ namespace amsi
         }
       }
     }
+    PCU_Switch_Comm(tl->comm());
   }
   // To allow easy access to comm pattern and task sizes for outputing load info
   void ControlService::getPatternInfo(size_t rdd_id,int & t1s,int & t2s, CommPattern *& cp)

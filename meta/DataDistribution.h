@@ -2,9 +2,7 @@
 #define DATADISTRIBUTION_H_
 #include "Assemblable.h"
 #include "amsiMetaConfig.h"
-#ifdef CORE
 #include <PCU.h>
-#endif
 #include <valarray>
 #include <vector>
 #ifdef ZOLTAN
