@@ -24,7 +24,7 @@ namespace amsi
                                             part,
                                             dir_bcs.begin(),
                                             dir_bcs.end(),
-                                            simulation_time);
+                                            T);
     std::cout << "There are " << fixed_dofs << " dofs fixed by essential bound ary conditions." << std::endl;
   }
   void apfSimFEA::ApplyBC_Neumann(LAS * las)
@@ -35,7 +35,7 @@ namespace amsi
                              part,
                              neu_bcs.begin(),
                              neu_bcs.end(),
-                             simulation_time);
+                             T);
   }
   void apfSimFEA::Assemble(LAS * las)
   {

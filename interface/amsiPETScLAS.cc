@@ -47,7 +47,6 @@ namespace amsi
       std::cout << "(Re)initialized the matrix, vectors and the solver" << std::endl;
     }
   }
-  // these two really shouldn't exist, what they do should be possible from outside of PetscLAS since this is technically application logic
   void PetscLAS::iter()
   {
     // accumulate values
@@ -294,6 +293,18 @@ namespace amsi
     delete[] b_arr;
     delete[] b_i_arr;
   }
+  PetscLAS::PetscLAS()
+    : x_arr(NULL)
+    , b_arr(NULL)
+    , b_i_arr(NULL)
+    , globalNumEqs(0)
+    , vec_low(0)
+    , vec_high(0)
+    , mat_low(0)
+    , mat_high(0)
+    , b_assembled(true)
+    , b_addMode(true)
+  { }
   /**
    *@brief Constructor.
    *
@@ -320,7 +331,12 @@ namespace amsi
     , b_assembled(true)
     , b_addMode(true)
     , solver()
-  {}
+  {
+    int ffst = 0;
+    MPI_Scan(&n,&ffst,1,MPI_INTEGER,MPI_SUM,PETSC_COMM_WORLD);
+    ffst -= n; // scan is inclusive, remove the local dofs from the offset
+    Reinitialize(n,N,ffst);
+  }
   /**
    * @brief Print the associated matrix to the specified output.
    *

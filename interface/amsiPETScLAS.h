@@ -9,6 +9,7 @@ namespace amsi
   class PetscLAS : public LAS
   {
   public:
+    PetscLAS();
     PetscLAS(int,int);
     void iter();
     void step();

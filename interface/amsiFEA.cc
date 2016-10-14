@@ -12,7 +12,7 @@ namespace amsi
     , global_dof_count(0)
     , fixed_dofs(0)
     , numbered(false)
-    , simulation_time(0.0)
+    , T(0.0)
     , analysis_comm(cm)
     , dir_bcs()
     , neu_bcs()

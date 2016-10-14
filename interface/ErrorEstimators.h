@@ -1,7 +1,7 @@
 #ifndef ERRORESTIMATORS_H_
 #define ERRORESTIMATORS_H_
 #include <apfField.h>
-#include <apfFieldOf.h>
+//#include <apfFieldOf.h>
 #include <apfMesh.h>
 #include <cassert>
 namespace amsi

@@ -2,9 +2,7 @@
 #define TASK_H_
 #include "amsiMetaConfig.h"
 #include "amsiHost.h"
-#ifdef CORE
 #include <PCU.h>
-#endif
 #include <amsiMPI.h>
 #include <map>
 #include <string>
@@ -31,9 +29,7 @@ namespace amsi
       // don't execute of the global rank is not valid
       if(localToGlobalRank(localRank()) >= 0)
       {
-#       ifdef CORE
         PCU_Switch_Comm(task_comm);
-#       endif
         result +=  (*exec)(argc,argv,task_comm);
       }
       return result;

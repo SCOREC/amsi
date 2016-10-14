@@ -2,6 +2,7 @@
 # CMake config for AMSI
 # usage: ./config.sh [build_type] [build_tests_flag]
 #
+source $DEVROOT/scripts/util
 ROOT=$DEVROOT/amsi
 TEST_OVERRIDE=$2
 if [ -z $1 ]; then
@@ -22,18 +23,7 @@ elif [ "$BUILD_TYPE" == "Release" ] ; then
     BUILD_TESTS=ON
   fi
 fi
-if [ ! -d $BUILD_DIR ]; then
-  mkdir $BUILD_DIR
-fi
-read -p "About to delete (${BUILD_DIR}). Are you sure (y/n)? " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]] ; then
-  rm -rf $BUILD_DIR
-  mkdir $BUILD_DIR
-else
-  echo "Exiting..."
-  exit
-fi
+verify_directory_recreate ${BUILD_DIR}
 cd $BUILD_DIR
 module load cmake
 HOSTNAME=`hostname`

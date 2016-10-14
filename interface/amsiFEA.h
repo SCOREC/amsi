@@ -35,7 +35,9 @@ namespace amsi
     // whether the dofs have been numbered or not
     bool numbered;
     // the current simulation time (for dynamics) or psuedo-time (for statics)
-    double simulation_time;
+    // might want to pull this out entirely somehow... just pass in to pertinent member functions
+    // especially as it's really only used for nonlinear FEA, for linear FEA it is just set to 1
+    double T;
     // name of this analysis
     std::string name;
     // dimensionality of the analysis
@@ -50,6 +52,11 @@ namespace amsi
     virtual void ApplyBC_Dirichlet() {};
     virtual void ApplyBC_Neumann(LAS *) {};
     virtual void Assemble(LAS *) {};
+    void setSimulationTime(double t)
+    {
+      T = t;
+      std::cout << "Simulation time updated: " << T << std::endl;
+    }
     template <typename NODE_TYPE>
       void AssembleDOFs(LAS * las,
                         int num_elemental_dofs,

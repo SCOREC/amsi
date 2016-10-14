@@ -38,6 +38,7 @@ set(util_source_files
   )
 
 find_package(hwloc REQUIRED)
+find_package(SCOREC CONFIG REQUIRED)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h
@@ -50,7 +51,7 @@ target_include_directories(util PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                 $<INSTALL_INTERFACE:include/amsi>
                                 ${HWLOC_INCLUDE_DIR})
-target_link_libraries(util PUBLIC ${HWLOC_LIBRARIES})
+target_link_libraries(util PUBLIC SCOREC::pcu ${HWLOC_LIBRARIES})
 
 if("${HOST}" STREQUAL "BGQ")
   target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})
