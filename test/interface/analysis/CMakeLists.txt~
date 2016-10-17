@@ -1,0 +1,1 @@
+add_mpi_test(volume volume.cc 1 ${MODEL_DIR}/ ${MESH_DIR}/ )
