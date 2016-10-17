@@ -19,7 +19,7 @@ namespace amsi
         {
           if(!fxd[ii])
           {
-            const int & gi = dofids[ii];
+            //const int & gi = dofids[ii];
             for(int jj = 0; jj < nedofs; jj++)
             {
               const double & val = ke[ii*nedofs + jj];

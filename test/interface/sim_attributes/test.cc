@@ -25,7 +25,7 @@ int main(int argc, char * argv[])
   failed += test("PList move",(int)cpy.size(),1);
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2], sthreadNone, mdl, NULL);
-  pMesh sm_prt = PM_mesh(sm_msh,0);
+  //pMesh sm_prt = PM_mesh(sm_msh,0);
   std::vector<pACase> css;
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",
                      std::back_inserter(css));

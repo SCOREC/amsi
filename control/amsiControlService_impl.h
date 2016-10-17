@@ -18,20 +18,14 @@ namespace amsi
   {
     // determine if sender of recver
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
-
     Task * lt = task_man->getLocalTask();
-
     Task * t1 = task_man->Task_Get(t_ids.first);
     Task * t2 = task_man->Task_Get(t_ids.second);
-
     int t1s = taskSize(t1);
     int t2s = taskSize(t2);
-
     int t2_per_t1 = t2s / t1s;
     int extra_t2 = t2s % t1s;
-
     int task_rank = lt->localRank();
-
     if(lt == t1) // sending task
     {
       // make sure the data to be reconciled is assembled on the local task
@@ -43,9 +37,7 @@ namespace amsi
       }
       else
         Assemble(t_ids.first,data,type); // user-type assemble
-
       int to_send = t2_per_t1 + (task_rank < extra_t2);
-
       for(int ii = 0; ii < to_send; ii++)
       {
         int send_to = task_rank + (ii * t1s);
@@ -84,7 +76,6 @@ namespace amsi
     else // recv
       amsi::recv(buf,MPI_ANY_SOURCE,1,AMSI_COMM_WORLD);
   }
-
   /// @brief Templated member function used to communicate all data related to a specific CommPattern,
   ///         this call is collective on the union of the ProcessSets associated with the sending and
   ///         recving task-groups.
@@ -128,8 +119,8 @@ namespace amsi
         getRanksSentFrom(send_pattern,task_rank,&snt_rnks[0]);
         getUnitsSentFrom(send_pattern,task_rank,&snt_cnts[0]);
         size_t offset = 0;
-        buffer_offset<D> bo;
-        bo.buffer = &buffer[0];
+        //buffer_offset<D> bo;
+        //bo.buffer = &buffer[0];
         for(unsigned ii = 0; ii < num_snt_frm; ii++)
         {
           int inter_rnk = t1s+snt_rnks[ii]; // hacky and awful
@@ -256,8 +247,6 @@ namespace amsi
       }
     }
   }
-
-
   // This function adds data while load balancing
   // Assumption: Sending task specifies additions
   // Sending task process:
@@ -359,7 +348,6 @@ namespace amsi
         objects.clear();
         for(newObj = tempObj.begin(); newObj != tempObj.end(); ++newObj)
           objects.push_back(*newObj);
-
         // Reconcile orig and init comm pattern on recv task
         CommPattern_Reconcile(rdd_id);
         CommPattern_Reconcile(delta_id);
@@ -369,7 +357,6 @@ namespace amsi
         // Get the new orig and init comm patterns
         CommPattern_Reconcile(rdd_id);
         CommPattern_Reconcile(delta_id);
-
         // Fill data vector with appropriate indices
         CommPattern * pattern = comm_man->getCommPattern(rdd_id);
         CommPattern * delta_pattern = comm_man->getCommPattern(delta_id);
@@ -382,8 +369,6 @@ namespace amsi
       }
       return delta_id;
     }
-
-
   // Intra task function which does acutal communication for
   //   migration according to migration variables which should
   //   have been set in planMigration
@@ -411,28 +396,20 @@ namespace amsi
     {
       std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
-
       Task * tl = task_man->getLocalTask();
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
-
       int t1s = taskSize(t1);
       int t2s = taskSize(t1);
       int task_rank = tl->localRank();
-
       MPI_Comm task_comm = t2->comm();
-
       int recv_from;
       void* recv;
       size_t recv_size;
-
       PCU_Switch_Comm(task_comm);
       PCU_Comm_Begin();
-
       CommPattern * pattern = comm_man->getCommPattern(rdd_id);
-
       // ***** SEND MIGRATION DATA ***** //
-
       // Loop over task 1 processes to determine placing in implicit
       //   ordering and corresponding "task 1" process
       // Assumption: migration data contents are ordered by local indices (m_index)
@@ -444,7 +421,6 @@ namespace amsi
         {
           if(current_send >= m_send_to.size())
             break;
-
           // Send migration data
           if(current_data == m_index[current_send])
           {
@@ -463,29 +439,23 @@ namespace amsi
                            migration_data[current_send].data(),
                            migration_data[current_send].size());
             current_send++;
-
           }
-
           current_data++;
         }
-
       }
       PCU_Comm_Send();
       // ***** UPDATE COMM PATTERN ***** //
-
       // Update local comm pattern with removed data
       // When inserting objects later, we need to reference
       //   the comm pattern with migrated data subtracted out
       // Later, in shareMigration, the comm pattern will be
       //   updated by the corresponding task and reconciled on
       //   this task
-
       // the above explanation is weak, it will need to be made more clear
       int offset[t1s];
       offset[0] = (*pattern)(0,task_rank);
       for(int ii=1;ii<t1s;ii++)
         offset[ii] = offset[ii-1] + (*pattern)(ii,task_rank);
-
       for(int ii=0;ii<m_send_to.size();ii++)
         for(int jj=0;jj<t1s;jj++)
           if(m_index[ii] < offset[jj])
@@ -493,14 +463,11 @@ namespace amsi
             (*pattern)(jj,task_rank)--;
             break;
           }
-
       DataDistribution * dd = tl->getDD(rdd_dd_map[rdd_id]);
       (*dd)[task_rank] -= m_send_to.size();
-
       migration_data.clear();
       m_index.clear();
       m_send_to.clear();
-
       // ***** RECEIVE MIGRATION DATA ***** //
       int kk = 0;
       while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
@@ -510,24 +477,19 @@ namespace amsi
         int elem_index;
         memcpy(&t1process, (char*)recv + recv_size - 2*sizeof(int), sizeof(int));
         memcpy(&elem_index, (char*)recv + recv_size - sizeof(int), sizeof(int));
-
         // Store all migration info
         m_t1process.push_back(t1process);
         m_index.push_back(elem_index);
         m_recv_from.push_back(recv_from);
-
         // Store migration data
         migration_data.resize(kk+1);
         migration_data[kk].resize(recv_size - 2*sizeof(int));
         memcpy(migration_data[kk].data(), recv, recv_size - 2*sizeof(int));
         kk++;
       }
-
       // ***** REORDER MIGRATION DATA AND INSERT OBJECTS ***** //
-
       if(migration_data.size() > 0)
       {
-
         // Create new vectors/lists of all migration data and multiscale data
         std::vector< std::vector<char> > temp_md;
         std::vector<int> temp_index;
@@ -535,7 +497,6 @@ namespace amsi
         std::vector<int> temp_rf;
         Container<D> temp_objects;
         typename Container<D>::iterator currentObject = objects.begin();
-
         // Order data by task 1 process
         for(int ii=0;ii<t1s;ii++)
         {
@@ -548,29 +509,22 @@ namespace amsi
               temp_rf.push_back(m_recv_from[jj]);
               temp_objects.push_back(NULL);
             }
-
           for(int jj=0;jj<(*pattern)(ii,task_rank);jj++)
           {
             temp_objects.push_back(*currentObject);
             currentObject++;
           }
         }
-
         // Reconstruct all the lists
         migration_data = temp_md;
         m_t1process = temp_t1p;
         m_index = temp_index;
         m_recv_from = temp_rf;
         objects = temp_objects;
-
         (*dd)[task_rank] +=  migration_data.size();
       }
-
       dd->Assemble(task_comm);
-
     }
-
-
   // Inter task function to inform companion task of migration
   //   and update the comm pattern
   //
@@ -591,24 +545,18 @@ namespace amsi
     {
       std::pair<size_t,size_t> r_dd_id = rdd_map[rdd_id];
       std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_id.first);
-
       Task * tl = task_man->getLocalTask();
       int task_rank = tl->localRank();
-
       Task * t1 = task_man->Task_Get(t_ids.first); // sending task
       Task * t2 = task_man->Task_Get(t_ids.second); // recving task
-
       int t1s = taskSize(t1);
       int t2s = taskSize(t2);
-
       int recv_from;
       void* recv;
       size_t recv_size;
-
       PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
       PCU_Comm_Begin();
       CommPattern * pattern = comm_man->getCommPattern(rdd_id);
-
       // If receiver in comm pattern rdd_id, then send
       //   info to corresponding task 1 processes
       if(tl == t2)
@@ -620,46 +568,35 @@ namespace amsi
           dataToSend[0] = m_index[ii]; // 'old' pattern element index
           dataToSend[1] = m_recv_from[ii];   // old task 2 process
           PCU_Comm_Write(m_t1process[ii],dataToSend,2*sizeof(int));
-
         }
-
         PCU_Comm_Send();
         while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
         { }
-
         // Get updated comm pattern from task 1
         CommPattern_Reconcile(rdd_id);
-
       }
-
       // If sender in comm pattern rdd_id, then receive
       //   info about migration that occured on task 2
       //   Update object list accordingly
       else // (tl == t1)
       {
-
         std::vector<int> newT2proc;
         std::vector<int> oldT2proc;
         std::vector<int> oldCompIndex;
-
         PCU_Comm_Send();
-
         while(PCU_Comm_Read(&recv_from,&recv,&recv_size))
         {
           newT2proc.push_back(recv_from - t1s);
           oldCompIndex.push_back( ((int*)recv)[0] );
           oldT2proc.push_back( ((int*)recv)[1] );
         }
-
         int numMigration = newT2proc.size();
         Container<D> tempObj;
         typename Container<D>::iterator currentObj = objects.begin();
-
         // Re construct object list/vector from old list and migration lists
         int index = 0;
         for(int ii=0;ii<t2s;ii++)
         {
-
           // Search for data that was migrated to corresponding task 2 process
           for(int jj=0;jj<numMigration;jj++)
           {
@@ -682,7 +619,6 @@ namespace amsi
               }
             }
           }
-
           // Place remaining data from old list UNLESS it's been sent somewhere else
           //   in which case it was (or will be) added by above for loop
           for(int jj=0;jj<(*pattern)(task_rank,ii);jj++)
@@ -691,18 +627,13 @@ namespace amsi
             for(int kk=0;kk<numMigration;kk++)
               if(oldT2proc[kk] == ii && oldCompIndex[kk] == jj)
                 toAdd = false;
-
             if(toAdd)
               tempObj.push_back(*currentObj);
-
             currentObj++;
-
           }
         }
-
         // Reset object list/vector from newly constructed version
         objects = tempObj;
-
         //std::cout << "Before update: "  << std::endl << (*pattern) << std::endl;
         // Update, assemble, and reconcile comm pattern
         for(int ii=0;ii<numMigration;ii++)
@@ -714,7 +645,6 @@ namespace amsi
         CommPattern_Reconcile(rdd_id);
         //std::cout << "After update: "  << std::endl << (*pattern) << std::endl;
       }
-
       // Switch pcu comms back to task
       PCU_Switch_Comm(tl->comm());
     }

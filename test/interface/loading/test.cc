@@ -8,6 +8,7 @@ int main(int argc, char * argv[])
   Sim_logOn("simmetrix_log");
   pGModel mdl = GM_load(argv[1],NULL,NULL);
   pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+  {msh;}
   Sim_logOff();
   amsi::interfaceFree();
   return 0;
