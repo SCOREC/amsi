@@ -1,9 +1,8 @@
 #!/bin/bash
 # CMake config for AMSI testing with ctest
-ROOT=$(dirname "$PWD")
+ROOT=$DEVROOT/nightly/amsi
 BUILD_DIR=$ROOT/build_debug
 BUILD_TESTS=ON
-rm -rf ${BUILD_DIR}
 mkdir ${BUILD_DIR}
 cd ${BUILD_DIR}
 module load cmake
