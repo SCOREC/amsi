@@ -22,8 +22,8 @@ namespace amsi
     bool isLocallyValid() {return vld;}
     bool isValid()
     {
-      bool vld = cm != MPI_COMM_NULL;
-      if(vld)
+      bool vld = cm == MPI_COMM_NULL;
+      if(!vld)
       {
         int all = 0;
         MPI_Allreduce(&vld,&all,1,MPI_INTEGER,MPI_SUM,cm);
