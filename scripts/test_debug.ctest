@@ -12,9 +12,9 @@ set(CTEST_ENVIRONMENT
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 # startup
 if(EXPERIMENTAL)
-  set(CTEST_SOURCE_DIRECTORY "/fasttmp/wtobin/develop/amsi")
+  set(CTEST_SOURCE_DIRECTORY "${DEVROOT}/amsi")
 elseif(NIGHTLY)
-  set(CTEST_SOURCE_DIRECTORY "/fasttmp/wtobin/develop/nightly/amsi")
+  set(CTEST_SOURCE_DIRECTORY "${DEVRROT}/nightly/amsi")
 endif()
 set(CTEST_SITE scorec)
 set(CTEST_BUILD_NAME amsi-linux-ompi1110-gpp492-dbg)
