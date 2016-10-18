@@ -40,6 +40,9 @@ namespace amsi
     bool result = false;
     int rnk = -1;
     MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
+    if(!scl->isValid())
+      std::cout << "Warning: checking process assignment to invalid scale, "
+                << "synchronize scale to avoid potential errors." << std::endl;
     const RankSet * rs = scl->getRankSet();
     if(rs->contains(rnk))
       result = true;
