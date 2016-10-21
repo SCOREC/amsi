@@ -1,5 +1,5 @@
-#ifndef AMSIINTERFACE_H_
-#define AMSIINTERFACE_H_
+#ifndef AMSI_INTERFACE_H_
+#define AMSI_INTERFACE_H_
 #include "amsiInterfaceConfig.h"
 #include "amsiUtil.h"
 #include "amsiMPI.h"

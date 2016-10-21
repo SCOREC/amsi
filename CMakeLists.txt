@@ -30,7 +30,14 @@ if("${HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
 else()
   set(HOST SCOREC)
   set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
-  list(APPEND CMAKE_CXX_FLAGS "-std=c++0x -Wall")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+  # list(APPEND CMAKE_CXX_FLAGS "-std=c++0x -Wall")
+endif()
+
+SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 endif()
 
 include(GenerateExportHeader)
@@ -51,7 +58,6 @@ message(STATUS "Configuring control")
 add_subdirectory(control)
 
 if(BUILD_TESTS)
-  include(CTest)
   add_subdirectory(test)
 endif()
 
