@@ -24,16 +24,20 @@ int main(int argc, char * argv[])
   amsi::cutPaste<void*>(lst,std::back_inserter(cpy));
   failed += test("PList move",(int)cpy.size(),1);
   pGModel mdl = GM_load(argv[1],0,NULL);
-  pParMesh sm_msh = PM_load(argv[2], sthreadNone, mdl, NULL);
+  //pParMesh sm_msh = PM_load(argv[2], sthreadNone, mdl, NULL);
   //pMesh sm_prt = PM_mesh(sm_msh,0);
   std::vector<pACase> css;
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",
                      std::back_inserter(css));
   amsi::initCase(mdl,css[0]);
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
+  failed += pd == NULL;
   pACase op = (pACase)AttNode_childByType((pANode)css[0],"output");
+  failed += op == NULL;
   pANode frc_op = AttNode_childByType((pANode)op,"output force");
+  failed += frc_op == NULL;
   pANode dsp_op = AttNode_childByType((pANode)op,"output displacement");
+  failed += dsp_op == NULL;
   std::vector<pModelItem> frc_itms;
   std::vector<pModelItem> dsp_itms;
   amsi::getAssociatedModelItems(op,frc_op,std::back_inserter(frc_itms));
