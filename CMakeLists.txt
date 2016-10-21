@@ -59,6 +59,8 @@ add_subdirectory(control)
 
 if(BUILD_TESTS)
   add_subdirectory(test)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake @ONLY)
 endif()
 
 find_package(Doxygen)
