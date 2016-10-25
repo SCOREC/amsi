@@ -6,9 +6,11 @@ namespace amsi
 {
   extern std::string results_dir;
   class Log;
-  Log * makeLog(const std::string &);
-  int deleteLog(Log *);
+  Log * makeLog(const std::string & nm, const std::string & echo = "");
+  int deleteLog(Log *&);
+  const std::string & getName(Log *);
   std::iostream & log(Log *);
+  std::iostream & namedLog(Log *);
   double post(Log *);
   double getSincePost(Log *);
   double getElapsedTime(Log *);
