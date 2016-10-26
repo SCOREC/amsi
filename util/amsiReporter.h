@@ -1,5 +1,5 @@
-#ifndef AMSIREPORTER_H_
-#define AMSIREPORTER_H_
+#ifndef AMSI_REPORTER_H_
+#define AMSI_REPORTER_H_
 #include <string>
 #include <iostream>
 namespace amsi

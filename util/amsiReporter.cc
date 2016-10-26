@@ -1,5 +1,4 @@
 #include "amsiReporter.h"
-
 #include <algorithm>
 #include <cassert>
 #include <fstream>
@@ -7,9 +6,7 @@
 #include <limits>
 #include <map>
 #include <sstream>
-
 #include <mpi.h>
-
 namespace amsi {
   class Log {
   protected:
@@ -65,7 +62,6 @@ namespace amsi {
       result -= last_post;
       return result;
     }
-
     double elapsed() const
     {
       double result = MPI_Wtime();

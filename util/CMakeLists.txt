@@ -16,6 +16,7 @@ set(util_public_headers
   amsiRankSet.h
   amsiRankSet_impl.h
   amsiReporter.h
+  amsiTee.h
   amsiUtilFunctions.h
   amsiUUID.h
   amsiByteStream.h
