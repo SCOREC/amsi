@@ -5,7 +5,8 @@ namespace amsi
 {
   enum Event
   {
-    SYNCHRONIZE = 0
+    DELETED = 0,
+    SYNCHRONIZED = 1
   };
   class Subject;
   class Observer
@@ -19,6 +20,10 @@ namespace amsi
     std::set<Observer*> observers;
   protected:
     Subject() : observers() {}
+    ~Subject()
+    {
+      notify(DELETED);
+    }
     void notify(Event event)
     {
       for(std::set<Observer*>::iterator it = observers.begin();

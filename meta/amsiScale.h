@@ -24,7 +24,7 @@ namespace amsi
           MPI_Comm_free(&comm);
         comm = makeComm(rnks);
         setValid(true);
-        notify(SYNCHRONIZE);
+        notify(SYNCHRONIZED);
       }
     }
   public:
