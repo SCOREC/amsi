@@ -1,5 +1,7 @@
 #include "amsiReporter.h"
 #include "amsiObserver.h"
+#include "pystring.h"
+#include "amsiTee.h"
 #include <algorithm>
 #include <cassert>
 #include <fstream>
@@ -8,7 +10,8 @@
 #include <map>
 #include <sstream>
 #include <mpi.h>
-namespace amsi {
+namespace amsi
+{
   class log_class
   {
   protected:
@@ -35,7 +38,7 @@ namespace amsi {
     {
       init();
     }
-    std::stringstream & getStream() { return stream; }
+    std::stringstream & getBuffer() { return stream; }
     const std::string & getName() const { return name; }
     const double getCreation() const { return creation_time; }
     double post() { return last_post = MPI_Wtime(); }
@@ -57,22 +60,6 @@ namespace amsi {
     }
   };
   static std::map<std::string,Log> logs;
-  Log activateLog(const std::string & nm)
-  {
-    Log result = NULL;
-    result = logs[nm];
-    if(result == NULL)
-      result = logs[nm] = std::make_shared<log_class>(nm);
-    return result;
-  }
-  int deleteLog(Log & l)
-  {
-    assert(l);
-    int result = 0;
-    result += (logs.erase(l->getName()) == 0);
-    l.reset(); // either delete the log or decrement the shared_ptr counter
-    return result;
-  }
   const std::string & getName(Log l)
   {
     return l->getName();
@@ -80,7 +67,7 @@ namespace amsi {
   std::iostream & log(Log l)
   {
     assert(l);
-    return l->getStream();
+    return l->getBuffer();
   }
   std::iostream & namedLog(Log l)
   {
@@ -109,7 +96,7 @@ namespace amsi {
   }
   void writeToStream(Log l, std::ostream & out)
   {
-    out << l->getStream().str();
+    out << l->getBuffer().str();
     out.flush();
   }
   void flushToStream(Log l, std::ostream & out)
@@ -117,4 +104,75 @@ namespace amsi {
     writeToStream(l,out);
     l->clear();
   }
+  static std::map<std::string,std::ostream*> log_streams;
+  std::ostream & getLogStream(Log l)
+  {
+    const std::string & nm = getName(l);
+    if(log_streams.find(nm) != log_streams.end())
+      std::cerr << "WARNING: Log " << nm << " has no registered output streams, defaulting to std::cout!" << std::endl;
+    else
+      return *(log_streams[nm]);
+    return std::cout;
+  }
+  void addLogStream(Log l, std::ostream & strm)
+  {
+    const std::string & nm = getName(l);
+    if(log_streams.find(nm) == log_streams.end())
+      log_streams[nm] = &strm;
+  }
+  void write(Log l)
+  {
+    writeToStream(l,getLogStream(l));
+  }
+  void flush(Log l)
+  {
+    flushToStream(l,getLogStream(l));
+  }
+  Log activateLog(const std::string & nm)
+  {
+    Log result = NULL;
+    result = logs[nm];
+    if(result == NULL)
+    {
+      std::cout << "Creating log: " << nm << std::endl;
+      result = logs[nm] = std::make_shared<log_class>(nm);
+    }
+    return result;
+  }
+  int deleteLog(Log & l)
+  {
+    assert(l);
+    int dltd = 0;
+    const std::string nm(l->getName());
+    dltd += (logs.erase(nm) == 0);
+    l.reset(); // either delete the log or decrement the shared_ptr counter
+    if(l.get() == NULL)
+      log_streams.erase(nm);
+    return dltd;
+  }
+  /*
+  void configureLogStreams(std::istream & cnfg)
+  {
+    std::string ln;
+    std::vector<std::string> tkns;
+    while(std::getline(cnfg,ln))
+    {
+      ln = pystring::strip(ln);
+      if(pystring::startswith(ln,std::string("#")))
+        return;
+      pystring::split(ln,tkns," ");
+      activateLog(tkns[0]);
+      std::ostream * strm = NULL;
+      for(size_t ii = 1; ii < tkns.size(); ++ii)
+      {
+        if(tkns[ii] == "file")
+          std::fstream strm(tkns[++ii]);
+        else if(tkns[ii] == "stdout")
+          std::cout;
+        else if(tkns[ii] == "stderr");
+          std::cerr;
+      }
+    }
+  }
+  */
 }

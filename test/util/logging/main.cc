@@ -37,6 +37,16 @@ int main(int argc, char * argv[])
   }
   amsi::deleteLog(echo);
   result += (echo != NULL);
+  // init
+  amsi::Log multistream = amsi::activateLog("multi_stream_log");
+  amsi::addLogStream(multistream,std::cout);
+  std::ofstream multi_outfile(arg1);
+  amsi::addLogStream(multistream,multi_outfile);
+  // usage
+  amsi::write(multistream);
+  amsi::flush(multistream);
+  // deinit
+  amsi::deleteLog(multistream);
   MPI_Finalize();
   return result;
 }
