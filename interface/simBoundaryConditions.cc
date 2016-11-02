@@ -36,7 +36,7 @@ namespace amsi
     switch(tp)
     {
     case DIRICHLET:
-      return fieldTypeString(sbtp);
+      return fieldUnitString(sbtp);
     case NEUMANN:
       return getNeumannTypeString(sbtp);
     default:
@@ -84,7 +84,7 @@ namespace amsi
   {
     atts.assign(numDirichletComponents(bc->sbtp),(pAttribute)NULL);
     std::vector<pAttribute> rw;
-    getBCAttributes(bc,std::back_inserter(rw));
+    getBCAttributes(b,std::back_inserter(rw));
     auto nd = rw.end();
     for(auto att = rw.begin(); att != nd; ++att)
     {
@@ -92,10 +92,6 @@ namespace amsi
       atts[findAttrIndex(dis_bc_attrs,3,att_tp)] = *att;
       Sim_deleteString(att_tp);
     }
-  }
-  int SimDisplacementQuery::numComps()
-  {
-    return numDirichletComponents(bc->sbtp);
   }
   bool SimDisplacementQuery::isFixed(int ii)
   {
@@ -140,7 +136,7 @@ namespace amsi
     : SimBCQuery(b)
     , att()
   {
-    getBCAttributes(bc,&att);
+    getBCAttributes(b,&att);
   }
   bool SimValueQuery::isFixed(int)
   {

@@ -21,20 +21,22 @@ int main (int argc, char ** argv)
     amsi::PetscLAS las(0,0);
     apf::Mesh * apf_msh = apf::createMesh(msh);
     std::vector<apf::Field*> flds;
-    amsi::buildFieldsFromSim(mdl,apf_msh,std::back_inserter(flds));
-    std::vector<apf::Numbering*> dof_ids;
-    amsi::buildNumberingsFromSim(mdl,flds.begin(),flds.end(),std::back_inserter(dof_ids));
-    // each field can have its own dirichlet bcs, but just store them all with a record of which field they are related to
+    amsi::buildFieldsFromSim(pd,apf_msh,std::back_inserter(flds));
+    std::vector<apf::Numbering*> nms;
+    amsi::buildNumberingsFromSim(mdl,flds.begin(),flds.end(),std::back_inserter(nms));;
     std::vector<amsi::SimBCQuery*> bcs[amsi::NUM_BC_TYPES];
-    for(std::vector<apf::Field*>::iterator fld = flds.begin(); fld != flds.end(); ++fld)
+    std::vector<pANode> bcs;
+    amsi::getTypeNodes((pANode)pd,amsi::getBCTypeString(amsi::DIRICHLET),std::back_inserter(bcs));
+    for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
     {
-      for(int ii = 0; ii < amsi::NUM_BC_TYPES; ii++)
-      {
-        std::vector<int> bc_tps;
-        amsi::getApplicableBCTypesForField(amsi::decodeFieldType(apf::getName(*fld)),ii,std::back_inserter(bc_tps));
-        amsi::buildSimBCQueries(pd,ii,bc_tps.begin(),bc_tps.end(),std::back_inserter(bcs[ii]));
-      }
+      amsi::describeNode(*bc);
+      std::vector<pANode> fld_nm;
+      amsi::getTypeNodes(*bc,"field name",std::back_inserter(fld_nm));
+      amsi::describeNode(fld_nm[0]);
     }
+    //amsi::buildSimBCQueries(pd,amsi::DIRICHLET,/*amsi::UNITLESS,amsi::NUM_FIELD_UNITS*/,std::back_inserter(bcs[amsi::DIRICHLET]));
+    //amsi::buildSimBCQueries(pd,amsi::NEUMANN,/*amsi::CUSTOM,amsi::NUM_NEUMANN_TYPES*/,std::back_inserter(bcs[amsi::NEUMANN]));
+    //after building queries, associate them with fields, since we need the geometric entities they lie on anyway, but we also have to relate the SimBCQueries BACK to the attributes taged on the model...
     amsi::NonLinElasticity iso_non(mdl,msh,pd);
     double nrm = 0.0;
     amsi::NewtonSolver(&iso_non,&las,30,1e-4,1.0,nrm);

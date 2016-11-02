@@ -17,29 +17,11 @@ namespace amsi
    */
   int getForceType(char const * nm);
   /**
-   * Get a c-style string describing the boundary condition type;
-   */
-  char const * getBCTypeString(int tp);
-  /**
-   * Get a c-style string describing the type of boundary condition's subtype
-   */
-  char const * getBCSubtypeString(int tp, int sbpt);
-  /**
-   * Get a c-style string describing the dirichlet boundary condition type.
-   */
-  char const * getDirichletTypeString(int tp);
-  /**
-   * Get a c-style string describing the neumann boundary condition type.
-   */
-  char const * getNeumannTypeString(int tp);
-  /**
    * A structure containing the necessary data to construct a SimBCQuery and get
    *  the mesh entities which the boundary condition is associated with.
    */
-  struct SimBC
+  struct SimBC : public BC
   {
-    int tp;         // bc type (neumann/dirichlet)
-    int sbtp;       // the bc subtype
     pANode bc_nd;   // the attribute node
     pModelItem itm; // the model entity
   };
@@ -51,14 +33,11 @@ namespace amsi
    */
   class SimBCQuery : public BCQuery
   {
-  protected:
-    SimBC * bc;
   public:
     SimBCQuery(SimBC * b)
-      : BCQuery()
-      , bc(b)
+      : BCQuery(b)
     { }
-    SimBC * getSimBC() { return bc; }
+    SimBC * getSimBC() { return static_cast<SimBC*>(bc); }
   };
   /**
    * A BCQuery class specifc to the displacement dirichlet boundary condition.
@@ -71,7 +50,6 @@ namespace amsi
     std::vector<pAttribute> atts;
   public:
     SimDisplacementQuery(SimBC * b);
-    virtual int numComps();
     virtual bool isFixed(int ii);
     virtual bool isConst(int ii);
     virtual bool isTimeExpr(int ii);
@@ -143,8 +121,8 @@ namespace amsi
    *  to the appropriate field/numberings.
    * @todo should be able to work on either field or numbering (just field in case of a non-solution field)
    */
-  template <typename I1, typename I2>
-    int applyAllSimDirichletBCs(I1 nm_bgn, I1 nm_nd, pMesh msh, I2 bc_bgn, I2 bc_nd, double t);
+   //template <typename I1, typename I2>
+   //int applyAllSimDirichletBCs(I1 nm_bgn, I1 nm_nd, pMesh msh, I2 bc_bgn, I2 bc_nd, double t);
   /**
    * Apply the SimBCQueries in range [bgn,nd) as dirichlet boundary conditions
    *  to the numbering and the field the numbering applies to for time t.
@@ -182,23 +160,6 @@ namespace amsi
    */
   template <class O>
     void buildApplicableSimBCQueries(pACase cs, int fld_tp, int bc_tp, O out);
-  class SimDirichletBCApplier : public DirichletBCApplier
-  {
-  protected:
-    std::vector<SimBCQuery*> dir_bcs;
-  public:
-    SimDirichletBCApplier(pACase pd, int fld_tp)
-      : dir_bcs()
-    {
-      std::vector<int> app_dir;
-      getApplicableBCTypesForField(fld_tp,amsi::DIRICHLET,std::back_inserter(app_dir));
-      buildSimBCQueries(pd,amsi::DIRICHLET,app_dir.begin(),app_dir.end(),std::back_inserter(dir_bcs));
-    }
-    virtual int apply()
-    {
-      return 0;
-    }
-  };
 }
 #include "simBoundaryConditions_impl.h"
 #endif

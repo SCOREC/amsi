@@ -2,42 +2,61 @@
 #define AMSI_BOUNDARY_CONDITIONS_H_
 namespace amsi
 {
-  class LAS;
-  class DirichletBCApplier
-  {
-  public:
-    virtual int apply() = 0;
-  };
-  class NeumannBCApplier
-  {
-  public:
-    virtual void apply(LAS * ls) = 0;
-  };
   enum BCTypes
   {
-    DIRICHLET,
-    NEUMANN,
-    NUM_BC_TYPES
+    DIRICHLET = 0,
+    NEUMANN = 1,
+    NUM_BC_TYPES = 2
   };
   enum NeumannBCType
   {
-    SURFACE_TRACTION,
-    NORMAL_PRESSURE,
-    NUM_NEUMANN_TYPES
+    CUSTOM = 0,
+    SURFACE_TRACTION = 1,
+    NORMAL_PRESSURE = 2,
+    NUM_NEUMANN_TYPES = 3
   };
   int numBCComponents(int tp, int sbtp);
   int numDirichletComponents(int tp);
   int numNeumannComponents(int tp);
+  struct BC
+  {
+    int tp;
+    int sbtp;
+  };
   class BCQuery
   {
+  protected:
+    BC * bc;
   public:
-    virtual int numComps() = 0;
+    BCQuery(BC * b)
+      : bc(b)
+    { }
+    virtual int numComps()
+    {
+      return numBCComponents(bc->tp,bc->sbtp);
+    }
     virtual bool isFixed(int ii = 0) = 0;
     virtual bool isConst(int ii = 0) = 0;
     virtual bool isTimeExpr(int ii = 0) = 0;
     virtual bool isSpaceExpr(int ii = 0) = 0;
     virtual double getValue(int ii = 0, ...) = 0;
   };
+  /**
+   * Get a c-style string describing the boundary condition type;
+   */
+  char const * getBCTypeString(int tp);
+  /**
+   * Get a c-style string describing the type of boundary condition's subtype
+   */
+  char const * getBCSubtypeString(int tp, int sbpt);
+  /**
+   * Get a c-style string describing the dirichlet boundary condition type.
+   */
+  char const * getDirichletTypeString(int tp);
+  /**
+   * Get a c-style string describing the neumann boundary condition type.
+   */
+  char const * getNeumannTypeString(int tp);
   template <typename O>
     void getApplicableBCTypesForField(int fld_tp, int bc_tp, O out);
 }

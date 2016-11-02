@@ -23,10 +23,24 @@ namespace amsi
   {
     std::vector<SimBC*> bcs;
     buildSimBCs(pd,tp,bgn,nd,std::back_inserter(bcs));
-    auto bc_nd = bcs.end();
-    for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
+    for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
       *out++ = buildSimBCQuery(*bc);
   }
+  /*
+  template <typename I1, typename I2>
+    int applyAllSimDirichletBCs(I1 nm_bgn, I2 nm_nd, pMesh msh, I2 bgn, I2 nd, double t)
+  {
+    int fxd = 0;
+    for(auto nm = nm_bgn; nm != nm_nd; ++nm)
+    {
+      // gather appropriate bcqueries
+      std::vector<SimBCQuery*> bcs;
+      //std::copy_if(bgn,nd,std::back_inserter(bcs),[&](I2 bc)->bool{;});
+      //applySimDirichletBCs(*nm,msh,,,t);
+    }
+    return fxd;
+  }
+  */
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t)
   {
@@ -111,9 +125,9 @@ namespace amsi
     }
   }
   template <class I, class O>
-    void buildSimBCs(pACase ac, int tp, I begin, I end, O out)
+    void buildSimBCs(pACase ac, int tp, I bgn, I nd, O out)
   {
-    for(I bc_tp = begin; bc_tp != end; ++bc_tp)
+    for(I bc_tp = bgn; bc_tp != nd; ++bc_tp)
     {
       std::vector<pANode> bcs;
       getTypeNodes((pANode)ac,getBCSubtypeString(tp,*bc_tp),std::back_inserter(bcs));

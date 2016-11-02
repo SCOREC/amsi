@@ -9,26 +9,27 @@ namespace amsi
   class FEAIteration : public Iteration
   {
   protected:
-    FEA * pde;
-    std::list<apf::Field *> flds;
-    //std::list<apf::Numbering *> sl_flds;
-    pMesh prt;
-    std::list<BCQuery*> dir_bcs;
-    std::list<BCQuery*> nue_bcs;
-    LAS * ls;
+    LAS * las;
+    pMesh simmsh;
+//    std::vector<SimBCQuery*> bcs[amsi::NUM_BC_TYPES];
+    double t;
     int itr;
   public:
-    FEAIteration(FEA * f, LAS * l)
-      : pde(f)
-      , ls(l)
-      , itr(0)
+    FEAIteration()
     { }
     virtual void iterate()
     {
-      //reinitializeLinearSystem(pde,ls);
+/*
+      applyAllSimDirichletBCs(nms.begin(),
+                              nms.end(),
+                              simmsh,
+                              bcs[amsi::DIRICHLET].begin(),
+                              bcs[amsi::DIRICHLET].end(),
+                              t);
+*/
       //pde->applyNeumannBCs(ls);
       //pde->assembleLinearSystem(ls);
-      ls->solve();
+      las->solve();
       //pde->applySolution(ls);
       itr++;
     }
