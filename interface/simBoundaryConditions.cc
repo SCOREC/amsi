@@ -36,8 +36,7 @@ namespace amsi
     switch(tp)
     {
     case DIRICHLET:
-      // the field name and name of the dirichlet boundary condition type are the same
-      return getFieldString(sbtp);
+      return fieldTypeString(sbtp);
     case NEUMANN:
       return getNeumannTypeString(sbtp);
     default:

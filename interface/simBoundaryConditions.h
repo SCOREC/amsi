@@ -139,12 +139,21 @@ namespace amsi
   template <typename I, typename O>
     void buildSimBCQueries(pACase pd, int tp, I bgn, I nd, O out);
   /**
+   * Apply the SimBCQueries in range [bc_bgn,nc) as dirichlet boundary conditions
+   *  to the appropriate field/numberings.
+   * @todo should be able to work on either field or numbering (just field in case of a non-solution field)
+   */
+  template <typename I1, typename I2>
+    int applyAllSimDirichletBCs(I1 nm_bgn, I1 nm_nd, pMesh msh, I2 bc_bgn, I2 bc_nd, double t);
+  /**
    * Apply the SimBCQueries in range [bgn,nd) as dirichlet boundary conditions
    *  to the numbering and the field the numbering applies to for time t.
    * @todo no reason that should have to use a numbered field technically, so allow to pass in a field and a numbering
    */
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t);
+  //template <typename I>
+  //  int applySimDirichletBCs(apf::Field * fld, pMesh msh, I bgn, I nd, double t);
   /**
    *
    */

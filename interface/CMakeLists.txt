@@ -7,6 +7,7 @@ set(interface_public_headers
     amsiDummyLAS.h
     amsiFiniteElementAnalysis.h
     amsiFields.h
+    amsiFields_impl.h
     amsiFEA.h
     amsiLAS.h
     amsiNonlinearAnalysis.h

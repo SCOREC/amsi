@@ -22,7 +22,7 @@ namespace amsi
     apf_primary_numbering = apf::createNumbering(apf_primary_field);
     // create elemental systems
     elemental_system = new LinearElasticIntegrator(apf_primary_field,1,youngs_modulus,poisson_ratio);
-    // create boundary conditions on existent fields
+    // create boundary conditions on existing fields
     std::vector<int> app_dir;
     getApplicableBCTypesForField(amsi::DISPLACEMENT,amsi::DIRICHLET,std::back_inserter(app_dir));
     amsi::buildSimBCQueries(pd,amsi::DIRICHLET,app_dir.begin(),app_dir.end(),std::back_inserter(dir_bcs));
