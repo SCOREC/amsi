@@ -1,10 +1,11 @@
 #ifndef AMSI_APF_BOUNDARY_CONDITIONS_H_
 #define AMSI_APF_BOUNDARY_CONDITIONS_H_
-#include "amsiBoundaryConditions.h"
-#include "amsiNeumannIntegrators.h"
 #include "apfMesh.h"
 namespace amsi
 {
+  class NeumannIntegrator;
+  class BCQuery;
+  class LAS;
   double getDirichletValue(BCQuery * qry,
                            apf::Mesh * msh,
                            apf::MeshEntity * ent,

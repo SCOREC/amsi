@@ -1,3 +1,5 @@
+#ifndef SIM_ATTRIBUTES_IMPL_H_
+#define SIM_ATTRIBUTES_IMPL_H_
 #include "simWrapper.h"
 #include "simBoundaryConditions.h"
 #include <cassert>
@@ -27,6 +29,7 @@ namespace amsi
   {
     pACase op = (pACase)AttNode_childByType((pANode)cs,"output");
     pANode tp_op = AttNode_childByType((pANode)op,tp);
-    amsi::getAssociatedModelItems(op,tp_op,out);
+    getAssociatedModelItems(op,tp_op,out);
   }
 }
+#endif

@@ -1,14 +1,13 @@
 #ifndef AMSI_INTERFACE_H_
 #define AMSI_INTERFACE_H_
+#include "amsiFields.h"
 #include "amsiInterfaceConfig.h"
 #include "amsiUtil.h"
 #include "amsiMPI.h"
-#ifdef PETSC
 #include "amsiPETScLAS.h"
-#endif
-#ifdef SIM
+#include "apfFields.h"
 #include "simAttributes.h"
-#endif
+#include "simFields.h"
 namespace amsi
 {
   void interfaceInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);

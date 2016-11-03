@@ -23,15 +23,15 @@ int main (int argc, char ** argv)
     std::vector<apf::Field*> flds;
     amsi::buildFieldsFromSim(pd,apf_msh,std::back_inserter(flds));
     std::vector<apf::Numbering*> nms;
-    amsi::buildNumberingsFromSim(mdl,flds.begin(),flds.end(),std::back_inserter(nms));;
+    amsi::buildNumberingsFromSim(pd,flds.begin(),flds.end(),std::back_inserter(nms));;
     std::vector<amsi::SimBCQuery*> bcs[amsi::NUM_BC_TYPES];
-    std::vector<pANode> bcs;
-    amsi::getTypeNodes((pANode)pd,amsi::getBCTypeString(amsi::DIRICHLET),std::back_inserter(bcs));
-    for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
+    std::vector<pANode> bc_nds;
+    amsi::getTypeNodes((pANode)pd,amsi::getBCTypeString(amsi::DIRICHLET),std::back_inserter(bc_nds));
+    for(auto bc_nd = bc_nds.begin(); bc_nd != bc_nds.end(); ++bc_nd)
     {
-      amsi::describeNode(*bc);
+      amsi::describeNode(*bc_nd);
       std::vector<pANode> fld_nm;
-      amsi::getTypeNodes(*bc,"field name",std::back_inserter(fld_nm));
+      amsi::getTypeNodes(*bc_nd,"field name",std::back_inserter(fld_nm));
       amsi::describeNode(fld_nm[0]);
     }
     //amsi::buildSimBCQueries(pd,amsi::DIRICHLET,/*amsi::UNITLESS,amsi::NUM_FIELD_UNITS*/,std::back_inserter(bcs[amsi::DIRICHLET]));

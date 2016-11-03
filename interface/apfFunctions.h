@@ -1,5 +1,5 @@
-#ifndef APFFUNCTIONS_H_
-#define APFFUNCTIONS_H_
+#ifndef APF_FUNCTIONS_H_
+#define APF_FUNCTIONS_H_
 #include <apf.h>
 #include <apfDynamicVector.h>
 #include <apfField.h>

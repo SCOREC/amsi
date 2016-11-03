@@ -1,4 +1,5 @@
 #include "apfsimWrapper.h"
+#include "amsiMPI.h"
 #include "apfFunctions.h"
 #include "simAnalysis.h"
 namespace amsi

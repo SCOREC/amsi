@@ -1,8 +1,6 @@
 #ifndef APF_SIM_WRAPPER_H_
 #define APF_SIM_WRAPPER_H_
 #include "sim.h"
-#include "simAnalysis.h"
-#include "simBoundaryConditions.h"
 #include <apf.h>
 #include <apfMesh.h>
 #include <list>

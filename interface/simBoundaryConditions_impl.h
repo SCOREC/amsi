@@ -1,3 +1,5 @@
+#ifndef SIM_BOUNDARY_CONDITIONS_IMPL_H_
+#define SIM_BOUNDARY_CONDITIONS_IMPL_H_
 #include "apfBoundaryConditions.h"
 #include "amsiNeumannIntegrators.h"
 #include "amsiFields.h"
@@ -150,3 +152,4 @@ namespace amsi
     }
   }
 }
+#endif

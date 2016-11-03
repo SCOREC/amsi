@@ -1,3 +1,5 @@
+#ifndef AMSI_BOUNDARY_CONDITIONS_IMPL_H_
+#define AMSI_BOUNDARY_CONDITIONS_IMPL_H_
 #include "amsiFields.h"
 namespace amsi
 {
@@ -14,3 +16,4 @@ namespace amsi
     }
   }
 }
+#endif

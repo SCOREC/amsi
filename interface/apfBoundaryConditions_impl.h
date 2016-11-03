@@ -1,6 +1,10 @@
+#ifndef APF_BOUNDARY_CONDITIONS_IMPL_H_
+#define APF_BOUNDARY_CONDITIONS_IMPL_H_
 #include "apfField.h"
 #include "apfShape.h"
 #include "apfNumbering.h"
+#include "amsiNeumannIntegrators.h"
+#include "amsiBoundaryConditions.h"
 #include <cassert>
 namespace amsi
 {
@@ -62,3 +66,4 @@ namespace amsi
     }
   }
 }
+#endif

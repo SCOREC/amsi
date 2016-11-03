@@ -15,6 +15,7 @@ set(interface_public_headers
     amsiPETScLAS.h
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
+    apfFields.h
     apfFunctions.h
     apfFunctions_impl.h
     apfWrapper.h
@@ -42,6 +43,8 @@ set(interface_public_headers
     simAttributes_impl.h
     simBoundaryConditions.h
     simBoundaryConditions_impl.h
+    simFields.h
+    simFields_impl.h
     simWrapper.h
     SimFEA.h
     apfSimFEA.h
@@ -59,6 +62,7 @@ set(interface_src_files
     amsiNeumannIntegrators.cc
     amsiPETScLAS.cc
     apfBoundaryConditions.cc
+    apfFields.cc
     apfFunctions.cc
     apfWrapper.cc
     apfsimWrapper.cc
@@ -77,6 +81,7 @@ set(interface_src_files
     simAnalysis.cc
     simAttributes.cc
     simBoundaryConditions.cc
+    simFields.cc
     simWrapper.cc
     SimFEA.cc
     apfSimFEA.cc

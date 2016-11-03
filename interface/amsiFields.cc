@@ -1,6 +1,7 @@
 #include "amsiFields.h"
-#include <cassert>
 #include <pystring.h>
+#include <algorithm>
+#include <cassert>
 namespace amsi
 {
   static char const * fld_units[] =
@@ -46,4 +47,12 @@ namespace amsi
     assert(tks.size() == 5);
     return tks[4];
   }
+  std::string composeFieldName(int nt, int tp, const std::string & nm)
+  {
+    std::vector<std::string> nm_vc(3);
+    nm_vc[0] = std::string(fieldUnitString(nt));
+    nm_vc[1] = std::string(fieldTypeString(tp));
+    nm_vc[2] = nm;
+    return pystring::join("_",nm_vc);
+   }
 }

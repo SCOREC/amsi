@@ -1,15 +1,8 @@
 #ifndef AMSI_SIM_ANALYSIS_H_
 #define AMSI_SIM_ANALYSIS_H_
-#include "amsiAnalysis.h"
 #include "sim.h"
 namespace amsi
 {
-  struct SimDomain
-  {
-    pModel mdl;
-    pParMesh pmsh;
-    pMesh msh;
-  };
   /**
    * Get all mesh entities with dimensionality dm classified on the specified geometric entity.
    */

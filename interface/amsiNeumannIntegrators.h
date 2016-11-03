@@ -1,6 +1,5 @@
 #ifndef AMSI_NEUMANN_INTEGRATORS_H_
 #define AMSI_NEUMANN_INTEGRATORS_H_
-#include "amsiBoundaryConditions.h"
 #include "amsiLAS.h"
 #include "apfFunctions.h"
 #include <apf.h>
@@ -8,6 +7,7 @@
 #include <cassert>
 namespace amsi
 {
+  class BCQuery;
   class NeumannIntegrator : public apf::Integrator
   {
   protected:
@@ -56,26 +56,7 @@ namespace amsi
     virtual void outElement()
     {  }
   protected:
-    void updateBCQueryValues(apf::Vector3 const & p)
-    {
-      if(qry->isConst())
-        for(int ii = 0; ii < nfcmps; ii++)
-          vls[ii] = qry->getValue(ii);
-      else if(qry->isSpaceExpr())
-      {
-        apf::Vector3 xyz;
-        apf::mapLocalToGlobal(me,p,xyz);
-        if(qry->isTimeExpr())
-          for(int ii = 0; ii < nfcmps; ii++)
-            vls[ii] = qry->getValue(ii,tm,xyz[0],xyz[1],xyz[2]);
-        else
-          for(int ii = 0; ii < nfcmps; ii++)
-            vls[ii] = qry->getValue(ii,xyz[0],xyz[1],xyz[2]);
-      }
-      else if(qry->isTimeExpr())
-        for(int ii = 0; ii < nfcmps; ii++)
-          vls[ii] = qry->getValue(ii,tm);
-    }
+    void updateBCQueryValues(apf::Vector3 const & p);
   };
   class SurfaceTraction : public NeumannIntegrator
   {
