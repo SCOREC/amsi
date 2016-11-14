@@ -1,5 +1,5 @@
-#ifndef TASK_H_
-#define TASK_H_
+#ifndef AMSI_TASK_H_
+#define AMSI_TASK_H_
 #include "amsiMetaConfig.h"
 #include "amsiHost.h"
 #include <PCU.h>

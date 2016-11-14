@@ -1,4 +1,4 @@
-#include "DataDistribution.h"
+#include "amsiDataDistribution.h"
 #include "amsiMPI.h"
 #ifdef ZOLTAN
 #include <zoltan.h>

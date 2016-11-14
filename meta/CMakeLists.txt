@@ -6,15 +6,15 @@ set(meta_public_headers
   amsiCouplingData.h
   amsiCreateCoupling.h
   amsiScale.h
-  ProcessSet.h
-  ProcessAllocator.h
-  DataDistribution.h
-  Task.h
-  TaskGroup.h
-  TaskManager.h
-  CommunicationManager.h
-  PlanMigration.h
-  Assemblable.h
+  amsiProcessSet.h
+  amsiProcessAllocator.h
+  amsiDataDistribution.h
+  amsiTask.h
+  amsiTaskGroup.h
+  amsiTaskManager.h
+  amsiCommunicationManager.h
+  amsiPlanMigration.h
+  amsiAssemblable.h
   )
 
 set(meta_source_files
@@ -23,14 +23,14 @@ set(meta_source_files
   amsiCoupling.cc
   amsiCreateCoupling.cc
   amsiScale.cc
-  ProcessSet.cc
-  DataDistribution.cc
-  Task.cc
-  TaskGroup.cc
-  TaskManager.cc
-  CommunicationManager.cc
-  PlanMigration.cc
-  Assemblable.cc
+  amsiProcessSet.cc
+  amsiDataDistribution.cc
+  amsiTask.cc
+  amsiTaskGroup.cc
+  amsiTaskManager.cc
+  amsiCommunicationManager.cc
+  amsiPlanMigration.cc
+  amsiAssemblable.cc
   )
 
 find_package(zoltan)

@@ -1,5 +1,5 @@
-#ifndef COMMPATTERN_CREATE_H_
-#define COMMPATTERN_CREATE_H_
+#ifndef AMSI_COMMPATTERN_CREATE_H_
+#define AMSI_COMMPATTERN_CREATE_H_
 namespace amsi
 {
   class DataDistribution;

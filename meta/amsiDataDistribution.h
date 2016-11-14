@@ -1,6 +1,6 @@
-#ifndef DATADISTRIBUTION_H_
-#define DATADISTRIBUTION_H_
-#include "Assemblable.h"
+#ifndef AMSI_DATADISTRIBUTION_H_
+#define AMSI_DATADISTRIBUTION_H_
+#include "amsiAssemblable.h"
 #include "amsiMetaConfig.h"
 #include <PCU.h>
 #include <valarray>

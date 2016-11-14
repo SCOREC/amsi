@@ -1,8 +1,8 @@
 #ifndef AMSI_COMMPATTERN_H_
 #define AMSI_COMMPATTERN_H_
-#include "Assemblable.h"
+#include "amsiAssemblable.h"
 #include "amsiMetaConfig.h"
-#include "CommunicationManager.h"
+#include "amsiCommunicationManager.h"
 #include <mpi.h>
 #include <PCU.h>
 #include <ostream>

@@ -1,5 +1,5 @@
-#include "PlanMigration.h"
-#include "DataDistribution.h"
+#include "amsiPlanMigration.h"
+#include "amsiDataDistribution.h"
 #include "amsiCoupling.h"
 #ifdef ZOLTAN
 #include <zoltan.h>

@@ -1,9 +1,9 @@
-#ifndef COMMUNICATION_MANAGER_H_
-#define COMMUNICATION_MANAGER_H_
+#ifndef AMSI_COMMUNICATION_MANAGER_H_
+#define AMSI_COMMUNICATION_MANAGER_H_
 #include "unordered_map.h"
 #include "amsiCreateCoupling.h"
 #include "amsiAddData.h"
-#include "PlanMigration.h"
+#include "amsiPlanMigration.h"
 #include <map>
 #include <string>
 #include <utility>

@@ -1,5 +1,6 @@
 #ifndef AMSI_BOUNDARY_CONDITIONS_H_
 #define AMSI_BOUNDARY_CONDITIONS_H_
+#include <string>
 namespace amsi
 {
   enum BCTypes
@@ -20,6 +21,7 @@ namespace amsi
   int numNeumannComponents(int tp);
   struct BC
   {
+    std::string fld;
     int tp;
     int sbtp;
   };

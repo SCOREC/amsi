@@ -1,7 +1,7 @@
 #include "amsiControlService.h"
-#include "Assemblable.h"
-#include "PlanMigration.h"
-#include "DataDistribution.h"
+#include "amsiAssemblable.h"
+#include "amsiPlanMigration.h"
+#include "amsiDataDistribution.h"
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif

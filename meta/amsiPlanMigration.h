@@ -1,5 +1,5 @@
-#ifndef PLANMIGRATION_H_
-#define PLANMIFRATION_H_
+#ifndef AMSI_PLANMIGRATION_H_
+#define AMSI_PLANMIFRATION_H_
 #include "amsiMetaConfig.h"
 #include <amsiMPI.h>
 #include <vector>

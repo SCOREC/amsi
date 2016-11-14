@@ -1,6 +1,6 @@
 #include "test.h"
 #include "amsiMeta.h"
-#include "TaskManager.h"
+#include "amsiTaskManager.h"
 #include <iostream>
 #include <utility>
 using namespace amsi;

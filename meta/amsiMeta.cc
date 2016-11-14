@@ -6,7 +6,8 @@
 #include <getopt.h>
 #include <pystring.h>
 #include <fstream>
-namespace amsi {
+namespace amsi
+{
   TaskManager * tm = NULL;
   CommunicationManager * cm = NULL;
   FileSystemInfo * fs = NULL;

@@ -1,5 +1,5 @@
-#ifndef PROCESSSET_H_
-#define PROCESSSET_H_
+#ifndef AMSI_PROCESSSET_H_
+#define AMSI_PROCESSSET_H_
 #include <utility>
 namespace amsi
 {

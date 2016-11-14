@@ -1,5 +1,5 @@
-#ifndef ASSEMBLABLE_H_
-#define ASSEMBLABLE_H_
+#ifndef AMSI_ASSEMBLABLE_H_
+#define AMSI_ASSEMBLABLE_H_
 #include <mpi.h>
 namespace amsi
 {

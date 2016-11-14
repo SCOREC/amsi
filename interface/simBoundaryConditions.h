@@ -116,6 +116,8 @@ namespace amsi
    */
   template <typename I, typename O>
     void buildSimBCQueries(pACase pd, int tp, I bgn, I nd, O out);
+  template <typename O>
+    void buildBCQueriesFromSim(pACase pd, int tp, O out);
   /**
    * Apply the SimBCQueries in range [bc_bgn,nc) as dirichlet boundary conditions
    *  to the appropriate field/numberings.
@@ -156,10 +158,10 @@ namespace amsi
   template <class I, class O>
     void buildSimBCs(pACase ac, int tp, I begin, I end, O out);
   /**
-   *
+   * Build SimBC structures for boundary conditions of type tp
    */
   template <class O>
-    void buildApplicableSimBCQueries(pACase cs, int fld_tp, int bc_tp, O out);
+    void buildSimBCs(pACase cs, int bc_tp, O out);
 }
 #include "simBoundaryConditions_impl.h"
 #endif

@@ -1,7 +1,7 @@
-#ifndef AMSIMETA_H_
-#define AMSIMETA_H_
-#include "TaskManager.h"
-#include "CommunicationManager.h"
+#ifndef AMSI_META_H_
+#define AMSI_META_H_
+#include "amsiTaskManager.h"
+#include "amsiCommunicationManager.h"
 #include <amsiFileSys.h>
 #include <amsiUtil.h>
 #include <string>

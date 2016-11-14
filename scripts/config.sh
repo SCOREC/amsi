@@ -55,7 +55,7 @@ else
     cmake \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=ON \
-        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/sim/openmpi-1.10.0/ \
+        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/openmpi-1.10.0/ \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
         -DHWLOC_ROOT=$DEVROOT/install/hwloc/ \

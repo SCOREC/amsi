@@ -1,8 +1,8 @@
-#include "CommunicationManager.h"
+#include "amsiCommunicationManager.h"
 #include "amsiCoupling.h"
 #include "amsiCreateCoupling.h"
-#include "Task.h"
-#include "TaskManager.h"
+#include "amsiTask.h"
+#include "amsiTaskManager.h"
 #include <cstdlib>
 namespace amsi
 {

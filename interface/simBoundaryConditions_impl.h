@@ -28,6 +28,14 @@ namespace amsi
     for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
       *out++ = buildSimBCQuery(*bc);
   }
+  template <typename O>
+    void buildBCQueriesFromSim(pACase pd, int tp, O out)
+  {
+    std::vector<SimBC*> bcs;
+    buildSimBCs(pd,tp,std::back_inserter(bcs)); // prob_def, dirichlet, SimBC output
+    for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
+      *out++ = buildSimBCQuery(*bc);
+  }
   /*
   template <typename I1, typename I2>
     int applyAllSimDirichletBCs(I1 nm_bgn, I2 nm_nd, pMesh msh, I2 bgn, I2 nd, double t)
@@ -148,6 +156,29 @@ namespace amsi
           nw_bc->itm = *mdl_itm;
           *out++ = nw_bc;
         }
+      }
+    }
+  }
+  template <typename O>
+    void buildSimBCs(pACase cs, int tp, O out)
+  {
+    std::vector<pANode> bcs;
+    getTypeNodes((pANode)cs,getBCTypeString(tp),std::back_inserter(bcs));
+    for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
+    {
+      pANode fld_nm = AttNode_childByType(*bc,"field name");
+      std::string nm = std::string(AttInfoString_value((pAttInfoString)fld_nm));
+      std::vector<pModelItem> mdl_itms;
+      getAssociatedModelItems(cs,*bc,std::back_inserter(mdl_itms));
+      for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itms.end(); ++mdl_itm)
+      {
+        SimBC * nw_bc = new SimBC;
+        nw_bc->tp = tp;
+        nw_bc->sbtp = 0;
+        nw_bc->bc_nd = *bc;
+        nw_bc->itm = *mdl_itm;
+        nw_bc->fld = nm;
+        *out++ = nw_bc;
       }
     }
   }

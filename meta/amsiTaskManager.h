@@ -1,8 +1,8 @@
-#ifndef TASKMANAGER_H_
-#define TASKMANAGER_H_
-#include "Task.h"
-#include "ProcessSet.h"
-#include "ProcessAllocator.h"
+#ifndef AMSI_TASKMANAGER_H_
+#define AMSI_TASKMANAGER_H_
+#include "amsiTask.h"
+#include "amsiProcessSet.h"
+#include "amsiProcessAllocator.h"
 #include "amsiMetaConfig.h"
 #include "amsiHost.h"
 #include "amsiScale.h"

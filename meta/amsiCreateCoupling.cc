@@ -1,6 +1,6 @@
 #include "amsiCreateCoupling.h"
 #include "amsiCoupling.h"
-#include "DataDistribution.h"
+#include "amsiDataDistribution.h"
 #include <cassert>
 #include <iostream>
 #include <limits.h>

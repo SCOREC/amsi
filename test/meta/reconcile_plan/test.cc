@@ -1,5 +1,5 @@
 #include "test.h"
-#include "Assemblable.h"
+#include "amsiAssemblable.h"
 int main(int argc, char ** argv)
 {
   int failed = 0;

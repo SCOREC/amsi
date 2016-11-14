@@ -1,5 +1,5 @@
-#ifndef ADDDATA_LOADBALANCING_H_
-#define ADDDATA_LOADBALANCING_H_
+#ifndef AMSI_ADDDATA_LOADBALANCING_H_
+#define AMSI_ADDDATA_LOADBALANCING_H_
 #include <cassert>
 #include <iterator>
 #include <vector>

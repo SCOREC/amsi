@@ -1,6 +1,6 @@
-#include "Task.h"
-#include "DataDistribution.h"
-#include "ProcessSet.h"
+#include "amsiTask.h"
+#include "amsiDataDistribution.h"
+#include "amsiProcessSet.h"
 #include <cassert>
 #include <iostream>
 #ifdef ZOLTAN

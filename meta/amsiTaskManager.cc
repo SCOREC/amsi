@@ -1,5 +1,5 @@
-#include "Task.h"
-#include "TaskManager.h"
+#include "amsiTask.h"
+#include "amsiTaskManager.h"
 #include "amsiMeta.h"
 #include <amsiMPI.h>
 #include <cassert>
