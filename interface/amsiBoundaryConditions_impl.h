@@ -7,12 +7,12 @@ namespace amsi
   template <typename O>
     void getApplicableBCTypesForField(int fld_tp, int bc_tp, O out)
   {
-    if(fld_tp == DISPLACEMENT && bc_tp == DIRICHLET)
-      *out++ = DISPLACEMENT;
-    else if(fld_tp == DISPLACEMENT && bc_tp == NEUMANN)
+    if(fld_tp == FieldUnit::displacement && bc_tp == BCType::dirichlet)
+      *out++ = displacement;
+    else if(fld_tp == FieldUnit::displacement && bc_tp == BCType::neumann)
     {
-      *out++ = SURFACE_TRACTION;
-      *out++ = NORMAL_PRESSURE;
+      *out++ = NeuBCType::traction;
+      *out++ = NeuBCType::pressure;
     }
   }
 }

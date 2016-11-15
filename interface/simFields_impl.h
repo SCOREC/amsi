@@ -17,9 +17,9 @@ namespace amsi
       FieldSpec spc;
       buildFieldSpecFromSimNode((pANode)*fld,spc);
       *out++ = buildFieldFromSpec(msh,&spc);
-      if(spc.tp == DELTA)
+      if(spc.tp == FieldType::delta)
       {
-        spc.tp = FULL;
+        spc.tp = FieldType::full;
         *out++ = buildFieldFromSpec(msh,&spc);
       }
     }

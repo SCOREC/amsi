@@ -2,6 +2,7 @@ set(util_public_headers
   amsiByteStream.h
   amsiConversionIterator.h
   amsiDistributed.h
+  amsiEnumOps.h
   amsiFileSys.h
   amsiUtil.h
   amsiUtilConfig.h

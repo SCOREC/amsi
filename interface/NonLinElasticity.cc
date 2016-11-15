@@ -22,10 +22,10 @@ namespace amsi
     elemental_system = new NonLinElasticIntegrator(apf_primary_field,1,youngs_modulus,poisson_ratio);
     if(pd)
     {
-      int dir_tps[] = {amsi::DISPLACEMENT};
-      amsi::buildSimBCQueries(pd,amsi::DIRICHLET,&dir_tps[0],(&dir_tps[0])+1,std::back_inserter(dir_bcs));
-      int neu_tps[] = {amsi::SURFACE_TRACTION,amsi::NORMAL_PRESSURE};
-      amsi::buildSimBCQueries(pd,amsi::NEUMANN,&neu_tps[0],(&neu_tps[0])+1,std::back_inserter(neu_bcs));
+      int dir_tps[] = {amsi::FieldUnit::displacement};
+      amsi::buildSimBCQueries(pd,amsi::BCType::dirichlet,&dir_tps[0],(&dir_tps[0])+1,std::back_inserter(dir_bcs));
+      int neu_tps[] = {amsi::NeuBCType::traction,amsi::NeuBCType::pressure};
+      amsi::buildSimBCQueries(pd,amsi::BCType::neumann,&neu_tps[0],(&neu_tps[0])+1,std::back_inserter(neu_bcs));
     }
     setSimulationTime(0.01);
   }

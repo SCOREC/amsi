@@ -1,8 +1,16 @@
 #ifndef AMSI_BOUNDARY_CONDITIONS_H_
 #define AMSI_BOUNDARY_CONDITIONS_H_
+#include <amsiEnumOps.h>
 #include <string>
 namespace amsi
 {
+  #define BC_TYPES(OP) OP(dirichlet), OP(neumann), OP(num_bc_types)
+  #define NEU_TYPES(OP) OP(custom), OP(traction), OP(pressure), OP(num_neu_types)
+  enum BCType{BC_TYPES(MAKE_ENUM_OP)};
+  const char * const BCTypes[] = {BC_TYPES(MAKE_STRING_OP)};
+  enum NeuBCType{NEU_TYPES(MAKE_ENUM_OP)};
+  const char * const NeuTypes[] = {NEU_TYPES(MAKE_STRING_OP)};
+  /*
   enum BCTypes
   {
     DIRICHLET = 0,
@@ -16,6 +24,7 @@ namespace amsi
     NORMAL_PRESSURE = 2,
     NUM_NEUMANN_TYPES = 3
   };
+  */
   int numBCComponents(int tp, int sbtp);
   int numDirichletComponents(int tp);
   int numNeumannComponents(int tp);

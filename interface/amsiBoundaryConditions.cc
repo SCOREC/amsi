@@ -4,9 +4,9 @@ namespace amsi
 {
   int numBCComponents(int tp, int sbtp)
   {
-    if(tp == DIRICHLET)
+    if(tp == BCType::dirichlet)
       return numDirichletComponents(sbtp);
-    else if(tp == NEUMANN)
+    else if(tp == BCType::neumann)
       return numNeumannComponents(sbtp);
     else
       return 0;
@@ -15,7 +15,8 @@ namespace amsi
   {
     switch(tp)
     {
-    case DISPLACEMENT:
+    case FieldUnit::unitless:
+    case FieldUnit::displacement:
       return 3;
     default:
       return 0;
@@ -25,9 +26,9 @@ namespace amsi
   {
     switch(tp)
     {
-    case SURFACE_TRACTION:
+    case NeuBCType::traction:
       return 3;
-    case NORMAL_PRESSURE:
+    case NeuBCType::pressure:
       return 1;
     default:
       return 0;

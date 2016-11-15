@@ -24,13 +24,11 @@ namespace amsi
     elemental_system = new LinearElasticIntegrator(apf_primary_field,1,youngs_modulus,poisson_ratio);
     // create boundary conditions on existing fields
     std::vector<int> app_dir;
-    getApplicableBCTypesForField(amsi::DISPLACEMENT,amsi::DIRICHLET,std::back_inserter(app_dir));
-    amsi::buildSimBCQueries(pd,amsi::DIRICHLET,app_dir.begin(),app_dir.end(),std::back_inserter(dir_bcs));
+    getApplicableBCTypesForField(amsi::FieldUnit::displacement,amsi::BCType::dirichlet,std::back_inserter(app_dir));
+    amsi::buildSimBCQueries(pd,amsi::BCType::dirichlet,app_dir.begin(),app_dir.end(),std::back_inserter(dir_bcs));
     std::vector<int> app_neu;
-    getApplicableBCTypesForField(amsi::DISPLACEMENT,amsi::NEUMANN,std::back_inserter(app_neu));
-    amsi::buildSimBCQueries(pd,amsi::NEUMANN,app_neu.begin(),app_neu.end(),std::back_inserter(neu_bcs));
-    //int fei_tps[] = {amsi::ISO_LIN_ELASTIC};
-    //amsi::buildSimFeis(pd,&feis[0],(&feis[0])+1),std::back_inserter(feis));
+    getApplicableBCTypesForField(amsi::FieldUnit::displacement,amsi::BCType::neumann,std::back_inserter(app_neu));
+    amsi::buildSimBCQueries(pd,amsi::BCType::neumann,app_neu.begin(),app_neu.end(),std::back_inserter(neu_bcs));
     setSimulationTime(1.0);
   }
 }

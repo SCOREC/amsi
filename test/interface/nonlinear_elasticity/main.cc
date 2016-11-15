@@ -23,10 +23,10 @@ int main (int argc, char ** argv)
   amsi::buildFieldsFromSim(pd,apf_msh,std::back_inserter(flds));
   std::vector<apf::Numbering*> nms;
   amsi::buildNumberingsFromSim(pd,flds.begin(),flds.end(),std::back_inserter(nms));;
-  std::vector<amsi::SimBCQuery*> bcs[amsi::NUM_BC_TYPES]{};
-  amsi::buildBCQueriesFromSim(pd,amsi::DIRICHLET,std::back_inserter(bcs[amsi::DIRICHLET]));
+  std::vector<amsi::SimBCQuery*> bcs[amsi::BCType::num_bc_types]{};
+  amsi::buildBCQueriesFromSim(pd,amsi::BCType::dirichlet,std::back_inserter(bcs[amsi::BCType::dirichlet]));
   std::vector<pANode> bc_nds;
-  amsi::getTypeNodes((pANode)pd,amsi::getBCTypeString(amsi::DIRICHLET),std::back_inserter(bc_nds));
+  amsi::getTypeNodes((pANode)pd,amsi::getBCTypeString(amsi::BCType::dirichlet),std::back_inserter(bc_nds));
   for(auto bc_nd = bc_nds.begin(); bc_nd != bc_nds.end(); ++bc_nd)
   {
     amsi::describeNode(*bc_nd);

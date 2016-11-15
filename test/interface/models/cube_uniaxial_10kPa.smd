@@ -254,7 +254,7 @@ _sim_empty
 0 -1
 <part> attributes 10
 AttDBVersion 10 8
-0 7 0 33 174
+0 7 0 35 176
 1 10 6
 0 
 9 parasolid
@@ -567,6 +567,33 @@ AttDBVersion 10 8
 1 1
 0 
 1
+1 6 176
+0 
+9 direction
+0 
+0 0 1
+0
+0
+1 3 0
+7 3
+0 
+2
+2 -1
+0 
+8 10000*$t
+2 -1
+0 
+1 0
+2 -1
+0 
+1 0
+1 7 175
+0 
+8 traction
+0 
+0 0 1
+0
+1 176
 3 1 2
 14 Volume Meshing
 8 MeshProc
@@ -609,9 +636,9 @@ AttDBVersion 10 8
 5 macro
 0 0 1
 0
-5 154 165 167 169 171
+6 154 165 167 169 171 175
 152
-5 6
+6 7
 1
 1
 3 5  1 154
@@ -627,6 +654,9 @@ AttDBVersion 10 8
 6
 1
 2 2  1 171
+7
+1
+2 2  1 175
 3 1 150
 0 
 6 output
@@ -666,4 +696,4 @@ attributes 3129
 6 native4
 29 ./cube_uniaxial_10kPa_nat.x_t21 nativeModel.parasolid6 # 1 0 0 
 </header>
-7189 7254                                                                                                                      
+7341 7406                                                                                                                      

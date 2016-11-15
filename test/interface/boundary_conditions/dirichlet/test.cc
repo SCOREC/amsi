@@ -24,13 +24,13 @@ int main(int argc, char ** argv)
   // only run the first attribute case
   amsi::initCase(mdl,css[0]);
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
-  int dsp = amsi::DISPLACEMENT;
+  int dsp = amsi::FieldUnit::displacement;
   apf::Mesh * msh =  apf::createMesh(sm_msh);
   apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
   apf::Numbering * nm = apf::createNumbering(u);
   // wrap below here in function ?
   std::vector<amsi::SimBCQuery*> dir_qrys;
-  amsi::buildSimBCQueries(pd,amsi::DIRICHLET,&dsp,(&dsp)+1,std::back_inserter(dir_qrys));
+  amsi::buildSimBCQueries(pd,amsi::BCType::dirichlet,&dsp,(&dsp)+1,std::back_inserter(dir_qrys));
   int fxd = amsi::applySimDirichletBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
   failed += test_neq("Fixed dofs",0,fxd);
   amsi::freeCase(css[0]);

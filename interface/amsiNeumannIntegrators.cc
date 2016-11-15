@@ -26,9 +26,9 @@ namespace amsi
   {
     switch(tp)
     {
-    case SURFACE_TRACTION:
+    case NeuBCType::traction:
       return new SurfaceTraction(las,fld,o,qry,t);
-    case NORMAL_PRESSURE:
+    case NeuBCType::pressure:
       return new Pressure(las,fld,o,qry,t);
     default:
       return NULL;

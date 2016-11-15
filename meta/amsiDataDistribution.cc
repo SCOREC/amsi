@@ -5,6 +5,41 @@
 #endif
 namespace amsi
 {
+  CouplingData::CouplingData(Task * t, int cnt)
+    : Distributed(t->comm())
+    , tsk(t)
+    , lcl_cnt(cnt)
+    , wgts(lcl_cnt)
+  { }
+  void CouplingData::synchronize()
+  {
+    wgts.resize(lcl_cnt);
+    setValid(true);
+  }
+  int CouplingData::operator[](unsigned idx) const
+  {
+    int bfr = 0;
+    MPI_Bcast(&bfr,1,MPI_INTEGER,idx,tsk->comm());
+    return bfr;
+  }
+  int & CouplingData::operator[](unsigned idx)
+  {
+    int rnk = -1;
+    MPI_Comm_rank(tsk->comm(),&rnk);
+    assert(idx == static_cast<unsigned>(rnk));
+    setValid(false);
+    return lcl_cnt;
+  }
+  void CouplingData::setWeight(unsigned idx, double vl)
+  {
+    assert(idx < wgts.size());
+    wgts[idx] = vl;
+  }
+  double CouplingData::getWeight(unsigned idx)
+  {
+    assert(idx < wgts.size());
+    return wgts[idx];
+  }
   DataDistribution::DataDistribution(int size)
     : valid(false)
     , wgts(size)

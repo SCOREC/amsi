@@ -59,7 +59,7 @@ namespace amsi
     {
       SimBCQuery * dir_bc = dynamic_cast<SimBCQuery*>(*it);
       SimBC * sim_bc = dir_bc->getSimBC();
-      assert(sim_bc->tp == DIRICHLET);
+      assert(sim_bc->tp == BCType::dirichlet);
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
       std::list<pEntity> ents;
       getClassifiedDimEnts(msh,(pGEntity)sim_bc->itm,0,dm,std::back_inserter(ents));
@@ -75,7 +75,7 @@ namespace amsi
     {
       SimBCQuery * neu_bc = dynamic_cast<SimBCQuery*>(*it);
       SimBC * sim_bc = neu_bc->getSimBC();
-      assert(sim_bc->tp == NEUMANN);
+      assert(sim_bc->tp == BCType::neumann);
       NeumannIntegrator * i = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
       std::list<pEntity> ents;
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
@@ -89,7 +89,8 @@ namespace amsi
     pAttribute att = GEN_attrib((pGEntity)bc->itm,getBCSubtypeString(bc->tp,bc->sbtp));
     switch(bc->sbtp)
     {
-    case DISPLACEMENT:
+    case FieldUnit::unitless:
+    case FieldUnit::displacement:
       cutPaste<pAttribute>(Attribute_children(att),out);
       break;
     default:
@@ -102,8 +103,9 @@ namespace amsi
     pAttribute att = GEN_attrib((pGEntity)bc->itm,getBCSubtypeString(bc->tp,bc->sbtp));
     switch(bc->sbtp)
     {
-    case SURFACE_TRACTION:
-    case NORMAL_PRESSURE:
+    case NeuBCType::custom:
+    case NeuBCType::traction:
+    case NeuBCType::pressure:
       cutPaste<pAttribute>(Attribute_children(att),out); // either direction or magnitude (traction or follow force)
       break;
     default:
@@ -114,9 +116,9 @@ namespace amsi
     void getBCAttributes(SimBC * bc, O out)
   {
 
-    if(bc->tp == DIRICHLET)
+    if(bc->tp == BCType::dirichlet)
       getDirichletBCAttributes(bc,out);
-    else if(bc->tp == NEUMANN)
+    else if(bc->tp == BCType::neumann)
       getNeumannBCAttributes(bc,out);
   }
   template <class O>

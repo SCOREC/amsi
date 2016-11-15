@@ -3,6 +3,7 @@
 #include <cstdarg>
 namespace amsi
 {
+  /*
   char const * bc_tps[] =
   {
     "dirichlet",
@@ -10,9 +11,11 @@ namespace amsi
   };
   char const * neu_bc_attrs[] =
   {
+    "custom",
     "surface traction",
     "pressure"
   };
+  */
   char const * dis_bc_attrs[] =
   {
     "x",
@@ -28,31 +31,31 @@ namespace amsi
   }
   char const * getBCTypeString(int tp)
   {
-    assert(tp < NUM_BC_TYPES);
-    return bc_tps[tp];
+    assert(tp < BCType::num_bc_types);
+    return BCTypes[tp];
   }
   char const * getBCSubtypeString(int tp, int sbtp)
   {
     switch(tp)
     {
-    case DIRICHLET:
-      return fieldUnitString(sbtp);
-    case NEUMANN:
-      return getNeumannTypeString(sbtp);
+    case BCType::dirichlet:
+      return fieldUnitString(static_cast<FieldUnit>(sbtp));
+    case BCType::neumann:
+      return getNeumannTypeString(static_cast<FieldType>(sbtp));
     default:
       return NULL;
     }
   }
   char const * getNeumannTypeString(int tp)
   {
-    assert(tp < NUM_NEUMANN_TYPES && tp >= 0);
-    return neu_bc_attrs[tp];
+    assert(tp < NeuBCType::num_neu_types && tp >= 0);
+    return NeuTypes[tp];
   }
   SimBCQuery * buildSimDirichletBCQuery(SimBC * bc)
   {
     switch(bc->sbtp)
     {
-    case DISPLACEMENT:
+    case FieldUnit::displacement:
       return new SimDisplacementQuery(bc);
     default:
       return NULL;
@@ -62,9 +65,9 @@ namespace amsi
   {
     switch(bc->sbtp)
     {
-    case SURFACE_TRACTION:
+    case NeuBCType::traction:
       return new SimTensor1Query(bc);
-    case NORMAL_PRESSURE:
+    case NeuBCType::pressure:
       return new SimTensor0Query(bc);
     default:
       return NULL;
@@ -72,9 +75,9 @@ namespace amsi
   }
   SimBCQuery * buildSimBCQuery(SimBC * bc)
   {
-    if(bc->tp == DIRICHLET)
+    if(bc->tp == BCType::dirichlet)
       return buildSimDirichletBCQuery(bc);
-    else if(bc->tp == NEUMANN)
+    else if(bc->tp == BCType::neumann)
       return buildSimNeumannBCQuery(bc);
     return NULL;
   }
