@@ -11,6 +11,9 @@ namespace amsi
 {
   class CommPattern : public Assemblable
   {
+  protected:
+    int s1;
+    int s2;
   public:
     CommPattern(int so, int st)
       : s1(so)
@@ -20,9 +23,6 @@ namespace amsi
     virtual int operator()(int,int) const = 0;
     int getNumSenders() const {return s1;}
     int getNumRecvers() const {return s2;}
-  protected:
-    int s1;
-    int s2;
   };
   class FullCommPattern : public CommPattern
   {

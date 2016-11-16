@@ -3,6 +3,7 @@
 #include "amsiAssemblable.h"
 #include "amsiDistributed.h"
 #include "amsiMetaConfig.h"
+#include "amsiScale.h"
 #include "amsiTask.h"
 #include <PCU.h>
 #include <valarray>
@@ -12,19 +13,18 @@ struct Zoltan_Struct;
 #endif
 namespace amsi
 {
-  class CouplingData : public Distributed
+  class DistributedData : public Distributed
   {
   private:
-    Task * tsk;
+    Scale * scl;
     int lcl_cnt;
     std::valarray<int> wgts;
   public:
-    CouplingData(Task * t,
-                 int cnt = 0);
+    DistributedData(Scale * s,int cnt = 0);
     virtual void synchronize();
     int operator[](unsigned) const;
     int& operator[](unsigned);
-    void setWeight(unsigned,double wgt);
+    void setWeight(unsigned,double);
     double getWeight(unsigned);
   };
   class DataDistribution : public Assemblable
@@ -53,5 +53,4 @@ namespace amsi
 #   endif
   };
 } // namespace amsi
-
 #endif
