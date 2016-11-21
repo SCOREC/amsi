@@ -40,17 +40,20 @@ namespace amsi
     assert(idx < wgts.size());
     return wgts[idx];
   }
-  DataDistribution::DataDistribution(int size)
-    : valid(false)
-    , wgts(size)
-    , dd(size)
-  {  }
 # ifdef ZOLTAN
-  DataDistribution::DataDistribution(int size, Zoltan_Struct * z)
+  DataDistribution::DataDistribution(int size, bool w, Zoltan_Struct * z)
     : valid(false)
-    , wgts(size)
+    , wgtd(w)
+    , wgts(wgtd ? size : 0)
     , dd(size)
     , zs(z)
+  { }
+#else
+  DataDistribution::DataDistribution(int size, bool w)
+    : valid(false)
+    , wgtd(w)
+    , wgts(wgtd ? size : 0)
+    , dd(size)
   { }
 #endif
   void DataDistribution::Assemble(MPI_Comm comm)
