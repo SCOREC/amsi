@@ -17,6 +17,28 @@ namespace amsi
     virtual bool converged() = 0;
     virtual bool failed() {return false;}
   };
+  class MultiConvergence : public Convergence
+  {
+  private:
+    Convergence * one;
+    Convergence * two;
+  public:
+    MultiConvergence(Convergence * o, Convergence * t)
+      : Convergence()
+      , one(o)
+      , two(t)
+    {}
+    virtual bool converged()
+    {
+      bool frst = one->converged();
+      return frst ? two->converged() : frst;
+    }
+    virtual bool failed()
+    {
+      bool frst = one->failed();
+      return frst ? frst : two->failed();
+    }
+  };
   class LinearConvergence : public Convergence
   {
   public:
