@@ -42,12 +42,13 @@ namespace amsi
     int operator[](unsigned index) const;
     int& operator[](unsigned index);
     // preliminary version to get weighted migration working, HACKY and poorly implemented
-    bool isWeighted();
+    bool isWeighted() { return wgtd;}
     void setWeight(unsigned index, unsigned sub_index, double wgt);
     double getWeight(unsigned index, unsigned sub_index);
   protected:
     DataDistribution();
     bool valid;
+    bool wgtd;
     std::valarray<std::vector<double> > wgts;
     std::valarray<int> dd;
 #   ifdef ZOLTAN
