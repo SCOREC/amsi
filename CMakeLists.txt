@@ -53,8 +53,8 @@ add_subdirectory(util)
 message(STATUS "Configuring meta")
 add_subdirectory(meta)
 
-message(STATUS "Configuring interface")
-add_subdirectory(interface)
+message(STATUS "Configuring analysis")
+add_subdirectory(analysis)
 
 message(STATUS "Configuring control")
 add_subdirectory(control)
