@@ -1,7 +1,8 @@
 #include "amsiControlService.h"
 #include "amsiAssemblable.h"
-#include "amsiPlanMigration.h"
 #include "amsiDataDistribution.h"
+#include "amsiOutput.h"
+#include "amsiPlanMigration.h"
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
@@ -76,19 +77,15 @@ namespace amsi
     comm_man->InitInterComms(task_man);
     if(task_man->lockConfiguration())
     {
-      // TODO: Change this so the user can specificy which processes to allow to output to stdout
-      // redirect std::cout to /dev/null in silent processes,
-      // supposedely just setting the failbit will suppress all standard library functions using cout
       if(suppress_output)
       {
-        int local_rank = task_man->getLocalTask()->localRank();
-        if(local_rank > 0)
-          std::cout.setstate(std::ios_base::failbit);
+        if(getLocal()->localRank() > 0)
+          suppressOutput(std::cout);
       }
-#       ifdef ZOLTAN
+#     ifdef ZOLTAN
       float version = 0.0;
       Zoltan_Initialize(0,NULL,&version);
-#       endif
+#     endif
       result += task_man->Execute(argc,argv);
     }
     else
