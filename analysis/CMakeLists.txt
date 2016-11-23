@@ -1,7 +1,10 @@
-set(interface_public_headers
-    amsiInterface.h
-    amsiInterfaceConfig.h
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiAnalysisConfig.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/amsiAnalysisConfig.h
+               @ONLY)
+
+set(analysis_public_headers
     amsiAnalysis.h
+    amsiAnalysisConfig.h
     amsiBoundaryConditions.h
     amsiBoundaryConditions_impl.h
     amsiDummyLAS.h
@@ -52,8 +55,8 @@ set(interface_public_headers
     NonLinElasticity.h
    )
 
-set(interface_src_files
-    amsiInterface.cc
+set(analysis_src_files
+    amsiAnalysis.cc
     amsiBoundaryConditions.cc
     amsiFiniteElementAnalysis.cc
     amsiFields.cc
@@ -92,31 +95,26 @@ set(interface_src_files
 find_package(PETSc REQUIRED)
 find_package(zoltan)
 find_package(SCOREC CONFIG REQUIRED)
-#find_package(SimModSuite REQUIRED)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiInterfaceConfig.h.in
-               ${CMAKE_CURRENT_SOURCE_DIR}/amsiInterfaceConfig.h
-               @ONLY)
 
 # Add the library to create
-add_library(interface ${interface_src_files})
+add_library(analysis ${analysis_src_files})
 
 # properties for downstream packages
-target_include_directories(interface PUBLIC
+target_include_directories(analysis PUBLIC
                                      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                      $<INSTALL_INTERFACE:include/amsi>)
 
-target_link_libraries(interface PUBLIC util meta SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LIBRARIES})
-target_include_directories(interface PUBLIC ${PETSC_INCLUDE_DIRS})
+target_link_libraries(analysis PUBLIC util SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LIBRARIES})
+target_include_directories(analysis PUBLIC ${PETSC_INCLUDE_DIRS})
 
 
-install(TARGETS interface
-        EXPORT amsiinterfaceTargets
+install(TARGETS analysis
+        EXPORT amsianalysisTargets
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         INCLUDES DESTINATION include/amsi)
 
-install(EXPORT amsiinterfaceTargets
+install(EXPORT amsianalysisTargets
         DESTINATION ${ConfigPackageLocation})
 
-install(FILES ${interface_public_headers} DESTINATION include/amsi)
+install(FILES ${analysis_public_headers} DESTINATION include/amsi)
