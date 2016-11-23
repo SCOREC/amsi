@@ -1,8 +1,8 @@
 #include "test.h"
-#include "amsiMeta.h"
+#include "amsiControl.h"
 int main(int argc, char ** argv)
 {
-  amsi::metaInit(argc,argv);
-  amsi::metaFree();
+  amsi::controlInit(argc,argv);
+  amsi::controlFree();
   return 0;
 }
