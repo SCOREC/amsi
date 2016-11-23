@@ -5,5 +5,6 @@
 namespace amsi
 {
   void suppressOutput(std::ostream & io);
+  void expressOutput(std::ostream & io);
 }
 #endif
