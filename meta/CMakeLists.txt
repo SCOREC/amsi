@@ -2,6 +2,8 @@ set(meta_public_headers
   amsiMeta.h
   amsiMetaConfig.h
   amsiAddData.h
+  amsiControlService.h
+  amsiControlService_impl.h
   amsiCoupling.h
   amsiCouplingData.h
   amsiCreateCoupling.h
@@ -20,6 +22,7 @@ set(meta_public_headers
 set(meta_source_files
   amsiMeta.cc
   amsiAddData.cc
+  amsiControlService.cc
   amsiCoupling.cc
   amsiCreateCoupling.cc
   amsiScale.cc

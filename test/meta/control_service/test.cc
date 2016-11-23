@@ -1,7 +1,6 @@
 #include "test.h"
 #include "amsi.h"
 #include "amsiMeta.h"
-#include "amsiControl.h"
 #include "amsiControlService.h"
 #include <iostream>
 #include <utility>
@@ -68,7 +67,7 @@ int task2_run(int &, char **&, MPI_Comm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::controlInit(argc,argv);
+  amsi::metaInit(argc,argv);
   Task * t1 = amsi::tm->getTask("task1");
   Task * t2 = amsi::tm->getTask("task2");
   ControlService * cs = ControlService::Instance();
@@ -78,6 +77,6 @@ int main(int argc, char * argv[])
   t2->setExecutionFunction(&task2_run);
   failed += cs->Execute(argc,argv);
   test("Number failed",0,failed);
-  amsi::controlFree();
+  amsi::metaFree();
   return failed;
 }
