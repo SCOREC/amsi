@@ -1,6 +1,6 @@
 #ifndef AMSI_CONTROLSERVICE_AMSI_H_
 #define AMSI_CONTROLSERVICE_AMSI_H_
-#include "amsiInterfaceConfig.h"
+#include "amsiAnalysisConfig.h"
 #include "amsiMetaConfig.h"
 #include "amsiCoupling.h"
 #include "amsiAssemblable.h"

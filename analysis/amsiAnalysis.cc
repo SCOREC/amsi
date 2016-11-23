@@ -1,28 +1,22 @@
-#include "amsiInterface.h"
-#include "amsiMeta.h"
+#include "amsiAnalysis.h"
 #include "sim.h"
 #include "amsiMPI.h"
 #include <gmi_null.h>
 #include <gmi_sim.h>
 namespace amsi
 {
-  void interfaceInit(int argc, char ** argv, MPI_Comm cm)
+  // call inside of a scale/task main, not in the binary main
+  void analysisInit(int argc, char ** argv, MPI_Comm cm)
   {
-    metaInit(argc,argv,cm);
 #   ifdef PETSC
     if(use_petsc)
-    {
-      if(from_file)
-        petscInit(argc,argv,getLocal()->comm());
-      else
-        petscInit(argc,argv,cm);
-    }
+      petscInit(argc,argv,AMSI_COMM_SCALE);
 #   endif
     if(use_simmetrix)
       simmetrixInit(argc,argv,cm);
     gmi_register_null();
   }
-  void interfaceFree()
+  void analysisFree()
   {
     if(use_simmetrix)
       simmetrixFree();
@@ -30,7 +24,6 @@ namespace amsi
     if(use_petsc)
       petscFree();
 #   endif
-    metaFree();
   }
 # ifdef PETSC
   bool use_petsc = false;

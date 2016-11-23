@@ -20,5 +20,4 @@ endfunction(add_mpi_test)
 add_subdirectory(util)
 add_subdirectory(meta)
 add_subdirectory(analysis)
-add_subdirectory(control)
 

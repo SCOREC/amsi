@@ -21,3 +21,18 @@ target_link_libraries(task_manager util meta)
 
 add_mpi_test(communication_manager communication_manager/test.cc 32)
 target_link_libraries(communication_manager util meta)
+
+add_mpi_test(control_service test.cc 32 -a control_service/amsi_options_8_24)
+target_link_libraries(control_service util meta)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/control_service/amsi_options_8_24
+               ${CMAKE_CURRENT_BINARY_DIR}/control_service/amsi_options_8_24 COPYONLY)
+
+add_mpi_test(reconcile_pattern test.cc 32 -a reconcile_pattern/amsi_options_8_24)
+target_link_libraries(reconcile_pattern util meta)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/reconcile_pattern/amsi_options_8_24
+               ${CMAKE_CURRENT_BINARY_DIR}/reconcile_pattern/amsi_options_8_24 COPYONLY)
+
+add_mpi_test(reciprocal_comm recip_comm/test.cc 8 -a recip_comm/amsi_options_3_5)
+target_link_libraries(reciprocal_commm util meta)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/recip_comm/amsi_options_3_5
+               ${CMAKE_CURRENT_BINARY_DIR}/recip_comm/amsi_options_3_5 COPYONLY)

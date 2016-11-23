@@ -1,7 +1,7 @@
-#ifndef AMSI_INTERFACE_H_
-#define AMSI_INTERFACE_H_
+#ifndef AMSI_ANALYSIS_H_
+#define AMSI_ANALYSIS_H_
 #include "amsiFields.h"
-#include "amsiInterfaceConfig.h"
+#include "amsiAnalysisConfig.h"
 #include "amsiUtil.h"
 #include "amsiMPI.h"
 #include "amsiPETScLAS.h"
@@ -10,8 +10,8 @@
 #include "simFields.h"
 namespace amsi
 {
-  void interfaceInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
-  void interfaceFree();
+  void analysisInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void analysisFree();
 # ifdef PETSC
   void petscInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
   void petscFree();

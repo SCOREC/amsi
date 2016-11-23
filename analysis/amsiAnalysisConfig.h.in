@@ -1,6 +1,5 @@
-#ifndef AMSIINTERFACECONFIGH_H_IN_
-#define AMSIINTERFACECONFIGH_H_IN_
-#include "amsiMetaConfig.h"
+#ifndef AMSI_ANALYSISCONFIG_H_
+#define AMSI_ANALYSISCONFIG_H_
 #if @PETSC_FOUND@ == TRUE
 #  define PETSC
 #endif

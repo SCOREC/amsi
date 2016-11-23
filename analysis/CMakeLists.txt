@@ -1,3 +1,7 @@
+find_package(PETSc REQUIRED)
+find_package(zoltan)
+find_package(SCOREC CONFIG REQUIRED)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiAnalysisConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiAnalysisConfig.h
                @ONLY)
@@ -91,10 +95,6 @@ set(analysis_src_files
     Elasticity.cc
     NonLinElasticity.cc
    )
-
-find_package(PETSc REQUIRED)
-find_package(zoltan)
-find_package(SCOREC CONFIG REQUIRED)
 
 # Add the library to create
 add_library(analysis ${analysis_src_files})

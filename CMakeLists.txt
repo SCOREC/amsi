@@ -56,9 +56,6 @@ add_subdirectory(meta)
 message(STATUS "Configuring analysis")
 add_subdirectory(analysis)
 
-message(STATUS "Configuring control")
-add_subdirectory(control)
-
 if(BUILD_TESTS)
   add_subdirectory(test)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in
