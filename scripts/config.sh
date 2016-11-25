@@ -3,7 +3,7 @@
 # usage: ./config.sh [build_type] [build_tests_flag]
 #
 source $DEVROOT/scripts/util
-ROOT=$DEVROOT/amsi_sim
+ROOT=$DEVROOT/amsi
 TEST_OVERRIDE=$2
 if [ -z $1 ]; then
   BUILD_TYPE=Debug
