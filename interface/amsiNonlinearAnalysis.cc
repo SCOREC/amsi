@@ -1,4 +1,5 @@
 #include "amsiNonlinearAnalysis.h"
+#include <cmath>
 #include <iostream>
 namespace amsi
 {
@@ -39,7 +40,7 @@ namespace amsi
     double nrm = 0.0;
     las->GetVectorNorm(nrm_i);
     las->GetAccumVectorNorm(nrm);
-    bool cnvrgd = nrm == 0.0 ? false : abs(nrm_i - nrm_im) / nrm < eps;
+    bool cnvrgd = nrm == 0.0 ? false : std::abs(nrm_i - nrm_im) / nrm < eps;
     return cnvrgd;
   }
   bool IncrementalResidualConvergence::failed()

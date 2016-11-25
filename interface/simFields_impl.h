@@ -24,6 +24,16 @@ namespace amsi
       }
     }
   }
+# ifdef BGQ
+  struct fld_cmpr
+  {
+    std::string nm;
+    bool operator()(apf::Field *& f)
+    {
+      return nm == apf::getName(f);
+    }
+  };
+# endif
   template <class I, class O>
     void buildNumberingsFromSim(pACase cs, I fld_bgn, I fld_nd, O out)
   {
@@ -37,7 +47,13 @@ namespace amsi
         FieldSpec spc;
         buildFieldSpecFromSimNode((pANode)*fld,spc);
         std::string nm = composeFieldName(spc.nt,spc.tp,spc.nm);
+#       ifdef BGQ
+        fld_cmpr cmp;
+	cmp.nm = nm;
+        auto apf_fld = std::find_if(fld_bgn,fld_nd,cmp);
+#       else
         auto apf_fld = std::find_if(fld_bgn,fld_nd,[&](apf::Field *& f)->bool { return nm == apf::getName(f); });
+#       endif
         if(apf_fld != fld_nd)
           *out++ = apf::createNumbering(*apf_fld);
       }
