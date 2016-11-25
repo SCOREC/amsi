@@ -18,7 +18,7 @@ fi
 cd $BUILD_DIR
 
 notifybuild \
-"../util/ ../multiscale/ ../analysis/ ../control/ ../test/analysis/linear_elasticity/ ../test/analysis/nonlinear_elasticity/ ../test/analysis/boundary_conditions/neumann/ ../test/analysis/boundary_conditions/dirichlet ../test/analysis/mesh_adaptivity/" \
+"../util/ ../multiscale/ ../analysis/ ../test/analysis/linear_elasticity/ ../test/analysis/nonlinear_elasticity/ ../test/analysis/boundary_conditions/neumann/ ../test/analysis/boundary_conditions/dirichlet ../test/analysis/mesh_adaptivity/" \
 '' \
 'make install' \
 "AMSI_$BUILD_TYPE"
