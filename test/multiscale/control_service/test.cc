@@ -1,6 +1,5 @@
 #include "test.h"
-#include "amsi.h"
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include "amsiControlService.h"
 #include <iostream>
 #include <utility>

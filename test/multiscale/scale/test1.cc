@@ -1,5 +1,5 @@
 #include "test.h"
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include <iterator>
 #include <vector>
 int main(int argc, char * argv[])

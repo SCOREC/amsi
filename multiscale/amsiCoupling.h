@@ -1,7 +1,7 @@
 #ifndef AMSI_COMMPATTERN_H_
 #define AMSI_COMMPATTERN_H_
 #include "amsiAssemblable.h"
-#include "amsiMetaConfig.h"
+#include "amsiMultiscaleConfig.h"
 #include "amsiCommunicationManager.h"
 #include <mpi.h>
 #include <PCU.h>

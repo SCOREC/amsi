@@ -1,5 +1,5 @@
 #include "test.h"
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include "amsiTaskManager.h"
 #include <iostream>
 #include <utility>

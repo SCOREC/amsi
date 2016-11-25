@@ -1,6 +1,6 @@
 #ifndef AMSI_SCALE_H_
 #define AMSI_SCALE_H_
-#include "amsiMetaConfig.h"
+#include "amsiMultiscaleConfig.h"
 #include <amsiDistributed.h>
 #include <amsiHost.h>
 #include <amsiMPI.h>

@@ -2,7 +2,7 @@
 #define AMSI_DATADISTRIBUTION_H_
 #include "amsiAssemblable.h"
 #include "amsiDistributed.h"
-#include "amsiMetaConfig.h"
+#include "amsiMultiscaleConfig.h"
 #include "amsiScale.h"
 #include "amsiTask.h"
 #include <PCU.h>

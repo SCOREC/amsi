@@ -1,6 +1,11 @@
-set(meta_public_headers
-  amsiMeta.h
-  amsiMetaConfig.h
+find_package(zoltan)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h
+               @ONLY)
+
+set(multiscale_public_headers
+  amsiMultiscale.h
+  amsiMultiscaleConfig.h
   amsiAddData.h
   amsiControlService.h
   amsiControlService_impl.h
@@ -19,8 +24,8 @@ set(meta_public_headers
   amsiAssemblable.h
   )
 
-set(meta_source_files
-  amsiMeta.cc
+set(multiscale_source_files
+  amsiMultiscale.cc
   amsiAddData.cc
   amsiControlService.cc
   amsiCoupling.cc
@@ -36,33 +41,27 @@ set(meta_source_files
   amsiAssemblable.cc
   )
 
-find_package(zoltan)
+add_library(multiscale ${multiscale_source_files})
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h.in
-               ${CMAKE_CURRENT_SOURCE_DIR}/amsiMetaConfig.h
-               @ONLY)
-
-add_library(meta ${meta_source_files})
-
-target_include_directories(meta PUBLIC
+target_include_directories(multiscale PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                 $<INSTALL_INTERFACE:include/amsi>)
-target_link_libraries(meta PUBLIC util)
+target_link_libraries(multiscale PUBLIC util)
 
 if(ZOLTAN_FOUND)
-  target_link_libraries(meta PUBLIC ${ZOLTAN_LIBRARIES})
-  target_include_directories(meta PUBLIC ${ZOLTAN_INCLUDE_DIRS})
+  target_link_libraries(multiscale PUBLIC ${ZOLTAN_LIBRARIES})
+  target_include_directories(multiscale PUBLIC ${ZOLTAN_INCLUDE_DIRS})
 endif()
 
-set_property(TARGET meta PROPERTY VERSION ${AMSI_VERSION})
+set_property(TARGET multiscale PROPERTY VERSION ${AMSI_VERSION})
 
-install(TARGETS meta
-        EXPORT amsimetaTargets
+install(TARGETS multiscale
+        EXPORT amsimultiscaleTargets
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         INCLUDES DESTINATION include/amsi)
 
-install(EXPORT amsimetaTargets
+install(EXPORT amsimultiscaleTargets
         DESTINATION ${ConfigPackageLocation})
 
-install(FILES ${meta_public_headers} DESTINATION include/amsi)
+install(FILES ${multiscale_public_headers} DESTINATION include/amsi)

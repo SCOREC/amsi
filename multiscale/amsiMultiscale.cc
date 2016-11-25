@@ -1,4 +1,4 @@
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include <amsiFileSys.h>
 #include <amsiMPI.h>
 #include <amsiReporter.h>

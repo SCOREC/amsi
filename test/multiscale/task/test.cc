@@ -1,5 +1,5 @@
 #include "test.h"
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include <iostream>
 #include <utility>
 using namespace amsi;

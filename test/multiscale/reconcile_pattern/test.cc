@@ -1,4 +1,4 @@
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include "amsiControlService.cc"
 int task1(int & argc, char **& argv, MPI_Comm cm)
 {

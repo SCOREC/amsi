@@ -1,6 +1,6 @@
 #ifndef AMSI_TASK_H_
 #define AMSI_TASK_H_
-#include "amsiMetaConfig.h"
+#include "amsiMultiscaleConfig.h"
 #include "amsiHost.h"
 #include <PCU.h>
 #include <amsiMPI.h>

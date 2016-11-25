@@ -1,6 +1,6 @@
 #include "amsiTask.h"
 #include "amsiTaskManager.h"
-#include "amsiMeta.h"
+#include "amsiMultiscale.h"
 #include <amsiMPI.h>
 #include <cassert>
 #include <iostream>
