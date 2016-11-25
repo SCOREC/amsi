@@ -6,39 +6,41 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h.in
 set(multiscale_public_headers
   amsiMultiscale.h
   amsiMultiscaleConfig.h
+  amsiAssemblable.h
   amsiAddData.h
+  amsiCommunicationManager.h
   amsiControlService.h
   amsiControlService_impl.h
   amsiCoupling.h
   amsiCouplingData.h
   amsiCreateCoupling.h
-  amsiScale.h
+  amsiDataDistribution.h
+  amsiMigration.h
+  amsiPlanMigration.h
   amsiProcessSet.h
   amsiProcessAllocator.h
-  amsiDataDistribution.h
+  amsiScale.h
   amsiTask.h
   amsiTaskGroup.h
   amsiTaskManager.h
-  amsiCommunicationManager.h
-  amsiPlanMigration.h
-  amsiAssemblable.h
   )
 
 set(multiscale_source_files
   amsiMultiscale.cc
+  amsiAssemblable.cc
   amsiAddData.cc
+  amsiCommunicationManager.cc
   amsiControlService.cc
   amsiCoupling.cc
   amsiCreateCoupling.cc
-  amsiScale.cc
-  amsiProcessSet.cc
   amsiDataDistribution.cc
+  amsiMigration.cc
+  amsiPlanMigration.cc
+  amsiProcessSet.cc
+  amsiScale.cc
   amsiTask.cc
   amsiTaskGroup.cc
   amsiTaskManager.cc
-  amsiCommunicationManager.cc
-  amsiPlanMigration.cc
-  amsiAssemblable.cc
   )
 
 add_library(multiscale ${multiscale_source_files})

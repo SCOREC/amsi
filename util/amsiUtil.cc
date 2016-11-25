@@ -5,6 +5,7 @@
 #include <PCU.h>
 namespace amsi
 {
+  FileSystemInfo * fs = NULL;
   void utilInit(int argc, char ** argv, MPI_Comm cm)
   {
     MPI_Init(&argc,&argv);

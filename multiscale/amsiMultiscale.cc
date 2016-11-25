@@ -1,7 +1,5 @@
 #include "amsiMultiscale.h"
-#include <amsiFileSys.h>
-#include <amsiMPI.h>
-#include <amsiReporter.h>
+#include <amsiUtil.h>
 #include <cassert>
 #include <getopt.h>
 #include <pystring.h>
@@ -10,7 +8,6 @@ namespace amsi
 {
   TaskManager * tm = NULL;
   CommunicationManager * cm = NULL;
-  FileSystemInfo * fs = NULL;
   bool from_file = false;
   std::string options_filename;
   bool parse_options(int argc,char ** argv)
