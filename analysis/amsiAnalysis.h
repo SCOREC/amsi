@@ -2,12 +2,11 @@
 #define AMSI_ANALYSIS_H_
 #include "amsiFields.h"
 #include "amsiAnalysisConfig.h"
-#include "amsiUtil.h"
-#include "amsiMPI.h"
 #include "amsiPETScLAS.h"
 #include "apfFields.h"
 #include "simAttributes.h"
 #include "simFields.h"
+#include "amsiNonlinearAnalysis.h"
 namespace amsi
 {
   void initAnalysis(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);

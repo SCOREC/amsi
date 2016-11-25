@@ -3,6 +3,7 @@
 #include "amsiMPI.h"
 #include "amsiFileSys.h"
 #include "amsiReporter.h"
+#include "amsiOutput.h"
 #include "amsiUtilConfig.h"
 namespace amsi
 {
