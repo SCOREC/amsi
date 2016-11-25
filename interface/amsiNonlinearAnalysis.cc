@@ -5,17 +5,17 @@ namespace amsi
 {
   bool numericalSolve(Iteration * it, Convergence * cn)
   {
-    bool failure = false;
+    bool scs = true;
     do
     {
       it->iterate();
       if(cn->failed())
       {
-        failure = true;
+        scs = false;
         break;
       }
     } while(!cn->converged());
-    return failure;
+    return scs;
   }
   bool RelativeResidualConvergence::converged()
   {

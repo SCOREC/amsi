@@ -107,16 +107,16 @@ namespace amsi
     size_t id = 0;
     if(assignedTo())
     {
-      DataDistribution * dd = static_cast<DataDistribution*>(NULL);
+      DataDistribution * dd = NULL;
 #     ifndef ZOLTAN
-      dd = new DataDistribution(proc->size());
+      dd = new DataDistribution(proc->size(),true);
 #     else
       if(!proc->size())
         dd = new DataDistribution(proc->size());
       else
       {
         Zoltan_Struct * zs = Zoltan_Create(task_comm);
-        dd = new DataDistribution(proc->size(),zs);
+        dd = new DataDistribution(proc->size(),true,zs);
         size_t s1 = sizeof(DataDistribution*);
         size_t s2 = sizeof(int);
         void * buffer = (void*) new char[s1+s2];

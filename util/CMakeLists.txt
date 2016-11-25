@@ -12,6 +12,7 @@ set(util_public_headers
   amsiObserver.h
   amsiMPI.h
   amsiMPI_impl.h
+  amsiOutput.h
   amsiPArray.h
   amsiPermute.h
   amsiRankSet.h
@@ -31,6 +32,7 @@ set(util_source_files
   amsiLocality.cc
   amsiUtil.cc
   amsiMPI.cc
+  amsiOutput.cc
   amsiPArray.cc
   amsiRankSet.cc
   amsiReporter.cc
