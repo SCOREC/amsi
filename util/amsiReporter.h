@@ -3,11 +3,12 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include "amsiHost.h"
 namespace amsi
 {
   extern std::string results_dir;
   class log_class;
-  typedef std::shared_ptr<log_class> Log;
+  typedef shared_ptr<log_class> Log;
   const std::string & getName(Log);
   std::iostream & log(Log);
   std::iostream & namedLog(Log);

@@ -18,7 +18,6 @@ function(add_mpi_test name file no_mpi_proc)
 endfunction(add_mpi_test)
 
 add_subdirectory(util)
-add_subdirectory(meta)
-add_subdirectory(interface)
-add_subdirectory(control)
+add_subdirectory(multiscale)
+add_subdirectory(analysis)
 

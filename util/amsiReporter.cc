@@ -3,7 +3,6 @@
 #include "pystring.h"
 #include "amsiTee.h"
 #include <algorithm>
-#include <cassert>
 #include <fstream>
 #include <iomanip>
 #include <limits>
@@ -66,7 +65,6 @@ namespace amsi
   }
   std::iostream & log(Log l)
   {
-    assert(l);
     return l->getBuffer();
   }
   std::iostream & namedLog(Log l)
@@ -76,22 +74,18 @@ namespace amsi
   }
   double post(Log l)
   {
-    assert(l);
     return l->post();
   }
   double getSincePost(Log l)
   {
-    assert(l);
     return l->sincePost();
   }
   double getElapsedTime(Log l)
   {
-    assert(l);
     return l->elapsed();
   }
   double getInitialTime(Log l)
   {
-    assert(l);
     return l->getCreation();
   }
   void writeToStream(Log l, std::ostream & out)
@@ -130,21 +124,20 @@ namespace amsi
   }
   Log activateLog(const std::string & nm)
   {
-    Log result = NULL;
+    Log result;
     result = logs[nm];
     if(result == NULL)
     {
       std::cout << "Creating log: " << nm << std::endl;
-      result = logs[nm] = std::make_shared<log_class>(nm);
+      result = logs[nm] = Log(new log_class(nm));
     }
     return result;
   }
   int deleteLog(Log & l)
   {
-    assert(l);
     int dltd = 0;
     const std::string nm(l->getName());
-    dltd += (logs.erase(nm) == 0);
+    dltd += (logs.erase(nm) == 0); // remove the pointer from the map
     l.reset(); // either delete the log or decrement the shared_ptr counter
     if(l.get() == NULL)
       log_streams.erase(nm);
