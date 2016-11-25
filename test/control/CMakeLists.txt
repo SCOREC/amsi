@@ -1,4 +1,0 @@
-add_subdirectory(init)
-add_subdirectory(reconcile_pattern)
-add_subdirectory(ControlService)
-add_subdirectory(ReciprocalComm)

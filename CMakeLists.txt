@@ -50,14 +50,11 @@ find_package(SCOREC CONFIG REQUIRED)
 message(STATUS "Configuring util")
 add_subdirectory(util)
 
-message(STATUS "Configuring meta")
-add_subdirectory(meta)
+message(STATUS "Configuring multiscale")
+add_subdirectory(multiscale)
 
-message(STATUS "Configuring interface")
-add_subdirectory(interface)
-
-message(STATUS "Configuring control")
-add_subdirectory(control)
+message(STATUS "Configuring analysis")
+add_subdirectory(analysis)
 
 if(BUILD_TESTS)
   add_subdirectory(test)

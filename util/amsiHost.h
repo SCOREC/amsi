@@ -6,11 +6,15 @@
 #include <boost/functional/hash.hpp>
 using boost::hash;
 using boost::unordered_map;
+#include <tr1/memory>
+using std::tr1::shared_ptr;
 #else
 #include <unordered_map>
 #include <functional>
 using std::hash;
 using std::unordered_map;
+#include <memory>
+using std::shared_ptr;
 #endif
 #include <climits>
 int is_big_endian(void);

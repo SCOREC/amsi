@@ -2,7 +2,7 @@
 #include "amsiUtil.h"
 int main(int argc, char ** argv)
 {
-  amsi::utilInit(argc,argv);
-  amsi::utilFree();
+  amsi::initUtil(argc,argv);
+  amsi::freeUtil();
   return 0;
 }

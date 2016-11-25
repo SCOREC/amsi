@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
   amsi::namedLog(echo) << " this should be written to a tty as specified by the first input argument: " << arg1 <<  std::endl;
   {
     std::ofstream e1("tee_echo.log");
-    std::ofstream e2(arg1);
+    std::ofstream e2(arg1.c_str());
     amsi::teestream t(e1,e2);
     amsi::flushToStream(echo,t);
   }
@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
   // init
   amsi::Log multistream = amsi::activateLog("multi_stream_log");
   amsi::addLogStream(multistream,std::cout);
-  std::ofstream multi_outfile(arg1);
+  std::ofstream multi_outfile(arg1.c_str());
   amsi::addLogStream(multistream,multi_outfile);
   // usage
   amsi::write(multistream);
