@@ -35,6 +35,9 @@ namespace amsi
     from_file = parse_options(argc,argv);
     if(from_file)
       configureFromFile(options_filename);
+    ControlService * cs = ControlService::Instance();
+    cs->SetTaskManager(amsi::tm);
+    cs->SetCommunicationManager(amsi::cm);
   }
   void freeMultiscale()
   {
