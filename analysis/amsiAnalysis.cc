@@ -6,7 +6,7 @@
 namespace amsi
 {
   // call inside of a scale/task main, not in the binary main
-  void analysisInit(int argc, char ** argv, MPI_Comm cm)
+  void initAnalysis(int argc, char ** argv, MPI_Comm cm)
   {
 #   ifdef PETSC
     if(use_petsc)
@@ -16,7 +16,7 @@ namespace amsi
       simmetrixInit(argc,argv,cm);
     gmi_register_null();
   }
-  void analysisFree()
+  void freeAnalysis()
   {
     if(use_simmetrix)
       simmetrixFree();

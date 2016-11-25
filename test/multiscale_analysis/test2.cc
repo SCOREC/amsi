@@ -1,6 +1,5 @@
 #include "test.h"
-#include "amsiInterface.h"
-#include "amsiMeta.h"
+#include "amsiAnalysis.h"
 #include <cassert>
 int task(int & argc, char **& argv, MPI_Comm)
 {
@@ -18,11 +17,11 @@ int main(int argc, char * argv[])
   int failed = 0;
   assert(argc == 3);
   amsi::use_simmetrix = true;
-  amsi::interfaceInit(argc,argv);
+  amsi::initAnalysis(argc,argv);
   amsi::TaskManager tm(AMSI_COMM_WORLD);
   amsi::Task * tsk = tm.createTask("task",2);
   tsk->setExecutionFunction(&task);
   failed += tm.Execute(argc,argv);
-  amsi::interfaceFree();
+  amsi::freeAnalysis();
   return failed;
 }

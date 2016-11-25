@@ -1,6 +1,6 @@
 #include "test.h"
 #include "amsi.h"
-#include "amsiControl.h"
+#include "amsiMeta.h"
 #include "amsiControlService.h"
 #include "amsiMeta.h"
 #include <mpi.h>
@@ -133,7 +133,7 @@ int task2_run(int &, char **&, MPI_Comm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::controlInit(argc,argv);
+  amsi::initMultiscale(argc,argv);
   std::cout << "Initializing test object(s):" << std::endl;
   // create an MPI datatypes used in the simulation as coupling data
   MPI_Type_contiguous(vsize,MPI_DOUBLE,&sigma_type);
@@ -152,6 +152,6 @@ int main(int argc, char * argv[])
   // Begin execution
   failed += cs->Execute(argc,argv);
   test("Number failed",0,failed);
-  amsi::controlFree();
+  amsi::freeMultiscale();
   return failed;
 }

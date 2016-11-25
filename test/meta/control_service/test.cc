@@ -67,7 +67,7 @@ int task2_run(int &, char **&, MPI_Comm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::metaInit(argc,argv);
+  amsi::initMultiscale(argc,argv);
   Task * t1 = amsi::tm->getTask("task1");
   Task * t2 = amsi::tm->getTask("task2");
   ControlService * cs = ControlService::Instance();
@@ -77,6 +77,6 @@ int main(int argc, char * argv[])
   t2->setExecutionFunction(&task2_run);
   failed += cs->Execute(argc,argv);
   test("Number failed",0,failed);
-  amsi::metaFree();
+  amsi::freeMultiscale();
   return failed;
 }

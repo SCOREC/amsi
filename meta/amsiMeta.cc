@@ -32,14 +32,14 @@ namespace amsi
     opterr = 1;
     return have_options;
   }
-  void metaInit(int argc, char ** argv, MPI_Comm cm)
+  void initMultiscale(int argc, char ** argv, MPI_Comm cm)
   {
     utilInit(argc,argv,cm);
     from_file = parse_options(argc,argv);
     if(from_file)
       configureFromFile(options_filename);
   }
-  void metaFree()
+  void freeMultiscale()
   {
     utilFree();
   }

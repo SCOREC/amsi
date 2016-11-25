@@ -27,12 +27,12 @@ target_link_libraries(cntrl util meta)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/control_service/amsi_options_8_24
                ${CMAKE_CURRENT_BINARY_DIR}/control_service/amsi_options_8_24 COPYONLY)
 
-add_mpi_test(reconcile_pattern reconcile_pattern/test.cc 32 -a reconcile_pattern/amsi_options_8_24)
-target_link_libraries(reconcile_pattern util meta)
+add_mpi_test(rcnl_ptrn reconcile_pattern/test.cc 32 -a reconcile_pattern/amsi_options_8_24)
+target_link_libraries(rcnl_ptrn util meta)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/reconcile_pattern/amsi_options_8_24
                ${CMAKE_CURRENT_BINARY_DIR}/reconcile_pattern/amsi_options_8_24 COPYONLY)
 
-add_mpi_test(recip_comm recip_comm/test.cc 8 -a recip_comm/amsi_options_3_5)
-target_link_libraries(recip_comm util meta)
+add_mpi_test(rcprcl_cmm recip_comm/test.cc 8 -a recip_comm/amsi_options_3_5)
+target_link_libraries(rcprcl_cmm util meta)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/recip_comm/amsi_options_3_5
                ${CMAKE_CURRENT_BINARY_DIR}/recip_comm/amsi_options_3_5 COPYONLY)

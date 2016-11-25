@@ -1,4 +1,4 @@
-#include "amsiInterface.h"
+#include "amsiAnalysis.h"
 #include "NonLinearElastic_UniformAdapt.h"
 #include "Solvers.h"
 #include <mpi.h>
@@ -8,7 +8,7 @@ int main (int argc, char ** argv)
 {
   assert(argc == 3);
   amsi::use_simmetrix = true;
-  amsi::interfaceInit(argc,argv);
+  amsi::initAnalysis(argc,argv);
   Sim_logOn("simmetrix_log");
   {
     pGModel mdl = GM_load(argv[1],0,NULL);
@@ -18,6 +18,6 @@ int main (int argc, char ** argv)
     apf::writeVtkFiles("uniformly_adapted_mesh",fea.getMesh());
     Sim_logOff();
   }
-  amsi::interfaceFree();
+  amsi::freeAnalysis();
   return 0;
 }

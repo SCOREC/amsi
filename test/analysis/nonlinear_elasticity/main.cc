@@ -1,4 +1,4 @@
-#include "amsiInterface.h"
+#include "amsiAnalysis.h"
 #include "NonLinElasticity.h"
 #include "Solvers.h"
 #include <mpi.h>
@@ -9,7 +9,7 @@ int main (int argc, char ** argv)
   int result = 0;
   amsi::use_simmetrix = true;
   amsi::use_petsc = true;
-  amsi::interfaceInit(argc,argv);
+  amsi::initAnalysis(argc,argv);
   Sim_logOn("sim.log");
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
@@ -43,6 +43,6 @@ int main (int argc, char ** argv)
   apf::writeVtkFiles("isotropic_nonlinear_elastic_result",iso_non.getMesh());
   amsi::freeCase(css[0]);
   Sim_logOff();
-  amsi::interfaceFree();
+  amsi::freeAnalysis();
   return result;
 }

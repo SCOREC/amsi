@@ -19,7 +19,7 @@ int task1_run(int &, char **&, MPI_Comm)
 /// test entry point
 int main(int argc, char * argv[])
 {
-  metaInit(argc,argv);
+  initMultiscale(argc,argv);
   int failed = 0;
   int rank = -1;
   MPI_Comm_rank(AMSI_COMM_WORLD,&rank);
@@ -58,6 +58,6 @@ int main(int argc, char * argv[])
   t1->setExecutionFunction(&task1_run);
   tm->Execute(argc,argv);
   test("Number Failed",0,failed);
-  metaFree();
+  freeMultiscale();
   return failed;
 }

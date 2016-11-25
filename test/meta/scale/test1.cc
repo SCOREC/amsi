@@ -5,7 +5,7 @@
 int main(int argc, char * argv[])
 {
   using namespace amsi;
-  metaInit(argc,argv);
+  initMultiscale(argc,argv);
   int failed = 0;
   std::vector<uuid> nodes;
   getNodeSet(nodes,AMSI_COMM_WORLD);
@@ -45,6 +45,6 @@ int main(int argc, char * argv[])
     MPI_Comm_size(cm,&sz);
     failed += test("MPI_Comm_size()",gsz-nm_nds,sz);
   }
-  metaFree();
+  freeMultiscale();
   return failed;
 }

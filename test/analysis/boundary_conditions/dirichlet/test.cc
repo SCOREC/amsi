@@ -1,5 +1,5 @@
 #include "test.h"
-#include "amsiInterface.h"
+#include "amsiAnalysis.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
 #include "simBoundaryConditions.h"
@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
   int failed = 0;
   assert(argc == 3);
   amsi::use_simmetrix = true;
-  amsi::interfaceInit(argc,argv);
+  amsi::initAnalysis(argc,argv);
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2],sthreadNone,mdl,NULL);
   pMesh prt = PM_mesh(sm_msh,0);
@@ -34,6 +34,6 @@ int main(int argc, char ** argv)
   int fxd = amsi::applySimDirichletBCs(nm,prt,dir_qrys.begin(),dir_qrys.end(),0.0);
   failed += test_neq("Fixed dofs",0,fxd);
   amsi::freeCase(css[0]);
-  amsi::interfaceFree();
+  amsi::freeAnalysis();
   return failed;
 }

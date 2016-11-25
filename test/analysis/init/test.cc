@@ -1,8 +1,8 @@
 #include "test.h"
-#include "amsiInterface.h"
+#include "amsiAnalysis.h"
 int main(int argc, char ** argv)
 {
-  amsi::interfaceInit(argc,argv);
-  amsi::interfaceFree();
+  amsi::initAnalysis(argc,argv);
+  amsi::freeAnalysis();
   return 0;
 }

@@ -1,5 +1,5 @@
 #include "test.h"
-#include "amsiInterface.h"
+#include "amsiAnalysis.h"
 #include "amsiDummyLAS.h"
 #include "simAnalysis.h"
 #include "simAttributes.h"
@@ -16,7 +16,7 @@ int main(int argc, char ** argv)
   int failed = 0;
   assert(argc == 3);
   amsi::use_simmetrix = true;
-  amsi::interfaceInit(argc,argv);
+  amsi::initAnalysis(argc,argv);
   Sim_logOn("simlog");
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2],sthreadNone,mdl,NULL);
@@ -41,6 +41,6 @@ int main(int argc, char ** argv)
   failed += test_neq("Force vector norm",0.0,nrm);
   amsi::freeCase(css[0]);
   Sim_logOff();
-  amsi::interfaceFree();
+  amsi::freeAnalysis();
   return failed;
 }

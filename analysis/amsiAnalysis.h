@@ -10,8 +10,8 @@
 #include "simFields.h"
 namespace amsi
 {
-  void analysisInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
-  void analysisFree();
+  void initAnalysis(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void freeAnalysis();
 # ifdef PETSC
   void petscInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
   void petscFree();

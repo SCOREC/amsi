@@ -1,6 +1,5 @@
-#include "amsiControl.h"
+#include "amsiMeta.h"
 #include "amsiControlService.cc"
-#include "amsiInterface.h"
 int task1(int & argc, char **& argv, MPI_Comm cm)
 {
   amsi::ControlService * cs = amsi::ControlService::Instance();
@@ -22,9 +21,7 @@ int task2(int & argc, char **& argv, MPI_Comm cm)
 int main(int argc, char ** argv)
 {
   int failed = 0;
-  amsi::use_petsc = false;
-  amsi::use_simmetrix = false;
-  amsi::controlInit(argc,argv);
+  amsi::initMultiscale(argc,argv);
   amsi::ControlService * cs = amsi::ControlService::Instance();
   cs->setSuppressOutput(false);
   amsi::TaskManager * tm = cs->GetTaskManager();
@@ -33,6 +30,6 @@ int main(int argc, char ** argv)
   t1->setExecutionFunction(&task1);
   t2->setExecutionFunction(&task2);
   failed += cs->Execute(argc,argv);
-  amsi::controlFree();
+  amsi::freeMultiscale();
   return failed;
 }

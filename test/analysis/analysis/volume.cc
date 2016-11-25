@@ -1,4 +1,4 @@
-#include "amsiInterface.h"
+#include "amsiAnalysis.h"
 #include "apfsimWrapper.h"
 #include "simWrapper.h"
 #include <cstdlib>
@@ -6,7 +6,7 @@ int main(int argc, char * argv[])
 {
   int result = 0;
   amsi::use_simmetrix = true;
-  amsi::interfaceInit(argc,argv);
+  amsi::initAnalysis(argc,argv);
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
   int tg = atoi(argv[3]);
@@ -24,6 +24,6 @@ int main(int argc, char * argv[])
   MPI_Comm_rank(MPI_COMM_WORLD,&rnk);
   if(rnk == 0)
     std::cout << vol << std::endl;
-  amsi::interfaceFree();
+  amsi::freeAnalysis();
   return result;
 }

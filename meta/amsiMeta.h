@@ -7,8 +7,8 @@
 #include <string>
 namespace amsi
 {
-  void metaInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
-  void metaFree();
+  void initMultiscale(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void freeMultiscale();
   void configureFromFile(const std::string &);
   extern TaskManager * tm;
   extern CommunicationManager * cm;
