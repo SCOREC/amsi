@@ -8,7 +8,7 @@
 namespace amsi
 {
   extern FileSystemInfo * fs;
-  void utilInit(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
-  void utilFree();
+  void initUtil(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void freeUtil();
 }
 #endif

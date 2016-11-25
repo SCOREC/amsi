@@ -1,6 +1,6 @@
 #include "amsiAnalysis.h"
 #include "sim.h"
-#include "amsiMPI.h"
+#include <amsiUtil.h>
 #include <gmi_null.h>
 #include <gmi_sim.h>
 namespace amsi
@@ -8,6 +8,7 @@ namespace amsi
   // call inside of a scale/task main, not in the binary main
   void initAnalysis(int argc, char ** argv, MPI_Comm cm)
   {
+    initUtil(argc,argv,cm);
 #   ifdef PETSC
     if(use_petsc)
       petscInit(argc,argv,AMSI_COMM_SCALE);
@@ -24,6 +25,7 @@ namespace amsi
     if(use_petsc)
       petscFree();
 #   endif
+    freeUtil();
   }
 # ifdef PETSC
   bool use_petsc = false;

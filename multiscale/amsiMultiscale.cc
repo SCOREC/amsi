@@ -31,7 +31,7 @@ namespace amsi
   }
   void initMultiscale(int argc, char ** argv, MPI_Comm cm)
   {
-    utilInit(argc,argv,cm);
+    initUtil(argc,argv,cm);
     from_file = parse_options(argc,argv);
     if(from_file)
       configureFromFile(options_filename);
@@ -41,7 +41,7 @@ namespace amsi
   }
   void freeMultiscale()
   {
-    utilFree();
+    freeUtil();
   }
   void configureFromFile(const std::string & filename)
   {
