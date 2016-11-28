@@ -8,33 +8,97 @@ namespace amsi
 {
   TaskManager * tm = NULL;
   CommunicationManager * cm = NULL;
-  bool from_file = false;
-  std::string options_filename;
-  bool parse_options(int argc,char ** argv)
+  int parseMultiscaleSection(const std::string & ln)
   {
-    bool have_options = false;
-    opterr = 0;
-    static struct option long_options[] = {{"amsi",required_argument,0,'a'},{0,0,0,0}};
-    int option_index = 0;
-    int option = 0;
-    while((option = getopt_long(argc,argv,"a:",long_options,&option_index)) != -1)
+    for(int ii = 0; ii < num_multiscale_config_sections; ++ii)
     {
-      if(option == 'a')
+      if(ln == std::string("@")+std::string(MultiscaleConfigSectionStrings[ii]))
+        return ii;
+    }
+    return -1;
+  }
+  void parseScales(std::istream & fl)
+  {
+    std::string ln;
+    std::vector<std::string> tks;
+    bool parsing = true;
+    while(parsing)
+    {
+      std::streampos ln_bgn = fl.tellg();
+      if(std::getline(fl,ln))
       {
-        options_filename = optarg;
-        have_options = true;
+        if(pystring::startswith(ln,std::string("@")))
+        {
+          fl.seekg(ln_bgn);
+          break;
+        }
+        pystring::partition(ln," ",tks);
+        assert(tks.size() == 3);
+        tm->createTask(tks[0],atoi(tks[2].c_str()));
+      }
+      else
+        parsing = false;
+    }
+  }
+  void parseRelations(std::istream & fl)
+  {
+    std::string ln;
+    std::vector<std::string> tks;
+    bool parsing = true;
+    while(parsing)
+    {
+      std::streampos ln_bgn = fl.tellg();
+      if(std::getline(fl,ln))
+      {
+        if(pystring::startswith(ln,std::string("@")))
+        {
+          fl.seekg(ln_bgn);
+          break;
+        }
+        pystring::partition(ln," ",tks);
+        assert(tks.size() == 3);
+        size_t t1 = tm->getTaskID(tks[0]);
+        size_t t2 = tm->getTaskID(tks[2]);
+        assert(t1 && t2);
+        cm->defineRelation(t1,t2);
+      }
+      else
+        parsing = false;
+    }
+  }
+  void configureMultiscaleFromFile(const std::string & filename)
+  {
+    std::fstream file(filename.c_str(),std::fstream::in);
+    assert(file.is_open());
+    tm = new TaskManager(AMSI_COMM_WORLD);
+    cm = new CommunicationManager();
+    std::string line;
+    while(std::getline(file,line))
+    {
+      line = pystring::strip(line);
+      if(pystring::startswith(line,std::string("@")))
+      {
+        int sctn = parseMultiscaleSection(line);
+        switch(sctn)
+        {
+        case scales:
+          parseScales(file);
+          break;
+        case relations:
+          parseRelations(file);
+          break;
+        }
       }
     }
-    optind = 0;
-    opterr = 1;
-    return have_options;
+    if(!tm->lockConfiguration())
+      std::cerr << "ERROR: AMSI multiscale cannot configure with supplied file: " << filename << std::endl;
+    AMSI_COMM_SCALE = getLocal()->comm();
   }
   void initMultiscale(int argc, char ** argv, MPI_Comm cm)
   {
     initUtil(argc,argv,cm);
-    from_file = parse_options(argc,argv);
-    if(from_file)
-      configureFromFile(options_filename);
+    if(cnfg_frm_fl)
+      configureMultiscaleFromFile(options_filename);
     ControlService * cs = ControlService::Instance();
     cs->SetTaskManager(amsi::tm);
     cs->SetCommunicationManager(amsi::cm);
@@ -42,61 +106,5 @@ namespace amsi
   void freeMultiscale()
   {
     freeUtil();
-  }
-  void configureFromFile(const std::string & filename)
-  {
-    std::fstream file(filename.c_str(),std::fstream::in);
-    assert(file.is_open());
-    tm = new TaskManager(AMSI_COMM_WORLD);
-    cm = new CommunicationManager();
-    std::vector<std::string> tokens;
-    std::string line;
-    bool parsing_scales = true;
-    bool parsing_relations = false;
-    bool parsing_configure = false;
-    while(std::getline(file,line))
-    {
-      line = pystring::strip(line);
-      if(parsing_scales)
-      {
-        if(pystring::startswith(line,std::string("#")))
-        {
-          parsing_scales = false;
-          parsing_relations = true;
-          continue;
-        }
-        pystring::partition(line," ",tokens);
-        assert(tokens.size() == 3);
-        tm->createTask(tokens[0],atoi(tokens[2].c_str()));
-      }
-      else if(parsing_relations)
-      {
-        if(pystring::startswith(line,std::string("#")))
-        {
-          parsing_relations=false;
-          parsing_configure=true;
-          continue;
-        }
-        pystring::partition(line," ",tokens);
-        assert(tokens.size() == 3);
-        size_t t1 = tm->getTaskID(tokens[0]);
-        size_t t2 = tm->getTaskID(tokens[2]);
-        assert(t1 && t2);
-        cm->defineRelation(t1,t2);
-      }
-      else if(parsing_configure)
-      {
-        if(fs)
-          delete fs;
-        fs = new FileSystemInfo(line);
-        int rnk = -1;
-        MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
-        if(rnk == 0)
-          printInfo(fs,std::cout);
-      }
-    }
-    if(!tm->lockConfiguration())
-      std::cerr << "Could not configure AMSI with supplied file: " << filename << std::endl;
-    AMSI_COMM_SCALE = getLocal()->comm();
   }
 }
