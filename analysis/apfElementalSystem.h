@@ -38,6 +38,10 @@ namespace amsi
     {
       if(ke)
         delete [] ke;
+      if(dofs)
+        delete [] dofs;
+      if(dofids)
+        delete [] dofids;
     }
     // apf::Integrator interface
     virtual inElement(apf::MeshElement * imlmt)

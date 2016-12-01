@@ -32,4 +32,8 @@ namespace amsi
     Ke.zero();
     fe.zero();
   }
+  void ElementalSystem::outElement()
+  {
+    apf::destroyElement(e);
+  }
 }

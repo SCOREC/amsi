@@ -81,6 +81,7 @@ namespace amsi
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
       getClassifiedEnts(msh,(pGEntity)sim_bc->itm,dm,std::back_inserter(ents));
       applyNeumannBC(las,nm,ents.begin(),ents.end(),i,t);
+      deleteNeumannIntegrator(i);
     }
   }
   template <class O>

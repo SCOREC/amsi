@@ -18,7 +18,7 @@ namespace amsi
   public:
     ElementalSystem(apf::Field * f, int o);
     virtual void inElement(apf::MeshElement *);
-    virtual void outElement() {};
+    virtual void outElement();
     virtual void ParallelReduce() {};
     virtual bool includesBodyForces() {return false;}
     virtual int numElementalDOFs() {return nedofs;}
