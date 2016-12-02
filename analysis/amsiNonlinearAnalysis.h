@@ -8,14 +8,33 @@ namespace amsi
   bool numericalSolve(Iteration * it, Convergence * cn);
   class Iteration
   {
+    int itr;
   public:
-    virtual void iterate() = 0;
+    Iteration() : itr(0) {}
+    virtual void iterate() { ++itr; }
+    int iteration() { return itr; }
   };
   class Convergence
   {
   public:
     virtual bool converged() = 0;
     virtual bool failed() {return false;}
+  };
+  template <typename T>
+    class UpdatingConvergence : public Convergence
+  {
+  protected:
+    double eps;
+    T eps_gen;
+  public:
+    UpdatingConvergence(T e)
+      : eps(e())
+      , eps_gen(e)
+    { }
+    virtual void update()
+    {
+      eps = eps_gen();
+    }
   };
   class MultiConvergence : public Convergence
   {
@@ -44,33 +63,34 @@ namespace amsi
   public:
     virtual bool converged() {return true;}
   };
-  class RelativeResidualConvergence : public Convergence
+  template <typename T>
+    class RelativeResidualConvergence : public UpdatingConvergence<T>
   {
   protected:
     LAS * las;
-    double eps;
   public:
-    RelativeResidualConvergence(LAS * l, double e)
-      : las(l)
-      , eps(e)
+    RelativeResidualConvergence(LAS * l, T e)
+      : UpdatingConvergence<T>(e)
+      , las(l)
     { }
     bool converged();
     bool failed();
   };
-  class IncrementalResidualConvergence : public Convergence
+  template <typename T>
+    class IncrementalResidualConvergence : public UpdatingConvergence<T>
   {
   protected:
     LAS * las;
-    double eps;
     double nrm_im;
   public:
-    IncrementalResidualConvergence(LAS * l, double e)
-      : las(l)
-      , eps(e)
+    IncrementalResidualConvergence(LAS * l, T e)
+      : UpdatingConvergence<T>(e)
+      , las(l)
       , nrm_im(0.0)
     { }
     bool converged();
     bool failed();
   };
 }
+#include "amsiNonlinearAnalysis_impl.h"
 #endif

@@ -18,6 +18,7 @@ set(analysis_public_headers
     amsiFEA.h
     amsiLAS.h
     amsiNonlinearAnalysis.h
+    amsiNonlinearAnalysis_impl.h
     amsiNeumannIntegrators.h
     amsiPETScLAS.h
     apfBoundaryConditions.h
