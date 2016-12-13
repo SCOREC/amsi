@@ -87,9 +87,15 @@ namespace amsi
       MPI_Comm_dup(cm,&AMSI_COMM_SCALE);
       MPI_Comm_dup(cm,&AMSI_COMM_WORLD);
       PCU_Comm_Init();
+      int rnk = -1;
+      MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
+      if(rnk > 1)
+        amsi::suppressOutput(std::cout);
       cnfg_frm_fl = parse_options(argc,argv);
       if(cnfg_frm_fl)
         configureUtilFromFile(options_filename);
+      if(rnk > 1)
+        amsi::expressOutput(std::cout);
     }
     inited++;
   }
