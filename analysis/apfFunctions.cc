@@ -8,6 +8,24 @@
 #include <cassert>
 namespace amsi
 {
+  void writePVDFile(const std::string & col_fnm, const std::string & msh_prfx, int sz)
+  {
+    std::string pvd(fs->getResultsDir() + col_fnm);
+    std::fstream pvdf(pvd.c_str(), std::ios::out);
+    pvdf << "<VTKFile type=\"Collection\" version=\"0.1\">" << std::endl;
+    pvdf << "  <Collection>" << std::endl;
+    for(int ii = 0; ii < sz; ii++)
+    {
+      std::ostringstream oss;
+      oss << msh_prfx << ii+1;
+      std::string vtu = oss.str();
+      pvdf << "    <DataSet timestep=\"" << ii << "\" group=\"\" ";
+      pvdf << "part=\"0\" file=\"" << vtu << "/" << vtu;
+      pvdf << ".pvtu\"/>" << std::endl;
+    }
+    pvdf << "  </Collection>" << std::endl;
+    pvdf << "</VTKFile>" << std::endl;
+  }
   bool isFixed(int n)
   {
     return n == -2;
@@ -21,8 +39,8 @@ namespace amsi
     return std::sqrt(len);
   }
   double triangleArea(const apf::Vector3 & pt_a,
-		      const apf::Vector3 & pt_b,
-		      const apf::Vector3 & pt_c)
+                      const apf::Vector3 & pt_b,
+                      const apf::Vector3 & pt_c)
   {
     /** Find area of triangle from 3 points in 3D space using Heron's formula */
     double len_a = edgeLength(pt_b,pt_c);
@@ -47,9 +65,9 @@ namespace amsi
     n = p.normal;
   }
   void faceNormal(const apf::Vector3 & pt_a,
-		  const apf::Vector3 & pt_b,
-		  const apf::Vector3 & pt_c,
-		  apf::Vector3 & n)
+                  const apf::Vector3 & pt_b,
+                  const apf::Vector3 & pt_c,
+                  apf::Vector3 & n)
   {
     apf::Plane p = apf::Plane::fromPoints(pt_a, pt_b, pt_c);
     n = p.normal;
@@ -252,16 +270,16 @@ namespace amsi
       apf::Vector3 pt0, pt1, pt2;
       for (int jj = 0; jj < dim; jj++)
       {
-	pt0[jj] = xyz(0,jj);
-	pt1[jj] = xyz(1,jj);
-	pt2[jj] = xyz(2,jj);
+        pt0[jj] = xyz(0,jj);
+        pt1[jj] = xyz(1,jj);
+        pt2[jj] = xyz(2,jj);
       }
       double area = triangleArea(pt0, pt1, pt2);
       faceNormal(pt0, pt1, pt2, normal);
       vol = 0.0; //<reinitialize volume.
       for (int jj = 0; jj < dim; jj++)
       {
-	vol += norm_dir * normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
+        vol += norm_dir * normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
       }
       vol *= area/3.0;
       vol *= 1.0/3.0;

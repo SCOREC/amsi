@@ -1,5 +1,6 @@
 #ifndef APF_FUNCTIONS_H_
 #define APF_FUNCTIONS_H_
+#include <amsiUtil.h>
 #include <apf.h>
 #include <apfDynamicVector.h>
 #include <apfField.h>
@@ -9,6 +10,9 @@
 #include <ostream>
 namespace amsi
 {
+  /// Write a paraview collection file for meshes with the format msh_prfx(ii) where ii ranges from 1 to sz.
+  void writePVDFile(const std::string & col_fnm, const std::string & msh_prfx, int sz);
+  ///
   template <typename I>
     void setEntitiesNode(apf::Field * fld, double vl, I bgn, I nd);
   // move below here into a fieldops-specific header or something
