@@ -1,6 +1,7 @@
 #ifndef AMSI_SIM_ANALYSIS_H_
 #define AMSI_SIM_ANALYSIS_H_
 #include "sim.h"
+#include <string>
 namespace amsi
 {
   /**
