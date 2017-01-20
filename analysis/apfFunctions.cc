@@ -8,7 +8,7 @@
 #include <cassert>
 namespace amsi
 {
-  void writePVDFile(const std::string & col_fnm, const std::string & msh_prfx, int sz)
+  void writePvdFile(const std::string & col_fnm, const std::string & msh_prfx, int sz)
   {
     std::string pvd(fs->getResultsDir() + col_fnm);
     std::fstream pvdf(pvd.c_str(), std::ios::out);
@@ -264,8 +264,7 @@ namespace amsi
       for (int ii = 0; ii < nen; ii++)
         for (int jj = 0; jj < dim; jj++)
           xyz(ii,jj) = mesh_xyz[ii][jj] + primary_field_xyz[ii][jj];
-
-      /** Calculate volumes from triangles on surface mesh */
+      // Calculate volumes from triangles on surface mesh
       apf::Vector3 normal;
       apf::Vector3 pt0, pt1, pt2;
       for (int jj = 0; jj < dim; jj++)
@@ -276,11 +275,9 @@ namespace amsi
       }
       double area = triangleArea(pt0, pt1, pt2);
       faceNormal(pt0, pt1, pt2, normal);
-      vol = 0.0; //<reinitialize volume.
+      vol = 0.0;
       for (int jj = 0; jj < dim; jj++)
-      {
         vol += norm_dir * normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
-      }
       vol *= area/3.0;
       vol *= 1.0/3.0;
     }
@@ -292,7 +289,7 @@ namespace amsi
     apf::EntityShape * es;
     double vol;
     int norm_dir;
-  };  
+  };
   double measureDisplaced(apf::MeshEntity * ment, apf::Field * u)
   {
     //todo : derive integration order from field order
@@ -315,5 +312,4 @@ namespace amsi
     apf::destroyMeshElement(mlm);
     return volume;
   }
-  
 }
