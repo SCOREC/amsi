@@ -4,7 +4,7 @@ int main(int argc, char * argv[])
 {
   assert(argc == 3);
   int result = 0;
-  amsi::use_simmetrix = true;
+  amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::initAnalysis(argc,argv);
   Sim_logOn("simmetrix_log");
   pGModel mdl = GM_load(argv[1],NULL,NULL);

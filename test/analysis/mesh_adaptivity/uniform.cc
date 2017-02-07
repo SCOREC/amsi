@@ -7,7 +7,7 @@
 int main (int argc, char ** argv)
 {
   assert(argc == 3);
-  amsi::use_simmetrix = true;
+  amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::initAnalysis(argc,argv);
   Sim_logOn("simmetrix_log");
   {

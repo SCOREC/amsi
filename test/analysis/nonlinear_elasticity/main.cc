@@ -7,8 +7,8 @@
 int main (int argc, char ** argv)
 {
   int result = 0;
-  amsi::use_simmetrix = true;
-  amsi::use_petsc = true;
+  amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
+  amsi::usePetsc("petsc_options");
   amsi::initAnalysis(argc,argv);
   Sim_logOn("sim.log");
   pGModel mdl = GM_load(argv[1],0,NULL);

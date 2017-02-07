@@ -15,7 +15,7 @@ int main(int argc, char ** argv)
 {
   int failed = 0;
   assert(argc == 3);
-  amsi::use_simmetrix = true;
+  amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::initAnalysis(argc,argv);
   Sim_logOn("simlog");
   pGModel mdl = GM_load(argv[1],0,NULL);

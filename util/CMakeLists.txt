@@ -18,6 +18,7 @@ set(util_public_headers
   amsiRankSet.h
   amsiRankSet_impl.h
   amsiReporter.h
+  amsiString.h
   amsiTee.h
   amsiUtilFunctions.h
   amsiUUID.h
@@ -36,6 +37,7 @@ set(util_source_files
   amsiPArray.cc
   amsiRankSet.cc
   amsiReporter.cc
+  amsiString.cc
   amsiUtil.cc
   amsiUUID.cc
   pystring.cc

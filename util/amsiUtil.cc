@@ -5,12 +5,41 @@
 #include <PCU.h>
 #include <getopt.h>
 #include <iostream>
+#include <cassert>
 namespace amsi
 {
-  FileSystemInfo * fs = NULL;
-  bool cnfg_frm_fl = false;
-  std::string options_filename;
-  static int inited = 0;
+  #define UTIL_OPTIONS(OP) OP(results), OP(num_util_options)
+  enum UtilOptions{UTIL_OPTIONS(MAKE_ENUM_OP)};
+  const char * const getUtilOptionString(int ii)
+  {
+    static const char * const UtilOptionStrings[] = {UTIL_OPTIONS(MAKE_STRING_OP)};
+    assert(ii < num_util_options);
+    return UtilOptionStrings[ii];
+  }
+  int getUtilOption(const std::string & optstr)
+  {
+    for(int ii = 0; ii < num_util_options; ++ii)
+    {
+      if(optstr == std::string(getUtilOptionString(ii)))
+        return ii;
+    }
+    return -1;
+  }
+  const char * const getUtilConfigSectionString(int ii)
+  {
+    static const char * const UtilConfigSectionStrings[] = {UTIL_CONFIG_SECTIONS(MAKE_STRING_OP)};
+    assert(ii < num_util_config_sections);
+    return UtilConfigSectionStrings[ii];
+  }
+  std::string options_filename("");
+  const std::string & getOptionsFilename()
+  {
+    return options_filename;
+  }
+  bool configuredFromFile()
+  {
+    return !options_filename.empty();
+  }
   bool parse_options(int argc,char ** argv)
   {
     bool have_options = false;
@@ -34,11 +63,12 @@ namespace amsi
   {
     for(int ii = 0; ii < num_util_config_sections; ++ii)
     {
-      if(ln == std::string("@") + std::string(UtilConfigSectionStrings[ii]))
+      if(ln == std::string("@") + std::string(getUtilConfigSectionString(ii)))
         return ii;
     }
     return -1;
   }
+  FileSystemInfo * fs = NULL;
   void parseUtil(std::istream & fl)
   {
     std::string ln;
@@ -54,10 +84,21 @@ namespace amsi
           fl.seekg(ln_bgn);
           break;
         }
-        if(fs)
-          delete fs;
-        fs = new FileSystemInfo(ln);
-        describeFSInfo(fs,std::cout);
+        pystring::partition(ln," ",tks);
+        assert(tks.size() == 3);
+        int opt = getUtilOption(tks[0]);
+        switch(opt)
+        {
+        case results:
+          if(fs)
+            delete fs;
+          fs = new FileSystemInfo(tks[2]);
+          describeFSInfo(fs,std::cout);
+          break;
+        default:
+          std::cerr << "ERROR: Unknown amsi utility option: " << tks[0] << std::endl;
+          break;
+        };
       }
       else
         parsing = false;
@@ -79,6 +120,7 @@ namespace amsi
       }
     }
   }
+  static int inited = 0;
   void initUtil(int argc, char ** argv, MPI_Comm cm)
   {
     if(!inited)
@@ -91,8 +133,7 @@ namespace amsi
       MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
       if(rnk > 1)
         amsi::suppressOutput(std::cout);
-      cnfg_frm_fl = parse_options(argc,argv);
-      if(cnfg_frm_fl)
+      if(parse_options(argc,argv))
         configureUtilFromFile(options_filename);
       if(rnk > 1)
         amsi::expressOutput(std::cout);

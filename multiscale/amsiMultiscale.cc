@@ -97,8 +97,8 @@ namespace amsi
   void initMultiscale(int argc, char ** argv, MPI_Comm cm)
   {
     initUtil(argc,argv,cm);
-    if(cnfg_frm_fl)
-      configureMultiscaleFromFile(options_filename);
+    if(configuredFromFile())
+      configureMultiscaleFromFile(getOptionsFilename());
     ControlService * cs = ControlService::Instance();
     cs->SetTaskManager(amsi::tm);
     cs->SetCommunicationManager(amsi::cm);

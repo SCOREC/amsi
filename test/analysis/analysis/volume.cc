@@ -5,7 +5,7 @@
 int main(int argc, char * argv[])
 {
   int result = 0;
-  amsi::use_simmetrix = true;
+  amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::initAnalysis(argc,argv);
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
