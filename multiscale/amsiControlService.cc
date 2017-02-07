@@ -47,21 +47,6 @@ namespace amsi
       result = comm_man->defineRelation(t1_id,t2_id);
     return result;
   }
-  /// @brief Retrieve the ID of a CommRelation
-  /// @param nm1 A string containing the name of the sending task
-  /// @param nm2 A string containing the name of the recving task
-  /// @return size_t An identifier for the CommRelation or 0 if the relation could
-  ///                not be created (typically if one of the Tasks doesn't exist).
-  size_t ControlService::CommRelation_GetID(const std::string & nm1,
-                                            const std::string & nm2)
-  {
-    size_t result = 0;
-    size_t t1_id = task_man->getTaskID(nm1);
-    size_t t2_id = task_man->getTaskID(nm2);
-    if(t1_id != 0 && t2_id != 0)
-      result = comm_man->CommRelation_GetID(t1_id,t2_id);
-    return result;
-  }
   void ControlService::setScaleMain(const std::string & scale, ExecuteFunc function)
   {
     task_man->getTask(scale)->setExecutionFunction(function);
@@ -120,7 +105,7 @@ namespace amsi
         int t1s = taskSize(t1);
         int t2s = taskSize(t2);
         //std::cout << "Generating IDs" << std::endl;
-        size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
+        size_t r_id = comm_man->getRelationID(t1_id,t2_id);
         size_t t1_dd_id = task_man->getTask(t1_nm)->getDD_ID(t1_dd_nm);
         //std::cout << "Combining IDs" << std::endl;
         rdd_id = combine_hashes(r_id,t1_dd_id);
@@ -369,7 +354,7 @@ namespace amsi
         Task * t2 = task_man->Task_Get(t2_id);
         int t1s = taskSize(t1);
         int t2s = taskSize(t2);
-        size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
+        size_t r_id = comm_man->getRelationID(t1_id,t2_id);
         size_t t1_dd_id = task_man->getTask(t1_nm)->getDD_ID(t1_dd_nm);
         rdd_id = combine_hashes(r_id,t1_dd_id);
         rdd_map[rdd_id] = std::make_pair(r_id,t1_dd_id);
@@ -483,7 +468,7 @@ namespace amsi
           //int t1s = taskSize(t1);
           //int t2s = taskSize(t2);
           //std::cout << "Generating IDs" << std::endl;
-          size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
+          size_t r_id = comm_man->getRelationID(t1_id,t2_id);
           size_t dd_id = task_man->getTask(t1_nm)->getDD_ID(dd_nm);
           //std::cout << "Combining IDs" << std::endl;
           new_rdd_id = combine_hashes(r_id,dd_id);

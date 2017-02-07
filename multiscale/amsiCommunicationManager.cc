@@ -29,7 +29,7 @@ namespace amsi
     if(!CommRelation_Exists(id1,id2))
     {
       relations.insert(std::make_pair(id1,id2));
-      result = CommRelation_GetID(id1,id2);
+      result = getRelationID(id1,id2);
       rtmap[result] = std::make_pair(id1,id2);
     }
     return result;
@@ -67,7 +67,7 @@ namespace amsi
     {
       Task * tA = tm->Task_Get(it->first);
       Task * tB = tm->Task_Get(it->second);
-      size_t r_id = CommRelation_GetID(it->first,it->second);
+      size_t r_id = getRelationID(it->first,it->second);
       int lrA = tA->localRank();
       int lrB = tB->localRank();
       Task * local_task = lrA >= 0 ? tA : lrB >= 0 ? tB : NULL;
@@ -118,7 +118,7 @@ namespace amsi
   /// @param id1 The identifier for the sending task
   /// @param id2 The identifier for the recving task
   /// @return size_T The identifier the CommRelation specified, or 0 if such a relation does not exist
-  size_t CommunicationManager::CommRelation_GetID(size_t id1, size_t id2)
+  size_t CommunicationManager::getRelationID(size_t id1, size_t id2)
   {
     // hacky, horrible, and not at all a correct method, placeholder till we put in something better (needs to be non-commutative as t1->t2 often has t2->t1)
 //      return id1-id2;
@@ -156,5 +156,16 @@ namespace amsi
     if(it != rtmap.end())
       result = rtmap[r_id];
     return result;
+  }
+  size_t getRelationID(CommunicationManager * cm,
+                       TaskManager * tm,
+                       const std::string & t1_nm,
+                       const std::string & t2_nm)
+  {
+    size_t t1 = tm->getTaskID(t1_nm);
+    size_t t2 = tm->getTaskID(t2_nm);
+    if(t1 != 0 && t2 != 0)
+      return cm->getRelationID(t1,t2);
+    return 0;
   }
 } // namespace amsi

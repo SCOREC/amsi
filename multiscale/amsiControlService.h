@@ -27,8 +27,6 @@ namespace amsi
     int Execute(int& argc,char **& argv);
     size_t CommRelation_Define(const std::string & nm1,
                                const std::string & nm2);
-    size_t CommRelation_GetID(const std::string & nm1,
-                              const std::string & nm2);
     size_t CreateCommPattern(const std::string & t1_dd,
                              const std::string & t1,
                              const std::string & t2);
