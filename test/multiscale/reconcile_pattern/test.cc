@@ -23,7 +23,6 @@ int main(int argc, char ** argv)
   int failed = 0;
   amsi::initMultiscale(argc,argv);
   amsi::ControlService * cs = amsi::ControlService::Instance();
-  cs->setSuppressOutput(false);
   amsi::TaskManager * tm = cs->GetTaskManager();
   amsi::Task * t1 = tm->getTask("task1");
   amsi::Task * t2 = tm->getTask("task2");

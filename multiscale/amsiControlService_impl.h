@@ -52,7 +52,7 @@ namespace amsi
   }
   // assumes that the data has been assembled locally
   template <typename T>
-    void ControlService::couplingBroadcast(size_t r_id, T * buf)
+    void ControlService::scaleBroadcast(size_t r_id, T * buf)
   {
     // determine if sender of recver
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
@@ -75,6 +75,47 @@ namespace amsi
     }
     else // recv
       amsi::recv(buf,MPI_ANY_SOURCE,1,AMSI_COMM_WORLD);
+  }
+  template <typename I, typename O>
+    void ControlService::aSendBroadcast(O out, size_t rid, I * bfr, size_t cnt)
+  {
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(rid);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    int t2s = taskSize(t2);
+    int t2_per_t1 = t2s / t1s;
+    int extra_t2 = t2s % t1s;
+    int task_rank = t1->localRank();
+    int to_send = t2_per_t1 + (task_rank < extra_t2);
+    for(int ii = 0; ii < to_send; ii++)
+    {
+      int send_to = task_rank + (ii * t1s);
+      *out = amsi::asend(bfr,t2->localToGlobalRank(send_to),cnt,AMSI_COMM_WORLD);
+      ++out;
+    }
+  }
+  template <typename T>
+    int ControlService::aRecvBroadcastSize(size_t rid)
+  {
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(rid);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    int t2s = taskSize(t2);
+    rank_t rcv_frm = t2s % t1s;
+    return arecv_sz<T>(rcv_frm,AMSI_COMM_WORLD);
+  }
+  template <typename I, typename O>
+    void ControlService::aRecvBroadcast(O out, size_t rid, I * bfr, size_t cnt)
+  {
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(rid);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    int t2s = taskSize(t2);
+    int rcv_frm = t2s % t1s;
+    *out = amsi::arecv(bfr,rcv_frm,cnt,AMSI_COMM_WORLD);
   }
   /// @brief Templated member function used to communicate all data related to a specific CommPattern,
   ///         this call is collective on the union of the ProcessSets associated with the sending and

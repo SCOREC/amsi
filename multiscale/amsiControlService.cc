@@ -1,6 +1,7 @@
 #include "amsiControlService.h"
 #include "amsiAssemblable.h"
 #include "amsiDataDistribution.h"
+#include "amsiMPI.h"
 #include "amsiOutput.h"
 #include "amsiPlanMigration.h"
 #ifdef ZOLTAN
@@ -18,7 +19,6 @@ namespace amsi
     : comm_man()
     , task_man()
     , rdd_map()
-    , suppress_output(false)
   {}
   /// @brief Set the CommunicationManager to be used by the AMSI ControlService
   /// @param cm A pointer to the CommunicationManager
@@ -62,11 +62,6 @@ namespace amsi
     comm_man->InitInterComms(task_man);
     if(task_man->lockConfiguration())
     {
-      if(suppress_output)
-      {
-        if(getLocal()->localRank() > 0)
-          suppressOutput(std::cout);
-      }
 #     ifdef ZOLTAN
       float version = 0.0;
       Zoltan_Initialize(0,NULL,&version);

@@ -140,8 +140,8 @@ int main(int argc, char * argv[])
   // find size of sigma_type
   int sigmaTypeSize;
   MPI_Type_size(sigma_type,&sigmaTypeSize);
-  Task * t1 = amsi::tm->getTask("macro");
-  Task * t2 = amsi::tm->getTask("micro");
+  Task * t1 = amsi::getScaleManager()->getTask("macro");
+  Task * t2 = amsi::getScaleManager()->getTask("micro");
   ControlService * cs = ControlService::Instance();
   failed += test_neq("ControlService::Instance()",static_cast<ControlService*>(NULL),cs);
   // Set the execution functions for the tasks

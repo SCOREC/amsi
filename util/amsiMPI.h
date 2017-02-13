@@ -79,8 +79,10 @@ namespace amsi
     int flg = 0;
     MPI_Iprobe(frm,0,cm,&flg,&s);
     if(flg)
+    {
       MPI_Get_count(&s,mpi_type<T>(),&sz);
-    frm = s.MPI_SOURCE;
+      frm = s.MPI_SOURCE;
+    }
     return sz;
   }
   // asynchronously recv a message from frm with cnt elements

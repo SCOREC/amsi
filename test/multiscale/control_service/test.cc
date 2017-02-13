@@ -67,10 +67,9 @@ int main(int argc, char * argv[])
 {
   int failed = 0;
   amsi::initMultiscale(argc,argv);
-  Task * t1 = amsi::tm->getTask("task1");
-  Task * t2 = amsi::tm->getTask("task2");
+  Task * t1 = amsi::getScaleManager()->getTask("task1");
+  Task * t2 = amsi::getScaleManager()->getTask("task2");
   ControlService * cs = ControlService::Instance();
-  cs->setSuppressOutput(false);
   failed += test_neq("ControlService::Instance()",static_cast<ControlService*>(NULL),cs);
   t1->setExecutionFunction(&task1_run);
   t2->setExecutionFunction(&task2_run);
