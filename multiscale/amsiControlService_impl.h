@@ -102,8 +102,8 @@ namespace amsi
     Task * t1 = task_man->Task_Get(t_ids.first);
     Task * t2 = task_man->Task_Get(t_ids.second);
     int t1s = taskSize(t1);
-    int t2s = taskSize(t2);
-    rank_t rcv_frm = t2s % t1s;
+    int scl_rnk = t2->localRank();
+    int rcv_frm = t1->localToGlobalRank(scl_rnk % t1s);
     return arecv_sz<T>(rcv_frm,AMSI_COMM_WORLD);
   }
   template <typename I, typename O>
@@ -113,8 +113,8 @@ namespace amsi
     Task * t1 = task_man->Task_Get(t_ids.first);
     Task * t2 = task_man->Task_Get(t_ids.second);
     int t1s = taskSize(t1);
-    int t2s = taskSize(t2);
-    int rcv_frm = t2s % t1s;
+    int scl_rnk = t2->localRank();
+    int rcv_frm = t1->localToGlobalRank(scl_rnk % t1s);
     *out = amsi::arecv(bfr,rcv_frm,cnt,AMSI_COMM_WORLD);
   }
   /// @brief Templated member function used to communicate all data related to a specific CommPattern,
