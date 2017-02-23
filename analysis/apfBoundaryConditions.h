@@ -12,14 +12,6 @@ namespace amsi
                            int nd,
                            int cmp,
                            double t);
-  /*
-  double getNeumannValue(BCQuery * qry,
-                         apf::Mesh * msh,
-                         apf::MeshEntity * ent,
-                         int nd,
-                         int cmp,
-                         double t);
-  */
   template <typename I>
     int applyDirichletBC(apf::Numbering * nm,
                          I begin,

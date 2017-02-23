@@ -51,8 +51,10 @@ set(analysis_public_headers
     simAttributes_impl.h
     simBoundaryConditions.h
     simBoundaryConditions_impl.h
+    simClassified.h
     simFields.h
     simFields_impl.h
+    simIterator.h
     simWrapper.h
     SimFEA.h
     apfSimFEA.h
@@ -89,6 +91,7 @@ set(analysis_src_files
     simAnalysis.cc
     simAttributes.cc
     simBoundaryConditions.cc
+    simClassified.cc
     simFields.cc
     simWrapper.cc
     SimFEA.cc
