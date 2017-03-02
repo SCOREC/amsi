@@ -1,5 +1,6 @@
 set(util_public_headers
   amsiByteStream.h
+  amsiCasters.h
   amsiConversionIterator.h
   amsiDistributed.h
   amsiEnumOps.h

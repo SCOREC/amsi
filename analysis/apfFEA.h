@@ -1,17 +1,17 @@
 #ifndef AMSI_APFFEA_H_
 #define AMSI_APFFEA_H_
 #include "amsiFEA.h"
-#include "ElementalSystem.h"
 #include "amsiBoundaryConditions.h"
+#include "apfFieldOp.h"
+#include "ElementalSystem.h"
 #include <apf.h>
-#include <apfField.h>
 #include <apfMesh.h>
 #include <apfNumbering.h>
 #include <iomanip>
 namespace amsi
 {
   apf::Field * analyzeMeshQuality(apf::Mesh * mesh, apf::Field * disp_field);
-  class PrintField : public apf::FieldOp
+  class PrintField : public amsi::FieldOp
   {
   private:
     apf::Field * f;
@@ -21,7 +21,7 @@ namespace amsi
   public:
   PrintField(apf::Field * field, std::ostream & str) : f(field), me(), os(str), nc(0)
     {
-      nc = f->countComponents();
+      nc = apf::countComponents(f);
       os << std::setprecision(16);
     }
     virtual bool inEntity(apf::MeshEntity* e) {me = e; return true;}

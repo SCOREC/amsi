@@ -1,5 +1,4 @@
 #include "apfBoundaryConditions.h"
-#include "apfField.h"
 #include "apfShape.h"
 #include "apfNumbering.h"
 #include <iostream>

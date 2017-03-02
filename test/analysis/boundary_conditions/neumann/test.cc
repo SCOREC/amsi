@@ -19,7 +19,7 @@ int main(int argc, char ** argv)
   amsi::initAnalysis(argc,argv);
   Sim_logOn("simlog");
   pGModel mdl = GM_load(argv[1],0,NULL);
-  pParMesh sm_msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+  pParMesh sm_msh = PM_load(argv[2],mdl,NULL);
   pMesh prt = PM_mesh(sm_msh,0);
   // get all analysis cases
   std::vector<pACase> css;

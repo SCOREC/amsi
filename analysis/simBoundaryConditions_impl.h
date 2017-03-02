@@ -132,9 +132,7 @@ namespace amsi
     {
       std::vector<pModelItem> mdl_itms;
       cutPaste<pModelItem>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
-      auto mdl_itm_nd = mdl_itms.end();
-      for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
-        *out++ = *mdl_itm;
+      std::copy(mdl_itms.begin(),mdl_itms.end(),out);
     }
   }
   template <class I, class O>

@@ -1,7 +1,7 @@
 #include "apfFunctions.h"
 #include "ElementalSystem.h"
+#include "simClassified.h"
 #include <apfDynamicMatrix.h>
-#include <apfField.h>
 #include <apfGeometry.h>
 #include <apfMesh.h>
 #include <apfShape.h>
@@ -30,25 +30,6 @@ namespace amsi
   {
     return n == -2;
   }
-  double edgeLength(const apf::Vector3 & pt_a, const apf::Vector3 & pt_b)
-  {
-    double len = 0.0;
-    for (int ii = 0; ii < 3; ii++)
-      len += (pt_a[ii] - pt_b[ii]) * (pt_a[ii] - pt_b[ii]);
-
-    return std::sqrt(len);
-  }
-  double triangleArea(const apf::Vector3 & pt_a,
-                      const apf::Vector3 & pt_b,
-                      const apf::Vector3 & pt_c)
-  {
-    /** Find area of triangle from 3 points in 3D space using Heron's formula */
-    double len_a = edgeLength(pt_b,pt_c);
-    double len_b = edgeLength(pt_a,pt_c);
-    double len_c = edgeLength(pt_a,pt_b);
-    double s = 0.5 * (len_a + len_b + len_c);
-    return std::sqrt(s * (s - len_a) * (s - len_b) * (s - len_c));
-  }
   void faceNormal(apf::Mesh * msh, apf::MeshEntity * fc, apf::Vector3 & n)
   {
     assert(msh);
@@ -62,14 +43,6 @@ namespace amsi
     apf::getVector(crds,vs[1],0,vcrds[1]);
     apf::getVector(crds,vs[2],0,vcrds[2]);
     apf::Plane p = apf::Plane::fromPoints(vcrds[0],vcrds[1],vcrds[2]);
-    n = p.normal;
-  }
-  void faceNormal(const apf::Vector3 & pt_a,
-                  const apf::Vector3 & pt_b,
-                  const apf::Vector3 & pt_c,
-                  apf::Vector3 & n)
-  {
-    apf::Plane p = apf::Plane::fromPoints(pt_a, pt_b, pt_c);
     n = p.normal;
   }
   void vertexNormal(apf::Mesh * msh, apf::MeshEntity * vrt, apf::Vector3 & n)
@@ -115,7 +88,7 @@ namespace amsi
   {
     apf::Mesh * mesh = apf::getMesh(numbering);
     apf::Field * field = apf::getField(numbering);
-    int num_components = field->countComponents();
+    int num_components = apf::countComponents(field);
     apf::FieldShape * field_shape = apf::getShape(field);
     int analysis_dim = mesh->getDimension();
     for(int dim = 0; dim <= analysis_dim; dim++)
@@ -174,142 +147,5 @@ namespace amsi
     mat[1][2] = mat[2][1] = vec[4];
     mat[0][2] = mat[2][0] = vec[5];
   }
-  class MeasureDisplaced : public amsi::ElementalSystem
-  {
-  public:
-    MeasureDisplaced(apf::Field * field, int o)
-      : ElementalSystem(field,o)
-      , dim(0)
-      , vol(0)
-    {}
-    void inElement(apf::MeshElement * me)
-    {
-      ElementalSystem::inElement(me);
-      fs = apf::getShape(f);
-      es = fs->getEntityShape(apf::getMesh(f)->getType(apf::getMeshEntity(me)));
-      dim = apf::getDimension(me);
-    }
-    void atPoint(apf::Vector3 const &p, double w, double dV)
-    {
-      int & nen = nenodes; // = 4 (tets)
-      // 1. Get coordinates on underlying mesh
-      apf::Mesh * mesh = apf::getMesh(f);
-      apf::Field * apf_coord_field = mesh->getCoordinateField();
-      apf::Element * mesh_coord_elem = apf::createElement(apf_coord_field,me);
-      apf::NewArray<apf::Vector3> mesh_xyz;
-      apf::getVectorNodes(mesh_coord_elem,mesh_xyz);
-      // 2. Get coordinates from apf_primary_field (passed in), which contains the accumulated displacement
-      apf::NewArray<apf::Vector3> primary_field_xyz;
-      apf::getVectorNodes(e,primary_field_xyz);
-      // 3. Calculate current coordinates
-      apf::DynamicMatrix xyz(nen,dim); xyz.zero();
-      for (int ii = 0; ii < nen; ii++)
-        for (int jj = 0; jj < dim; jj++)
-          xyz(ii,jj) = mesh_xyz[ii][jj] + primary_field_xyz[ii][jj];
-      // For Updated Lagrangian, the Jacobian of the updated coordinates are used
-      // Note: that entires of Jacobian is hard coded for Linear tetrahedra elements.
-      // TO DO: Generalize Jacobian for current configuration.
-      apf::Matrix<3,3> J;
-      J[0][0] = xyz(1,0) - xyz(0,0); // x2-x1
-      J[0][1] = xyz(2,0) - xyz(0,0); // x3-x1
-      J[0][2] = xyz(3,0) - xyz(0,0); // x4-x1
-      J[1][0] = xyz(1,1) - xyz(0,1); // y2-y1
-      J[1][1] = xyz(2,1) - xyz(0,1); // y3-y1
-      J[1][2] = xyz(3,1) - xyz(0,1); // y4-y1
-      J[2][0] = xyz(1,2) - xyz(0,2); // z2-z1
-      J[2][1] = xyz(2,2) - xyz(0,2); // z3-z1
-      J[2][2] = xyz(3,2) - xyz(0,2); // z4-z1
-      double detJ = getDeterminant(J);
-      vol = w * detJ;
-    }
-    double getVol(){return vol;}
-  private:
-    int dim;
-    apf::FieldShape * fs;
-    apf::EntityShape * es;
-    double vol;
-  };
-  class MeasureDisplacedFromSurf : public amsi::ElementalSystem
-  {
-  public:
-    MeasureDisplacedFromSurf(apf::Field * field, int o, int normal_dir)
-      : ElementalSystem(field,o)
-      , dim(0)
-      , vol(0)
-      , norm_dir(normal_dir)
-    {}
-    void inElement(apf::MeshElement * me)
-    {
-      ElementalSystem::inElement(me);
-      fs = apf::getShape(f);
-      es = fs->getEntityShape(apf::getMesh(f)->getType(apf::getMeshEntity(me)));
-      // dim = apf::getDimension(me);
-      /** We want to consider 3D space, however MeshElement me is for 2D entity. Therefore we need to hardcode dim for now.. */
-      dim = 3;
-    }
-    void atPoint(apf::Vector3 const &p, double w, double dV)
-    {
-      int & nen = nenodes; // = 3 (triangle)
-      // 1. Get coordinates on underlying mesh
-      apf::Mesh * mesh = apf::getMesh(f);
-      apf::Field * apf_coord_field = mesh->getCoordinateField();
-      apf::Element * mesh_coord_elem = apf::createElement(apf_coord_field,me);
-      apf::NewArray<apf::Vector3> mesh_xyz;
-      apf::getVectorNodes(mesh_coord_elem,mesh_xyz);
-      // 2. Get coordinates from apf_primary_field (passed in), which contains the accumulated displacement
-      apf::NewArray<apf::Vector3> primary_field_xyz;
-      apf::getVectorNodes(e,primary_field_xyz);
-      // 3. Calculate current coordinates
-      apf::DynamicMatrix xyz(nen,dim); xyz.zero();
-      for (int ii = 0; ii < nen; ii++)
-        for (int jj = 0; jj < dim; jj++)
-          xyz(ii,jj) = mesh_xyz[ii][jj] + primary_field_xyz[ii][jj];
-      // Calculate volumes from triangles on surface mesh
-      apf::Vector3 normal;
-      apf::Vector3 pt0, pt1, pt2;
-      for (int jj = 0; jj < dim; jj++)
-      {
-        pt0[jj] = xyz(0,jj);
-        pt1[jj] = xyz(1,jj);
-        pt2[jj] = xyz(2,jj);
-      }
-      double area = triangleArea(pt0, pt1, pt2);
-      faceNormal(pt0, pt1, pt2, normal);
-      vol = 0.0;
-      for (int jj = 0; jj < dim; jj++)
-        vol += norm_dir * normal[jj] * (pt0[jj] + pt1[jj] + pt2[jj]);
-      vol *= area/3.0;
-      vol *= 1.0/3.0;
-    }
-    double getVol(){return vol;}
-    int getNormDir(){return norm_dir;}
-  private:
-    int dim;
-    apf::FieldShape * fs;
-    apf::EntityShape * es;
-    double vol;
-    int norm_dir;
-  };
-  double measureDisplaced(apf::MeshEntity * ment, apf::Field * u)
-  {
-    //todo : derive integration order from field order
-    MeasureDisplaced elemental_volume(u,1);
-    apf::Mesh * msh = apf::getMesh(u);
-    apf::MeshElement * mlm = apf::createMeshElement(msh,ment);
-    elemental_volume.process(mlm);
-    double volume = elemental_volume.getVol();
-    apf::destroyMeshElement(mlm);
-    return volume;
-  }
-  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u, int norm_dir)
-  {
-    //todo : derive integration order from field order
-    MeasureDisplacedFromSurf elemental_volume(u,1,norm_dir);
-    apf::Mesh * msh = apf::getMesh(u);
-    apf::MeshElement * mlm = apf::createMeshElement(msh,ment);
-    elemental_volume.process(mlm);
-    double volume = elemental_volume.getVol();
-    apf::destroyMeshElement(mlm);
-    return volume;
-  }
+
 }

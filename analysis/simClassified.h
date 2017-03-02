@@ -3,9 +3,7 @@
 #include "simIterator.h"
 namespace amsi
 {
-  SimIterator * beginClassified(apf::Mesh * msh,
-                                apf::ModelEntity * mdl_ent,
-                                int dm);
-  SimIterator * endClassified(SimIterator * bgn);
+  SimIterator beginClassified(apf::Mesh * msh, apf::ModelEntity * mdl_ent, int dm);
+  SimIterator endClassified(const SimIterator & bgn);
 }
 #endif

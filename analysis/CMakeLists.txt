@@ -11,6 +11,7 @@ set(analysis_public_headers
     amsiAnalysisConfig.h
     amsiBoundaryConditions.h
     amsiBoundaryConditions_impl.h
+    amsiDofHolder.h
     amsiDummyLAS.h
     amsiFiniteElementAnalysis.h
     amsiFields.h
@@ -23,9 +24,11 @@ set(analysis_public_headers
     amsiPETScLAS.h
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
+    apfFieldOp.h
     apfFields.h
     apfFunctions.h
     apfFunctions_impl.h
+    apfMeasure.h
     apfWrapper.h
     apfWrapper_impl.h
     apfsimWrapper.h
@@ -74,6 +77,7 @@ set(analysis_src_files
     apfBoundaryConditions.cc
     apfFields.cc
     apfFunctions.cc
+    apfMeasure.cc
     apfWrapper.cc
     apfsimWrapper.cc
     MatrixUtil.h

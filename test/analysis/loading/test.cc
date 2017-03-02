@@ -1,4 +1,5 @@
 #include "amsiAnalysis.h"
+#include <SimModel.h>
 #include <cassert>
 int main(int argc, char * argv[])
 {
@@ -11,7 +12,7 @@ int main(int argc, char * argv[])
   result += mdl == NULL;
   if(mdl)
   {
-    pParMesh msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+    pParMesh msh = PM_load(argv[2],mdl,NULL);
     result += msh == NULL;
   }
   Sim_logOff();
