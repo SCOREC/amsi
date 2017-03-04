@@ -3,202 +3,102 @@
 #include <apfSIM.h>
 namespace amsi
 {
-  class SimClassifiedIter : public SimIterator
+  SimClassifiedIter::SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me, int d)
+    : SimIterator()
+    , msh(reinterpret_cast<apf::MeshSIM*>(m))
+    , mdl_ent(me)
+    , dim(d)
+    , it()
+    , ent()
   {
-  protected:
-    apf::MeshSIM * msh;
-    apf::ModelEntity * mdl_ent;
-  public:
-    SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me)
-      : msh(reinterpret_cast<apf::MeshSIM*>(m))
-      , mdl_ent(me)
-    { }
-    ~SimClassifiedIter()
-    { }
-    bool operator==(const SimIterator & o) const
+    switch(dim)
     {
-      const SimClassifiedIter * ot = reinterpret_cast<const SimClassifiedIter*>(&o);
-      return ot->msh == msh && ot->mdl_ent == mdl_ent;
-    }
-  };
-  class SimClassifiedRegionIter : public SimClassifiedIter
-  {
-  private:
-    RIter it;
-    pRegion pr;
-  public:
-    SimClassifiedRegionIter(apf::Mesh * m, apf::ModelEntity * me)
-      : SimClassifiedIter(m,me)
-    {
-      it = M_classifiedRegionIter(PM_mesh(msh->getMesh(),0),
-                                  reinterpret_cast<pGEntity>(mdl_ent));
-      pr = RIter_next(it);
-    }
-    ~SimClassifiedRegionIter()
-    {
-      RIter_delete(it);
-    }
-    void operator++()
-    {
-      pr = RIter_next(it);
-    }
-    bool operator==(const SimIterator & o) const
-    {
-      if(SimClassifiedIter::operator==(o))
-      {
-        const SimClassifiedRegionIter * ot = reinterpret_cast<const SimClassifiedRegionIter*>(&o);
-        return ot->pr == pr;
-      }
-      return false;
-    }
-    apf::MeshEntity * operator*() const
-    {
-      return apf::castEntity((pEntity)pr);
-    }
-  };
-  class SimClassifiedFaceIter : public SimClassifiedIter
-  {
-  private:
-    FIter it;
-    pFace fc;
-  public:
-    SimClassifiedFaceIter(apf::Mesh * m, apf::ModelEntity * me)
-      : SimClassifiedIter(m,me)
-    {
-      it = M_classifiedFaceIter(PM_mesh(msh->getMesh(),0),
-                                reinterpret_cast<pGEntity>(mdl_ent),1);
-      fc = FIter_next(it);
-    }
-    ~SimClassifiedFaceIter()
-    {
-      FIter_delete(it);
-    }
-    void operator++()
-    {
-      fc = FIter_next(it);
-    }
-    bool operator==(const SimIterator & o) const
-    {
-      if(SimClassifiedIter::operator==(o))
-      {
-        const SimClassifiedFaceIter * ot = reinterpret_cast<const SimClassifiedFaceIter*>(&o);
-        return ot->fc == fc;
-      }
-      return false;
-    }
-    apf::MeshEntity * operator*() const
-    {
-      return apf::castEntity((pEntity)fc);
-    }
-  };
-  class SimClassifiedEdgeIter : public SimClassifiedIter
-  {
-  private:
-    EIter it;
-    pEdge ed;
-  public:
-    SimClassifiedEdgeIter(apf::Mesh * m, apf::ModelEntity * me)
-      : SimClassifiedIter(m,me)
-    {
-      it = M_classifiedEdgeIter(PM_mesh(msh->getMesh(),0),
-                                reinterpret_cast<pGEntity>(mdl_ent),1);
-      ed = EIter_next(it);
-    }
-    ~SimClassifiedEdgeIter()
-    {
-      EIter_delete(it);
-    }
-    void operator++()
-    {
-      ed = EIter_next(it);
-    }
-    bool operator==(const SimIterator & o) const
-    {
-      if(SimClassifiedIter::operator==(o))
-      {
-        const SimClassifiedEdgeIter * ot = reinterpret_cast<const SimClassifiedEdgeIter*>(&o);
-        return ot->ed == ed;
-      }
-      return false;
-    }
-    apf::MeshEntity * operator*() const
-    {
-      return apf::castEntity((pEntity)ed);
-    }
-  };
-  class SimClassifiedVertexIter : public SimClassifiedIter
-  {
-  private:
-    VIter it;
-    pVertex vt;
-  public:
-    SimClassifiedVertexIter(apf::Mesh * m, apf::ModelEntity * me)
-      : SimClassifiedIter(m,me)
-    {
-      it = M_classifiedVertexIter(PM_mesh(msh->getMesh(),0),
-                                  reinterpret_cast<pGEntity>(mdl_ent),1);
-      vt = VIter_next(it);
-    }
-    ~SimClassifiedVertexIter()
-    {
-      VIter_delete(it);
-    }
-    void operator++()
-    {
-      vt = VIter_next(it);
-    }
-    bool operator==(const SimIterator & o) const
-    {
-      if(SimClassifiedIter::operator==(o))
-      {
-        const SimClassifiedVertexIter * ot = reinterpret_cast<const SimClassifiedVertexIter*>(&o);
-        return ot->vt == vt;
-      }
-      return false;
-    }
-    apf::MeshEntity * operator*() const
-    {
-      return apf::castEntity((pEntity)vt);
-    }
-  };
-  SimIterator beginClassified(apf::Mesh * msh, apf::ModelEntity * mdl_ent, int dm)
-  {
-    switch(dm)
-    {
-    case 3:
-      return SimClassifiedRegionIter(msh,mdl_ent);
-    case 2:
-      return SimClassifiedFaceIter(msh,mdl_ent);
-    case 1:
-      return SimClassifiedEdgeIter(msh,mdl_ent);
     case 0:
-      return SimClassifiedVertexIter(msh,mdl_ent);
-    }
-    return SimClassifiedIter(msh,mdl_ent);
+      it.viter = M_classifiedVertexIter(PM_mesh(msh->getMesh(),0),reinterpret_cast<pGEntity>(mdl_ent),1);
+      ent.vtx = VIter_next(it.viter);
+      break;
+    case 1:
+      it.eiter = M_classifiedEdgeIter(PM_mesh(msh->getMesh(),0),reinterpret_cast<pGEntity>(mdl_ent),1);
+      ent.edg = EIter_next(it.eiter);
+      break;
+    case 2:
+      it.fiter = M_classifiedFaceIter(PM_mesh(msh->getMesh(),0),reinterpret_cast<pGEntity>(mdl_ent),1);
+      ent.fac = FIter_next(it.fiter);
+      break;
+    case 3:
+      it.riter = M_classifiedRegionIter(PM_mesh(msh->getMesh(),0),reinterpret_cast<pGEntity>(mdl_ent));
+      ent.rgn = RIter_next(it.riter);
+      break;
+    };
   }
-  class EndSimIterator : public SimIterator
+  void SimClassifiedIter::end()
   {
-  private:
-    const SimIterator & bgn;
-  public:
-    EndSimIterator(const SimIterator & i)
-      : bgn(i)
-    { }
-    void operator++()
-    { }
-    bool operator==(const SimIterator & o) const
-    {
-      if(bgn == o)
-        return true;
-      return false;
-    }
-    apf::MeshEntity * operator*() const
-    {
-      return NULL;
-    }
-  };
-  SimIterator endClassified(const SimIterator & bgn)
+    ent.vtx = NULL;
+  }
+  bool SimClassifiedIter::operator==(const SimIterator & o) const
   {
-    return EndSimIterator(bgn);
+    const SimClassifiedIter * ot = reinterpret_cast<const SimClassifiedIter*>(&o);
+    if(ot->msh == msh && ot->mdl_ent == mdl_ent && ot->dim == dim)
+    {
+      switch(dim)
+      {
+      case 0:
+        return ot->ent.vtx == ent.vtx;
+      case 1:
+        return ot->ent.edg == ent.edg;
+      case 2:
+        return ot->ent.fac == ent.fac;
+      case 3:
+        return ot->ent.rgn == ent.rgn;
+      }
+    }
+    return false;
+  }
+  void SimClassifiedIter::operator++()
+  {
+    switch(dim)
+    {
+    case 0:
+      ent.vtx = VIter_next(it.viter);
+      break;
+    case 1:
+      ent.edg = EIter_next(it.eiter);
+      break;
+    case 2:
+      ent.fac = FIter_next(it.fiter);
+      break;
+    case 3:
+      ent.rgn = RIter_next(it.riter);
+      break;
+    }
+  }
+  apf::MeshEntity * SimClassifiedIter::operator*() const
+  {
+    switch(dim)
+    {
+    case 0:
+      return apf::castEntity((pEntity)ent.vtx);
+      break;
+    case 1:
+      return apf::castEntity((pEntity)ent.edg);
+      break;
+    case 2:
+      return apf::castEntity((pEntity)ent.fac);
+      break;
+    case 3:
+      return apf::castEntity((pEntity)ent.rgn);
+      break;
+    }
+    return NULL;
+  }
+  SimClassifiedIter beginClassified(apf::Mesh * msh, apf::ModelEntity * mdl_ent, int dim)
+  {
+    return SimClassifiedIter(msh,mdl_ent,dim);
+  }
+  SimClassifiedIter endClassified(const SimClassifiedIter & bgn)
+  {
+    SimClassifiedIter it(bgn);
+    it.end();
+    return it;
   }
 }

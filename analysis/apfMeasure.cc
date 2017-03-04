@@ -187,7 +187,7 @@ namespace amsi
     int dim = msh->getModelType(mdl_ent);
     for(auto ent = amsi::beginClassified(msh,mdl_ent,dim); ent != amsi::endClassified(ent); ++ent)
     {
-      apf::MeshElement * mnt = apf::createMeshElement(apf::getMesh(u),*ent);
+      apf::MeshElement * mnt = apf::createMeshElement(msh,*ent);
       elvol.process(mnt);
       vol += elvol.getVol();
       apf::destroyMeshElement(mnt);

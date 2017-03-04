@@ -1,6 +1,7 @@
 #ifndef SIM_BOUNDARY_CONDITIONS_IMPL_H_
 #define SIM_BOUNDARY_CONDITIONS_IMPL_H_
 #include "apfBoundaryConditions.h"
+#include "simClassified.h"
 #include "amsiNeumannIntegrators.h"
 #include "amsiFields.h"
 #include "simAnalysis.h"
@@ -61,9 +62,12 @@ namespace amsi
       SimBC * sim_bc = dir_bc->getSimBC();
       assert(sim_bc->tp == BCType::dirichlet);
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
-      std::list<pEntity> ents;
-      getClassifiedDimEnts(msh,(pGEntity)sim_bc->itm,0,dm,std::back_inserter(ents));
-      fxd += applyDirichletBC(nm,ents.begin(),ents.end(),dir_bc,t);
+      for(int ii = 0; ii <= dm; ++ii)
+      {
+        auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
+        auto end = amsi::endClassified(bgn);
+        fxd += applyDirichletBC(nm,bgn,end,*it,t);
+      }
     }
     return fxd;
   }
@@ -77,10 +81,13 @@ namespace amsi
       SimBC * sim_bc = neu_bc->getSimBC();
       assert(sim_bc->tp == BCType::neumann);
       NeumannIntegrator * i = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
-      std::list<pEntity> ents;
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
-      getClassifiedEnts(msh,(pGEntity)sim_bc->itm,dm,std::back_inserter(ents));
-      applyNeumannBC(las,nm,ents.begin(),ents.end(),i,t);
+      for(int ii = 0; ii <= dm; ++ii)
+      {
+        auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
+        auto end = amsi::endClassified(bgn);
+        applyNeumannBC(las,nm,bgn,end,i,t);
+      }
       deleteNeumannIntegrator(i);
     }
   }
