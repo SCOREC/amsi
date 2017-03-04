@@ -12,11 +12,14 @@ namespace amsi
                            double t)
   {
     double val = 0.0;
-    if(qry->isConst(cmp))
+    bool cnst = qry->isConst(cmp);
+    bool sptl = qry->isSpaceExpr(cmp);
+    bool time = qry->isTimeExpr(cmp);
+    if(cnst)
       val = qry->getValue(cmp);
     else
     {
-      if(qry->isSpaceExpr(cmp))
+      if(sptl)
       {
         // get parametric coordinate of nd
         apf::Vector3 pt;
@@ -25,12 +28,12 @@ namespace amsi
         apf::Vector3 xyz;
         apf::mapLocalToGlobal(apf::createMeshElement(msh,ent),pt,xyz);
         // check if also time expr
-        if(qry->isTimeExpr(cmp))
-          val = qry->getValue(t,xyz[0],xyz[1],xyz[2]);
+        if(time)
+          val = qry->getValue(cmp,t,xyz[0],xyz[1],xyz[2]);
         else
-          val = qry->getValue(xyz[0],xyz[1],xyz[2]);
+          val = qry->getValue(cmp,xyz[0],xyz[1],xyz[2]);
       }
-      else if(qry->isTimeExpr(cmp))
+      else if(time)
         val = qry->getValue(cmp,t);
       else
         std::cerr << "Error: Non constant dirichlet boundary condition with "

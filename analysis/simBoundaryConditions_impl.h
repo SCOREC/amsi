@@ -157,6 +157,7 @@ namespace amsi
         auto mdl_itm_nd = mdl_itms.end();
         for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
         {
+          assert(ModelItem_isGEntity(*mdl_itm));
           SimBC * nw_bc = new SimBC;
           nw_bc->tp = tp;
           nw_bc->sbtp = *bc_tp;
