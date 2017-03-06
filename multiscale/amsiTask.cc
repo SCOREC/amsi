@@ -151,7 +151,7 @@ namespace amsi
       else
       {
         Zoltan_Struct * zs = Zoltan_Create(cm);
-        dd = new DataDistribution(sz,true,zs);
+        dd = new DataDistribution(sz,rnk,true,zs);
         size_t s1 = sizeof(DataDistribution*);
         size_t s2 = sizeof(int);
         void * buffer = (void*) new char[s1+s2];

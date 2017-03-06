@@ -57,7 +57,7 @@ else
         -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/ \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
-        -DHWLOC_ROOT=$DEVROOT/install/hwloc/ \
+        -DHWLOC_ROOT=$DEVROOT/install/hwloc/openmpi-1.10.0/ \
         -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
         ..
 fi
