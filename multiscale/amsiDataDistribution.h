@@ -31,26 +31,70 @@ namespace amsi
   {
   public:
 #   ifdef ZOLTAN
-    DataDistribution(int size, bool wgtd = false, Zoltan_Struct * zs = NULL);
-    Zoltan_Struct * GetZS() const {return zs;}
+    /**
+     * Construct a data distribution object.
+     */
+    DataDistribution(int sz,
+                     int l,
+                     bool wgtd = false,
+                     Zoltan_Struct * zs = NULL);
+    /**
+     * Get the zoltan structure related to this
+     *  DataDistribution. Used primarily by
+     *  AMSI load balancing algorithms.
+     */
+    Zoltan_Struct * GetZS() const
+    {
+      return zs;
+    }
 #   else
-    DataDistribution(int size, bool wgtd = false);
+    /**
+     * Construct a data distribution object.
+     */
+    DataDistribution(int sz,
+                     int l,
+                     bool wgtd = false);
 #   endif
     virtual ~DataDistribution() {};
-    // Assemblable interface
+    /**
+     * Assemble the DataDistribution, so that
+     *  each process has full information on
+     *  the current state of the parallel
+     *  distribution of the modeled data.
+     */
     virtual void Assemble(MPI_Comm);
-    int operator[](unsigned index) const;
-    int& operator[](unsigned index);
-    // preliminary version to get weighted migration working, HACKY and poorly implemented
+    /**
+     * Get the data quantity for the process with rank
+     *  idx in the MPI_Comm this DataDistribution is
+     *  related to. Strictly a RHS operator.
+     */
+    int operator[](unsigned idx) const;
+    /**
+     * Set the data quantity for the local process.
+     */
+    int operator=(int qnt);
+    /**
+     * Accumulate the data quantity for the local process.
+     */
+    int operator+=(int qnt);
+    /**
+     * Determine if the units of data modeled by this
+     *  DataDistribution have a weighting metric associated
+     *  with them.
+     */
     bool isWeighted() { return wgtd;}
-    void setWeight(unsigned index, unsigned sub_index, double wgt);
-    double getWeight(unsigned index, unsigned sub_index);
+    /**
+     * Get/Set the weight associated with the wgt-th
+     *  unit of data on the n-th process.
+     */
+    double & getWeight(unsigned nth, unsigned wgt);
   protected:
     DataDistribution();
+    int lcl_rnk;
     bool valid;
     bool wgtd;
-    std::valarray<std::vector<double> > wgts;
-    std::valarray<int> dd;
+    std::vector<std::vector<double>> wgts;
+    std::vector<int> dd;
 #   ifdef ZOLTAN
     Zoltan_Struct * zs;
 #   endif

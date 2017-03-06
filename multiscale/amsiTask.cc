@@ -100,42 +100,10 @@ namespace amsi
     }
   }
 #endif
-  /// @brief Create a DataDistribution for this Task (using the associated ProcessSet)
-  /// @param nm A unique string identifying the DataDistribution
-  size_t Task::createDD(const std::string & nm)
+  void Task::registerDataDistribution(const std::string & nm,
+                                      DataDistribution * dd)
   {
-    size_t id = 0;
-    if(assignedTo())
-    {
-      DataDistribution * dd = NULL;
-#     ifndef ZOLTAN
-      dd = new DataDistribution(proc->size(),true);
-#     else
-      if(!proc->size())
-        dd = new DataDistribution(proc->size());
-      else
-      {
-        Zoltan_Struct * zs = Zoltan_Create(task_comm);
-        dd = new DataDistribution(proc->size(),true,zs);
-        size_t s1 = sizeof(DataDistribution*);
-        size_t s2 = sizeof(int);
-        void * buffer = (void*) new char[s1+s2];
-        memcpy(buffer,&dd,s1);
-        memcpy((void*)(((size_t)buffer)+s1),&local_rank,s2);
-        Zoltan_Set_Fn(zs,
-                      ZOLTAN_NUM_OBJ_FN_TYPE,
-                      (void(*)()) &DD_get,
-                      buffer);
-        Zoltan_Set_Fn(zs,
-                      ZOLTAN_OBJ_LIST_FN_TYPE,
-                      (void(*)()) &DD_describe,
-                      buffer);
-      }
-#     endif
-      id = getDD_ID(nm);
-      data[id] = dd;
-    }
-    return id;
+    data[getDD_ID(nm)] = dd;
   }
   /// @brief Determine whether a DataDistribution with the given name exists
   /// @param nm A unique string identifying a DataDistribution (maybe)
@@ -146,41 +114,6 @@ namespace amsi
     if(assignedTo())
       exists = data.count(getDD_ID(nm)) > 0;
     return exists;
-  }
-  /// @brief Set the locally-owned data count for a given DataDistribution
-  /// @param nm A unique string identifying the DataDistribution for which to set the count
-  /// @param ct The locally-owned data count
-  void Task::setLocalDDValue(const std::string & nm, int ct)
-  {
-    if(assignedTo())
-    {
-      size_t id = getDD_ID(nm);
-      if(id != 0)
-        data[id]->operator[](local_rank) = ct;
-    }
-    else
-    {
-      std::cout << "WARNING: Attempt to set data distribution value on non-local task!" << std::endl;
-    }
-  }
-  /// @brief Get the locally-owned data count
-  /// @param dd_id A unique identifier for the DataDistribution
-  /// @return int The locally-owned data count
-  int Task::getLocalDDValue(size_t dd_id)
-  {
-    int cnt = -1;
-    if(assignedTo())
-      if(data.count(dd_id) > 0)
-        cnt = (*data[dd_id])[local_rank];
-    return cnt;
-  }
-  /// @brief Assemble a DataDistribution defined on the ProcessSet associated with
-  ///        this task, collective on that ProcessSet
-  /// @param A string uniquely identifying the DataDistribution to assemble
-  void Task::assembleDD(const std::string & nm)
-  {
-    if(verifyDD(nm))
-      data[getDD_ID(nm)]->Assemble(task_comm);
   }
   /// @brief Get a DataDistribution's identifier from the unique name
   /// @param nm A string uniquely identifying the DataDistribution
@@ -196,5 +129,46 @@ namespace amsi
   int Task::localToGlobalRank(int r)
   {
     return (*proc)[r];
+  }
+  int Task::size()
+  {
+    return proc->size();
+  }
+  DataDistribution * createDataDistribution(Task * tsk,
+                                            const std::string & nm)
+  {
+    DataDistribution * dd = NULL;
+    if(tsk->assignedTo())
+    {
+      int sz = tsk->size();
+      int rnk = tsk->localRank();
+      MPI_Comm cm = tsk->comm();
+#     ifndef ZOLTAN
+      dd = new DataDistribution(sz,rnk,true);
+#     else
+      if(!sz)
+        dd = new DataDistribution(sz,rnk);
+      else
+      {
+        Zoltan_Struct * zs = Zoltan_Create(cm);
+        dd = new DataDistribution(sz,true,zs);
+        size_t s1 = sizeof(DataDistribution*);
+        size_t s2 = sizeof(int);
+        void * buffer = (void*) new char[s1+s2];
+        memcpy(buffer,&dd,s1);
+        memcpy((void*)(((size_t)buffer)+s1),&rnk,s2);
+        Zoltan_Set_Fn(zs,
+                      ZOLTAN_NUM_OBJ_FN_TYPE,
+                      (void(*)()) &DD_get,
+                      buffer);
+        Zoltan_Set_Fn(zs,
+                      ZOLTAN_OBJ_LIST_FN_TYPE,
+                      (void(*)()) &DD_describe,
+                      buffer);
+      }
+#     endif
+      tsk->registerDataDistribution(nm,dd);
+    }
+    return dd;
   }
 } // namespace amsi

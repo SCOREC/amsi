@@ -34,7 +34,7 @@ namespace amsi
     Iteration() : itr(0) {}
     virtual void iterate() { ++itr; }
     int iteration() { return itr; }
-  };
+};
   /**
    * A convergence operator determines whether the current
    *  state of the simulation has converged to a reasonable

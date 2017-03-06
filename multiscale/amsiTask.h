@@ -34,11 +34,9 @@ namespace amsi
       }
       return result;
     };
-    size_t createDD(const std::string & nm);
+    void registerDataDistribution(const std::string & nm,
+                                  DataDistribution * dd);
     bool verifyDD(const std::string & nm);
-    void setLocalDDValue(const std::string & nm, int ct);
-    int getLocalDDValue(size_t dd_id);
-    void assembleDD(const std::string & nm);
     size_t getDD_ID(const std::string & nm);
     DataDistribution * getDD(const std::string & dd_nm)
     {
@@ -62,5 +60,6 @@ namespace amsi
     hash<std::string> id_gen;
   };
   int taskSize(Task * t);
+  DataDistribution * createDataDistribution(Task * tsk, const std::string & nm);
 }
 #endif

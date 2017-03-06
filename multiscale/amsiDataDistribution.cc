@@ -41,19 +41,21 @@ namespace amsi
     return wgts[idx];
   }
 # ifdef ZOLTAN
-  DataDistribution::DataDistribution(int size, bool w, Zoltan_Struct * z)
-    : valid(false)
+  DataDistribution::DataDistribution(int sz, int l, bool w, Zoltan_Struct * z)
+    : lcl_rnk(l)
+    , valid(false)
     , wgtd(w)
-    , wgts(wgtd ? size : 0)
-    , dd(size)
+    , wgts(wgtd ? sz : 0)
+    , dd(sz)
     , zs(z)
   { }
 #else
-  DataDistribution::DataDistribution(int size, bool w)
-    : valid(false)
+  DataDistribution::DataDistribution(int sz, int l, bool w)
+    : lcl_rnk(l)
+    , valid(false)
     , wgtd(w)
-    , wgts(wgtd ? size : 0)
-    , dd(size)
+    , wgts(wgt ? sz : 0)
+    , dd(sz)
   { }
 #endif
   void DataDistribution::Assemble(MPI_Comm comm)
@@ -68,29 +70,28 @@ namespace amsi
       wgts[ii].resize(dd[ii]);
     assembled = true;
   }
-  int DataDistribution::operator [](unsigned index) const
+  int DataDistribution::operator[](unsigned idx) const
   {
-    return dd[index];
+    return dd[idx];
   }
-  int& DataDistribution::operator [](unsigned index)
+  int DataDistribution::operator=(int qnt)
   {
     unassembled();
-    return dd[index];
+    return dd[lcl_rnk] = qnt;
   }
-  void DataDistribution::setWeight(unsigned index, unsigned sub_index, double value)
+  int DataDistribution::operator+=(int qnt)
+  {
+    unassembled();
+    return dd[lcl_rnk] += qnt;
+  }
+  double & DataDistribution::getWeight(unsigned nth, unsigned wgt)
   {
     if(!assembled)
     {
       // HACKY really should assemble here... but we're unlikely to hit this case
-      wgts[index].resize(dd[index]);
+      wgts[nth].resize(dd[nth]);
       valid = true;
     }
-    wgts[index][sub_index] = value;
-  }
-  double DataDistribution::getWeight(unsigned index, unsigned sub_index)
-  {
-    if(sub_index+1 > wgts[index].size())
-      wgts[index].resize(sub_index+1,0.0);
-    return wgts[index][sub_index];
+    return wgts[nth][wgt];
   }
 } // namespace amsi

@@ -31,8 +31,8 @@ namespace amsi
   {
     int nrml = 0;
     int tg = msh->getModelTag(mdl_ent);
-    apf::MeshEntity * rgn0 = msh->getUpward(fc,0);
-    apf::MeshEntity * rgn1 = msh->getUpward(fc,1);
+    apf::MeshEntity * rgn0 = apf::castEntity((pEntity)F_region((pFace)fc,0));//msh->getUpward(fc,0);
+    apf::MeshEntity * rgn1 = apf::castEntity((pEntity)F_region((pFace)fc,1));//msh->getUpward(fc,1);
     int tg0 = rgn0 == NULL ? -2 : msh->getModelTag(msh->toModel(rgn0));
     int tg1 = rgn1 == NULL ? -2 : msh->getModelTag(msh->toModel(rgn1));
     if(tg0 == tg1)
@@ -227,6 +227,7 @@ namespace amsi
       if(msh->isOwned(*ent))
       {
         int sd = side(mdl_ent,msh,*ent);
+        assert(sd == 1);
         vol += measureDisplacedMeshEntity_greens(*ent,u,sd);
       }
     }

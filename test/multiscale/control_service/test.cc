@@ -4,16 +4,16 @@
 #include <iostream>
 #include <utility>
 using namespace amsi;
-int task1_run(int &, char **&, MPI_Comm)
+int task1_run(int &, char **&, MPI_Comm cm)
 {
   int failed = 0;
   ControlService * cs = ControlService::Instance();
   Task * local_task = amsi::getLocal();
   int local_rank = local_task->localRank();
   int local_data_count = (local_rank % 4) * 4;
-  local_task->createDD("send_to_task2");
-  local_task->setLocalDDValue("send_to_task2",local_data_count);
-  local_task->assembleDD("send_to_task2");
+  DataDistribution * dd = amsi::createDataDistribution(local_task,"send_to_task2");
+  (*dd) = local_data_count;
+  amsi::Assemble(dd,cm);
   size_t pattern_id = cs->CreateCommPattern("send_to_task2","task1","task2");
   failed += test_neq(".CreateCommPattern()",static_cast<size_t>(0),pattern_id);
   cs->CommPattern_Reconcile(pattern_id);
@@ -41,7 +41,7 @@ int task1_run(int &, char **&, MPI_Comm)
   failed += test("2-Way Communication",data.size(),result_data.size());
   return failed;
 }
-int task2_run(int &, char **&, MPI_Comm)
+int task2_run(int &, char **&, MPI_Comm cm)
 {
   int failed = 0;
   ControlService * cs = ControlService::Instance();
@@ -54,9 +54,9 @@ int task2_run(int &, char **&, MPI_Comm)
   cs->CommPattern_Reconcile(pattern_id);
   std::vector<double> data;
   cs->Communicate(pattern_id,data,MPI_DOUBLE);
-  local_task->createDD("send_to_task1");
-  local_task->setLocalDDValue("send_to_task1",data.size());
-  local_task->assembleDD("send_to_task1");
+  DataDistribution * dd = amsi::createDataDistribution(local_task,"send_to_task1");
+  (*dd) = data.size();
+  amsi::Assemble(dd,cm);
   size_t send_pattern_id = cs->CommPattern_UseInverted(pattern_id,"send_to_task1","task2","task1");
   cs->CommPattern_Assemble(send_pattern_id); // collective on the task
   cs->CommPattern_Reconcile(send_pattern_id); // collective on the relation closure

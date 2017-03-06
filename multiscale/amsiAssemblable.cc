@@ -1,6 +1,10 @@
 #include "amsiAssemblable.h"
 namespace amsi
 {
+  void Assemble(Assemblable * a, MPI_Comm cm)
+  {
+    a->Assemble(cm);
+  }
   int getReconcileSendCount(int t1s, int t2s, int t1rnk)
   {
     int cnt = 0;

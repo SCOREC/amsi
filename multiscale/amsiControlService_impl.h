@@ -505,7 +505,7 @@ namespace amsi
             break;
           }
       DataDistribution * dd = tl->getDD(rdd_dd_map[rdd_id]);
-      (*dd)[task_rank] -= m_send_to.size();
+      (*dd) += -1 * m_send_to.size();
       migration_data.clear();
       m_index.clear();
       m_send_to.clear();
@@ -562,9 +562,9 @@ namespace amsi
         m_index = temp_index;
         m_recv_from = temp_rf;
         objects = temp_objects;
-        (*dd)[task_rank] +=  migration_data.size();
+        (*dd) +=  migration_data.size();
       }
-      dd->Assemble(task_comm);
+      amsi::Assemble(dd,task_comm);
     }
   // Inter task function to inform companion task of migration
   //   and update the comm pattern

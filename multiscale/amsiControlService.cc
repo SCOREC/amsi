@@ -88,7 +88,7 @@ namespace amsi
     // Create additional data distribution for adding data // to support dynamic processes
     Task * tl = task_man->getLocalTask();
     std::string dd_init_nm = t1_dd_nm + "_init";
-    tl->createDD(dd_init_nm);
+    createDataDistribution(tl,dd_init_nm);
     if(t1_id && t2_id)
     {
       if(comm_man->CommRelation_Exists(t1_id,t2_id))
@@ -180,7 +180,7 @@ namespace amsi
       void * rcv= NULL;
       size_t rcv_sz = 0;
       DataDistribution * local_dd = tl->getDD(rdd_dd_map[rdd_id]);
-      (*local_dd)[task_rank] = 0;
+      (*local_dd) = 0;
       while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz))
       {
         int * hdr = (int*)rcv;
@@ -192,7 +192,7 @@ namespace amsi
           int cnt = bfr[num_rcv_rnks+ii];
           // using rcv_frm is just as hacky as the t1s+snd_to above, need to map from coupling ranks to task ranks instead (and vice-versa)
           (*recv_pattern)(rnk,task_rank) = cnt;
-          (*local_dd)[task_rank] += cnt;
+          (*local_dd) += cnt;
         }
       }
     }
@@ -340,7 +340,7 @@ namespace amsi
     // Create additional data distribution for adding data
     Task * tl = task_man->getLocalTask();
     std::string dd_init_nm = t1_dd_nm + "_init";
-    tl->createDD(dd_init_nm);
+    createDataDistribution(tl,dd_init_nm);
     if(t1_id && t2_id)
     {
       if(comm_man->CommRelation_Exists(t1_id,t2_id))
@@ -366,9 +366,9 @@ namespace amsi
           r_init[rdd_id] = rdd_init_id; // Store reference to init comm pattern by original comm pattern
           std::string t2_dd_init_nm = t2_dd_nm + "_init";
           if(!t2->verifyDD(t2_dd_nm))
-            t2->createDD(t2_dd_nm);
+            createDataDistribution(t2,t2_dd_nm);
           if(!t2->verifyDD(t2_dd_init_nm))
-            t2->createDD(t2_dd_init_nm);
+            createDataDistribution(t2,t2_dd_init_nm);
           rdd_dd_map[rdd_id] = t2->getDD_ID(t2_dd_nm);
           rdd_dd_map[rdd_init_id] = t2->getDD_ID(t2_dd_init_nm);
         }

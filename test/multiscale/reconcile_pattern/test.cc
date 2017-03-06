@@ -4,9 +4,9 @@ int task1(int & argc, char **& argv, MPI_Comm cm)
 {
   amsi::ControlService * cs = amsi::ControlService::Instance();
   amsi::Task * t1 = amsi::getLocal();
-  t1->createDD("to_t2");
-  t1->setLocalDDValue("to_t2",4);
-  t1->assembleDD("to_t2");
+  amsi::DataDistribution * dd = amsi::createDataDistribution(t1,"to_t2");
+  (*dd) = 4;
+  Assemble(dd,cm);
   size_t id = cs->CreateCommPattern("to_t2","task1","task2");
   cs->CommPattern_Reconcile(id);
   return 0;
