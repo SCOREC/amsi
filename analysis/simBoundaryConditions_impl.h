@@ -82,12 +82,9 @@ namespace amsi
       assert(sim_bc->tp == BCType::neumann);
       NeumannIntegrator * i = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
-      for(int ii = 0; ii <= dm; ++ii)
-      {
-        auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
-        auto end = amsi::endClassified(bgn);
-        applyNeumannBC(las,nm,bgn,end,i,t);
-      }
+      auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),dm);
+      auto end = amsi::endClassified(bgn);
+      applyNeumannBC(las,nm,bgn,end,i,t);
       deleteNeumannIntegrator(i);
     }
   }
