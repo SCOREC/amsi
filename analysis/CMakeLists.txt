@@ -18,6 +18,7 @@ set(analysis_public_headers
     amsiFields_impl.h
     amsiFEA.h
     amsiLAS.h
+    amsiLASQuery.h
     amsiNonlinearAnalysis.h
     amsiNonlinearAnalysis_impl.h
     amsiNeumannIntegrators.h
@@ -29,6 +30,7 @@ set(analysis_public_headers
     apfFunctions.h
     apfFunctions_impl.h
     apfMeasure.h
+    apfMeasure_impl.h
     apfWrapper.h
     apfWrapper_impl.h
     apfsimWrapper.h
@@ -58,6 +60,7 @@ set(analysis_public_headers
     simFields.h
     simFields_impl.h
     simIterator.h
+    simNonlinearAnalysis.h
     simWrapper.h
     SimFEA.h
     apfSimFEA.h
@@ -97,6 +100,7 @@ set(analysis_src_files
     simBoundaryConditions.cc
     simClassified.cc
     simFields.cc
+    simNonlinearAnalysis.cc
     simWrapper.cc
     SimFEA.cc
     apfSimFEA.cc

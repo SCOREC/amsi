@@ -13,5 +13,8 @@ namespace amsi
   double measureDisplacedModelEntity(apf::ModelEntity * mdl_ent, apf::Field * u);
   double measureDisplacedMeshEntity(apf::MeshEntity * ent, apf::Field * u);
   double measureDisplacedModelEntity_greens(apf::ModelEntity * mdl_ent, apf::Field * u);
+  template <typename I>
+    double measureDisplacedModelEntities(I b, I e, apf::Field * u);
 }
+#include "apfMeasure_impl.h"
 #endif

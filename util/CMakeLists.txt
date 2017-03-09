@@ -13,6 +13,7 @@ set(util_public_headers
   amsiObserver.h
   amsiMPI.h
   amsiMPI_impl.h
+  amsiOperators.h
   amsiOutput.h
   amsiPArray.h
   amsiPermute.h

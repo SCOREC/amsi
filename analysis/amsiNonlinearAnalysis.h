@@ -1,6 +1,8 @@
 #ifndef AMSI_NONLINEAR_ANALYSIS_H_
 #define AMSI_NONLINEAR_ANALYSIS_H_
 #include "amsiLAS.h"
+#include <iostream>
+#include <vector>
 namespace amsi
 {
   class Iteration;
@@ -54,20 +56,43 @@ namespace amsi
    *  the current epsilon value to use for detecting
    *  convergence.
    */
-  template <typename T>
+  template <typename V, typename E, typename R>
     class UpdatingConvergence : public Convergence
   {
   protected:
+    Iteration * itr;
+    double cvg_vl;
     double eps;
-    T eps_gen;
+    double ref_vl;
+    V cvg_gen;
+    E eps_gen;
+    R ref_gen;
   public:
-    UpdatingConvergence(T e)
-      : eps(e())
+    UpdatingConvergence(Iteration * it, V v, E e, R r)
+      : itr(it)
+      , cvg_vl(0.0)
+      , eps(0.0)
+      , ref_vl(0.0)
+      , cvg_gen(v)
       , eps_gen(e)
-    { }
+      , ref_gen(r)
+    {
+      update();
+    }
     virtual void update()
     {
-      eps = eps_gen();
+      cvg_vl = (*cvg_gen)();
+      eps = (*eps_gen)(itr->iteration());
+      ref_vl = (*ref_gen)();
+    }
+    virtual bool converged()
+    {
+      bool cvrgd = false;
+      std::cout << "convergence criteria: " << std::endl
+                << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
+                << "\t" << cvg_vl << " < " << eps * ref_vl << std::endl
+                << "\t" << ((cvrgd = cvg_vl < eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;
+      return cvrgd;
     }
   };
   /**
@@ -79,23 +104,28 @@ namespace amsi
   class MultiConvergence : public Convergence
   {
   private:
-    Convergence * one;
-    Convergence * two;
+    std::vector<Convergence*> cvgs;
   public:
-    MultiConvergence(Convergence * o, Convergence * t)
+    template <typename I>
+    MultiConvergence(I bgn, I end)
       : Convergence()
-      , one(o)
-      , two(t)
-    {}
+      , cvgs()
+    {
+      std::copy(bgn,end,std::back_inserter(cvgs));
+    }
     virtual bool converged()
     {
-      bool frst = one->converged();
-      return frst ? two->converged() : frst;
+      for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
+        if(!(*cvg)->converged())
+          return false;
+      return true;
     }
     virtual bool failed()
     {
-      bool frst = one->failed();
-      return frst ? frst : two->failed();
+      for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
+        if((*cvg)->failed())
+          return true;
+      return false;
     }
   };
   /**
@@ -109,8 +139,9 @@ namespace amsi
   public:
     virtual bool converged() {return true;}
   };
+  /*
   template <typename T>
-    class RelativeResidualConvergence : public UpdatingConvergence<T>
+    class ForceResidual_RelativeConvergence : public UpdatingConvergence<T>
   {
   protected:
     LAS * las;
@@ -137,6 +168,7 @@ namespace amsi
     bool converged();
     bool failed();
   };
+  */
 }
 #include "amsiNonlinearAnalysis_impl.h"
 #endif

@@ -2,6 +2,7 @@
 #include <cmath>
 namespace amsi
 {
+  /*
   template <typename T>
     bool RelativeResidualConvergence<T>::converged()
   {
@@ -38,5 +39,5 @@ namespace amsi
   {
     return false;
   }
-
+  */
 }
