@@ -134,8 +134,8 @@ namespace amsi
     auto mdl_asc_nd = mdl_ascs.end();
     for(auto mdl_asc = mdl_ascs.begin(); mdl_asc != mdl_asc_nd; ++mdl_asc)
     {
-      std::vector<pModelItem> mdl_itms;
-      cutPaste<pModelItem>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
+      std::vector<apf::ModelEntity*> mdl_itms;
+      cutPaste<apf::ModelEntity*>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
       std::copy(mdl_itms.begin(),mdl_itms.end(),out);
     }
   }
@@ -149,17 +149,18 @@ namespace amsi
       auto bc_nd = bcs.end();
       for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
       {
-        std::vector<pModelItem> mdl_itms;
+        std::vector<apf::ModelEntity * > mdl_itms;
         getAssociatedModelItems(ac,*bc,std::back_inserter(mdl_itms));
         auto mdl_itm_nd = mdl_itms.end();
         for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
         {
-          assert(ModelItem_isGEntity(*mdl_itm));
+          pGEntity mdl_ent = reinterpret_cast<pGEntity>(*mdl_itm);
+          assert(ModelItem_isGEntity(mdl_ent));
           SimBC * nw_bc = new SimBC;
           nw_bc->tp = tp;
           nw_bc->sbtp = *bc_tp;
           nw_bc->bc_nd = *bc;
-          nw_bc->itm = *mdl_itm;
+          nw_bc->itm = mdl_ent;
           *out++ = nw_bc;
         }
       }
@@ -174,15 +175,16 @@ namespace amsi
     {
       pANode fld_nm = AttNode_childByType(*bc,"field name");
       std::string nm = std::string(AttInfoString_value((pAttInfoString)fld_nm));
-      std::vector<pModelItem> mdl_itms;
+      std::vector<apf::ModelEntity*> mdl_itms;
       getAssociatedModelItems(cs,*bc,std::back_inserter(mdl_itms));
       for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itms.end(); ++mdl_itm)
       {
+        pGEntity mdl_ent = reinterpret_cast<pGEntity>(*mdl_itm);
         SimBC * nw_bc = new SimBC;
         nw_bc->tp = tp;
         nw_bc->sbtp = 0;
         nw_bc->bc_nd = *bc;
-        nw_bc->itm = *mdl_itm;
+        nw_bc->itm = mdl_ent;
         nw_bc->fld = nm;
         *out++ = nw_bc;
       }

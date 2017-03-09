@@ -47,6 +47,7 @@ namespace amsi
   public:
     virtual bool converged() = 0;
     virtual bool failed() {return false;}
+    virtual ~Convergence() {};
   };
   /**
    * The updating convergence class allows the internal
@@ -78,6 +79,12 @@ namespace amsi
       , ref_gen(r)
     {
       update();
+    }
+    ~UpdatingConvergence()
+    {
+      delete cvg_gen;
+      delete eps_gen;
+      delete ref_gen;
     }
     virtual void update()
     {
