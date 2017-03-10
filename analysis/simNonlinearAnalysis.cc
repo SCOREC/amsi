@@ -38,12 +38,13 @@ namespace amsi
     {
       pANode cvg_tp = AttNode_childByType(cn,"convergence type");
       pANode ref_tp = AttNode_childByType(cn,"reference value");
-      pANode eps_tp = AttNode_childByType(cn,"epsilon");
+      pAttribute eps_tp = AttCase_attrib(cs,"epsilon");
+      //pANode eps_tp = AttNode_childByType(cn,"epsilon");
       int cvg_tp_vl = AttInfoInt_value((pAttInfoInt)cvg_tp);
       int ref_tp_vl = AttInfoInt_value((pAttInfoInt)ref_tp);
       to_R1 * cvg_vl = getConvergenceValueOp(cvg_tp_vl,las);
       to_R1 * ref_vl = getReferenceValueOp(ref_tp_vl,cvg_tp_vl,las);
-      R1_to_R1 * eps_vl = new SimUpdatingEpsilon((pAttInfoDouble)eps_tp);
+      R1_to_R1 * eps_vl = new SimUpdatingEpsilon((pAttributeDouble)eps_tp);
       cnvg = new UpdatingConvergence<to_R1*,R1_to_R1*,to_R1*>(it,cvg_vl,eps_vl,ref_vl);
     }
     Sim_deleteString(tp);

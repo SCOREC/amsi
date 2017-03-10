@@ -2,6 +2,7 @@
 #define AMSI_NONLINEAR_ANALYSIS_H_
 #include "amsiLAS.h"
 #include <iostream>
+#include <limits>
 #include <vector>
 namespace amsi
 {
@@ -72,14 +73,12 @@ namespace amsi
     UpdatingConvergence(Iteration * it, V v, E e, R r)
       : itr(it)
       , cvg_vl(0.0)
-      , eps(0.0)
-      , ref_vl(0.0)
+      , eps(1e-16)
+      , ref_vl(std::numeric_limits<double>::max())
       , cvg_gen(v)
       , eps_gen(e)
       , ref_gen(r)
-    {
-      update();
-    }
+    { }
     ~UpdatingConvergence()
     {
       delete cvg_gen;
@@ -94,6 +93,7 @@ namespace amsi
     }
     virtual bool converged()
     {
+      update();
       bool cvrgd = false;
       std::cout << "convergence criteria: " << std::endl
                 << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
