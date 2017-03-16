@@ -144,13 +144,13 @@ namespace amsi
       for(int ii = 0; ii < snd_cnt; ii++)
       {
         // extract only nonzero entries and corresponding ranks
-        int num_rnks = countRanksSentTo(send_pattern,snd_rnks[ii]);
+        int num_rnks = countRanksSentToFrom(send_pattern,snd_rnks[ii]);
         if(num_rnks > 0)
         {
           std::vector<int> rnks(num_rnks);
           std::vector<int> cnts(num_rnks);
-          getRanksSentTo(send_pattern,snd_rnks[ii],&rnks[0]);
-          getUnitsSentTo(send_pattern,snd_rnks[ii],&cnts[0]);
+          getRanksSentToFrom(send_pattern,snd_rnks[ii],&rnks[0]);
+          getUnitsSentToFrom(send_pattern,snd_rnks[ii],&cnts[0]);
           // intercomm rank of the recving task (hacky)
           int inter_rnk = t1s+snd_rnks[ii];
           int bfr_sz = 1+2*num_rnks;
@@ -173,7 +173,7 @@ namespace amsi
       // get the recving comm pattern
       CommPattern * recv_pattern = comm_man->getCommPattern(rdd_id);
       // since only nonzeros are sent the pattern needs to start from zero
-      zeroCommPattern(recv_pattern);
+      recv_pattern->zero();
       // All processes must call PCU Send
       PCU_Comm_Send();
       int rcv_frm = -1;

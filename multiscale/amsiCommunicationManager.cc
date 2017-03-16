@@ -112,7 +112,7 @@ namespace amsi
   void CommunicationManager::CommPattern_Invert(size_t n_rdd_id,
                                                 size_t o_rdd_id)
   {
-    comm_patterns[n_rdd_id] = CommPattern_CreateInverted(comm_patterns[o_rdd_id]);
+    comm_patterns[n_rdd_id] = invertCommPattern(comm_patterns[o_rdd_id]);
   }
   /// @brief Retrieve the identifier for a specific CommRelation
   /// @param id1 The identifier for the sending task

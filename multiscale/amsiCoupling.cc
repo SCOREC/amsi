@@ -60,7 +60,7 @@ namespace amsi
     }
     return result;
   }
-  int countRanksSentTo(const CommPattern * cp, int rnk)
+  int countRanksSendingTo(const CommPattern * cp, int rnk)
   {
     int cnt = 0;
     for(int ii = 0; ii < cp->getNumSenders(); ii++)
@@ -68,7 +68,7 @@ namespace amsi
         cnt++;
     return cnt;
   }
-  int countRanksSentFrom(const CommPattern * cp, int rnk)
+  int countRanksSentToFrom(const CommPattern * cp, int rnk)
   {
     int cnt = 0;
     for(int ii = 0; ii < cp->getNumRecvers(); ii++)
@@ -76,7 +76,7 @@ namespace amsi
         cnt++;
     return cnt;
   }
-  void getRanksSentTo(const CommPattern * cp, int rnk, int * rnks)
+  void getRanksSendingTo(const CommPattern * cp, int rnk, int * rnks)
   {
     int hd = 0;
     for(int ii = 0; ii < cp->getNumSenders(); ii++)
@@ -86,7 +86,7 @@ namespace amsi
         hd++;
       }
   }
-  void getRanksSentFrom(const CommPattern * cp, int rnk, int * rnks)
+  void getRanksSentToFrom(const CommPattern * cp, int rnk, int * rnks)
   {
     int hd = 0;
     for(int ii = 0; ii < cp->getNumRecvers(); ii++)
@@ -96,7 +96,7 @@ namespace amsi
         hd++;
       }
   }
-  void getUnitsSentTo(const CommPattern * cp, int rnk, int * sent_to)
+  void getUnitsSendingTo(const CommPattern * cp, int rnk, int * sent_to)
   {
     int hd = 0;
     for(int ii = 0; ii < cp->getNumSenders(); ii++)
@@ -109,7 +109,7 @@ namespace amsi
       }
     }
   }
-  void getUnitsSentFrom(const CommPattern * cp, int rnk, int * recv_from)
+  void getUnitsSentToFrom(const CommPattern * cp, int rnk, int * recv_from)
   {
     int hd = 0;
     for(int ii = 0; ii < cp->getNumRecvers(); ii++)
@@ -139,23 +139,6 @@ namespace amsi
       for(int ii = 0; ii < cp->getNumSenders(); ii++)
         rcv[jj] += (*cp)(ii,jj);
     }
-  }
-  void zeroCommPattern(CommPattern * cp)
-  {
-    for(int ii = 0; ii < cp->getNumSenders(); ii++)
-      for(int jj = 0; jj < cp->getNumRecvers(); jj++)
-        (*cp)(ii,jj) = 0;
-  }
-  void zeroNonLocal(CommPattern * cp, int rnk, Role rl)
-  {
-    if(rl == SENDER)
-      for(int ii = 0; ii < cp->getNumSenders() && ii != rnk; ii++)
-        for(int jj = 0; jj < cp->getNumRecvers(); jj++)
-          (*cp)(ii,jj) = 0;
-    else if(rl == RECVER)
-      for(int ii = 0; ii < cp->getNumSenders(); ii++)
-        for(int jj = 0; jj < cp->getNumRecvers() && jj != rnk; jj++)
-          (*cp)(ii,jj) = 0;
   }
   /// @brief Default constructor.
   /// @param s1_ The number of processes in the ProcessSet related to the sending task
@@ -196,8 +179,8 @@ namespace amsi
     int sz = -1;
     MPI_Comm_size(cm,&sz);
     assert(sz != -1);
-    zeroNonLocal(this,rnk,SENDER);
-    int rnks_cnt = countRanksSentFrom(this,rnk);
+    this->zeroNonLocal(rnk,SENDER);
+    int rnks_cnt = countRanksSentToFrom(this,rnk);
     std::vector<int> rnks_cnts(sz);
     rnks_cnts[rnk] = rnks_cnt;
     MPI_Allgather(&rnks_cnt,1,mpi_type(rnks_cnt),
@@ -205,8 +188,8 @@ namespace amsi
                   cm);
     std::vector<int> rnks(rnks_cnt);
     std::vector<int> cnts(rnks_cnt);
-    getRanksSentFrom(this,rnk,&rnks[0]);
-    getUnitsSentFrom(this,rnk,&cnts[0]);
+    getRanksSentToFrom(this,rnk,&rnks[0]);
+    getUnitsSentToFrom(this,rnk,&cnts[0]);
     int ttl_cnt = rnks_cnts[0];
     int offsets[sz];
     offsets[0] = 0;
@@ -230,6 +213,34 @@ namespace amsi
         (*this)(ii,all_rnks[jj+offsets[ii]]) = all_cnts[jj+offsets[ii]];
     }
   }
+  void FullCommPattern::zero()
+  {
+    for(int ii = 0; ii < s1; ++ii)
+      for(int jj = 0; jj < s2; ++jj)
+        (*this)(ii,jj) = 0;
+  }
+  void FullCommPattern::zeroNonLocal(int rnk, Role rl)
+  {
+    if(rl == SENDER)
+      for(int ii = 0; ii < getNumSenders() && ii != rnk; ii++)
+        for(int jj = 0; jj < getNumRecvers(); jj++)
+          (*this)(ii,jj) = 0;
+    else if(rl == RECVER)
+      for(int ii = 0; ii < getNumSenders(); ii++)
+        for(int jj = 0; jj < getNumRecvers() && jj != rnk; jj++)
+          (*this)(ii,jj) = 0;
+  }
+  CommPattern * invertCommPattern(const CommPattern * pattern)
+  {
+    CommPattern * result = NULL;
+    int new_senders = pattern->getNumRecvers();
+    int new_recvers = pattern->getNumSenders();
+    result = new FullCommPattern(new_senders,new_recvers);
+    for(int ii = 0; ii < new_recvers; ii++)
+      for(int jj = 0; jj < new_senders; jj++)
+        (*result)(jj,ii) = (*pattern)(ii,jj);
+    return result;
+  }
   std::ostream& operator<<(std::ostream& os, const CommPattern& obj)
   {
     os << "CommPattern: " << std::endl;
@@ -242,16 +253,5 @@ namespace amsi
       os << std::endl;
     }
     return os;
-  }
-  CommPattern * CommPattern_CreateInverted(const CommPattern * pattern)
-  {
-    CommPattern * result = NULL;
-    int new_senders = pattern->getNumRecvers();
-    int new_recvers = pattern->getNumSenders();
-    result = new FullCommPattern(new_senders,new_recvers);
-    for(int ii = 0; ii < new_recvers; ii++)
-      for(int jj = 0; jj < new_senders; jj++)
-        (*result)(jj,ii) = (*pattern)(ii,jj);
-    return result;
   }
 }
