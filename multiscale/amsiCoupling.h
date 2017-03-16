@@ -9,7 +9,7 @@
 #include <vector>
 namespace amsi
 {
-  class CommPattern : public Assemblable
+  class CommPattern : public Assemblable, public Reconcilable
   {
   protected:
     int s1;
@@ -33,6 +33,7 @@ namespace amsi
     virtual int& operator()(int,int);
     virtual int operator()(int,int) const;
     virtual void Assemble(MPI_Comm);
+    virtual void Reconcile(MPI_Comm);
     virtual void zero();
   private:
     FullCommPattern();

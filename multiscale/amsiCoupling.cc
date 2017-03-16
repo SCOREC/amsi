@@ -213,6 +213,10 @@ namespace amsi
         (*this)(ii,all_rnks[jj+offsets[ii]]) = all_cnts[jj+offsets[ii]];
     }
   }
+  void FullCommPattern::Reconcile(MPI_Comm)
+  {
+
+  }
   void FullCommPattern::zero()
   {
     for(int ii = 0; ii < s1; ++ii)
