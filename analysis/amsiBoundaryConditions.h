@@ -7,26 +7,7 @@ namespace amsi
   #define BC_TYPES(OP) OP(dirichlet), OP(neumann), OP(num_bc_types)
   #define NEU_TYPES(OP) OP(custom), OP(traction), OP(pressure), OP(num_neu_types)
   enum BCType{BC_TYPES(MAKE_ENUM_OP)};
-  /// todo : wrap in function
-  const char * const BCTypes[] = {BC_TYPES(MAKE_STRING_OP)};
   enum NeuBCType{NEU_TYPES(MAKE_ENUM_OP)};
-  /// todo : wrap in function
-  const char * const NeuTypes[] = {NEU_TYPES(MAKE_STRING_OP)};
-  /*
-  enum BCTypes
-  {
-    DIRICHLET = 0,
-    NEUMANN = 1,
-    NUM_BC_TYPES = 2
-  };
-  enum NeumannBCType
-  {
-    CUSTOM = 0,
-    SURFACE_TRACTION = 1,
-    NORMAL_PRESSURE = 2,
-    NUM_NEUMANN_TYPES = 3
-  };
-  */
   int numBCComponents(int tp, int sbtp);
   int numDirichletComponents(int tp);
   int numNeumannComponents(int tp);

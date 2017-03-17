@@ -16,7 +16,7 @@ int main(int argc, char ** argv)
   amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::initAnalysis(argc,argv);
   pGModel mdl = GM_load(argv[1],0,NULL);
-  pParMesh sm_msh = PM_load(argv[2],sthreadNone,mdl,NULL);
+  pParMesh sm_msh = PM_load(argv[2],mdl,NULL);
   pMesh prt = PM_mesh(sm_msh,0);
   // get all analysis cases
   std::vector<pACase> css;

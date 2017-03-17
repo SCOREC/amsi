@@ -7,7 +7,7 @@
 namespace amsi {
   Task * getLocal()
   {
-    return tm->getLocalTask();
+    return getScaleManager()->getLocalTask();
   }
   TaskManager::TaskManager(MPI_Comm gc)
     : id_gen()

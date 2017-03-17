@@ -6,8 +6,16 @@
 #include <fstream>
 namespace amsi
 {
-  TaskManager * tm = NULL;
-  CommunicationManager * cm = NULL;
+  static TaskManager * tm = NULL;
+  static CommunicationManager * cm = NULL;
+  TaskManager * getScaleManager()
+  {
+    return tm;
+  }
+  CommunicationManager * getMultiscaleManager()
+  {
+    return cm;
+  }
   int parseMultiscaleSection(const std::string & ln)
   {
     for(int ii = 0; ii < num_multiscale_config_sections; ++ii)

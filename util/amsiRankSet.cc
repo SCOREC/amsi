@@ -5,7 +5,7 @@
 #include <algorithm>
 namespace amsi
 {
-  void SimpleRankSet::toArray(rank_t * rs) const
+  void SimpleRankSet::toArray(int * rs) const
   {
     assert(rs);
     std::copy(s.begin(),s.end(),rs);
@@ -19,23 +19,23 @@ namespace amsi
   {
     int asz = a->size();
     int bsz = b->size();
-    rank_t ar[asz];
-    rank_t br[bsz];
+    int ar[asz];
+    int br[bsz];
     a->toArray(ar);
     b->toArray(br);
     int rsz = asz > bsz ? asz : bsz;
-    rank_t rs[rsz];
-    rank_t * nsz = std::set_intersection(ar,ar+asz,
+    int rs[rsz];
+    int * nsz = std::set_intersection(ar,ar+asz,
                                          br,br+bsz,
                                          rs);
     insertFrom(rslt,&rs[0],nsz);
   }
   void merge(const RankSet * a, const RankSet * b, RankSet * rslt)
   {
-    rank_t asz = a->size();
-    rank_t bsz = b->size();
-    rank_t as[asz];
-    rank_t bs[bsz];
+    int asz = a->size();
+    int bsz = b->size();
+    int as[asz];
+    int bs[bsz];
     a->toArray(as);
     b->toArray(bs);
     insertFrom(rslt,&as[0],as+asz);
@@ -43,19 +43,19 @@ namespace amsi
   }
   void diff(const RankSet * a, const RankSet * b, RankSet * rslt)
   {
-    rank_t asz = a->size();
-    rank_t bsz = b->size();
-    rank_t as[asz];
-    rank_t bs[bsz];
+    int asz = a->size();
+    int bsz = b->size();
+    int as[asz];
+    int bs[bsz];
     a->toArray(as);
     b->toArray(bs);
-    rank_t ns[asz];
-    rank_t * nsz = std::set_difference(as,as+asz,
+    int ns[asz];
+    int * nsz = std::set_difference(as,as+asz,
                                        bs,bs+bsz,
                                        ns);
     insertFrom(rslt,ns,nsz);
   }
-  void takeN(const RankSet * src, rank_t nm, RankSet * a, RankSet * b)
+  void takeN(const RankSet * src, int nm, RankSet * a, RankSet * b)
   {
     int sz = src->size();
     assert(nm < sz);
@@ -88,8 +88,8 @@ namespace amsi
     MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
     MPI_Group wrld_grp;
     MPI_Comm_group(AMSI_COMM_WORLD,&wrld_grp);
-    rank_t sz = rs->size();
-    rank_t grp_rnks[sz];
+    int sz = rs->size();
+    int grp_rnks[sz];
     rs->toArray(grp_rnks);
     MPI_Group sbgrp = MPI_GROUP_EMPTY;
     if(rs->contains(rnk))
@@ -98,7 +98,7 @@ namespace amsi
     // really we only need tg to be the same on all processes in sbgrp
     // which this achieves, though there are undoubtedly better ways to
     // accomplish this
-    //int tg = abs((int)generateRangeUUID((rank_t*)grp_rnks,grp_rnks+sz));
+    //int tg = abs((int)generateRangeUUID((int*)grp_rnks,grp_rnks+sz));
     MPI_Comm result;
     MPI_Comm_create(AMSI_COMM_WORLD,sbgrp,&result);
     //TODO: this is in the mpi3 standard and allows the creation to not be collective over amsi_comm_world

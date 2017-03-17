@@ -28,7 +28,10 @@ namespace amsi
     /// retrieve the solution
     virtual void GetSolution(double *&) = 0;
     virtual void GetSolutionNorm(double &) = 0;
+    virtual void GetAccumSolution(double *&) = 0;
     virtual void GetAccumSolutionNorm(double &) = 0;
+    virtual void GetPrevSolution(double *&) = 0;
+    virtual void GetPrevSolutionNorm(double &) = 0;
     // Toshi below - must also be able to zero each side separately
     virtual bool ZeroMatrix() {return false;}
     virtual bool ZeroVector() {return false;}
@@ -37,7 +40,11 @@ namespace amsi
     virtual void GetVectorNorm(double &) = 0;
     virtual void GetAccumVector(double *&) = 0;
     virtual void GetAccumVectorNorm(double &) = 0;
+    virtual void GetPrevVector(double *&) = 0;
+    virtual void GetPrevVectorNorm(double &) = 0;
     virtual void GetDotNorm(double &) = 0;
+    virtual void GetPrevDotNorm(double &) = 0;
+    virtual void GetAccumDotNorm(double &) = 0;
     virtual void PrintMatrix(std::ostream &) {};
     virtual void PrintVector(std::ostream &) {};
     virtual void PrintSolution(std::ostream &) {};

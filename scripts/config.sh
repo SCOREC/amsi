@@ -46,7 +46,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     ..
 else
     module load $DEVROOT/module/openmpi/1.10.0
-    module load simmetrix/simModSuite
+    module load simmetrix/simModSuite/11.0-170210dev
     module load $DEVROOT/petsc/petsc-3.6.3/ompi110-debug/lib/petsc/conf/modules/petsc/3.6.3
     CC=`which mpicc`
     CXX=`which mpicxx`
@@ -56,7 +56,7 @@ else
         -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/ \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
-        -DHWLOC_ROOT=$DEVROOT/install/hwloc/ \
+        -DHWLOC_ROOT=$DEVROOT/install/hwloc/openmpi-1.10.0/ \
         -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
         ..
 fi

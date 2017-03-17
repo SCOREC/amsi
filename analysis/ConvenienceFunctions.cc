@@ -7,7 +7,10 @@ namespace amsi
   const int Voigt3x3[3][3] = {{0,5,4},
                               {5,1,3},
                               {4,3,2}};
-  void calcDefGrad(apf::Element * e, const apf::Vector3 & p, apf::Matrix3x3 & grad, double & grad_det)
+  void calcDefGrad(apf::Element * e,
+                   const apf::Vector3 & p,
+                   apf::Matrix3x3 & grad,
+                   double & grad_det)
   {
     apf::NewArray<apf::Vector3> u;
     apf::getVectorNodes(e,u);

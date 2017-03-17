@@ -19,7 +19,7 @@ struct Sigma
       return result;
     }
 };
-int task1_run(int &, char **&, MPI_Comm)
+int task1_run(int &, char **&, MPI_Comm cm)
 {
   int failed = 0;
   // Retrieve the ControlService
@@ -28,10 +28,10 @@ int task1_run(int &, char **&, MPI_Comm)
   Task * lt = tm->getLocalTask();
   int local_rank = lt->localRank();
   int local_data_count = 6+local_rank*2;
-  // Create a DataDistribution for this task, set the local data count, and assemble
-  lt->createDD("micro_init");
-  lt->setLocalDDValue("micro_init",local_data_count);
-  lt->assembleDD("micro_init");
+  // Create a DataDistribution for this task, set the local data count, and assembl
+  DataDistribution * dd = createDataDistribution(lt,"micro_init");
+  (*dd) = local_data_count;
+  Assemble(dd,cm);
   // Create a CommPattern to communicate from this task to the other
   size_t pattern_id = cs->CreateCommPattern("micro_init","macro","micro");
   failed += test_neq(".CreateCommPattern()",static_cast<size_t>(0),pattern_id);
@@ -98,7 +98,7 @@ int task1_run(int &, char **&, MPI_Comm)
   //std::cout << "Task 1 rank " << local_rank << " has recv'd all data" << std::endl;
   return failed;
 }
-int task2_run(int &, char **&, MPI_Comm)
+int task2_run(int &, char **&, MPI_Comm cm)
 {
   int failed = 0;
   // Retrieve the ControlService
@@ -115,9 +115,9 @@ int task2_run(int &, char **&, MPI_Comm)
   std::vector<Sigma> data;
   cs->Communicate(pattern_id,data,sigma_type);
   //invert the comm mapping for use as the commpattern for the t2->t1 relation
-  lt->createDD("micro_results");
-  lt->setLocalDDValue("micro_results",data.size());
-  lt->assembleDD("micro_results");
+  DataDistribution * dd = createDataDistribution(lt,"micro_results");
+  (*dd) = data.size();
+  Assemble(dd,cm);
   // invert the communication pattern used to get in the t1->t2 "send_to_task2" relation
   size_t send_pattern_id = cs->CommPattern_UseInverted(pattern_id,"micro_results","micro","macro");
   //std::cout << "recv pattern id is " << pattern_id << " send pattern id is " << send_pattern_id << std::endl;
@@ -140,8 +140,8 @@ int main(int argc, char * argv[])
   // find size of sigma_type
   int sigmaTypeSize;
   MPI_Type_size(sigma_type,&sigmaTypeSize);
-  Task * t1 = amsi::tm->getTask("macro");
-  Task * t2 = amsi::tm->getTask("micro");
+  Task * t1 = amsi::getScaleManager()->getTask("macro");
+  Task * t2 = amsi::getScaleManager()->getTask("micro");
   ControlService * cs = ControlService::Instance();
   failed += test_neq("ControlService::Instance()",static_cast<ControlService*>(NULL),cs);
   // Set the execution functions for the tasks
