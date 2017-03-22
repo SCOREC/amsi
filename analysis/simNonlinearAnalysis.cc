@@ -36,6 +36,7 @@ namespace amsi
     }
     if(std::string("nonlinear iteration").compare(tp) == 0)
     {
+
       pAttribute cvg_tp = Attribute_childByType(cn,"convergence type");
       pAttribute eps_att = Attribute_childByType(cn,"epsilon");
       pAttribute ref_tp = Attribute_childByType(cn,"reference value");

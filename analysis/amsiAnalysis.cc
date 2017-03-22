@@ -7,7 +7,7 @@
 #include <cassert>
 namespace amsi
 {
-#define ANALYSIS_OPTIONS(OP) OP(petsc), OP(petsc_options), OP(simmetrix), OP(simmetrix_license), OP(num_analysis_options)
+  #define ANALYSIS_OPTIONS(OP) OP(petsc), OP(petsc_options), OP(simmetrix), OP(simmetrix_license), OP(num_analysis_options)
   enum AnalysisOptions{ANALYSIS_OPTIONS(MAKE_ENUM_OP)};
   const char * const getAnalysisOptionString(int ii)
   {

@@ -32,7 +32,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
   module use /gpfs/u/barn/PASC/shared/module
   module load xl
   module load petsc/3.6.3
-  module load proprietary/simmetrix/simModSuite
+  module load proprietary/simmetrix/simModSuite/11.0-160922pre-xl
   module load boost
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -44,7 +44,6 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     -DHWLOC_ROOT=$DEVROOT/install/hwloc/xl/ \
     -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
     ..
-  chmod g+rw $BUILD_DIR
 else
     module load $DEVROOT/module/openmpi/1.10.0
     module load simmetrix/simModSuite/11.0-170210dev
