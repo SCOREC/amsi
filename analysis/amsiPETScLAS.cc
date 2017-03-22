@@ -224,7 +224,10 @@ namespace amsi
   }
   void PetscLAS::GetVectorNorm(double & norm)
   {
-    VecNorm(b_i,NORM_2,&norm);
+    if(b_i)
+      VecNorm(b_i,NORM_2,&norm);
+    else
+      norm = 0.0;
   }
   void PetscLAS::GetAccumVector(double * & vc)
   {
@@ -237,7 +240,10 @@ namespace amsi
   }
   void PetscLAS::GetAccumVectorNorm(double & nrm)
   {
-    VecNorm(b,NORM_2,&nrm);
+    if(b)
+      VecNorm(b,NORM_2,&nrm);
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetPrevVector(double *&)
   {
@@ -245,26 +251,47 @@ namespace amsi
   }
   void PetscLAS::GetPrevVectorNorm(double & nrm)
   {
-    VecNorm(b_im,NORM_2,&nrm);
+    if(b_im)
+      VecNorm(b_im,NORM_2,&nrm);
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetDotNorm(double & nrm)
   {
-    VecDot(b_i,x_i,&nrm);
-    nrm = fabs(nrm);
+    if(b_i && x_i)
+    {
+      VecDot(b_i,x_i,&nrm);
+      nrm = fabs(nrm);
+    }
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetPrevDotNorm(double & nrm)
   {
-    VecDot(b_im,x_im,&nrm);
-    nrm = fabs(nrm);
+    if(b_im && x_im)
+    {
+      VecDot(b_im,x_im,&nrm);
+      nrm = fabs(nrm);
+    }
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetAccumDotNorm(double & nrm)
   {
-    VecDot(b,x,&nrm);
-    nrm = fabs(nrm);
+    if(b && x)
+    {
+      VecDot(b,x,&nrm);
+      nrm = fabs(nrm);
+    }
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetSolutionNorm(double & nrm)
   {
-    VecNorm(x_i,NORM_2,&nrm);
+    if(x_i)
+      VecNorm(x_i,NORM_2,&nrm);
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetAccumSolution(double *&)
   {
@@ -272,7 +299,10 @@ namespace amsi
   }
   void PetscLAS::GetAccumSolutionNorm(double & nrm)
   {
-    VecNorm(x,NORM_2,&nrm);
+    if(x)
+      VecNorm(x,NORM_2,&nrm);
+    else
+      nrm = 0.0;
   }
   void PetscLAS::GetPrevSolution(double *&)
   {
@@ -280,7 +310,10 @@ namespace amsi
   }
   void PetscLAS::GetPrevSolutionNorm(double & nrm)
   {
-    VecNorm(x_im,NORM_2,&nrm);
+    if(x_im)
+      VecNorm(x_im,NORM_2,&nrm);
+    else
+      nrm = 0.0;
   }
   PetscLAS::~PetscLAS()
   {

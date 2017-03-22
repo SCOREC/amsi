@@ -7,23 +7,24 @@
 namespace amsi
 {
   Convergence * buildSimConvergenceOperator(pACase cs,
-                                            pANode nd,
+                                            pAttribute at,
                                             Iteration * it,
                                             LAS * las);
   // : public
   class SimUpdatingEpsilon : public R1_to_R1
   {
   protected:
-    pAttInfoDouble eps;
+    pAttributeDouble eps;
   public:
-    SimUpdatingEpsilon(pAttInfoDouble e)
+    SimUpdatingEpsilon(pAttributeDouble e)
       : eps(e)
     { }
     double operator()(double t)
     {
-      if(AttInfoDouble_isExpression(eps))
-        AttNode_setTime((pANode)eps,t);
-      return AttInfoDouble_value(eps);
+      if(!AttributeDouble_constant(eps))
+        return AttributeDouble_evalDT(eps,t);
+      else
+        return AttributeDouble_value(eps);
     }
   };
 }

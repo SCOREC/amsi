@@ -94,6 +94,7 @@ namespace amsi
     }
     virtual bool converged()
     {
+      update();
       bool cvrgd = false;
       std::cout << "convergence criteria: " << std::endl
                 << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
