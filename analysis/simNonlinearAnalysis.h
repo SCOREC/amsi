@@ -7,7 +7,7 @@
 namespace amsi
 {
   Convergence * buildSimConvergenceOperator(pACase cs,
-                                            pANode nd,
+                                            pAttribute at,
                                             Iteration * it,
                                             LAS * las);
   // : public
@@ -21,9 +21,10 @@ namespace amsi
     { }
     double operator()(double t)
     {
-      if(AttributeDouble_constant(eps) != 1)
+      if(!AttributeDouble_constant(eps))
         return AttributeDouble_evalDT(eps,t);
-      return AttributeDouble_value(eps);
+      else
+        return AttributeDouble_value(eps);
     }
   };
 }

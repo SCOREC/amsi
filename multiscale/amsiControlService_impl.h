@@ -154,11 +154,11 @@ namespace amsi
       {
         //unsigned local_count = t1->getLocalDDValue(r_dd_id.second);
         CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
-        unsigned num_snt_frm = countRanksSentFrom(send_pattern,task_rank);
+        unsigned num_snt_frm = countRanksSentToFrom(send_pattern,task_rank);
         std::vector<int> snt_rnks(num_snt_frm);
         std::vector<int> snt_cnts(num_snt_frm);
-        getRanksSentFrom(send_pattern,task_rank,&snt_rnks[0]);
-        getUnitsSentFrom(send_pattern,task_rank,&snt_cnts[0]);
+        getRanksSentToFrom(send_pattern,task_rank,&snt_rnks[0]);
+        getUnitsSentToFrom(send_pattern,task_rank,&snt_cnts[0]);
         size_t offset = 0;
         //buffer_offset<D> bo;
         //bo.buffer = &buffer[0];
@@ -214,11 +214,11 @@ namespace amsi
     CommPattern * ptrn = NULL; //t1->getLocalDDValue(r_dd_id.second);
     if(tl == t1)
     {
-      unsigned cnt_snt_frm = countRanksSentFrom(ptrn,task_rank);
+      unsigned cnt_snt_frm = countRanksSentToFrom(ptrn,task_rank);
       std::vector<int> snt_rnks(cnt_snt_frm);
-      getRanksSentFrom(ptrn,task_rank,&snt_rnks[0]);
+      getRanksSentToFrom(ptrn,task_rank,&snt_rnks[0]);
       std::vector<int> snt_cnts(cnt_snt_frm);
-      getUnitsSentFrom(ptrn,task_rank,&snt_cnts[0]);
+      getUnitsSentToFrom(ptrn,task_rank,&snt_cnts[0]);
       int unt = 0;
       size_t offset = 0;
       for(unsigned ii = 0; ii < cnt_snt_frm; ii++)     // for each rank recving from this one
@@ -259,7 +259,7 @@ namespace amsi
       int lst_frm = -1;
       void * rcv = NULL;
       std::vector<int> cnts(t1s);
-      getUnitsSentFrom(ptrn,frm,&cnts[0]);
+      getUnitsSentToFrom(ptrn,frm,&cnts[0]);
       while(PCU_Comm_Read(&frm,&rcv,&rcv_sz))
       { // need to make sure order is consistent, order by sending rank
         unsigned rcv_cnt = cnts[frm];
