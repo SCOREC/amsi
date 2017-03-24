@@ -1,9 +1,10 @@
 #ifndef AMSI_LAS_H_
 #define AMSI_LAS_H_
 #include <ostream>
+#include "amsiNonlinearAnalysis.h"
 namespace amsi
 {
-  class LAS
+  class LAS : public PerStep , public PerIter
   {
   public:
     virtual void iter() {};
@@ -32,7 +33,6 @@ namespace amsi
     virtual void GetAccumSolutionNorm(double &) = 0;
     virtual void GetPrevSolution(double *&) = 0;
     virtual void GetPrevSolutionNorm(double &) = 0;
-    // Toshi below - must also be able to zero each side separately
     virtual bool ZeroMatrix() {return false;}
     virtual bool ZeroVector() {return false;}
     virtual void GetVector(double *&) = 0;

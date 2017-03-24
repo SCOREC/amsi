@@ -1,4 +1,5 @@
 #include "amsiPETScLAS.h"
+#include <amsiMPI.h>
 #include <assert.h>
 #include <iostream>
 #include <limits>
@@ -114,7 +115,7 @@ namespace amsi
    */
   void PetscLAS::solve()
   {
-    if (!b_assembled)
+    if(!isVectorAssembled())
     {
       VecAssemblyBegin(b_i);
       VecAssemblyEnd(b_i);
@@ -188,7 +189,6 @@ namespace amsi
       VecAssemblyEnd(b_i);
     }
     b_assembled = false;
-    //b_addMode = false;
     VecZeroEntries(b_i);
     return true;
   }
@@ -225,7 +225,15 @@ namespace amsi
   void PetscLAS::GetVectorNorm(double & norm)
   {
     if(b_i)
+    {
+      if(!isVectorAssembled())
+      {
+        VecAssemblyBegin(b_i);
+        VecAssemblyEnd(b_i);
+        b_assembled = true;
+      }
       VecNorm(b_i,NORM_2,&norm);
+    }
     else
       norm = 0.0;
   }
@@ -413,5 +421,11 @@ namespace amsi
     MatGetRowMax(A,w,idx);
     VecMax(w,NULL,&rslt);
     return rslt;
+  }
+  bool PetscLAS::isVectorAssembled( )
+  {
+    MPI_Comm cm;
+    PetscObjectGetComm((PetscObject)b_i,&cm);
+    return comm_min(b_assembled,cm);
   }
 }

@@ -1,6 +1,5 @@
 #ifndef AMSI_NONLINEAR_ANALYSIS_H_
 #define AMSI_NONLINEAR_ANALYSIS_H_
-#include "amsiLAS.h"
 #include <iostream>
 #include <limits>
 #include <vector>
@@ -20,6 +19,14 @@ namespace amsi
    *  performs the linear solve.
    */
   bool numericalSolve(Iteration * it, Convergence * cn);
+  struct PerIter
+  {
+    virtual void iter() = 0;
+  };
+  struct PerStep
+  {
+    virtual void step() = 0;
+  };
   /**
    * An iteration object that represents a single iteration
    *  for a numerical simulation. The base class merely tracks
@@ -33,10 +40,17 @@ namespace amsi
   class Iteration
   {
     int itr;
+    std::vector<PerIter*> xtras;
   public:
     Iteration() : itr(0) {}
-    virtual void iterate() { ++itr; }
+    virtual void iterate()
+    {
+      for(auto xtra = xtras.begin(); xtra != xtras.end(); ++xtra)
+        (*xtra)->iter();
+      ++itr;
+    }
     int iteration() { return itr; }
+    void addExtra(PerIter * pi) { xtras.push_back(pi); }
 };
   /**
    * A convergence operator determines whether the current
@@ -146,36 +160,6 @@ namespace amsi
   public:
     virtual bool converged() {return true;}
   };
-  /*
-  template <typename T>
-    class ForceResidual_RelativeConvergence : public UpdatingConvergence<T>
-  {
-  protected:
-    LAS * las;
-  public:
-    RelativeResidualConvergence(LAS * l, T e)
-      : UpdatingConvergence<T>(e)
-      , las(l)
-    { }
-    bool converged();
-    bool failed();
-  };
-  template <typename T>
-    class IncrementalResidualConvergence : public UpdatingConvergence<T>
-  {
-  protected:
-    LAS * las;
-    double nrm_im;
-  public:
-    IncrementalResidualConvergence(LAS * l, T e)
-      : UpdatingConvergence<T>(e)
-      , las(l)
-      , nrm_im(0.0)
-    { }
-    bool converged();
-    bool failed();
-  };
-  */
 }
 #include "amsiNonlinearAnalysis_impl.h"
 #endif

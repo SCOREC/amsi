@@ -6,7 +6,7 @@
 #define VALUE_TO_STRING(x) #x
 #define VALUE(x) VALUE_TO_STRING(x)
 #define VAR_NAME_VALUE(var) #var "="  VALUE(var)
-#define BGQ
+#define SCOREC
 #define SCOREC
 #define SIM
 #define PETSC

@@ -48,6 +48,7 @@ namespace amsi
     int LocalOffset() { return vec_low; }
     ~PetscLAS();
   private:
+    bool isVectorAssembled();
     void freeMem();
     Mat A;     // matrix
     Vec x_im;   // previous solution

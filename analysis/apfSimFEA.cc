@@ -24,6 +24,7 @@ namespace amsi
                                             dir_bcs.begin(),
                                             dir_bcs.end(),
                                             T);
+    fixed_dofs = comm_sum(fixed_dofs,analysis_comm);
     std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;
   }
   void apfSimFEA::ApplyBC_Neumann(LAS * las)

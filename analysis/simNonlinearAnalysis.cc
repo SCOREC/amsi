@@ -40,11 +40,14 @@ namespace amsi
       pAttribute cvg_tp = Attribute_childByType(cn,"convergence type");
       pAttribute eps_att = Attribute_childByType(cn,"epsilon");
       pAttribute ref_tp = Attribute_childByType(cn,"reference value");
+      pAttribute cap_att = Attribute_childByType(cn,"iteration cap");
       int cvg_tp_vl = AttributeInt_value((pAttributeInt)cvg_tp);
       int ref_tp_vl = AttributeInt_value((pAttributeInt)ref_tp);
       to_R1 * cvg_vl = getConvergenceValueOp(cvg_tp_vl,las);
       to_R1 * ref_vl = getReferenceValueOp(ref_tp_vl,cvg_tp_vl,las);
-      R1_to_R1 * eps_vl = new SimUpdatingEpsilon((pAttributeDouble)eps_att);
+      auto * eps_vl = new SimUpdatingEpsilon((pAttributeDouble)eps_att);
+      if(cap_att)
+        eps_vl->setCap(AttributeInt_value((pAttributeInt)cap_att));
       cnvg = new UpdatingConvergence<to_R1*,R1_to_R1*,to_R1*>(it,cvg_vl,eps_vl,ref_vl);
     }
     Sim_deleteString(tp);

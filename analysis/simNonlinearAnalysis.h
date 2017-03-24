@@ -6,6 +6,7 @@
 #include <apf.h>
 namespace amsi
 {
+  class LAS;
   Convergence * buildSimConvergenceOperator(pACase cs,
                                             pAttribute at,
                                             Iteration * it,
@@ -15,16 +16,24 @@ namespace amsi
   {
   protected:
     pAttributeDouble eps;
+    int cap;
   public:
     SimUpdatingEpsilon(pAttributeDouble e)
       : eps(e)
+      , cap(-1)
     { }
     double operator()(double t)
     {
+      if(cap != -1 && t >= cap)
+        return true;
       if(!AttributeDouble_constant(eps))
         return AttributeDouble_evalDT(eps,t);
       else
         return AttributeDouble_value(eps);
+    }
+    void setCap(int c)
+    {
+      cap = c;
     }
   };
 }
