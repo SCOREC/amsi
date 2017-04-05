@@ -18,11 +18,13 @@ set(analysis_public_headers
     amsiFields_impl.h
     amsiFEA.h
     amsiLAS.h
+    amsiLAS2.h
     amsiLASQuery.h
     amsiNonlinearAnalysis.h
     amsiNonlinearAnalysis_impl.h
     amsiNeumannIntegrators.h
     amsiPETScLAS.h
+    amsiPETScLAS2.h
     apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
     apfFieldOp.h
@@ -77,6 +79,7 @@ set(analysis_src_files
     amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc
     amsiPETScLAS.cc
+    amsiPETScLAS2.cc
     apfBoundaryConditions.cc
     apfFields.cc
     apfFunctions.cc
