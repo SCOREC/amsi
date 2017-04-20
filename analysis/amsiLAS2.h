@@ -9,11 +9,16 @@ namespace las
   public:
     virtual void zero(Mat * m) = 0;
     virtual void zero(Vec * v) = 0;
-    virtual void add(Vec * v, int cnt, int * rws, double * vls) = 0;
-    virtual void add(Mat * m, int cntr, int * rws, int cntc, int * cols, double * vls) = 0;
-    virtual void solve(const Mat * k, Vec * u, const Vec * f) = 0;
-    virtual void dot(Vec * v0, Vec * v1) = 0;
-    virtual void norm(Vec * v) = 0;
+    virtual void assemble(Vec * v, int cnt, int * rws, double * vls) = 0;
+    virtual void assemble(Mat * m, int cntr, int * rws, int cntc, int * cls, double * vls) = 0;
+    virtual void set(Vec * v, int cnt, int * rws, double * vls) = 0;
+    virtual void set(Mat * m, int cntr, int * rws, int cntc, int * cls, double * vls) = 0;
+    virtual void solve(Mat * k, Vec * u, Vec * f) = 0;
+    virtual double norm(Vec * v) = 0;
+    virtual double dot(Vec * v0, Vec * v1) = 0;
+    virtual void axpy(double a, Vec * x, Vec * y) = 0;
+    virtual void get(Vec * v, double *& vls) = 0;
+    virtual void restore(Vec * v, double *& vls) = 0;
   };
 }
 #endif

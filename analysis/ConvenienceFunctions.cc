@@ -1,30 +1,12 @@
 #include "ConvenienceFunctions.h"
 namespace amsi
 {
-  const apf::Matrix3x3 Identity3x3(1.0,0.0,0.0,
-                                   0.0,1.0,0.0,
-                                   0.0,0.0,1.0);
+  const apf::Matrix3x3 eye3x3(1.0,0.0,0.0,
+                              0.0,1.0,0.0,
+                              0.0,0.0,1.0);
   const int Voigt3x3[3][3] = {{0,5,4},
                               {5,1,3},
                               {4,3,2}};
-  void calcDefGrad(apf::Element * e,
-                   const apf::Vector3 & p,
-                   apf::Matrix3x3 & grad,
-                   double & grad_det)
-  {
-    apf::NewArray<apf::Vector3> u;
-    apf::getVectorNodes(e,u);
-    apf::NewArray<apf::Vector3> shape_derivs;
-    apf::getShapeGrads(e,p,shape_derivs);
-    grad = Identity3x3;
-    int num_nodes = apf::countNodes(e);
-    int field_components = 3; // assumption
-    for(int ii = 0; ii < field_components; ii++)
-      for(int jj = 0; jj < field_components; jj++)
-        for(int kk = 0; kk < num_nodes; kk++)
-          grad[ii][jj] += u[kk][ii] * shape_derivs[kk][jj];
-    grad_det = apf::getDeterminant(grad);
-  }
   void LeftCauchy(const apf::Matrix3x3 & F,
                   apf::Matrix3x3 & B)
   {
@@ -87,7 +69,7 @@ namespace amsi
     apf::Matrix3x3 C_inv = apf::invert(C);
     for(int ii = 0; ii < 3; ii++)
       for(int jj = 0; jj < 3; jj++)
-        pk2[ii][jj] = gamma1 * Identity3x3[ii][jj] + gamma2 * C_inv[ii][jj];
+        pk2[ii][jj] = gamma1 * eye3x3[ii][jj] + gamma2 * C_inv[ii][jj];
   }
   void PrintElementalSystem(std::ostream & stream,
                             int num_elemental_dofs,

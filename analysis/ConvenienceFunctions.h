@@ -5,9 +5,7 @@
 #include <apfDynamicVector.h>
 namespace amsi
 {
-  extern const apf::Matrix3x3 Identity3x3;
   extern const int Voigt3x3[3][3];
-  void calcDefGrad(apf::Element * e,const apf::Vector3 & p,apf::Matrix3x3 & grad,double & grad_det);
   void LeftCauchy(const apf::Matrix3x3 & F,
                   apf::Matrix3x3 & B);
   void RightCauchy(const apf::Matrix3x3 & F,

@@ -206,7 +206,7 @@ namespace amsi
     apf::destroyMeshElement(mlm);
     return vol;
   }
-    double measureDisplacedMeshEntity_greens(apf::MeshEntity * ent, apf::Field * u, int norm_dir)
+  double measureDisplacedMeshEntity_greens(apf::MeshEntity * ent, apf::Field * u, int norm_dir)
   {
     //todo : derive integration order from field order
     MeasureDisplacedFromSurf elemental_volume(u,1,norm_dir);

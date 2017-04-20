@@ -2,8 +2,12 @@
 #define APF_ELEMENTAL_SYSTEM_H_
 #include "amsiElementalSystem.h"
 #include <apf.h>
+#include <apfNumbering.h>
+#include <apfDynamicMatrix.h>
 namespace amsi
 {
+  ElementalSystem2 * buildApfElementalSystem(apf::Element * e, apf::Numbering * n);
+  /*
   class apfElementalSystem : public apf::Integrator, public ElementalSystem
   {
   protected:
@@ -95,5 +99,6 @@ namespace amsi
     }
     int * getDofIds();
   };
+  */
 }
 #endif
