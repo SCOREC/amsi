@@ -164,6 +164,7 @@ namespace amsi
   public:
     virtual bool converged() {return true;}
   };
+  extern LinearConvergence linear_convergence; // should be const but converged() isn't const
   /**
    * A Convergence class which resets an Iteration object
    *  if the wrapped Convergence class has converged.
