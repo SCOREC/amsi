@@ -27,6 +27,7 @@ namespace amsi
   {
     virtual void step() = 0;
   };
+  struct ResetIteration;
   /**
    * An iteration object that represents a single iteration
    *  for a numerical simulation. The base class merely tracks
@@ -51,8 +52,10 @@ namespace amsi
     }
     int iteration() { return itr; }
     void addExtra(PerIter * pi) { xtras.push_back(pi); }
+  protected:
     void reset() { itr = 0; }
-};
+    friend ResetIteration;
+  };
   /**
    * A convergence operator determines whether the current
    *  state of the simulation has converged to a reasonable
@@ -160,6 +163,24 @@ namespace amsi
   {
   public:
     virtual bool converged() {return true;}
+  };
+  /**
+   * A Convergence class which resets an Iteration object
+   *  if the wrapped Convergence class has converged.
+   */
+  struct ResetIteration : public Convergence
+  {
+    ResetIteration(Convergence * c, Iteration * i) : cvg(c), itr(i) {}
+    virtual bool converged()
+    {
+      bool c = cvg->converged();
+      if(c)
+        itr->reset();
+      return c;
+    }
+  private:
+    Convergence * cvg;
+    Iteration * itr;
   };
 }
 #include "amsiNonlinearAnalysis_impl.h"
