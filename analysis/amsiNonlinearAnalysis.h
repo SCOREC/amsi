@@ -51,6 +51,7 @@ namespace amsi
     }
     int iteration() { return itr; }
     void addExtra(PerIter * pi) { xtras.push_back(pi); }
+    void reset() { itr = 0; }
 };
   /**
    * A convergence operator determines whether the current
