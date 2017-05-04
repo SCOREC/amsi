@@ -13,9 +13,9 @@ namespace amsi
     F = eye3x3;
     int nen = apf::countNodes(e);
     int cmp = 3; //apf::countComponente(apf::getField(e));
-    for(int kk = 0; kk < cmp; ++kk)
-      for(int jj = 0; jj < cmp; ++jj)
-        for(int ii = 0; ii < cmp; ++ii)
-          F[kk][jj] += u[ii][kk] * Ni_j[ii][jj];
+    for (int ii = 0; ii < cmp; ++ii)
+      for (int jj = 0; jj < cmp; ++jj)
+	for (int kk = 0; kk < nen; ++kk)
+	  F[ii][jj] += u[kk][ii] * Ni_j[kk][jj];
   }
 }
