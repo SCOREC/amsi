@@ -12,7 +12,7 @@ namespace amsi
       : nedofs(n)
       , edofs(new int [nedofs])
     { }
-    ~ElementalSystem2()
+    virtual ~ElementalSystem2()
     {
       delete [] edofs;
     }
