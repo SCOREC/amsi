@@ -40,21 +40,44 @@ namespace amsi
    */
   class Iteration
   {
+  private:
     int itr;
-    std::vector<PerIter*> xtras;
   public:
     Iteration() : itr(0) {}
     virtual void iterate()
     {
-      for(auto xtra = xtras.begin(); xtra != xtras.end(); ++xtra)
-        (*xtra)->iter();
       ++itr;
     }
     int iteration() { return itr; }
-    void addExtra(PerIter * pi) { xtras.push_back(pi); }
   protected:
     void reset() { itr = 0; }
     friend ResetIteration;
+  };
+  /**
+   * An iteration object composed of a sequence of
+   *  operations modeled by PerIter objects to allow
+   *  for more dynamic construction of the flow of a
+   *  simulation.
+   */
+  class ModularIteration : public Iteration
+  {
+  private:
+    std::vector<PerIter*> ops;
+  public:
+    ModularIteration()
+      : Iteration()
+      , ops()
+    { }
+    virtual void iterate()
+    {
+      for(auto op = ops.begin(); op != ops.end(); ++op)
+        (*op)->iter();
+      Iteration::iterate();
+    }
+    void addOperation(PerIter * op)
+    {
+      ops.push_back(op);
+    }
   };
   /**
    * A convergence operator determines whether the current
