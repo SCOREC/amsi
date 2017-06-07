@@ -21,6 +21,7 @@ namespace amsi
      void unreconciled() {reconciled = false;}
      bool reconciled;
    };
+   void Assemble(Assemblable * a, MPI_Comm cm);
    /**
     * Get the number of peer-to-peer sends required from rank
     *  t1rnk to complete reconciliation of a piece of control

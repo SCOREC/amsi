@@ -27,6 +27,9 @@ target_link_libraries(multiscale_control_service util multiscale)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/control_service/amsi_options_8_24
                ${CMAKE_CURRENT_BINARY_DIR}/control_service/amsi_options_8_24 COPYONLY)
 
+add_mpi_test(multiscale_broadcast control_service/broadcast.cc 32 -a control_service/amsi_options_8_24)
+target_link_libraries(multiscale_broadcast util multiscale)
+
 add_mpi_test(multiscale_reconcile_pattern reconcile_pattern/test.cc 32 -a reconcile_pattern/amsi_options_8_24)
 target_link_libraries(multiscale_reconcile_pattern util multiscale)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/reconcile_pattern/amsi_options_8_24

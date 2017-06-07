@@ -23,16 +23,16 @@ int main(int argc, char * argv[])
   if(assignedTo(&macro))
   {
     const MPI_Comm cm = macro.getComm();
-    rank_t sz = 0;
+    int sz = 0;
     MPI_Comm_size(cm,&sz);
     failed += test("MPI_Comm_size()",nm_nds,sz);
   }
-  rank_t gsz = 0;
+  int gsz = 0;
   MPI_Comm_size(AMSI_COMM_WORLD,&gsz);
   if(assignedTo(&micro))
   {
     const MPI_Comm cm = micro.getComm();
-    rank_t sz = 0;
+    int sz = 0;
     MPI_Comm_size(cm,&sz);
     failed += test("MPI_Comm_size()",gsz,sz);
   }
@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
   if(assignedTo(&micro))
   {
     const MPI_Comm cm = micro.getComm();
-    rank_t sz = 0;
+    int sz = 0;
     MPI_Comm_size(cm,&sz);
     failed += test("MPI_Comm_size()",gsz-nm_nds,sz);
   }

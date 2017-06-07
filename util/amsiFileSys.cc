@@ -1,5 +1,6 @@
 #include "amsiFileSys.h"
-#include <iostream> // temp
+#include <iostream>
+#include <sys/stat.h>
 namespace amsi
 {
   const std::string getpwd()
@@ -8,7 +9,7 @@ namespace amsi
     getcwd(&cwd[0],sizeof(cwd));
     return std::string(cwd);
   }
-  void printInfo(FileSystemInfo * fsi, std::ostream & out)
+  void describeFSInfo(FileSystemInfo * fsi, std::ostream & out)
   {
     out << "Executing in " << fsi->getcwd() << std::endl;
     out << "Results written to " << fsi->getResultsDir() << std::endl;
@@ -34,5 +35,13 @@ namespace amsi
       rslts = cwd + "/" + rs;
     else
       rslts = rs;
+    struct stat sb;
+    if(stat(rslts.c_str(),&sb) != 0)
+    {
+      std::cout << "STATUS: specified results directory [" << rslts << "] doesn't exist, creating..." << std::endl;
+      mkdir(rslts.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
+    else if(!S_ISDIR(sb.st_mode))
+      std::cerr << "ERROR: specified results directory [" << rslts << "] names an existing file!" << std::endl;
   }
 }

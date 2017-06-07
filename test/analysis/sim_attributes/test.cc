@@ -38,13 +38,13 @@ int main(int argc, char * argv[])
   failed += frc_op == NULL;
   pANode dsp_op = AttNode_childByType((pANode)op,"output displacement");
   failed += dsp_op == NULL;
-  std::vector<pModelItem> frc_itms;
-  std::vector<pModelItem> dsp_itms;
+  std::vector<apf::ModelEntity*> frc_itms;
+  std::vector<apf::ModelEntity*> dsp_itms;
   amsi::getAssociatedModelItems(op,frc_op,std::back_inserter(frc_itms));
   amsi::getAssociatedModelItems(op,dsp_op,std::back_inserter(dsp_itms));
-  std::vector<pModelItem> frc_itms2;
+  std::vector<apf::ModelEntity*> frc_itms2;
   amsi::getTrackedModelItems(css[0],"output force",std::back_inserter(frc_itms2));
-  std::vector<pModelItem> dsp_itms2;
+  std::vector<apf::ModelEntity*> dsp_itms2;
   amsi::getTrackedModelItems(css[0],"output displacement",std::back_inserter(dsp_itms2));
   amsi::freeCase(css[0]);
   // below here taken care of by amsi free

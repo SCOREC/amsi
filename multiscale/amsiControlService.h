@@ -27,8 +27,6 @@ namespace amsi
     int Execute(int& argc,char **& argv);
     size_t CommRelation_Define(const std::string & nm1,
                                const std::string & nm2);
-    size_t CommRelation_GetID(const std::string & nm1,
-                              const std::string & nm2);
     size_t CreateCommPattern(const std::string & t1_dd,
                              const std::string & t1,
                              const std::string & t2);
@@ -70,15 +68,17 @@ namespace amsi
     template <typename D>
       void Reconcile(size_t r_id, D & data, MPI_Datatype type);
     template <typename T>
-      void couplingBroadcast(size_t r_id, T * buf);
+      void scaleBroadcast(size_t r_id, T * buf);
+    template <typename I, typename O>
+      void aSendBroadcast(O out, size_t rid, I * bfr, size_t cnt);
+    template <typename T>
+      int aRecvBroadcastSize(size_t rid);
+    template <typename I, typename O>
+      void aRecvBroadcast(O out, size_t rid, I * bfr, size_t cnt);
     template <typename D, template <typename T,typename All = std::allocator<T> > class Container>
       void Communicate(size_t rdd_id,Container<D> & buffer,MPI_Datatype type);
     template <typename PRT_IO, typename DATA_IO>
       void Communicate(size_t rdd_id, PRT_IO cnts, DATA_IO bfr, MPI_Datatype tp);
-    void setSuppressOutput(bool s)
-    {
-      suppress_output = s;
-    }
   private:
     ControlService();
     ControlService(const ControlService &);
@@ -100,7 +100,6 @@ namespace amsi
     std::vector<int> m_index;
     std::vector<int> m_t1process;
     std::vector<int> m_recv_from;
-    bool suppress_output;
   };
 } // namespace amsi
 #include "amsiControlService_impl.h"

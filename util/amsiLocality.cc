@@ -55,16 +55,16 @@ namespace amsi
       it++;
     }
   }
-  rank_t getNthRankOnNode(uuid nid, rank_t nth, MPI_Comm cm)
+  int getNthRankOnNode(uuid nid, int nth, MPI_Comm cm)
   {
     DefaultRankSet rnks;
     getRanksOnNode(nid,rnks,cm);
-    std::vector<rank_t> on_nd;
+    std::vector<int> on_nd;
     pushTo(&rnks,std::back_inserter(on_nd));
     assert((unsigned)nth < on_nd.size());
     return on_nd.at(nth);
   }
-  void getNthRankOnNodes(const std::vector<uuid> & nids, rank_t nth, RankSet * rnks, MPI_Comm cm)
+  void getNthRankOnNodes(const std::vector<uuid> & nids, int nth, RankSet * rnks, MPI_Comm cm)
   {
     assert(rnks);
     for(std::vector<uuid>::const_iterator nid = nids.begin(); nid != nids.end(); nid++)

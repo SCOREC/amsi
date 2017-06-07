@@ -8,21 +8,21 @@ namespace amsi
   {
   public:
     virtual ~RankSet() {};
-    virtual rank_t size() const = 0;
-    virtual void insert(rank_t) = 0;
-    virtual bool contains(rank_t) const = 0;
-    virtual void toArray(rank_t *) const = 0;
+    virtual int size() const = 0;
+    virtual void insert(int) = 0;
+    virtual bool contains(int) const = 0;
+    virtual void toArray(int *) const = 0;
     virtual RankSet * copy() = 0;
   };
   class SimpleRankSet : public RankSet
   {
   protected:
-    std::set<rank_t> s;
+    std::set<int> s;
   public:
-    virtual rank_t size() const {return s.size();}
-    virtual void insert(rank_t r) {s.insert(r);}
-    virtual bool contains(rank_t r) const {return s.count(r) > 0;}
-    virtual void toArray(rank_t * rs) const;
+    virtual int size() const {return s.size();}
+    virtual void insert(int r) {s.insert(r);}
+    virtual bool contains(int r) const {return s.count(r) > 0;}
+    virtual void toArray(int * rs) const;
     virtual RankSet * copy();
   };
   typedef SimpleRankSet DefaultRankSet;
@@ -39,7 +39,7 @@ namespace amsi
   void intersection(const RankSet * a, const RankSet * b, RankSet * rslt);
   void merge(const RankSet * a, const RankSet * b, RankSet * rslt);
   void diff(const RankSet * a, const RankSet * b, RankSet * rslt);
-  void takeN(const RankSet * src, rank_t nm, RankSet * a, RankSet * b);
+  void takeN(const RankSet * src, int nm, RankSet * a, RankSet * b);
   enum RankFormats
   {
     SET,
@@ -49,11 +49,11 @@ namespace amsi
   class RankRange
   {
   protected:
-    rank_t lw;
-    rank_t hgh;
+    int lw;
+    int hgh;
   public:
-    rank_t size() {return hgh - lw;}
-    void insert(rank_t vl)
+    int size() {return hgh - lw;}
+    void insert(int vl)
     {
       if(vl == hgh+1)
         hgh = vl;
@@ -62,7 +62,7 @@ namespace amsi
       //else
         // split into a tree with a range branch and a set branch
     }
-    bool contains(rank_t vl)
+    bool contains(int vl)
     {
       return (vl > lw && vl <= hgh);
     }

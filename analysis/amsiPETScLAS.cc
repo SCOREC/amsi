@@ -1,4 +1,5 @@
 #include "amsiPETScLAS.h"
+#include <amsiMPI.h>
 #include <assert.h>
 #include <iostream>
 #include <limits>
@@ -49,9 +50,6 @@ namespace amsi
   }
   void PetscLAS::iter()
   {
-    // accumulate values
-    VecAYPX(b,1.0,b_i);
-    VecAYPX(x,1.0,x_i);
     // move into previous iteration vecs
     VecCopy(b_i,b_im);
     VecCopy(x_i,x_im);
@@ -117,7 +115,7 @@ namespace amsi
    */
   void PetscLAS::solve()
   {
-    if (!b_assembled)
+    if(!isVectorAssembled())
     {
       VecAssemblyBegin(b_i);
       VecAssemblyEnd(b_i);
@@ -137,6 +135,9 @@ namespace amsi
     //PetscViewerASCIIOpen(PETSC_COMM_WORLD,"delta_u_i",&vwr);
     //VecView(x_i,vwr);
     //PetscViewerDestroy(&vwr);
+    // accumulate values
+    VecAYPX(b,1.0,b_i);
+    VecAYPX(x,1.0,x_i);
   }
   /**
    *@brief Zero out the Matrix and Vector associated with the linear system, without changing their underlying nonzero structures.
@@ -188,7 +189,6 @@ namespace amsi
       VecAssemblyEnd(b_i);
     }
     b_assembled = false;
-    //b_addMode = false;
     VecZeroEntries(b_i);
     return true;
   }
@@ -208,22 +208,6 @@ namespace amsi
     VecRestoreArray(b_i,&Bi);
     vc = &b_i_arr[0];
   }
-  void PetscLAS::GetAccumVector(double * & vc)
-  {
-    PetscScalar * B;
-    VecGetArray(b,&B);
-    int n = vec_high-vec_low;
-    memcpy(b_arr,(double*)B,n*sizeof(PetscScalar));
-    VecRestoreArray(b,&B);
-    vc = &b_arr[0];
-  }
-  /**
-   *@brief Overwrite the values in the associated vector with those from the provided array.
-   *
-   *@param[in] An array of the correct length to update the associated vector.
-   *
-   *@todo Construct a test case.
-   */
   void PetscLAS::SetVector(const double * vec)
   {
     if(!b_addMode)
@@ -240,40 +224,105 @@ namespace amsi
   }
   void PetscLAS::GetVectorNorm(double & norm)
   {
-    VecNorm(b_i,NORM_2,&norm);
+    if(b_i)
+    {
+      if(!isVectorAssembled())
+      {
+        VecAssemblyBegin(b_i);
+        VecAssemblyEnd(b_i);
+        b_assembled = true;
+      }
+      VecNorm(b_i,NORM_2,&norm);
+    }
+    else
+      norm = 0.0;
   }
-  void PetscLAS::GetDotNorm(double & norm)
+  void PetscLAS::GetAccumVector(double * & vc)
   {
-    VecDot(b_im,x_im,&norm);
-    norm = fabs(norm);
-    /*
-      double t = 0.0;
-      VecDot(b_i,b_i,&t);
-      std::cout << "b_i sqrnorm: " << t << " norm: " << sqrt(t) << std::endl;
-      VecDot(b_im,b_im,&t);
-      std::cout << "b_im sqrnorm: " << t << " norm: " << sqrt(t) << std::endl;
-      double diff = 0.0;
-      VecWAXPY(w,-1.0,b_i,b_im);
-      VecDot(w,w,&diff);
-      VecDot(b_im,b_im,&norm);
-      norm = sqrt(diff / norm);
-    */
-  }
-  void PetscLAS::GetSolutionNorm(double & norm)
-  {
-    VecNorm(x_i,NORM_2,&norm);
-  }
-  void PetscLAS::GetAccumSolutionNorm(double & norm)
-  {
-    VecNorm(x,NORM_2,&norm);
+    PetscScalar * B;
+    VecGetArray(b,&B);
+    int n = vec_high-vec_low;
+    memcpy(b_arr,(double*)B,n*sizeof(PetscScalar));
+    VecRestoreArray(b,&B);
+    vc = &b_arr[0];
   }
   void PetscLAS::GetAccumVectorNorm(double & nrm)
   {
-    VecNorm(b,NORM_2,&nrm);
+    if(b)
+      VecNorm(b,NORM_2,&nrm);
+    else
+      nrm = 0.0;
   }
-  /**
-   *@brief Destructor.
-   */
+  void PetscLAS::GetPrevVector(double *&)
+  {
+    // UNIMPLEMENTED
+  }
+  void PetscLAS::GetPrevVectorNorm(double & nrm)
+  {
+    if(b_im)
+      VecNorm(b_im,NORM_2,&nrm);
+    else
+      nrm = 0.0;
+  }
+  void PetscLAS::GetDotNorm(double & nrm)
+  {
+    if(b_i && x_i)
+    {
+      VecDot(b_i,x_i,&nrm);
+      nrm = fabs(nrm);
+    }
+    else
+      nrm = 0.0;
+  }
+  void PetscLAS::GetPrevDotNorm(double & nrm)
+  {
+    if(b_im && x_im)
+    {
+      VecDot(b_im,x_im,&nrm);
+      nrm = fabs(nrm);
+    }
+    else
+      nrm = 0.0;
+  }
+  void PetscLAS::GetAccumDotNorm(double & nrm)
+  {
+    if(b && x)
+    {
+      VecDot(b,x,&nrm);
+      nrm = fabs(nrm);
+    }
+    else
+      nrm = 0.0;
+  }
+  void PetscLAS::GetSolutionNorm(double & nrm)
+  {
+    if(x_i)
+      VecNorm(x_i,NORM_2,&nrm);
+    else
+      nrm = 0.0;
+  }
+  void PetscLAS::GetAccumSolution(double *&)
+  {
+    // UNIMPLEMENTED
+  }
+  void PetscLAS::GetAccumSolutionNorm(double & nrm)
+  {
+    if(x)
+      VecNorm(x,NORM_2,&nrm);
+    else
+      nrm = 0.0;
+  }
+  void PetscLAS::GetPrevSolution(double *&)
+  {
+    // UNIMPLEMENTED
+  }
+  void PetscLAS::GetPrevSolutionNorm(double & nrm)
+  {
+    if(x_im)
+      VecNorm(x_im,NORM_2,&nrm);
+    else
+      nrm = 0.0;
+  }
   PetscLAS::~PetscLAS()
   {
     freeMem();
@@ -289,9 +338,9 @@ namespace amsi
     VecDestroy(&b_i);
     VecDestroy(&b_im);
     VecDestroy(&w);
-    delete[] x_arr;
-    delete[] b_arr;
-    delete[] b_i_arr;
+    delete [] x_arr;
+    delete [] b_arr;
+    delete [] b_i_arr;
   }
   PetscLAS::PetscLAS()
     : x_arr(NULL)
@@ -372,5 +421,11 @@ namespace amsi
     MatGetRowMax(A,w,idx);
     VecMax(w,NULL,&rslt);
     return rslt;
+  }
+  bool PetscLAS::isVectorAssembled( )
+  {
+    MPI_Comm cm;
+    PetscObjectGetComm((PetscObject)b_i,&cm);
+    return comm_min(b_assembled,cm);
   }
 }

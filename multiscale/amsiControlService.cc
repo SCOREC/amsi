@@ -1,6 +1,7 @@
 #include "amsiControlService.h"
 #include "amsiAssemblable.h"
 #include "amsiDataDistribution.h"
+#include "amsiMPI.h"
 #include "amsiOutput.h"
 #include "amsiPlanMigration.h"
 #ifdef ZOLTAN
@@ -18,7 +19,6 @@ namespace amsi
     : comm_man()
     , task_man()
     , rdd_map()
-    , suppress_output(false)
   {}
   /// @brief Set the CommunicationManager to be used by the AMSI ControlService
   /// @param cm A pointer to the CommunicationManager
@@ -47,21 +47,6 @@ namespace amsi
       result = comm_man->defineRelation(t1_id,t2_id);
     return result;
   }
-  /// @brief Retrieve the ID of a CommRelation
-  /// @param nm1 A string containing the name of the sending task
-  /// @param nm2 A string containing the name of the recving task
-  /// @return size_t An identifier for the CommRelation or 0 if the relation could
-  ///                not be created (typically if one of the Tasks doesn't exist).
-  size_t ControlService::CommRelation_GetID(const std::string & nm1,
-                                            const std::string & nm2)
-  {
-    size_t result = 0;
-    size_t t1_id = task_man->getTaskID(nm1);
-    size_t t2_id = task_man->getTaskID(nm2);
-    if(t1_id != 0 && t2_id != 0)
-      result = comm_man->CommRelation_GetID(t1_id,t2_id);
-    return result;
-  }
   void ControlService::setScaleMain(const std::string & scale, ExecuteFunc function)
   {
     task_man->getTask(scale)->setExecutionFunction(function);
@@ -77,11 +62,6 @@ namespace amsi
     comm_man->InitInterComms(task_man);
     if(task_man->lockConfiguration())
     {
-      if(suppress_output)
-      {
-        if(getLocal()->localRank() > 0)
-          suppressOutput(std::cout);
-      }
 #     ifdef ZOLTAN
       float version = 0.0;
       Zoltan_Initialize(0,NULL,&version);
@@ -108,7 +88,7 @@ namespace amsi
     // Create additional data distribution for adding data // to support dynamic processes
     Task * tl = task_man->getLocalTask();
     std::string dd_init_nm = t1_dd_nm + "_init";
-    tl->createDD(dd_init_nm);
+    createDataDistribution(tl,dd_init_nm);
     if(t1_id && t2_id)
     {
       if(comm_man->CommRelation_Exists(t1_id,t2_id))
@@ -120,7 +100,7 @@ namespace amsi
         int t1s = taskSize(t1);
         int t2s = taskSize(t2);
         //std::cout << "Generating IDs" << std::endl;
-        size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
+        size_t r_id = comm_man->getRelationID(t1_id,t2_id);
         size_t t1_dd_id = task_man->getTask(t1_nm)->getDD_ID(t1_dd_nm);
         //std::cout << "Combining IDs" << std::endl;
         rdd_id = combine_hashes(r_id,t1_dd_id);
@@ -164,13 +144,13 @@ namespace amsi
       for(int ii = 0; ii < snd_cnt; ii++)
       {
         // extract only nonzero entries and corresponding ranks
-        int num_rnks = countRanksSentTo(send_pattern,snd_rnks[ii]);
+        int num_rnks = countRanksSendingTo(send_pattern,snd_rnks[ii]);
         if(num_rnks > 0)
         {
           std::vector<int> rnks(num_rnks);
           std::vector<int> cnts(num_rnks);
-          getRanksSentTo(send_pattern,snd_rnks[ii],&rnks[0]);
-          getUnitsSentTo(send_pattern,snd_rnks[ii],&cnts[0]);
+          getRanksSendingTo(send_pattern,snd_rnks[ii],&rnks[0]);
+          getUnitsSendingTo(send_pattern,snd_rnks[ii],&cnts[0]);
           // intercomm rank of the recving task (hacky)
           int inter_rnk = t1s+snd_rnks[ii];
           int bfr_sz = 1+2*num_rnks;
@@ -193,14 +173,14 @@ namespace amsi
       // get the recving comm pattern
       CommPattern * recv_pattern = comm_man->getCommPattern(rdd_id);
       // since only nonzeros are sent the pattern needs to start from zero
-      zeroCommPattern(recv_pattern);
+      recv_pattern->zero();
       // All processes must call PCU Send
       PCU_Comm_Send();
       int rcv_frm = -1;
       void * rcv= NULL;
       size_t rcv_sz = 0;
       DataDistribution * local_dd = tl->getDD(rdd_dd_map[rdd_id]);
-      (*local_dd)[task_rank] = 0;
+      (*local_dd) = 0;
       while(PCU_Comm_Read(&rcv_frm,&rcv,&rcv_sz))
       {
         int * hdr = (int*)rcv;
@@ -212,7 +192,7 @@ namespace amsi
           int cnt = bfr[num_rcv_rnks+ii];
           // using rcv_frm is just as hacky as the t1s+snd_to above, need to map from coupling ranks to task ranks instead (and vice-versa)
           (*recv_pattern)(rnk,task_rank) = cnt;
-          (*local_dd)[task_rank] += cnt;
+          (*local_dd) += cnt;
         }
       }
     }
@@ -360,7 +340,7 @@ namespace amsi
     // Create additional data distribution for adding data
     Task * tl = task_man->getLocalTask();
     std::string dd_init_nm = t1_dd_nm + "_init";
-    tl->createDD(dd_init_nm);
+    createDataDistribution(tl,dd_init_nm);
     if(t1_id && t2_id)
     {
       if(comm_man->CommRelation_Exists(t1_id,t2_id))
@@ -369,7 +349,7 @@ namespace amsi
         Task * t2 = task_man->Task_Get(t2_id);
         int t1s = taskSize(t1);
         int t2s = taskSize(t2);
-        size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
+        size_t r_id = comm_man->getRelationID(t1_id,t2_id);
         size_t t1_dd_id = task_man->getTask(t1_nm)->getDD_ID(t1_dd_nm);
         rdd_id = combine_hashes(r_id,t1_dd_id);
         rdd_map[rdd_id] = std::make_pair(r_id,t1_dd_id);
@@ -386,9 +366,9 @@ namespace amsi
           r_init[rdd_id] = rdd_init_id; // Store reference to init comm pattern by original comm pattern
           std::string t2_dd_init_nm = t2_dd_nm + "_init";
           if(!t2->verifyDD(t2_dd_nm))
-            t2->createDD(t2_dd_nm);
+            createDataDistribution(t2,t2_dd_nm);
           if(!t2->verifyDD(t2_dd_init_nm))
-            t2->createDD(t2_dd_init_nm);
+            createDataDistribution(t2,t2_dd_init_nm);
           rdd_dd_map[rdd_id] = t2->getDD_ID(t2_dd_nm);
           rdd_dd_map[rdd_init_id] = t2->getDD_ID(t2_dd_init_nm);
         }
@@ -483,7 +463,7 @@ namespace amsi
           //int t1s = taskSize(t1);
           //int t2s = taskSize(t2);
           //std::cout << "Generating IDs" << std::endl;
-          size_t r_id = comm_man->CommRelation_GetID(t1_id,t2_id);
+          size_t r_id = comm_man->getRelationID(t1_id,t2_id);
           size_t dd_id = task_man->getTask(t1_nm)->getDD_ID(dd_nm);
           //std::cout << "Combining IDs" << std::endl;
           new_rdd_id = combine_hashes(r_id,dd_id);

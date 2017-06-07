@@ -46,7 +46,7 @@ namespace amsi
   void initCase(pModel mdl, pACase cs)
   {
     char * nm = AttNode_name(cs);
-    std::cout << "Initializing analysis case " << nm << std::endl;
+    std::cout << "Initializing analysis case: " << nm << std::endl;
     pPList chdrn = AttNode_children(cs);
     pACase chd = NULL;
     void * it = NULL;

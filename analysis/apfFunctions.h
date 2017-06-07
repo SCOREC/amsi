@@ -1,14 +1,18 @@
 #ifndef APF_FUNCTIONS_H_
 #define APF_FUNCTIONS_H_
+#include "apfFieldOp.h"
+#include <amsiUtil.h>
 #include <apf.h>
 #include <apfDynamicVector.h>
-#include <apfField.h>
 #include <apfNumbering.h>
 #include <cstring>
 #include <cmath>
 #include <ostream>
 namespace amsi
 {
+  /// Write a paraview collection file for meshes with the format msh_prfx(ii) where ii ranges from 1 to sz.
+  void writePvdFile(const std::string & col_fnm, const std::string & msh_prfx, int sz);
+  ///
   template <typename I>
     void setEntitiesNode(apf::Field * fld, double vl, I bgn, I nd);
   // move below here into a fieldops-specific header or something
@@ -22,12 +26,12 @@ namespace amsi
   class ApplyOp
   {
   protected:
-    apf::FieldOp * aplr;
+    amsi::FieldOp * aplr;
   public:
     ApplyOp()
       : aplr(NULL)
     { }
-    void setApplier(apf::FieldOp * a) {aplr = a;}
+    void setApplier(amsi::FieldOp * a) {aplr = a;}
     virtual void apply(apf::MeshEntity * me, int nde, int cmp, int cmps, double & to, const double & frm) = 0;
   };
   /**
@@ -93,7 +97,7 @@ namespace amsi
       to = std::abs(frm) < eps ? to : frm;
     }
   };
-  class ExtractOp : public apf::FieldOp
+  class ExtractOp : public amsi::FieldOp
   {
   protected:
     apf::Field * frm;
@@ -140,7 +144,7 @@ namespace amsi
    * Apply an ApplyOp to a source and destination field.
    *  Can be used for copying, accumulating, etc.
    */
-  class MergeFields : public apf::FieldOp
+  class MergeFields : public amsi::FieldOp
   {
   protected:
     apf::Field * to;
@@ -193,7 +197,7 @@ namespace amsi
    *  sets or accumulates the array values at the index corresponding to the
    *  numbering minus the initial dof offset.
    */
-  class ApplyVector : public apf::FieldOp
+  class ApplyVector : public amsi::FieldOp
   {
   protected:
     apf::Numbering * nm;
@@ -205,8 +209,12 @@ namespace amsi
     double * cmps;
     ApplyOp * op;
   public:
-    ApplyVector(apf::Numbering * n, apf::Field * f, const double * s, int d, ApplyOp * o)
-      : apf::FieldOp()
+    ApplyVector(apf::Numbering * n,
+                apf::Field * f,
+                const double * s,
+                int d,
+                ApplyOp * o)
+      : amsi::FieldOp()
       , nm(n)
       , fld(f)
       , me(NULL)
@@ -236,64 +244,17 @@ namespace amsi
     }
     void run() { apply(fld); }
   };
-  /*
-  class RecoverVector : public apf::FieldOp
-  {
-  protected:
-    apf::MeshEntity * me;
-    apf::Numbering * nm;
-    apf::Field * fld;
-    std::vector<double> vec;
-    int fld_cmps;
-    double * cmps;
-  public:
-  ConstructVector(apf::Numbering * n, int sz)
-      : me(NULL)
-      , nm(n)
-      , vec(sz)
-      , fld_cmps(apf::countComponents(apf::getField(n)))
-      , cmps(new double [fld_cmps])
-    { }
-    ~ConstructVector()
-    {
-      delete [] cmps;
-    }
-    bool inEntity(apf::MeshEntity * m) { me = m; return true; }
-    void outEntity() {}
-    void atNode(int nde)
-    {
-      memset(&cmps,0.0,sizeof(double)*fld_cmps);
-      apf::getComponents(fld,me,nde,&cmps[0]);
-      if(apf::isNumbered())
-    }
-    double * getVector()
-    {
-      return &vec[0];
-    }
-      vod
-  };
-  */
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);
-  void faceNormal(const apf::Vector3 & pt_a,
-                  const apf::Vector3 & pt_b,
-                  const apf::Vector3 & pt_c,
-                  apf::Vector3 & normal);
   void vertexNormal(apf::Mesh *,
                     apf::MeshEntity *,
                     apf::Vector3 & n);
-  double edgeLength(const apf::Vector3 & pt_a, const apf::Vector3 & pt_b);
-  double triangleArea(const apf::Vector3 & pt_a,
-                      const apf::Vector3 & pt_b,
-                      const apf::Vector3 & pt_c);
   void displaceMesh(apf::Field * displacement_field);
   void printNumbering(std::ostream & out, apf::Numbering * numbering);
   void SymmMatrixToVoigtVector(const apf::Matrix3x3 & mat, apf::Vector<6> & vec);
   void VoigtVectorToSymmMatrix(const apf::Vector<6> & vec, apf::Matrix3x3 & mat);
   void VoigtVectorToSymmMatrix(const apf::DynamicVector & vec, apf::Matrix3x3 & mat);
-  double measureDisplaced(apf::MeshEntity * ment, apf::Field * u);
-  double measureDisplacedFromSurf(apf::MeshEntity * ment, apf::Field * u, int norm_dir);
 }
 #include "apfFunctions_impl.h"
 #endif

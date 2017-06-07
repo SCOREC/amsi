@@ -3,7 +3,6 @@
 #include "simBoundaryConditions.h"
 #include "amsiMPI.h"
 #include <apfSIM.h>
-#include <apfSIMDataOf.h>
 #include <apfShape.h>
 #include <cassert>
 namespace amsi
@@ -25,7 +24,8 @@ namespace amsi
                                             dir_bcs.begin(),
                                             dir_bcs.end(),
                                             T);
-    std::cout << "There are " << fixed_dofs << " dofs fixed by essential bound ary conditions." << std::endl;
+    fixed_dofs = comm_sum(fixed_dofs,analysis_comm);
+    std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;
   }
   void apfSimFEA::ApplyBC_Neumann(LAS * las)
   {
@@ -46,16 +46,20 @@ namespace amsi
   {
     if(mesh_size_field != NULL)
     {
+      /*
       sim_size_field =
         dynamic_cast<apf::SIMDataOf<double>* >(mesh_size_field->getData())->getSimField();
+      */
       SimFEA::Adapt();
     }
   }
   void apfSimFEA::addFieldToMap(apf::Field * fd)
   {
+    /*
     apf::SIMDataOf<double> * field_data = dynamic_cast<apf::SIMDataOf<double>*>(fd->getData());
     if(field_data != NULL)
       SimFEA::addFieldToMap(field_data->getSimField());
+    */
   }
 }
 

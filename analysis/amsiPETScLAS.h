@@ -28,19 +28,27 @@ namespace amsi
     void GetVectorNorm(double &);
     void GetAccumVector(double *&);
     void GetAccumVectorNorm(double &);
+    void GetPrevVector(double *&);
+    void GetPrevVectorNorm(double &);
     void GetDotNorm(double &);
+    void GetPrevDotNorm(double &);
+    void GetAccumDotNorm(double &);
     void GetSolution(double *&);
-    void GetSolutionNorm(double & n);
+    void GetSolutionNorm(double &);
+    void GetAccumSolution(double *&);
     void GetAccumSolutionNorm(double &);
-    virtual void PrintMatrix(std::ostream &);
-    virtual void PrintVector(std::ostream &);
-    virtual void PrintSolution(std::ostream &);
+    void GetPrevSolution(double *&);
+    void GetPrevSolutionNorm(double &);
+    void PrintMatrix(std::ostream &);
+    void PrintVector(std::ostream &);
+    void PrintSolution(std::ostream &);
     double MatrixMax();
-    virtual int GlobalDOFs() { return globalNumEqs; }
-    virtual int LocalDOFs() { return vec_high - vec_low; }
-    virtual int LocalOffset() { return vec_low; }
+    int GlobalDOFs() { return globalNumEqs; }
+    int LocalDOFs() { return vec_high - vec_low; }
+    int LocalOffset() { return vec_low; }
     ~PetscLAS();
   private:
+    bool isVectorAssembled();
     void freeMem();
     Mat A;     // matrix
     Vec x_im;   // previous solution
@@ -50,7 +58,9 @@ namespace amsi
     Vec b_i;     // current vector
     Vec b;
     Vec w;     // work vector
-    double * x_arr, * b_arr, * b_i_arr;
+    double * x_arr;
+    double * b_arr;
+    double * b_i_arr;
     int globalNumEqs;
     int vec_low;
     int vec_high;

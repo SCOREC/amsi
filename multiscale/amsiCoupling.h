@@ -9,11 +9,12 @@
 #include <vector>
 namespace amsi
 {
-  class CommPattern : public Assemblable
+  class CommPattern : public Assemblable, public Reconcilable
   {
   protected:
     int s1;
     int s2;
+    void zeroNonLocal(int,Role);
   public:
     CommPattern(int so, int st)
       : s1(so)
@@ -21,6 +22,7 @@ namespace amsi
     {}
     virtual int& operator()(int,int) = 0;
     virtual int operator()(int,int) const = 0;
+    virtual void zero() = 0;
     int getNumSenders() const {return s1;}
     int getNumRecvers() const {return s2;}
   };
@@ -31,41 +33,57 @@ namespace amsi
     virtual int& operator()(int,int);
     virtual int operator()(int,int) const;
     virtual void Assemble(MPI_Comm);
+    virtual void Reconcile(MPI_Comm);
+    virtual void zero();
   private:
     FullCommPattern();
     int * pattern;
+  protected:
+    void zeroNonLocal(int,Role);
   };
-  /// count the number of processes the specified recving process is being sent to
-  //  @param rnk The rank in the recving task
-  int countRanksSentTo(const CommPattern * cp, int rnk);
-  /// count the number of processes the specified recving process is recving from
-  int countRanksSentFrom(const CommPattern * cp, int rnk);
-  /// get the task ranks of the processes the specified sending process is sending to
-  void getRanksSentTo(const CommPattern * cp, int rnk, int * rnks);
-  /// get the task ranks of the processes the specified recving process is recving from
-  void getRanksSentFrom(const CommPattern * cp, int rnk, int * rnks);
-  /// get the unit count for the specified rank to send to the ranks given by getRanksSentTo()
-  void getUnitsSentTo(const CommPattern * cp, int rnk, int * sent_to);
-  /// get the unit count for the specified rank to recv from the ranks given by getRanksRecvFrom()
-  void getUnitsSentFrom(const CommPattern * cp, int rnk, int * recv_from);
-  /// get the unit count sums for each rnk the sending task
-  // essentially reconstruct the data dist the pattern is based on
+  /**
+   * Count the processes in the sending scale which will send data to the specified recving process.
+   */
+  int countRanksSendingTo(const CommPattern * cp, int rnk);
+  /**
+   * Count the processes in the recving scale which will recv data from the specified sending process.
+   */
+  int countRanksSentToFrom(const CommPattern * cp, int rnk);
+  /**
+   * Get the scale ranks of the processes in the sending scale the specified recving process is recving from.
+   */
+  void getRanksSendingTo(const CommPattern * cp, int rnk, int * rnks);
+  /**
+   * Get the scale ranks of the processes in the recving scale the specified sending process is sending to.
+   */
+  void getRanksSentToFrom(const CommPattern * cp, int rnk, int * rnks);
+  /**
+   * Get the unit counts for each process in the sending scale sending data to the specified recving process.
+   */
+  void getUnitsSendingTo(const CommPattern * cp, int rnk, int * sent_to);
+  /**
+   * Get the unit counts for each process in the recving scale recving data from the specified sending process.
+   */
+  void getUnitsSentToFrom(const CommPattern * cp, int rnk, int * recv_from);
+  /**
+   * Get the unit count sums for each process in the sending scale, this essentially reconstructs the DataDistribution.
+   */
   void getUnitsSent(const CommPattern * cp, int * snd);
-  /// get the unit count sums for each rnk in the recving task
-  // construct the recving data dist the pattern is based on
+  /**
+   * Get the unit count sums for each process in the recving scales, this essentially reconstructs the induced DataDistribution.
+   */
   void getUnitsRecv(const CommPattern * cp, int * recv);
-  // TODO: pull these two functions into the CommPattern class,
-  //  as their implementation should vary with different implementations
-  //  of CommPatterns.
-  void zeroCommPattern(CommPattern * cp);
-  void zeroNonLocal(CommPattern * cp, int rnk, Role rl);
+  /**
+   * Create a new CommPattern by inverting the old one. (Essentially a matrix transposition).
+   */
+  CommPattern * invertCommPattern(const CommPattern * pattern);
+  /**
+   * Retrieve information about the rank and remote index of a piece of scale local data by index.
+   */
+  std::pair<int,int> coupledInfoByIndex(CommPattern * cp, Role role, int rank, int index);
+  /**
+   * Print a CommPattern to stream.
+   */
   std::ostream& operator<<(std::ostream& os, const CommPattern& obj);
-  /// Create a new CommPattern which is an inversion of the old one (ie all sending processes in the old CommPattern are recvers in the produced CommPattern and vice-versa, essentially a matrix transposition)
-  CommPattern * CommPattern_CreateInverted(const CommPattern * pattern);
-  // retrieve information about the rank and remote index of a piece of local data by index
-  std::pair<int,int> coupledInfoByIndex(CommPattern * cp,
-                                        Role role,
-                                        int rank,
-                                        int index);
-} // namespace amsi
+}
 #endif

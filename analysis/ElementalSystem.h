@@ -15,11 +15,12 @@ namespace amsi
     int nedofs;
     int nenodes;
     int num_field_components;
+    virtual void _inElement(apf::MeshElement *) {}
   public:
     ElementalSystem(apf::Field * f, int o);
     virtual void inElement(apf::MeshElement *);
-    virtual void outElement() {};
-    virtual void ParallelReduce() {};
+    virtual void outElement();
+    virtual void parallelReduce() {};
     virtual bool includesBodyForces() {return false;}
     virtual int numElementalDOFs() {return nedofs;}
     virtual apf::Element * getElement() {return e;}

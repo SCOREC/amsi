@@ -52,7 +52,7 @@ namespace amsi
   }
   // assumes that the data has been assembled locally
   template <typename T>
-    void ControlService::couplingBroadcast(size_t r_id, T * buf)
+    void ControlService::scaleBroadcast(size_t r_id, T * buf)
   {
     // determine if sender of recver
     std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
@@ -75,6 +75,47 @@ namespace amsi
     }
     else // recv
       amsi::recv(buf,MPI_ANY_SOURCE,1,AMSI_COMM_WORLD);
+  }
+  template <typename I, typename O>
+    void ControlService::aSendBroadcast(O out, size_t rid, I * bfr, size_t cnt)
+  {
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(rid);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    int t2s = taskSize(t2);
+    int t2_per_t1 = t2s / t1s;
+    int extra_t2 = t2s % t1s;
+    int task_rank = t1->localRank();
+    int to_send = t2_per_t1 + (task_rank < extra_t2);
+    for(int ii = 0; ii < to_send; ii++)
+    {
+      int send_to = task_rank + (ii * t1s);
+      *out = amsi::asend(bfr,t2->localToGlobalRank(send_to),cnt,AMSI_COMM_WORLD);
+      ++out;
+    }
+  }
+  template <typename T>
+    int ControlService::aRecvBroadcastSize(size_t rid)
+  {
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(rid);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    int scl_rnk = t2->localRank();
+    int rcv_frm = t1->localToGlobalRank(scl_rnk % t1s);
+    return arecv_sz<T>(rcv_frm,AMSI_COMM_WORLD);
+  }
+  template <typename I, typename O>
+    void ControlService::aRecvBroadcast(O out, size_t rid, I * bfr, size_t cnt)
+  {
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(rid);
+    Task * t1 = task_man->Task_Get(t_ids.first);
+    Task * t2 = task_man->Task_Get(t_ids.second);
+    int t1s = taskSize(t1);
+    int scl_rnk = t2->localRank();
+    int rcv_frm = t1->localToGlobalRank(scl_rnk % t1s);
+    *out = amsi::arecv(bfr,rcv_frm,cnt,AMSI_COMM_WORLD);
   }
   /// @brief Templated member function used to communicate all data related to a specific CommPattern,
   ///         this call is collective on the union of the ProcessSets associated with the sending and
@@ -113,11 +154,11 @@ namespace amsi
       {
         //unsigned local_count = t1->getLocalDDValue(r_dd_id.second);
         CommPattern * send_pattern = comm_man->getCommPattern(rdd_id);
-        unsigned num_snt_frm = countRanksSentFrom(send_pattern,task_rank);
+        unsigned num_snt_frm = countRanksSentToFrom(send_pattern,task_rank);
         std::vector<int> snt_rnks(num_snt_frm);
         std::vector<int> snt_cnts(num_snt_frm);
-        getRanksSentFrom(send_pattern,task_rank,&snt_rnks[0]);
-        getUnitsSentFrom(send_pattern,task_rank,&snt_cnts[0]);
+        getRanksSentToFrom(send_pattern,task_rank,&snt_rnks[0]);
+        getUnitsSentToFrom(send_pattern,task_rank,&snt_cnts[0]);
         size_t offset = 0;
         //buffer_offset<D> bo;
         //bo.buffer = &buffer[0];
@@ -173,11 +214,11 @@ namespace amsi
     CommPattern * ptrn = NULL; //t1->getLocalDDValue(r_dd_id.second);
     if(tl == t1)
     {
-      unsigned cnt_snt_frm = countRanksSentFrom(ptrn,task_rank);
+      unsigned cnt_snt_frm = countRanksSentToFrom(ptrn,task_rank);
       std::vector<int> snt_rnks(cnt_snt_frm);
-      getRanksSentFrom(ptrn,task_rank,&snt_rnks[0]);
+      getRanksSentToFrom(ptrn,task_rank,&snt_rnks[0]);
       std::vector<int> snt_cnts(cnt_snt_frm);
-      getUnitsSentFrom(ptrn,task_rank,&snt_cnts[0]);
+      getUnitsSentToFrom(ptrn,task_rank,&snt_cnts[0]);
       int unt = 0;
       size_t offset = 0;
       for(unsigned ii = 0; ii < cnt_snt_frm; ii++)     // for each rank recving from this one
@@ -218,7 +259,7 @@ namespace amsi
       int lst_frm = -1;
       void * rcv = NULL;
       std::vector<int> cnts(t1s);
-      getUnitsSentFrom(ptrn,frm,&cnts[0]);
+      getUnitsSentToFrom(ptrn,frm,&cnts[0]);
       while(PCU_Comm_Read(&frm,&rcv,&rcv_sz))
       { // need to make sure order is consistent, order by sending rank
         unsigned rcv_cnt = cnts[frm];
@@ -464,7 +505,7 @@ namespace amsi
             break;
           }
       DataDistribution * dd = tl->getDD(rdd_dd_map[rdd_id]);
-      (*dd)[task_rank] -= m_send_to.size();
+      (*dd) += -1 * m_send_to.size();
       migration_data.clear();
       m_index.clear();
       m_send_to.clear();
@@ -521,9 +562,9 @@ namespace amsi
         m_index = temp_index;
         m_recv_from = temp_rf;
         objects = temp_objects;
-        (*dd)[task_rank] +=  migration_data.size();
+        (*dd) +=  migration_data.size();
       }
-      dd->Assemble(task_comm);
+      amsi::Assemble(dd,task_comm);
     }
   // Inter task function to inform companion task of migration
   //   and update the comm pattern

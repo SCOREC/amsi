@@ -15,7 +15,8 @@ namespace amsi
     const std::string & getcwd() {return cwd;}
     const std::string & getResultsDir() {return rslts;}
   };
-  void printInfo(FileSystemInfo * fsi, std::ostream & out);
+  void describeFSInfo(FileSystemInfo * fsi,
+                      std::ostream & out);
   bool isRelativePath(const std::string & pth);
   bool isAbsolutePath(const std::string & pth);
 };

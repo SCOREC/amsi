@@ -17,8 +17,6 @@ namespace amsi {
     las->Zero();
     /// assemble linear system
     fem->Assemble(las);
-    double nrm = 0.0;
-    las->GetVectorNorm(nrm);
     /// solve linear system
     las->solve();
     /// update analysis with solution

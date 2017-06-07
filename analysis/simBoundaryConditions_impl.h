@@ -1,6 +1,7 @@
 #ifndef SIM_BOUNDARY_CONDITIONS_IMPL_H_
 #define SIM_BOUNDARY_CONDITIONS_IMPL_H_
 #include "apfBoundaryConditions.h"
+#include "simClassified.h"
 #include "amsiNeumannIntegrators.h"
 #include "amsiFields.h"
 #include "simAnalysis.h"
@@ -61,9 +62,12 @@ namespace amsi
       SimBC * sim_bc = dir_bc->getSimBC();
       assert(sim_bc->tp == BCType::dirichlet);
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
-      std::list<pEntity> ents;
-      getClassifiedDimEnts(msh,(pGEntity)sim_bc->itm,0,dm,std::back_inserter(ents));
-      fxd += applyDirichletBC(nm,ents.begin(),ents.end(),dir_bc,t);
+      for(int ii = 0; ii <= dm; ++ii)
+      {
+        auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
+        auto end = amsi::endClassified(bgn);
+        fxd += applyDirichletBC(nm,bgn,end,*it,t);
+      }
     }
     return fxd;
   }
@@ -77,10 +81,11 @@ namespace amsi
       SimBC * sim_bc = neu_bc->getSimBC();
       assert(sim_bc->tp == BCType::neumann);
       NeumannIntegrator * i = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
-      std::list<pEntity> ents;
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
-      getClassifiedEnts(msh,(pGEntity)sim_bc->itm,dm,std::back_inserter(ents));
-      applyNeumannBC(las,nm,ents.begin(),ents.end(),i,t);
+      auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),dm);
+      auto end = amsi::endClassified(bgn);
+      applyNeumannBC(las,nm,bgn,end,i,t);
+      deleteNeumannIntegrator(i);
     }
   }
   template <class O>
@@ -129,11 +134,9 @@ namespace amsi
     auto mdl_asc_nd = mdl_ascs.end();
     for(auto mdl_asc = mdl_ascs.begin(); mdl_asc != mdl_asc_nd; ++mdl_asc)
     {
-      std::vector<pModelItem> mdl_itms;
-      cutPaste<pModelItem>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
-      auto mdl_itm_nd = mdl_itms.end();
-      for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
-        *out++ = *mdl_itm;
+      std::vector<apf::ModelEntity*> mdl_itms;
+      cutPaste<apf::ModelEntity*>(AMA_modelItems(*mdl_asc),std::back_inserter(mdl_itms));
+      std::copy(mdl_itms.begin(),mdl_itms.end(),out);
     }
   }
   template <class I, class O>
@@ -146,16 +149,18 @@ namespace amsi
       auto bc_nd = bcs.end();
       for(auto bc = bcs.begin(); bc != bc_nd; ++bc)
       {
-        std::vector<pModelItem> mdl_itms;
+        std::vector<apf::ModelEntity * > mdl_itms;
         getAssociatedModelItems(ac,*bc,std::back_inserter(mdl_itms));
         auto mdl_itm_nd = mdl_itms.end();
         for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itm_nd; ++mdl_itm)
         {
+          pGEntity mdl_ent = reinterpret_cast<pGEntity>(*mdl_itm);
+          assert(ModelItem_isGEntity(mdl_ent));
           SimBC * nw_bc = new SimBC;
           nw_bc->tp = tp;
           nw_bc->sbtp = *bc_tp;
           nw_bc->bc_nd = *bc;
-          nw_bc->itm = *mdl_itm;
+          nw_bc->itm = mdl_ent;
           *out++ = nw_bc;
         }
       }
@@ -170,15 +175,16 @@ namespace amsi
     {
       pANode fld_nm = AttNode_childByType(*bc,"field name");
       std::string nm = std::string(AttInfoString_value((pAttInfoString)fld_nm));
-      std::vector<pModelItem> mdl_itms;
+      std::vector<apf::ModelEntity*> mdl_itms;
       getAssociatedModelItems(cs,*bc,std::back_inserter(mdl_itms));
       for(auto mdl_itm = mdl_itms.begin(); mdl_itm != mdl_itms.end(); ++mdl_itm)
       {
+        pGEntity mdl_ent = reinterpret_cast<pGEntity>(*mdl_itm);
         SimBC * nw_bc = new SimBC;
         nw_bc->tp = tp;
         nw_bc->sbtp = 0;
         nw_bc->bc_nd = *bc;
-        nw_bc->itm = *mdl_itm;
+        nw_bc->itm = mdl_ent;
         nw_bc->fld = nm;
         *out++ = nw_bc;
       }

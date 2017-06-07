@@ -3,19 +3,6 @@
 #include <cstdarg>
 namespace amsi
 {
-  /*
-  char const * bc_tps[] =
-  {
-    "dirichlet",
-    "neumann"
-  };
-  char const * neu_bc_attrs[] =
-  {
-    "custom",
-    "surface traction",
-    "pressure"
-  };
-  */
   char const * dis_bc_attrs[] =
   {
     "x",
@@ -28,28 +15,6 @@ namespace amsi
       if(strcmp(itm,arr[ii]) == 0)
         return ii;
     return -1;
-  }
-  char const * getBCTypeString(int tp)
-  {
-    assert(tp < BCType::num_bc_types);
-    return BCTypes[tp];
-  }
-  char const * getBCSubtypeString(int tp, int sbtp)
-  {
-    switch(tp)
-    {
-    case BCType::dirichlet:
-      return fieldUnitString(static_cast<FieldUnit>(sbtp));
-    case BCType::neumann:
-      return getNeumannTypeString(static_cast<FieldType>(sbtp));
-    default:
-      return NULL;
-    }
-  }
-  char const * getNeumannTypeString(int tp)
-  {
-    assert(tp < NeuBCType::num_neu_types && tp >= 0);
-    return NeuTypes[tp];
   }
   SimBCQuery * buildSimDirichletBCQuery(SimBC * bc)
   {
@@ -88,8 +53,7 @@ namespace amsi
     atts.assign(numDirichletComponents(bc->sbtp),(pAttribute)NULL);
     std::vector<pAttribute> rw;
     getBCAttributes(b,std::back_inserter(rw));
-    auto nd = rw.end();
-    for(auto att = rw.begin(); att != nd; ++att)
+    for(auto att = rw.begin(); att != rw.end(); ++att)
     {
       char * att_tp = Attribute_infoType(*att);
       atts[findAttrIndex(dis_bc_attrs,3,att_tp)] = *att;
@@ -110,27 +74,30 @@ namespace amsi
   {
     return ! isConst(ii);
   }
-  bool SimDisplacementQuery::isSpaceExpr(int)
+  bool SimDisplacementQuery::isSpaceExpr(int ii)
   {
-    return false;
+    return ! isConst(ii);
   }
   double SimDisplacementQuery::getValue(int ii, ...)
   {
     assert(isFixed(ii));
-    if(isConst(ii))
+    bool cnst = isConst(ii);
+    bool sptl = isSpaceExpr(ii);
+    bool time = isTimeExpr(ii);
+    if(cnst)
       return AttributeTensor0_value((pAttributeTensor0)atts[ii]);
     double rslt = 0.0;
-    int arg_cnt = isTimeExpr(ii) ? 1 : 0;
-    arg_cnt += isSpaceExpr(ii) ? 3 : 0;
+    int arg_cnt = time ? 1 : 0;
+    arg_cnt += sptl ? 3 : 0;
     va_list prms;
     va_start(prms,ii);
     double * args = new double[arg_cnt];
-    for(int ii = 0; ii < arg_cnt; ii++)
-      args[ii] = va_arg(prms, double);
-    if(isTimeExpr(ii))
+    for(int jj = 0; jj < arg_cnt; jj++)
+      args[jj] = va_arg(prms, double);
+    if(time)
       rslt = AttributeTensor0_evalDT((pAttributeTensor0)atts[ii],args[0]);
-    else if(isSpaceExpr(ii))
-      rslt = AttributeTensor0_evalDS((pAttributeTensor0)atts[ii],&args[0]);
+    if(sptl)
+      rslt = AttributeTensor0_evalDS((pAttributeTensor0)atts[ii],&args[time ? 1 : 0]);
     va_end(prms);
     delete [] args;
     return rslt;

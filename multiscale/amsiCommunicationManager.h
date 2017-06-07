@@ -23,13 +23,14 @@ namespace amsi
   public:
     CommunicationManager();
     size_t defineRelation(size_t id1, size_t id2);
+    size_t getRelationID(size_t id1, size_t id2);
     bool CommRelation_Exists(size_t id1, size_t id2);
     // will return null until the pattern for a relation is actually initialized
     CommPattern * getCommPattern(size_t rdd_id);
     std::pair<size_t,size_t> Relation_GetTasks(size_t r_id);
   protected:
     friend class ControlService;
-    size_t CommRelation_GetID(size_t id1, size_t id2);
+    //size_t CommRelation_GetID(size_t id1, size_t id2);
     MPI_Comm CommRelation_GetInterComm(size_t r_id);
     size_t RelationDistribution_GetID(size_t r_id, DataDistribution * dd);
     /// called prior to execution of tasks
@@ -49,6 +50,10 @@ namespace amsi
     commpatternmap_type comm_patterns;
     std::map<size_t,CommPatternAlgo> comm_pattern_build;
   };
+  size_t getRelationID(CommunicationManager * cm,
+                       TaskManager * tm,
+                       const std::string & t1_nm,
+                       const std::string & t2_nm);
 } // namespace amsi
 
 #endif

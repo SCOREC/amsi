@@ -1,76 +1,211 @@
 #ifndef AMSI_NONLINEAR_ANALYSIS_H_
 #define AMSI_NONLINEAR_ANALYSIS_H_
-#include "amsiLAS.h"
+#include <iostream>
+#include <limits>
+#include <vector>
 namespace amsi
 {
   class Iteration;
   class Convergence;
+  /**
+   * Perform a numerical solve using the supplied iteration
+   *  and convergence objects. The iteration object
+   *  constitutes a single iteration in a nonlinear solve.
+   *  The convergence object informs whether the underlying
+   *  simulation has converged to a solution for the current
+   *  nonlinear solve.
+   *  If the simulation is linear, simply pass a convergence
+   *  object that returns true and an iteration object that
+   *  performs the linear solve.
+   */
   bool numericalSolve(Iteration * it, Convergence * cn);
+  struct PerIter
+  {
+    virtual void iter() = 0;
+  };
+  struct PerStep
+  {
+    virtual void step() = 0;
+  };
+  struct ResetIteration;
+  /**
+   * An iteration object that represents a single iteration
+   *  for a numerical simulation. The base class merely tracks
+   *  the iteration count as a single linear solve takes place.
+   *  Classes which inherit from the Iteration should form the
+   *  linear system for a simulation and perform a solve of
+   *  of the linear system. A suitable convergence operator
+   *  to detect whether the state of the simulation after
+   *  the linear system constitutes a solved state.
+   */
   class Iteration
   {
+  private:
+    int itr;
   public:
-    virtual void iterate() = 0;
+    Iteration() : itr(0) {}
+    virtual void iterate()
+    {
+      ++itr;
+    }
+    int iteration() { return itr; }
+  protected:
+    void reset() { itr = 0; }
+    friend ResetIteration;
   };
+  /**
+   * An iteration object composed of a sequence of
+   *  operations modeled by PerIter objects to allow
+   *  for more dynamic construction of the flow of a
+   *  simulation.
+   */
+  class ModularIteration : public Iteration
+  {
+  private:
+    std::vector<PerIter*> ops;
+  public:
+    ModularIteration()
+      : Iteration()
+      , ops()
+    { }
+    virtual void iterate()
+    {
+      for(auto op = ops.begin(); op != ops.end(); ++op)
+        (*op)->iter();
+      Iteration::iterate();
+    }
+    void addOperation(PerIter * op)
+    {
+      ops.push_back(op);
+    }
+  };
+  /**
+   * A convergence operator determines whether the current
+   *  state of the simulation has converged to a reasonable
+   *  solution.
+   */
   class Convergence
   {
   public:
     virtual bool converged() = 0;
     virtual bool failed() {return false;}
+    virtual ~Convergence() {};
   };
+  /**
+   * The updating convergence class allows the internal
+   *  epsilon value to change depending on the state of
+   *  the simulation. The eps_gen template member object
+   *  must have an operator() member function that returns
+   *  the current epsilon value to use for detecting
+   *  convergence.
+   */
+  template <typename V, typename E, typename R>
+    class UpdatingConvergence : public Convergence
+  {
+  protected:
+    Iteration * itr;
+    double cvg_vl;
+    double eps;
+    double ref_vl;
+    V cvg_gen;
+    E eps_gen;
+    R ref_gen;
+  public:
+    UpdatingConvergence(Iteration * it, V v, E e, R r)
+      : itr(it)
+      , cvg_vl(0.0)
+      , eps(1e-16)
+      , ref_vl(std::numeric_limits<double>::max())
+      , cvg_gen(v)
+      , eps_gen(e)
+      , ref_gen(r)
+    { }
+    ~UpdatingConvergence()
+    {
+      delete cvg_gen;
+      delete eps_gen;
+      delete ref_gen;
+    }
+    virtual void update()
+    {
+      cvg_vl = (*cvg_gen)();
+      eps = (*eps_gen)(itr->iteration());
+      ref_vl = (*ref_gen)();
+    }
+    virtual bool converged()
+    {
+      update();
+      bool cvrgd = false;
+      std::cout << "convergence criteria: " << std::endl
+                << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
+                << "\t" << cvg_vl << " < " << eps * ref_vl << std::endl
+                << "\t" << ((cvrgd = cvg_vl < eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;
+      return cvrgd;
+    }
+  };
+  /**
+   * A convergence class that wraps two convergence
+   *  objects. Useful for composing simple convergence
+   *  operations in lieu of implementing a bespoke
+   *  combined class.
+   */
   class MultiConvergence : public Convergence
   {
   private:
-    Convergence * one;
-    Convergence * two;
+    std::vector<Convergence*> cvgs;
   public:
-    MultiConvergence(Convergence * o, Convergence * t)
+    template <typename I>
+    MultiConvergence(I bgn, I end)
       : Convergence()
-      , one(o)
-      , two(t)
-    {}
+      , cvgs()
+    {
+      std::copy(bgn,end,std::back_inserter(cvgs));
+    }
     virtual bool converged()
     {
-      bool frst = one->converged();
-      return frst ? two->converged() : frst;
+      for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
+        if(!(*cvg)->converged())
+          return false;
+      return true;
     }
     virtual bool failed()
     {
-      bool frst = one->failed();
-      return frst ? frst : two->failed();
+      for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
+        if((*cvg)->failed())
+          return true;
+      return false;
     }
   };
+  /**
+   * A convergence class to use for linear
+   *  simulations, since no iteration is required
+   *  for linear simulations, this simply returns
+   *  true.
+   */
   class LinearConvergence : public Convergence
   {
   public:
     virtual bool converged() {return true;}
   };
-  class RelativeResidualConvergence : public Convergence
+  extern LinearConvergence linear_convergence; // should be const but converged() isn't const
+  /**
+   * A Convergence class which resets an Iteration object
+   *  if the wrapped Convergence class has converged.
+   */
+  struct ResetIteration : public Convergence
   {
-  protected:
-    LAS * las;
-    double eps;
-  public:
-    RelativeResidualConvergence(LAS * l, double e)
-      : las(l)
-      , eps(e)
-    { }
-    bool converged();
-    bool failed();
-  };
-  class IncrementalResidualConvergence : public Convergence
-  {
-  protected:
-    LAS * las;
-    double eps;
-    double nrm_im;
-  public:
-    IncrementalResidualConvergence(LAS * l, double e)
-      : las(l)
-      , eps(e)
-      , nrm_im(0.0)
-    { }
-    bool converged();
-    bool failed();
+    ResetIteration(Convergence * c, Iteration * i) : cvg(c), itr(i) {}
+    virtual bool converged()
+    {
+      bool c = cvg->converged();
+      if(c)
+        itr->reset();
+      return c;
+    }
+  private:
+    Convergence * cvg;
+    Iteration * itr;
   };
 }
+#include "amsiNonlinearAnalysis_impl.h"
 #endif

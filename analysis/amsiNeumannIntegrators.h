@@ -54,7 +54,9 @@ namespace amsi
       fe.zero();
     }
     virtual void outElement()
-    {  }
+    {
+      apf::destroyElement(e);
+    }
   protected:
     void updateBCQueryValues(apf::Vector3 const & p);
   };
@@ -112,5 +114,6 @@ namespace amsi
                                              BCQuery * qry,
                                              int tp,
                                              double t = 0.0);
+  void deleteNeumannIntegrator(NeumannIntegrator * i);
 }
 #endif

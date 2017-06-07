@@ -48,13 +48,13 @@ namespace amsi
       result = true;
     return result;
   }
-  void assignFirstN(const RankSet * rs, rank_t n, Scale * sc)
+  void assignFirstN(const RankSet * rs, int n, Scale * sc)
   {
     DefaultRankSet a, b;
     takeN(rs,n,&a,&b);
     sc->assignRanks(&a);
   }
-  void assignCounts(const RankSet * rs, rank_t nm, rank_t * cnts, Scale * scls[])
+  void assignCounts(const RankSet * rs, int nm, int * cnts, Scale * scls[])
   {
     std::vector<DefaultRankSet> rmndr(nm);
     std::vector<DefaultRankSet> sbsts(nm);
@@ -66,12 +66,12 @@ namespace amsi
       scls[ii]->assignRanks(&sbsts[ii]);
     }
   }
-  void assignRatios(const RankSet * rs, rank_t cnt, double * rts, Scale * scls[])
+  void assignRatios(const RankSet * rs, int cnt, double * rts, Scale * scls[])
   {
-    rank_t sz = rs->size();
-    rank_t cnts[cnt];
+    int sz = rs->size();
+    int cnts[cnt];
     for(int ii = 0; ii < cnt; ii++)
-      cnts[ii] = (rank_t)(((double)sz)*rts[ii]);
+      cnts[ii] = (int)(((double)sz)*rts[ii]);
     assert(std::accumulate(&cnts[0],&cnts[cnt-1],0) == sz);
     assignCounts(rs,cnt,&cnts[0],scls);
   }

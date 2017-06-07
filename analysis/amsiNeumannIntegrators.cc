@@ -34,4 +34,8 @@ namespace amsi
       return NULL;
     }
   }
+  void deleteNeumannIntegrator(NeumannIntegrator * i)
+  {
+    delete i;
+  }
 }

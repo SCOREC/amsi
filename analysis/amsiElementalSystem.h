@@ -2,17 +2,31 @@
 #define AMSI_ELEMENTAL_SYSTEM_H_
 namespace amsi
 {
-  class ElementalSystem
+  class ElementalSystem2
   {
   protected:
     int nedofs;
+    int * edofs;
   public:
-    ElementalSystem()
-      : nedofs(0)
+    ElementalSystem2(int n)
+      : nedofs(n)
+      , edofs(new int [nedofs])
     { }
-    virtual int getNedofs() { return nedofs; }
-    virtual const double * getKe() = 0;
-    virtual const double * getFe() = 0;
+    virtual ~ElementalSystem2()
+    {
+      delete [] edofs;
+    }
+    virtual void zero() = 0;
+    virtual double & fe(int idx) = 0;
+    virtual double & ke(int rdx, int cdx) = 0;
+    int & dofs(int ddx)
+    {
+      return edofs[ddx];
+    }
+    int nedof()
+    {
+      return nedofs;
+    }
   };
 }
 #endif

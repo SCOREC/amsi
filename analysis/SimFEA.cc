@@ -15,47 +15,6 @@ namespace amsi
     out << "\t" << M_numEdges(mesh) << " edges." << std::endl;
     out << "\t" << M_numVertices(mesh) << " vertices." << std::endl;
   }
-  void Model_GetClassifiedEntities(pMesh mesh,
-                                   pGEntity entity,
-                                   int dim,
-                                   std::list<pEntity> & classified)
-  {
-    switch(dim)
-    {
-    case 3:
-    {
-      RIter it = M_classifiedRegionIter(mesh,entity);
-      pRegion pr;
-      while ((pr = RIter_next(it))) classified.push_back((pEntity)pr);
-      RIter_delete(it);
-      break;
-    }
-    case 2:
-    {
-      FIter it = M_classifiedFaceIter(mesh,entity,1);
-      pFace pf;
-      while ((pf = FIter_next(it))) classified.push_back((pEntity)pf);
-      FIter_delete(it);
-      break;
-    }
-    case 1:
-    {
-      EIter it = M_classifiedEdgeIter(mesh,entity,1);
-      pEdge pe;
-      while ((pe = EIter_next(it))) classified.push_back((pEntity)pe);
-      EIter_delete(it);
-      break;
-    }
-    case 0:
-    {
-      VIter it = M_classifiedVertexIter(mesh,entity,1);
-      pVertex pv;
-      while ((pv = VIter_next(it))) classified.push_back((pEntity)pv);
-      VIter_delete(it);
-      break;
-    }
-    }
-  }
   SimFEA::SimFEA(pGModel imdl,
                  pParMesh imsh,
                  pACase pd,

@@ -1,4 +1,5 @@
 #include "NonLinearElasticIntegrator.h"
+#include "amsiDeformation.h"
 #include "apfFunctions.h"
 #include "ConvenienceFunctions.h"
 #include "NonFiniteElement.h"
@@ -51,8 +52,8 @@ namespace amsi
     apf::NewArray<apf::Vector3> shape_derivs;
     apf::getShapeGrads(e,p,shape_derivs);
     apf::Matrix3x3 grad;
-    double detgrad;
-    calcDefGrad(e,p,grad,detgrad);
+    deformationGradient(e,p,grad);
+    //double detgrad = apf::getDeterminant(grad);
     apf::Matrix3x3 C;
     RightCauchy(grad,C);
     apf::Matrix<6,6> hookes;

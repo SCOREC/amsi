@@ -1,7 +1,6 @@
 #ifndef ERRORESTIMATORS_H_
 #define ERRORESTIMATORS_H_
-#include <apfField.h>
-//#include <apfFieldOf.h>
+#include "apfFieldOp.h"
 #include <apfMesh.h>
 #include <cassert>
 namespace amsi
@@ -34,7 +33,7 @@ namespace amsi
     rslt = rslt / num_adj;
     return rslt;
   }
-  class RecoverNodalAverage : public apf::FieldOp
+  class RecoverNodalAverage : public amsi::FieldOp
   {
   protected:
     apf::Mesh * mesh;
@@ -45,7 +44,7 @@ namespace amsi
   public:
   RecoverNodalAverage(apf::Field * ip_field,
                       apf::Field * in_recovered_field)
-    : FieldOp()
+    : amsi::FieldOp()
       , mesh(apf::getMesh(in_recovered_field))
       , ip_field(NULL)
       , recovered_field(in_recovered_field)

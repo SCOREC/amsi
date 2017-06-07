@@ -1,5 +1,6 @@
 set(util_public_headers
   amsiByteStream.h
+  amsiCasters.h
   amsiConversionIterator.h
   amsiDistributed.h
   amsiEnumOps.h
@@ -12,12 +13,14 @@ set(util_public_headers
   amsiObserver.h
   amsiMPI.h
   amsiMPI_impl.h
+  amsiOperators.h
   amsiOutput.h
   amsiPArray.h
   amsiPermute.h
   amsiRankSet.h
   amsiRankSet_impl.h
   amsiReporter.h
+  amsiString.h
   amsiTee.h
   amsiUtilFunctions.h
   amsiUUID.h
@@ -36,6 +39,7 @@ set(util_source_files
   amsiPArray.cc
   amsiRankSet.cc
   amsiReporter.cc
+  amsiString.cc
   amsiUtil.cc
   amsiUUID.cc
   pystring.cc
