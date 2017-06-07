@@ -2,6 +2,7 @@ util/amsiUtilConfig.h
 analysis/amsiAnalysisConfig.h
 multiscale/amsiMultiscaleConfig.h
 build_debug/
+build_release/
 simmetrix_log
 # Prerequisites
 *.d
