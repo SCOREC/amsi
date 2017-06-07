@@ -1,3 +1,4 @@
+util/amsiUtilConfig.h
 analysis/amsiAnalysisConfig.h
 multiscale/amsiMultiscaleConfig.h
 build_debug/
