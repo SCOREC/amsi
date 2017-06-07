@@ -144,13 +144,13 @@ namespace amsi
       for(int ii = 0; ii < snd_cnt; ii++)
       {
         // extract only nonzero entries and corresponding ranks
-        int num_rnks = countRanksSentToFrom(send_pattern,snd_rnks[ii]);
+        int num_rnks = countRanksSendingTo(send_pattern,snd_rnks[ii]);
         if(num_rnks > 0)
         {
           std::vector<int> rnks(num_rnks);
           std::vector<int> cnts(num_rnks);
-          getRanksSentToFrom(send_pattern,snd_rnks[ii],&rnks[0]);
-          getUnitsSentToFrom(send_pattern,snd_rnks[ii],&cnts[0]);
+          getRanksSendingTo(send_pattern,snd_rnks[ii],&rnks[0]);
+          getUnitsSendingTo(send_pattern,snd_rnks[ii],&cnts[0]);
           // intercomm rank of the recving task (hacky)
           int inter_rnk = t1s+snd_rnks[ii];
           int bfr_sz = 1+2*num_rnks;
