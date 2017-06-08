@@ -2,15 +2,21 @@
 #define AMSI_SIM_ANALYSIS_H_
 #include "sim.h"
 #include <string>
+#include <vector>
 namespace amsi
 {
   /**
-   * Get the next analysis case to run. If cs_nm is the empty string,
-   *  the next unused analysis case is returned, otherwise an analysis
-   *  with name cs_nm is returned. If all analyses have been run, or
-   *  the specified analysis case doesn't exist, returns NULL.
+   * Get a list of all analysis cases
+   * \param [in] mdl simmetrix model
+   * \return vector of pointer to analysis cases
    */
-  pACase getNextAnalysisCase(pGModel mdl, const std::string & cs_nm);
+  std::vector<pACase> getAnalysisCases(pGModel mdl);
+  /**
+   * Get a pointer to the analysis case with the specified name
+   * \param [in] mdl simmetrix model
+   * \return pointer to analysis cases
+   */
+  pACase getAnalysisCase(pGModel mdl, std::string const & case_name);
   /**
    * Get all mesh entities with dimensionality dm classified on the specified geometric entity.
    */
