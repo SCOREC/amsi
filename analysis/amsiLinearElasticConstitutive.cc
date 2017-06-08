@@ -1,13 +1,13 @@
-#include "LinearElasticIntegrator.h"
+#include "amsiLinearElasticConstitutive.h"
 #include <apfMesh.h>
 #include <apfShape.h>
 #include <cstring> //memset
 #include <cmath>
 namespace amsi
 {
-  apf::DynamicMatrix & GetIsotropicStressStrainTensor(double E, double v)
+  apf::DynamicMatrix orthotropicLinearElasticConstitutive(double E, double v)
   {
-    static apf::DynamicMatrix result(6,6);
+    apf::DynamicMatrix result(6,6);
     double lambda = ( v * E ) / ( ( 1 + v ) * ( 1 - 2 * v ) );
     double mu = E / ( 2 * ( 1 + v ) );
     result(0,0) = lambda + (2 * mu);
@@ -35,7 +35,7 @@ namespace amsi
                                                    double E,
                                                    double v) :
     ElementalSystem(field,o),
-    D(GetIsotropicStressStrainTensor(E,v))
+    C(orthotropicLinearElastic(E,v))
   {
     fs = apf::getShape(f);
   }
@@ -64,11 +64,11 @@ namespace amsi
       B(5,3*ii+2) = grads[ii][0]; // N_(ii,1)
     }
     apf::DynamicMatrix kt(nedofs,nedofs);
-    apf::DynamicMatrix DB(6,nedofs);
-    apf::multiply(D,B,DB);
+    apf::DynamicMatrix CB(6,nedofs);
+    apf::multiply(C,B,CB);
     apf::DynamicMatrix BT(nedofs,6);
     apf::transpose(B,BT);
-    apf::multiply(BT,DB,kt);
+    apf::multiply(BT,CB,kt);
     // numerical integration
     kt *= w * dV;
     Ke += kt;

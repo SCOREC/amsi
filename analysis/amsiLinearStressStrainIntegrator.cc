@@ -1,17 +1,15 @@
-#include "StressStrainIntegrator.h"
-#include "LinearElasticIntegrator.h"
+#include "amsiLinearStressStrainIntegrator.h"
+#include "amsiLinearElasticConstitutive.h"
 #include "apfFunctions.h"
 namespace amsi
 {
-  LinearStressStrainIntegrator::LinearStressStrainIntegrator(apf::Field * displacement_field,
-                                                             apf::Field * strain_ip_field,
-                                                             apf::Field * stress_ip_field,
-                                                             double E, double v) :
-    ElementalSystem(displacement_field,0),
-    D(GetIsotropicStressStrainTensor(E,v)),
-    u(),U(),
-    stress_field(stress_ip_field),
-    strain_field(strain_ip_field)
+  LinearStressStrainIntegrator::LinearStressStrainIntegrator(apf::Field * uf, apf::Field * stn, apf::Field * sts, double E, double v)
+    : ElementalSystem(uf,0)
+    , C(isotropicLinearElasticityTensor(E,v))
+    , u()
+    , U()
+    , strs(sts)
+    , strn(stn)
   {}
   void LinearStressStrainIntegrator::inElement(apf::MeshElement * melm)
   {
@@ -22,8 +20,7 @@ namespace amsi
       for(int jj = 0; jj < num_field_components; jj++)
         (*U)[ii*num_field_components + jj] = u[ii][jj];
   }
-  void LinearStressStrainIntegrator::atPoint(apf::Vector3 const & p,
-                                             double w, double dV)
+  void LinearStressStrainIntegrator::atPoint(apf::Vector3 const & p, double w, double dV)
   {
     apf::NewArray<apf::Vector3> grads;
     apf::getShapeGrads(e,p,grads);
@@ -50,13 +47,13 @@ namespace amsi
     apf::DynamicVector strain(6);
     apf::DynamicVector stress(6);
     apf::multiply(B,(*U),strain);
-    apf::multiply(D,strain,stress);
+    apf::multiply(C,strain,stress);
     apf::Matrix3x3 epsilon;
     apf::Matrix3x3 sigma;
     VoigtVectorToSymmMatrix(strain,epsilon);
     VoigtVectorToSymmMatrix(stress,sigma);
-    apf::setMatrix(strain_field,apf::getMeshEntity(me),0,epsilon);
-    apf::setMatrix(stress_field,apf::getMeshEntity(me),0,sigma);
+    apf::setMatrix(strn,apf::getMeshEntity(me),0,epsilon);
+    apf::setMatrix(strs,apf::getMeshEntity(me),0,sigma);
   }
   void LinearStressStrainIntegrator::outElement()
   {

@@ -1,9 +1,9 @@
-#ifndef LINEARELASTICINTEGRATOR_H_
-#define LINEARELASTICINTEGRATOR_H_
+#ifndef AMSI_LINEAR_ELASTIC_CONSTITUTIVE_H_
+#define AMSI_LINEAR_ELASTIC_CONSTITUTIVE_H_
 #include "ElementalSystem.h"
 namespace amsi
 {
-  apf::DynamicMatrix & GetIsotropicStressStrainTensor(double E, double v);
+  apf::DynamicMatrix orthotropicLinearElasticConstitutive(double E, double v);
   class LinearElasticIntegrator : public ElementalSystem
   {
   public:
@@ -16,7 +16,7 @@ namespace amsi
                  double dV);
   private:
     apf::FieldShape * fs;
-    apf::DynamicMatrix & D;
+    apf::DynamicMatrix C;
   };
 }
 #endif

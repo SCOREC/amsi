@@ -1,5 +1,5 @@
-#include "Elasticity.h"
-#include "LinearElasticIntegrator.h"
+#include "amsiElasticityFEA.h"
+#include "amsiLinearElasticConstitutive.h"
 #include <vector>
 #include <list>
 #include <set>
@@ -7,11 +7,7 @@
 #include <limits>
 namespace amsi
 {
-  Elasticity::Elasticity(pGModel imdl,
-                         pParMesh imsh,
-                         pACase pd,
-                         MPI_Comm cm,
-                         double E, double v)
+  ElasticityFEA::ElasticityFEA(pGModel imdl, pParMesh imsh, pACase pd, MPI_Comm cm, double E, double v)
     : FEA(cm)
     , apfSimFEA(imdl,imsh,pd,cm)
     , youngs_modulus(E)
