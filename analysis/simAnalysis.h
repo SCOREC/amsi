@@ -2,15 +2,15 @@
 #define AMSI_SIM_ANALYSIS_H_
 #include "sim.h"
 #include <string>
-#include <vector>
 namespace amsi
 {
   /**
    * Get a list of all analysis cases
    * \param [in] mdl simmetrix model
-   * \return vector of pointer to analysis cases
+   * \param [out] out an output iterator which will store the cases
    */
-  std::vector<pACase> getAnalysisCases(pGModel mdl);
+  template <typename O>
+    void getAnalysisCases(pGModel mdl, O out);
   /**
    * Get a pointer to the analysis case with the specified name
    * \param [in] mdl simmetrix model
