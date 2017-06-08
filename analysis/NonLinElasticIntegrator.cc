@@ -1,30 +1,17 @@
 #include "NonLinElasticIntegrator.h"
-#include "LinearElasticIntegrator.h"
+#include "amsiLinearElasticConstitutive.h"
 #include "ConvenienceFunctions.h"
 #include "apfFunctions.h"
 namespace amsi
 {
-  NonLinElasticIntegrator::NonLinElasticIntegrator(apf::Field * field,
-                                                   int o,
-                                                   double youngs_modulus,
-                                                   double poisson_ratio) :
-    ElementalSystem(field,o),
-    stress_ip_field(NULL),
-    strain_ip_field(NULL),
-    D(GetIsotropicStressStrainTensor(youngs_modulus,poisson_ratio)),
-    v(poisson_ratio),
-    E(youngs_modulus)
-  {   }
-  double delta(int i, int j)
-  {
-    return i == j ? 1.0 : 0.0;
-  }
-  double NonLinElasticIntegrator::C(int i, int j, int k, int l)
-  {
-    double lambda = (E*v)/((1+v)*(1-2*v));
-    double mu = E / (2 * (1 + v));
-    return lambda * delta(i,j) * delta(k,l) + mu * (delta(i,k)*delta(j,l) + delta(i,l)*delta(j,k));
-  }
+  NonLinElasticIntegrator::NonLinElasticIntegrator(apf::Field * f, int o, double E_, double v_)
+    : ElementalSystem(f,o)
+    , stress_ip_field(NULL)
+    , strain_ip_field(NULL)
+    , C(isotropicLinearElasticityTensor(E_,v_))
+    , v(v_)
+    , E(E_)
+  { }
   void NonLinElasticIntegrator::getDisplacements(apf::DynamicVector & u)
   {
     apf::Element * e_disp = apf::createElement(f,me);
@@ -71,11 +58,11 @@ namespace amsi
         BNL(6+ii,jj+2) = Bp[ii][jj];
       }
     apf::DynamicMatrix K0(nedofs,nedofs);
-    apf::DynamicMatrix DB(6,nedofs);
-    apf::multiply(D,BL,DB);
+    apf::DynamicMatrix CB(6,nedofs);
+    apf::multiply(C,BL,CB);
     apf::DynamicMatrix BT(nedofs,6);
     apf::transpose(BL,BT);
-    apf::multiply(BT,DB,K0);
+    apf::multiply(BT,CB,K0);
     apf::DynamicVector t_u(nedofs);
     getDisplacements(t_u);
     apf::DynamicVector strain(6);
@@ -87,7 +74,7 @@ namespace amsi
       apf::setMatrix(strain_ip_field,apf::getMeshEntity(me),0,strain_mat);
     }
     apf::DynamicVector cauchy_stressv(6);
-    apf::multiply(D,strain,cauchy_stressv);
+    apf::multiply(C,strain,cauchy_stressv);
     if(stress_ip_field)
     {
       apf::Matrix3x3 stress_mat;

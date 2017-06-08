@@ -3,7 +3,7 @@
 #include "ElementalSystem.h"
 namespace amsi
 {
-  apf::DynamicMatrix orthotropicLinearElasticConstitutive(double E, double v);
+  apf::DynamicMatrix isotropicLinearElasticityTensor(double E, double v);
   class LinearElasticIntegrator : public ElementalSystem
   {
   public:

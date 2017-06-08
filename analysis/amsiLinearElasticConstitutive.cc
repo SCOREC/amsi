@@ -5,7 +5,7 @@
 #include <cmath>
 namespace amsi
 {
-  apf::DynamicMatrix orthotropicLinearElasticConstitutive(double E, double v)
+  apf::DynamicMatrix isotropicLinearElasticityTensor(double E, double v)
   {
     apf::DynamicMatrix result(6,6);
     double lambda = ( v * E ) / ( ( 1 + v ) * ( 1 - 2 * v ) );
@@ -30,12 +30,9 @@ namespace amsi
     result(5,5) = mu;
     return result;
   }
-  LinearElasticIntegrator::LinearElasticIntegrator(apf::Field * field,
-                                                   int o,
-                                                   double E,
-                                                   double v) :
-    ElementalSystem(field,o),
-    C(orthotropicLinearElastic(E,v))
+  LinearElasticIntegrator::LinearElasticIntegrator(apf::Field * field, int o, double E, double v)
+    : ElementalSystem(field,o)
+    , C(isotropicLinearElasticityTensor(E,v))
   {
     fs = apf::getShape(f);
   }

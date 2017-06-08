@@ -14,6 +14,7 @@ set(analysis_public_headers
     amsiDeformation.h
     amsiDofHolder.h
     amsiDummyLAS.h
+    amsiElasticityFEA.h
     amsiElementalSystem.h
     amsiFiniteElementAnalysis.h
     amsiFields.h
@@ -23,6 +24,8 @@ set(analysis_public_headers
     amsiLAS2.h
     amsiLASAssembly.h
     amsiLASQuery.h
+    amsiLinearElasticConstitutive.h
+    amsiLinearStressStrainIntegrator.h
     amsiNonlinearAnalysis.h
     amsiNonlinearAnalysis_impl.h
     amsiNeumannIntegrators.h
@@ -51,8 +54,6 @@ set(analysis_public_headers
     ConvenienceFunctions.h
     ElementalSystem.h
     apfFEA.h
-    LinearElasticIntegrator.h
-    StressStrainIntegrator.h
     NonLinElasticIntegrator.h
     NonLinearElasticIntegrator.h
     MatrixUtil.h
@@ -71,7 +72,6 @@ set(analysis_public_headers
     simWrapper.h
     SimFEA.h
     apfSimFEA.h
-    Elasticity.h
     NonLinElasticity.h
    )
 
@@ -79,10 +79,13 @@ set(analysis_src_files
     amsiAnalysis.cc
     amsiBoundaryConditions.cc
     amsiDeformation.cc
+    amsiElasticityFEA.cc
     amsiFiniteElementAnalysis.cc
     amsiFields.cc
     amsiFEA.cc
     amsiLASAssembly.cc
+    amsiLinearElasticConstitutive.cc
+    amsiLinearStressStrainIntegrator.cc
     amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc
     amsiPETScLAS.cc
@@ -102,8 +105,6 @@ set(analysis_src_files
     ConvenienceFunctions.cc
     ElementalSystem.cc
     apfFEA.cc
-    LinearElasticIntegrator.cc
-    StressStrainIntegrator.cc
     NonLinElasticIntegrator.cc
     NonLinearElasticIntegrator.cc
     MatrixUtil.cc
@@ -116,7 +117,6 @@ set(analysis_src_files
     simWrapper.cc
     SimFEA.cc
     apfSimFEA.cc
-    Elasticity.cc
     NonLinElasticity.cc
    )
 
