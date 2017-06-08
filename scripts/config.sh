@@ -46,7 +46,6 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     ..
 else
     module load $DEVROOT/module/openmpi/1.10.0
-    module load simmetrix/simModSuite/11.0-170210dev
     module load $DEVROOT/petsc/petsc-3.6.3/ompi110-debug/lib/petsc/conf/modules/petsc/3.6.3
     CC=`which mpicc`
     CXX=`which mpicxx`

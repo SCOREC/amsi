@@ -1,6 +1,6 @@
 #include "amsiAnalysis.h"
 #include "simAttributes.h"
-#include "Elasticity.h"
+#include "amsiElasticityFEA.h"
 #include "Solvers.h"
 #include <mpi.h>
 #include <cassert>
@@ -21,7 +21,7 @@ int main (int argc, char ** argv)
     amsi::initCase(mdl,css[0]);
     pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
     amsi::PetscLAS las(0,0);
-    amsi::Elasticity iso_lin(mdl,msh,pd,AMSI_COMM_SCALE);
+    amsi::ElasticityFEA iso_lin(mdl,msh,pd,AMSI_COMM_SCALE);
     amsi::LinearSolver(&iso_lin,&las);
     apf::writeVtkFiles("isotropic_linear_elastic_result",
                        iso_lin.getMesh());
