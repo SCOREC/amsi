@@ -1,17 +1,16 @@
 #include "ElementalSystem.h"
 namespace amsi
 {
-  ElementalSystem::ElementalSystem(apf::Field * field,
-                                   int o) :
-    apf::Integrator(o),
-    Ke(),
-    fe(),
-    me(NULL),
-    e(NULL),
-    f(field),
-    nedofs(0),
-    nenodes(0),
-    num_field_components(0)
+  ElementalSystem::ElementalSystem(apf::Field * field, int o)
+    : apf::Integrator(o)
+    , Ke()
+    , fe()
+    , me(NULL)
+    , e(NULL)
+    , f(field)
+    , nedofs(0)
+    , nenodes(0)
+    , num_field_components(0)
   {
     num_field_components = apf::countComponents(f);
   }

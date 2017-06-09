@@ -96,7 +96,8 @@ namespace amsi
       J[2][1] = xyz(2,2) - xyz(0,2); // z3-z1
       J[2][2] = xyz(3,2) - xyz(0,2); // z4-z1
       double detJ = getDeterminant(J);
-      vol = w * detJ;
+      vol += w * detJ;
+      apf::destroyElement(mesh_coord_elem);
     }
     double getVol(){return vol;}
   private:
