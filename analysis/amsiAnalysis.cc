@@ -69,6 +69,7 @@ namespace amsi
     PMU_setCommunicator(AMSI_COMM_SCALE);
     Sim_readLicenseFile(simmetrix_license_file.c_str());
     SimPartitionedMesh_start(NULL,NULL);
+    SimDiscrete_start(0);
     SimMeshing_start();
 #   ifdef SCOREC
     SimField_start();
@@ -83,6 +84,7 @@ namespace amsi
     SimField_stop();
 #   endif
     SimMeshing_stop();
+    SimDiscrete_stop(0);
     SimPartitionedMesh_stop();
     Sim_unregisterAllKeys();
   }

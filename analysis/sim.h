@@ -3,6 +3,7 @@
 #include <MeshSim.h>
 #include <MeshSimAdapt.h>
 #include <SimAttribute.h>
+#include <SimDiscrete.h>
 #include <SimField.h>
 #include <SimModel.h>
 #include <SimParallel.h>
