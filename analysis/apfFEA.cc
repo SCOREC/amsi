@@ -77,6 +77,7 @@ namespace amsi
                    &elemental_system->getKe()(0,0),
                    &elemental_system->getfe()(0),
                    elemental_system->includesBodyForces());
+      apf::destroyMeshElement(melm);
     }
   }
   // use solution vector to update displacement dofs associated with locally-owned nodes
