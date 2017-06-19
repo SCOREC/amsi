@@ -25,41 +25,25 @@ namespace amsi
     CommunicationManager * getCommunicationManager() {return comm_man;}
     void setScaleMain(const std::string &, ExecuteFunc);
     int Execute(int& argc,char **& argv);
-    size_t CommRelation_Define(const std::string & nm1,
-                               const std::string & nm2);
-    size_t CreateCommPattern(const std::string & t1_dd,
-                             const std::string & t1,
-                             const std::string & t2);
+    size_t CommRelation_Define(const std::string & nm1, const std::string & nm2);
+    size_t CreateCommPattern(const std::string & t1_dd, const std::string & t1, const std::string & t2);
     void getPatternInfo(size_t rdd_id,int &,int &,CommPattern *&);
     // Remove and add data from comm pattern
     void RemoveData(size_t rdd_id, std::vector<int> & data);
     template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
-      size_t AddData(size_t rdd_id,
-                     Container<D> & objects,
-                     std::vector<int> & data,
-                     int option = 0,
-                     void (*userFunc)() = NULL );
+      size_t AddData(size_t rdd_id, Container<D> & objects, std::vector<int> & data, int option = 0, void (*userFunc)() = NULL );
     // Migration functions
-    void planMigration(std::vector<int> & migration_indices,
-                       size_t rdd_id,
-                       int option = 0,
-                       void (*userFunc)() = NULL);
+    void planMigration(std::vector<int> & migration_indices, size_t rdd_id, int option = 0, void (*userFunc)() = NULL);
     template <typename D, template<typename T, typename All = std::allocator<T> > class Container>
-      void migration(std::vector< std::vector<char> > & migration_data,
-                     size_t rdd_id,
-                     Container<D> & objects);
+      void migration(std::vector< std::vector<char> > & migration_data, size_t rdd_id, Container<D> & objects);
     template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       void shareMigration(size_t rdd_id, Container<D> & objects);
     void CommPattern_Assemble(size_t rdd_id);
-    size_t RecvCommPattern(const std::string & t1_dd_nm,
-                           const std::string & t1_nm,
-                           const std::string & t2_nm,
-                           const std::string & t2_dd_nm);
+    size_t RecvCommPattern(const std::string & t1_dd_nm, const std::string & t1_nm,
+                           const std::string & t2_nm, const std::string & t2_dd_nm);
     void CommPattern_Reconcile(size_t rdd_id);
-    size_t CommPattern_UseInverted(size_t rdd_id,
-                                   const std::string & dd,
-                                   const std::string & t1,
-                                   const std::string & t2);
+    size_t CommPattern_UseInverted(size_t rdd_id, const std::string & dd,
+                                   const std::string & t1, const std::string & t2);
     void CommPattern_UpdateInverted(size_t use_rdd_id,size_t create_rdd_id);
     void Assemble(size_t,Assemblable*);
     void Reconcile(size_t,Reconcilable*);
