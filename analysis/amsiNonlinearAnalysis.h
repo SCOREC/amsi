@@ -80,9 +80,8 @@ namespace amsi
     }
   };
   /**
-   * A convergence operator determines whether the current
-   *  state of the simulation has converged to a reasonable
-   *  solution.
+   * An operation which determines whether the
+   *  modeled operation has converged.
    */
   class Convergence
   {
@@ -94,10 +93,16 @@ namespace amsi
   /**
    * The updating convergence class allows the internal
    *  epsilon value to change depending on the state of
-   *  the simulation. The eps_gen template member object
-   *  must have an operator() member function that returns
-   *  the current epsilon value to use for detecting
-   *  convergence.
+   *  the simulation.
+   * @tparam V the current convergence value object,
+   *            has a double operator()() function which
+   *            gives the current convergence value.
+   * @tparam E the current epsilon value object,
+   *            has a double operator()() function which
+   *            gives the current epsilon value.
+   * @tparam R the current reference value object,
+   *            has a double operator()() functino which
+   *            gives the current reference value.
    */
   template <typename V, typename E, typename R>
     class UpdatingConvergence : public Convergence
@@ -126,12 +131,23 @@ namespace amsi
       delete eps_gen;
       delete ref_gen;
     }
+    /**
+     * Update the internal values used to determine
+     *  convergence, the test value, epsilon, and
+     *  reference are updated from their respective
+     *  objects.
+     */
     virtual void update()
     {
       cvg_vl = (*cvg_gen)();
       eps = (*eps_gen)(itr->iteration());
       ref_vl = (*ref_gen)();
     }
+    /**
+     * Determine whether the modeled operation has
+     *  converged.
+     * @return \f$ test < \eps * ref \f$
+     */
     virtual bool converged()
     {
       update();
@@ -144,10 +160,11 @@ namespace amsi
     }
   };
   /**
-   * A convergence class that wraps two convergence
+   * A convergence class that wraps multiple convergence
    *  objects. Useful for composing simple convergence
    *  operations in lieu of implementing a bespoke
-   *  combined class.
+   *  combined class. Cannot modify the convergence
+   *  operations after construction.
    */
   class MultiConvergence : public Convergence
   {
