@@ -1,11 +1,43 @@
 #include "Solvers.h"
+#include "amsiNonlinearAnalysis.h"
 #include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <numeric>
 #include <stdexcept>
 #include <vector>
-namespace amsi {
+namespace amsi
+{
+  class LinearIteration : public Iteration
+  {
+  private:
+    FEA * fem;
+    LAS * las;
+  public:
+    LinearIteration(FEA * f, LAS * l)
+      : fem(f)
+      , las(l)
+    { }
+    void iterate()
+    {
+      fem->ApplyBC_Dirichlet();
+      fem->RenumberDOFs();
+      int gbl, lcl, off;
+      fem->GetDOFInfo(gbl,lcl,off);
+      las->Reinitialize(lcl,gbl,off);
+      las->Zero();
+      fem->Assemble(las);
+      las->solve();
+      double * s = NULL;
+      las->GetSolution(s);
+      fem->UpdateDOFs(s);
+      Iteration::iterate();
+    }
+  };
+  Iteration * buildLinearFEMIteration(FEA * f, LAS * l)
+  {
+    return new LinearIteration(f,l);
+  }
   void LinearSolver(FEA * fem,LAS * las)
   {
     int global_dof_count, local_dof_count, first_local_dof;
