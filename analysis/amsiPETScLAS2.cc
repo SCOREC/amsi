@@ -1,6 +1,7 @@
 #include "amsiPETScLAS2.h"
 #include <petsc.h>
 #include <petscksp.h>
+#include <petscsnes.h>
 namespace las
 {
   // todo : create variant using nnz structure
@@ -63,21 +64,6 @@ namespace las
   {
     MatSetValues(*getPetscMat(m),cntr,rws,cntc,cls,vls,INSERT_VALUES);
   }
-  void PetscOps::solve(las::Mat * k, las::Vec * u, las::Vec * f)
-  {
-    ::Mat * pk = getPetscMat(k);
-    ::Vec * pu = getPetscVec(u);
-    ::Vec * pf = getPetscVec(f);
-    ::KSP s;
-    KSPCreate(PETSC_COMM_WORLD,&s);
-    VecAssemblyBegin(*pf);
-    VecAssemblyEnd(*pf);
-    MatAssemblyBegin(*pk,MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(*pk,MAT_FINAL_ASSEMBLY);
-    KSPSetOperators(s,*pk,*pk);
-    KSPSetFromOptions(s);
-    KSPSolve(s,*pf,*pu);
-  }
   double PetscOps::norm(las::Vec * v)
   {
     double n = 0.0;
@@ -102,4 +88,48 @@ namespace las
   {
     VecRestoreArray(*getPetscVec(v),&vls);
   }
+  class PetscLUSolve : public LasSolve
+  {
+  public:
+    virtual void solve(las::Mat * k, las::Vec * u, las::Vec * f)
+    {
+      ::Mat * pk = getPetscMat(k);
+      ::Vec * pu = getPetscVec(u);
+      ::Vec * pf = getPetscVec(f);
+      ::KSP s;
+      KSPCreate(PETSC_COMM_WORLD,&s);
+      VecAssemblyBegin(*pf);
+      VecAssemblyEnd(*pf);
+      MatAssemblyBegin(*pk,MAT_FINAL_ASSEMBLY);
+      MatAssemblyEnd(*pk,MAT_FINAL_ASSEMBLY);
+      KSPSetOperators(s,*pk,*pk);
+      KSPSetFromOptions(s);
+      KSPSolve(s,*pf,*pu);
+      KSPDestroy(&s);
+    }
+  };
+  LasSolve * createPetscLUSolve()
+  {
+    return new PetscLUSolve;
+  }
+  class PetscQNSolve : public LasSolve
+  {
+  public:
+    virtual void solve(las::Mat * k, las::Vec * u, las::Vec * f)
+    {
+      ::Mat * pk = getPetscMat(k);
+      ::Vec * pu = getPetscVec(u);
+      ::Vec * pf = getPetscVec(f);
+      ::SNES snes;
+      SNESCreate(PETSC_COMM_WORLD,&snes);
+      // set snes options
+      SNESSetType(snes,SNESQN);
+      SNESSetJacobian(snes,*pk,*pk,NULL,NULL);
+      SNESSolve(snes,*pf,*pu);
+      int it = -1;
+      SNESGetIterationNumber(snes,&it);
+      std::cout << "BFGS QN Solve complete in " << it << " iterations." << std::endl;
+      SNESDestroy(&snes);
+    }
+  };
 }
