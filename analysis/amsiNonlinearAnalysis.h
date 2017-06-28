@@ -44,6 +44,7 @@ namespace amsi
     int itr;
   public:
     Iteration() : itr(0) {}
+    virtual ~Iteration() {}
     virtual void iterate()
     {
       ++itr;
@@ -68,6 +69,7 @@ namespace amsi
       : Iteration()
       , ops()
     { }
+    virtual ~ModulularIteration() {};
     virtual void iterate()
     {
       for(auto op = ops.begin(); op != ops.end(); ++op)
