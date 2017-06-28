@@ -69,7 +69,7 @@ namespace amsi
       : Iteration()
       , ops()
     { }
-    virtual ~ModulularIteration() {};
+    virtual ~ModularIteration() {};
     virtual void iterate()
     {
       for(auto op = ops.begin(); op != ops.end(); ++op)
