@@ -2,8 +2,9 @@
 # CMake config for AMSI
 # usage: ./config.sh [build_type] [build_tests_flag]
 #
-source $DEVROOT/scripts/util
-ROOT=$DEVROOT/amsi
+source util
+ROOT=$(dirname $PWD)
+# Determine if we should build test based on build_type and override
 TEST_OVERRIDE=$2
 if [ -z $1 ]; then
   BUILD_TYPE=Debug
@@ -25,7 +26,6 @@ elif [ "$BUILD_TYPE" == "Release" ] ; then
 fi
 verify_directory_recreate ${BUILD_DIR}
 cd $BUILD_DIR
-module load cmake
 HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
   module use /gpfs/u/home/PASC/PASCtbnw/barn-shared/install/petsc-3.6.3/bgq/xl/lib/petsc/conf/modules/
@@ -45,17 +45,14 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
     ..
 else
-    module load $DEVROOT/module/openmpi/1.10.0
-    module load $DEVROOT/petsc/petsc-3.6.3/ompi110-debug/lib/petsc/conf/modules/petsc/3.6.3
     CC=`which mpicc`
     CXX=`which mpicxx`
     cmake \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-        -DBUILD_TESTS=ON \
+        -DBUILD_TESTS=$BUILD_TESTS \
         -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/ \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
-        -DHWLOC_ROOT=$DEVROOT/install/hwloc/ \
         -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
         ..
 fi

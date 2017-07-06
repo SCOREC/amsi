@@ -8,8 +8,8 @@ set(AMSI_PATCH_VERSION 0)
 set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSION})
 
 # add FindPACKAGE.cmake files to path
-list(APPEND CMAKE_MODULE_PATH $ENV{DEVROOT}/scripts/cmake ${CMAKE_CURRENT_LIST_DIR}/cmake)
-include($ENV{DEVROOT}/scripts/cmake/util.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/util.cmake)
 set(CMAKE_DEBUG_POSTFIX d)
 site_name(HOSTNAME)
 message(STATUS "Configuring to build on " ${HOSTNAME})
