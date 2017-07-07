@@ -41,8 +41,22 @@ namespace las
     Vec * f_i;
     Vec * u_i1;
     Vec * f_i1;
-    Petsc2Wrapper();
   public:
+    Petsc2Wrapper()
+      : glb_dofs(0)
+      , lcl_dofs(0)
+      , vec_low(0)
+      , vec_hgh(0)
+      , ops(getPetscOps())
+      , slv(createPetscQNSolve())
+      , K(NULL)
+      , u(NULL)
+      , f(NULL)
+      , u_i(NULL)
+      , f_i(NULL)
+      , u_i1(NULL)
+      , f_i1(NULL)
+    { }
     Petsc2Wrapper(int glb,int lcl)
       : glb_dofs(glb)
       , lcl_dofs(lcl)
@@ -86,7 +100,21 @@ namespace las
     }
     void Reinitialize(int lcl, int glb, int low)
     {
-      if(lcl != lcl_dofs || glb != glb_dofs || low != vec_low)
+      if(K == NULL)
+      {
+        K = createPetscMatrix(glb,lcl);
+        u = createPetscVector(glb,lcl);
+        f = createPetscVector(glb,lcl);
+        u_i = createPetscVector(glb,lcl);
+        f_i = createPetscVector(glb,lcl);
+        u_i1 = createPetscVector(glb,lcl);
+        f_i1 = createPetscVector(glb,lcl);
+        lcl_dofs = lcl;
+        glb_dofs = glb;
+        MPI_Scan(&lcl,&vec_hgh,1,MPI_INTEGER,MPI_SUM,PETSC_COMM_WORLD);
+        vec_low = vec_hgh - lcl;
+      }
+      else if(lcl != lcl_dofs || glb != glb_dofs || low != vec_low)
       {
         std::cerr << "ERROR! Linear system resizing not supported for Petsc2Wrapper class!" << std::endl;
         MPI_Abort(PETSC_COMM_WORLD,-1);
