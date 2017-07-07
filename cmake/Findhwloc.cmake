@@ -16,7 +16,7 @@ else()
   foreach(PREFIX ${CMAKE_PREFIX_PATH})
     set(PKG_CONFIG_PATH "${PKG_CONFIG_PATH}:${PREFIX}/lib/pkgconfig")
   endforeach()
-  set(ENV{PKG_CONFIG_PATH} "${PKG_CONFIG_PATH}:$ENV{PKG_CONFIG_PATH}")
+  set(ENV{PKG_CONFIG_PATH} ${PKG_CONFIG_PATH})
 endif()
 
 if(hwloc_FIND_REQUIRED)

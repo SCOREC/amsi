@@ -68,6 +68,7 @@ namespace amsi
   {
     PMU_setCommunicator(AMSI_COMM_SCALE);
     Sim_readLicenseFile(simmetrix_license_file.c_str());
+    MS_init();
     SimPartitionedMesh_start(NULL,NULL);
     SimDiscrete_start(0);
     SimMeshing_start();
@@ -86,6 +87,7 @@ namespace amsi
     SimMeshing_stop();
     SimDiscrete_stop(0);
     SimPartitionedMesh_stop();
+    MS_exit();
     Sim_unregisterAllKeys();
   }
   void parseAnalysis(std::istream & fl)
