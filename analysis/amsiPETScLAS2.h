@@ -9,7 +9,7 @@ namespace las
   Vec * createPetscVector(int gbl, int lcl);
   LasOps * getPetscOps();
   LasSolve * createPetscLUSolve();
-  LasSolve * createPetscQNSolve();
+  LasSolve * createPetscQNSolve(void * a);
   class PetscOps : public LasOps
   {
   public:
@@ -42,13 +42,13 @@ namespace las
     Vec * u_i1;
     Vec * f_i1;
   public:
-    Petsc2Wrapper()
+    Petsc2Wrapper(void * a)
       : glb_dofs(0)
       , lcl_dofs(0)
       , vec_low(0)
       , vec_hgh(0)
       , ops(getPetscOps())
-      , slv(createPetscQNSolve())
+      , slv(createPetscQNSolve(a))
       , K(NULL)
       , u(NULL)
       , f(NULL)
@@ -63,7 +63,7 @@ namespace las
       , vec_low(0)
       , vec_hgh(0)
       , ops(getPetscOps())
-      , slv(createPetscQNSolve())
+      , slv(createPetscQNSolve(NULL))
       , K(createPetscMatrix(glb,lcl))
       , u(createPetscVector(glb,lcl))
       , f(createPetscVector(glb,lcl))
