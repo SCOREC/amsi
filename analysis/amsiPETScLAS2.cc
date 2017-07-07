@@ -140,8 +140,7 @@ namespace las
     // and then we set that to point to the f in this function
     las::Vec ** lf = NULL;
     hd = byte_read(hd,lf); // lf points to f inside of itr
-    *
-      lf = reinterpret_cast<las::Vec*>(&f);
+    *lf = reinterpret_cast<las::Vec*>(&f);
     itr->iterate();
     // set *lf to NULL since the local f might no longer be valid after this function ends
     *lf = NULL;

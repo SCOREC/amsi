@@ -3,6 +3,7 @@
 #include "amsiPETScLAS.h"
 #include "amsiLAS2.h"
 #include "amsiNonlinearAnalysis.h"
+#include "amsiByteStream.h" // for a hack (search for serialize)
 namespace las
 {
   Mat * createPetscMatrix(int gbl, int lcl);
@@ -28,6 +29,7 @@ namespace las
   class Petsc2Wrapper : public amsi::LAS
   {
   private:
+    void * qniterargs;
     double glb_dofs;
     double lcl_dofs;
     double vec_low;
@@ -43,12 +45,13 @@ namespace las
     Vec * f_i1;
   public:
     Petsc2Wrapper(void * a)
-      : glb_dofs(0)
+      : qniterargs(a)
+      , glb_dofs(0)
       , lcl_dofs(0)
       , vec_low(0)
       , vec_hgh(0)
       , ops(getPetscOps())
-      , slv(createPetscQNSolve(a))
+      , slv(NULL)
       , K(NULL)
       , u(NULL)
       , f(NULL)
@@ -113,6 +116,9 @@ namespace las
         glb_dofs = glb;
         MPI_Scan(&lcl,&vec_hgh,1,MPI_INTEGER,MPI_SUM,PETSC_COMM_WORLD);
         vec_low = vec_hgh - lcl;
+        las::Vec ** ff = &f;
+        qniterargs = serialize(qniterargs,ff);
+        slv = createPetscQNSolve(qniterargs);
       }
       else if(lcl != lcl_dofs || glb != glb_dofs || low != vec_low)
       {
