@@ -132,7 +132,7 @@ namespace las
       SNESDestroy(&snes);
     }
   };
-  LasSolve * creatPetscQNSolve()
+  LasSolve * createPetscQNSolve()
   {
     return new PetscQNSolve;
   }
