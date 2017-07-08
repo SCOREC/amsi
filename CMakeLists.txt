@@ -42,6 +42,9 @@ endif(BUILD_TESTS)
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
+# setup CMAKE_PREFIX_PATH from the environment
+string(REPLACE ":" ";" CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH})
+
 find_package(SCOREC CONFIG REQUIRED)
 
 message(STATUS "Configuring util")

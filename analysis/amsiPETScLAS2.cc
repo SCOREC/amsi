@@ -1,4 +1,8 @@
 #include "amsiPETScLAS2.h"
+// only needed for PetscIterate function.. consider splitting into another file
+#include "amsiByteStream.h"
+#include "apfFunctions.h"
+//
 #include <petsc.h>
 #include <petscksp.h>
 #include <petscsnes.h>
@@ -112,9 +116,43 @@ namespace las
   {
     return new PetscLUSolve;
   }
+  PetscErrorCode PetscIterate(SNES snes,::Vec x,::Vec f,void * i)
+  {
+    LasOps * ops = getPetscOps();
+    // x vector needs to be applied to simulation prior to assembling force vector...
+    // typically we update our fields just after a solve, which gets us into position
+    // for the next iteration
+    void * hd = i;
+    apf::Numbering * fld = NULL;
+    hd = byte_read(hd,fld);
+    double * sol = NULL;
+    las::Vec * lx = reinterpret_cast<las::Vec*>(&x);
+    ops->get(lx,sol);
+    amsi::AccumOp op;
+    amsi::ApplyVector appsol(fld,apf::getField(fld),&sol[0],3,&op);
+    appsol.run();
+    // get the iteration object to run to assemble the force vector
+    amsi::Iteration * itr = NULL;
+    hd = byte_read(hd,itr);
+    // also we need to assemble the values INTO f, which is provided by amsi, we can't assume
+    // that it is the same f we passed into the PetscQNSolve::solve() function,
+    // so we pass a pointer to the internal iteration pointer to the vector to assemble into,
+    // and then we set that to point to the f in this function
+    las::Vec ** lf = NULL;
+    hd = byte_read(hd,lf); // lf points to f inside of itr
+    *lf = reinterpret_cast<las::Vec*>(&f);
+    itr->iterate();
+    // set *lf to NULL since the local f might no longer be valid after this function ends
+    *lf = NULL;
+    return(0);
+  }
   class PetscQNSolve : public LasSolve
   {
+  private:
+    void * args;
   public:
+    PetscQNSolve(void * a) : args(a)
+    {}
     virtual void solve(las::Mat * k, las::Vec * u, las::Vec * f)
     {
       ::Mat * pk = getPetscMat(k);
@@ -125,6 +163,7 @@ namespace las
       // set snes options
       SNESSetType(snes,SNESQN);
       SNESSetJacobian(snes,*pk,*pk,NULL,NULL);
+      SNESSetFunction(snes,*pf,&PetscIterate,args);
       SNESSolve(snes,*pf,*pu);
       int it = -1;
       SNESGetIterationNumber(snes,&it);
@@ -132,4 +171,8 @@ namespace las
       SNESDestroy(&snes);
     }
   };
+  LasSolve * createPetscQNSolve(void * a)
+  {
+    return new PetscQNSolve(a);
+  }
 }

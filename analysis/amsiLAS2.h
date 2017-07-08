@@ -21,6 +21,7 @@ namespace las
   };
   class LasSolve
   {
+  public:
     virtual void solve(Mat * k, Vec * u, Vec * f) = 0;
   };
 }
