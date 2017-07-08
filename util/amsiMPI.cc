@@ -14,7 +14,7 @@ namespace amsi
   template <>
   MPI_Datatype mpi_type<int>(int) {return MPI_INT;}
   template <>
-  MPI_Datatype mpi_type<bool>(bool) {return MPI::BOOL;}
+  MPI_Datatype mpi_type<bool>(bool) { assert(sizeof(bool) == 1); return MPI_BYTE;}
   template <>
   MPI_Datatype mpi_type<unsigned long>(unsigned long) {return MPI_UNSIGNED_LONG;}
 }
