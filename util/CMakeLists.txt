@@ -71,7 +71,15 @@ install(TARGETS util
         ARCHIVE DESTINATION lib
         INCLUDES DESTINATION include/amsi)
 
+# this allows us to use the package from the
+# build tree which is wanted for multiple build configs
+export(EXPORT amsiutilTargets
+       FILE "${PROJECT_BINARY_DIR}/amsi/amsiutilTargets.cmake"
+       NAMESPACE amsi::)
+
 install(EXPORT amsiutilTargets
-        DESTINATION ${ConfigPackageLocation})
+        DESTINATION ${ConfigPackageLocation}
+        NAMESPACE amsi::
+        )
 
 install(FILES ${util_public_headers} DESTINATION include/amsi)

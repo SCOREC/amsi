@@ -138,7 +138,14 @@ install(TARGETS analysis
         ARCHIVE DESTINATION lib
         INCLUDES DESTINATION include/amsi)
 
+# this allows us to use the package from the
+# build tree which is wanted for multiple build configs
+export(EXPORT amsianalysisTargets
+       FILE "${PROJECT_BINARY_DIR}/amsi/amsianalysisTargets.cmake"
+       NAMESPACE amsi::)
+
 install(EXPORT amsianalysisTargets
-        DESTINATION ${ConfigPackageLocation})
+        DESTINATION ${ConfigPackageLocation}
+        NAMESPACE amsi::)
 
 install(FILES ${analysis_public_headers} DESTINATION include/amsi)
