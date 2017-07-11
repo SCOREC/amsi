@@ -57,8 +57,9 @@ set_property(TARGET util PROPERTY VERSION ${AMSI_VERSION})
 
 target_include_directories(util PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                $<INSTALL_INTERFACE:include/amsi>)
-target_link_libraries(util PUBLIC SCOREC::pcu PkgConfig::HWLOC)
+                                $<INSTALL_INTERFACE:include/amsi>
+                                ${HWLOC_INCLUDE_DIRECTORIES})
+target_link_libraries(util PUBLIC SCOREC::pcu ${HWLOC_LIBRARIES})
 
 if("${HOST}" STREQUAL "BGQ")
   target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})
