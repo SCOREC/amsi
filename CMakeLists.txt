@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required(VERSION 3.7)
 
 project(amsi)
 
@@ -41,9 +41,6 @@ endif(BUILD_TESTS)
 
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
-
-# setup CMAKE_PREFIX_PATH from the environment
-string(REPLACE ":" ";" CMAKE_PREFIX_PATH $ENV{CMAKE_PREFIX_PATH})
 
 find_package(SCOREC CONFIG REQUIRED)
 
