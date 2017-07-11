@@ -1,0 +1,7 @@
+<Project name="AMSI">
+  <SubProject name="master">
+  </SubProject>
+  <SubProject name="develop">
+  </SubProject>
+</Project>
+

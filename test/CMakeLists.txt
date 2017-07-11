@@ -1,4 +1,3 @@
-include(CTest)
 
 set(test_header_dir ${CMAKE_CURRENT_SOURCE_DIR})
 function(add_mpi_test name file no_mpi_proc)
