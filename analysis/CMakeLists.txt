@@ -1,4 +1,4 @@
-find_package(PETSc REQUIRED)
+find_package(PETSC REQUIRED)
 find_package(zoltan)
 find_package(SCOREC CONFIG REQUIRED)
 
@@ -126,11 +126,10 @@ add_library(analysis ${analysis_src_files})
 # properties for downstream packages
 target_include_directories(analysis PUBLIC
                                      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                     $<INSTALL_INTERFACE:include/amsi>)
+                                     $<INSTALL_INTERFACE:include/amsi>
+                                     ${PETSC_INCLUDE_DIRS})
 
 target_link_libraries(analysis PUBLIC util SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LIBRARIES})
-target_include_directories(analysis PUBLIC ${PETSC_INCLUDE_DIRS})
-
 
 install(TARGETS analysis
         EXPORT amsianalysisTargets
