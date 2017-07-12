@@ -15,7 +15,7 @@ set(CTEST_DROP_SITE_CDASH TRUE)
 
 set(CTEST_SITE Jenga.scorec.rpi.edu)
 
-set(CTEST_DASHBOARD_ROOT "/fasttmp/mersoj/develop/test/amsi/cdash" )
+set(CTEST_DASHBOARD_ROOT "$ENV{DEVROOT}/test/amsi/cdash" )
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 #set(CTEST_BUILD_CONFIGURATION RelWithDebInfo)
 set(CTEST_BUILD_CONFIGURATION Debug)
@@ -28,7 +28,7 @@ set(CTEST_BINARY_NAME build)
 find_program(CTEST_COMMAND NAMES ctest)
 find_program(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
 find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
-set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "/fasttmp/mersoj/develop/install/openmpi/1.10.6/share/openmpi/openmpi-valgrind.supp")
+set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "$ENV{DEVROOT}/install/openmpi/1.10.6/share/openmpi/openmpi-valgrind.supp")
 set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full")
 
 set(SOURCE_DIRECTORY "${CTEST_DASHBOARD_ROOT}/${CTEST_SOURCE_NAME}")
@@ -49,8 +49,9 @@ set(CONFIGURE_OPTIONS
   "-DBUILD_TESTS=ON"
   "-DCMAKE_C_COMPILER=mpicc"
   "-DCMAKE_CXX_COMPILER=mpicxx"
-  "-DHWLOC_ROOT=/fasttmp/mersoj/develop/install/hwloc/"
-  "-DSCOREC_DIR=/fasttmp/mersoj/develop/install/core/lib/cmake/SCOREC"
+  "-DCMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}"
+  "-DHWLOC_LIB_DIR=$ENV{DEVROOT}/install/hwloc/lib/"
+  "-DSCOREC_DIR=$ENV{DEVROOT}/install/core/lib/cmake/SCOREC"
   "-DCMAKE_CXX_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
   "-DCMAKE_C_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
   "-DCMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
