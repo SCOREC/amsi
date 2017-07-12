@@ -1,6 +1,6 @@
 include(util)
 
-find_package(PkgConfig QUIET)
+find_package(PkgConfig REQUIRED QUIET)
 
 checkSetParam(PETSC_DIR TRUE)
 checkSetParam(PETSC_ARCH TRUE)
@@ -20,27 +20,9 @@ endif()
 pkg_check_modules(PETSC ${_PETSC_OPTS} IMPORTED_TARGET PETSc)
 
 if(PETSC_FOUND)
-  set(PETSC_INCLUDE_DIRS ${PETSC_INCLUDEDIR})
+  set(PETSC_INCLUDE_DIRS "${PETSC_STATIC_INCLUDE_DIRS}")
   set(PETSC_LIBRARIES "${PETSC_STATIC_LDFLAGS};${PETSC_STATIC_LIBRARIES}")
 endif(PETSC_FOUND)
-
-  #find_path(PETSC_INCLUDE_DIR_ONE petscksp.h
-  #  HINTS ${PETSC_DIR}
-  #  PATH_SUFFIXES include)
-
-  #find_path(PETSC_INCLUDE_DIR_TWO petscfix.h
-  #  HINTS ${PETSC_DIR}/${PETSC_ARCH}
-  #  PATH_SUFFIXES include)
-
-  #set(PETSC_INCLUDE_DIRS ${PETSC_PACKAGE_INCLUDES} ${PETSC_INCLUDE_DIR_ONE} ${PETSC_INCLUDE_DIR_TWO})
-  #describeVar(PETSC_INCLUDE_DIRS)
-
-  #find_library(PETSC_LIB petsc
-  # HINTS ${PETSC_DIR}/${PETSC_ARCH}
-  # PATH_SUFFIXES lib)
-
-  #set(PETSC_LIBRARIES ${PETSC_LIB} ${PETSC_PACKAGE_LIBS})
-  #describeVar(PETSC_LIBRARIES)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PETSC DEFAULT_MSG PETSC_LIBRARIES PETSC_INCLUDE_DIRS)

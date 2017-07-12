@@ -1,55 +1,24 @@
-# Copyright (c) 2012 Marwan Abdellah <marwan.abdellah@epfl.ch>
-#                    Daniel Nachbaur <daniel.nachbaur@epfl.ch>
-#               2013 Stefan.Eilemann@epfl.ch
+find_package(PkgConfig REQUIRED QUIET)
 
-# Use pkg-config to fetch the contents of the .pc file
-# After that, use the directories refer to the libraries and
-# also the headers
-
-find_package(PkgConfig QUIET)
-
-if(HWLOC_LIB_DIR)
-  set(ENV{PKG_CONFIG_PATH} "${HWLOC_LIB_DIR}/pkgconfig:$ENV{PKG_CONFIG_PATH}")
-endif()
+set(ENV{PKG_CONFIG_PATH} "ENV{PKG_CONFIG_PATH}:${HWLOC_LIB_DIR}/pkgconfig")
 
 if(HWLOC_FIND_REQUIRED)
-  set(_hwloc_OPTS "REQUIRED")
+  set(_HWLOC_OPTS "REQUIRED")
 endif()
 if(HWLOC_FIND_QUIETLY)
-  set(_hwloc_OPTS "QUIET")
+  set(_HWLOC_OPTS "QUIET")
 endif()
 if(HWLOC_FIND_REQUIRED AND HWLOC_FIND_QUIETLY)
-  set(_hwloc_OPTS "REQUIRED QUIET")
+  set(_HWLOC_OPTS "REQUIRED QUIET")
 endif()
 
-if(hwloc_FIND_VERSION)
-  if(hwloc_FIND_VERSION_EXACT)
-    pkg_check_modules(HWLOC ${_hwloc_OPTS} IMPORTED_TARGET hwloc=${hwloc_FIND_VERSION})
-  else()
-    pkg_check_modules(HWLOC ${_hwloc_OPTS} IMPORTED_TARGET hwloc>=${hwloc_FIND_VERSION})
-  endif()
-else()
-  pkg_check_modules(HWLOC ${_hwloc_opts} IMPORTED_TARGET hwloc)
-endif()
-
-if(NOT HWLOC_FOUND)
-  # check if hwloc_include_dir and hwloc_lib_dir are set
-  find_path(HWLOC_INCLUDE_DIR hwloc.h
-            HINTS ${HWLOC_INCLUDEDIR}
-            PATH_SUFFIXES include)
-  find_library(HWLOC_LIBRARIES hwloc
-               HINTS ${HWLOC_LIB_DIR}
-               PATH_SUFFIXES lib)
-  if(HWLOC_INCLUDE_DIR AND HWLOC_LIBRARIES)
-    set(HWLOC_FOUND TRUE)
-  endif(HWLOC_INCLUDE_DIR AND HWLOC_LIBRARIES)
-else(NOT HWLOC_FOUND)
-  set(HWLOC_LIBRARIES "${HWLOC_STATIC_LDFLAGS};${HWLOC_STATIC_LIBRARIES}")
-  set(HWLOC_INCLUDE_DIR ${HWLOC_INCLUDEDIR})
-endif(NOT HWLOC_FOUND)
+pkg_check_modules(HWLOC ${_HWLOC_OPTS} IMPORTED_TARGET hwloc)
 
 if(HWLOC_FOUND)
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(hwloc DEFAULT_MSG HWLOC_LIBRARIES HWLOC_INCLUDE_DIR)
-  message(STATUS "Found hwloc ${HWLOC_VERSION} in ${HWLOC_INCLUDE_DIR}:${HWLOC_LIBRARIES}")
-endif()
+  set(HWLOC_INCLUDE_DIRS "${HWLOC_STATIC_INCLUDE_DIRS}")
+  set(HWLOC_LIBRARIES "${HWLOC_STATIC_LDFLAGS};${HWLOC_STATIC_LIBRARIES}")
+endif(HWLOC_FOUND)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(HWLOC DEFAULT_MSG HWLOC_LIBRARIES HWLOC_INCLUDE_DIRS)
+mark_as_advanced(HWLOC_LIBRARIES HWLOC_INCLUDE_DIRS)
