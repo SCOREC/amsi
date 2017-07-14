@@ -52,10 +52,19 @@ namespace amsi
   }
   class MeasureDisplaced : public amsi::ElementalSystem
   {
+  private:
+    int dim;
+    apf::FieldShape * fs;
+    apf::EntityShape * es;
+    apf::Element * mesh_coord_elem;
+    double vol;
   public:
     MeasureDisplaced(apf::Field * field, int o)
       : ElementalSystem(field,o)
       , dim(0)
+      , fs(NULL)
+      , es(NULL)
+      , mesh_coord_elem(NULL)
       , vol(0)
     {}
     void inElement(apf::MeshElement * me)
@@ -64,14 +73,12 @@ namespace amsi
       fs = apf::getShape(f);
       es = fs->getEntityShape(apf::getMesh(f)->getType(apf::getMeshEntity(me)));
       dim = apf::getDimension(me);
+      mesh_coord_elem = apf::createElement(apf::getMesh(f)->getCoordinateField(),me);
     }
     void atPoint(apf::Vector3 const &p, double w, double dV)
     {
       int & nen = nenodes; // = 4 (tets)
       // 1. Get coordinates on underlying mesh
-      apf::Mesh * mesh = apf::getMesh(f);
-      apf::Field * apf_coord_field = mesh->getCoordinateField();
-      apf::Element * mesh_coord_elem = apf::createElement(apf_coord_field,me);
       apf::NewArray<apf::Vector3> mesh_xyz;
       apf::getVectorNodes(mesh_coord_elem,mesh_xyz);
       // 2. Get coordinates from apf_primary_field (passed in), which contains the accumulated displacement
@@ -97,14 +104,13 @@ namespace amsi
       J[2][2] = xyz(3,2) - xyz(0,2); // z4-z1
       double detJ = getDeterminant(J);
       vol += w * detJ;
+    }
+    void outElement()
+    {
       apf::destroyElement(mesh_coord_elem);
+      ElementalSystem::outElement();
     }
     double getVol(){return vol;}
-  private:
-    int dim;
-    apf::FieldShape * fs;
-    apf::EntityShape * es;
-    double vol;
   };
   class MeasureDisplacedFromSurf : public amsi::ElementalSystem
   {
