@@ -1,4 +1,6 @@
 find_package(zoltan)
+
+# FIXME configured files should be configured into build dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h
                @ONLY)
@@ -46,7 +48,7 @@ set(multiscale_source_files
 add_library(multiscale ${multiscale_source_files})
 
 target_include_directories(multiscale PUBLIC
-                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                 $<INSTALL_INTERFACE:include/amsi>)
 target_link_libraries(multiscale PUBLIC util)
 
@@ -74,3 +76,7 @@ install(EXPORT amsimultiscaleTargets
         NAMESPACE amsi::)
 
 install(FILES ${multiscale_public_headers} DESTINATION include/amsi)
+
+# Headers need to be copied to binary directory to enable building against build
+# W/O installation
+file(COPY ${multiscale_public_headers} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

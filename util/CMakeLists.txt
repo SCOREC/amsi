@@ -48,6 +48,7 @@ set(util_source_files
 find_package(HWLOC REQUIRED)
 find_package(SCOREC CONFIG REQUIRED)
 
+# FIXME configured files should be configured into build dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h
                @ONLY)
@@ -56,7 +57,7 @@ add_library(util ${util_source_files})
 set_property(TARGET util PROPERTY VERSION ${AMSI_VERSION})
 
 target_include_directories(util PUBLIC
-                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                 $<INSTALL_INTERFACE:include/amsi>
                                 ${HWLOC_INCLUDE_DIRS})
 target_link_libraries(util PUBLIC SCOREC::pcu ${HWLOC_LIBRARIES})
@@ -74,7 +75,7 @@ install(TARGETS util
 # this allows us to use the package from the
 # build tree which is wanted for multiple build configs
 export(EXPORT amsiutilTargets
-       FILE "${PROJECT_BINARY_DIR}/amsi/amsiutilTargets.cmake"
+       FILE "${CMAKE_BINARY_DIR}/amsi/amsiutilTargets.cmake"
        NAMESPACE amsi::)
 
 install(EXPORT amsiutilTargets
@@ -83,3 +84,6 @@ install(EXPORT amsiutilTargets
         )
 
 install(FILES ${util_public_headers} DESTINATION include/amsi)
+# Headers need to be copied to binary directory to enable building against build
+# W/O installation
+file(COPY ${util_public_headers} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -1,5 +1,5 @@
 #include "amsiMultiscale.h"
-#include "amsiControlService.cc"
+#include "amsiControlService.h"
 int task1(int & argc, char **& argv, MPI_Comm cm)
 {
   amsi::ControlService * cs = amsi::ControlService::Instance();

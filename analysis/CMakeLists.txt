@@ -2,6 +2,7 @@ find_package(PETSC REQUIRED)
 find_package(zoltan)
 find_package(SCOREC CONFIG REQUIRED)
 
+# FIXME configured files should be configured into build dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiAnalysisConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/amsiAnalysisConfig.h
                @ONLY)
@@ -125,7 +126,7 @@ add_library(analysis ${analysis_src_files})
 
 # properties for downstream packages
 target_include_directories(analysis PUBLIC
-                                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                      $<INSTALL_INTERFACE:include/amsi>
                                      ${PETSC_INCLUDE_DIRS})
 
@@ -140,7 +141,7 @@ install(TARGETS analysis
 # this allows us to use the package from the
 # build tree which is wanted for multiple build configs
 export(EXPORT amsianalysisTargets
-       FILE "${PROJECT_BINARY_DIR}/amsi/amsianalysisTargets.cmake"
+       FILE "${CMAKE_BINARY_DIR}/amsi/amsianalysisTargets.cmake"
        NAMESPACE amsi::)
 
 install(EXPORT amsianalysisTargets
@@ -148,3 +149,6 @@ install(EXPORT amsianalysisTargets
         NAMESPACE amsi::)
 
 install(FILES ${analysis_public_headers} DESTINATION include/amsi)
+# Headers need to be copied to binary directory to enable building against build
+# W/O installation
+file(COPY ${analysis_public_headers} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
