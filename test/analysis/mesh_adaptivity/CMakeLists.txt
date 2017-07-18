@@ -1,6 +1,3 @@
-add_mpi_test(analysis_uniform_adapt uniform.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms)
-target_link_libraries(analysis_uniform_adapt analysis)
-
 add_mpi_test(analysis_error_estimator error_estimator.cc 1 ${MODEL_DIR}/cube_uniaxial_10kPa.smd ${MESH_DIR}/cube_24_tets.sms)
 target_link_libraries(analysis_error_estimator analysis)
 
