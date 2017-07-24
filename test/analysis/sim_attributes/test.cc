@@ -5,6 +5,7 @@
 #include "apf.h"
 #include "apfSIM.h"
 #include "apfBoundaryConditions.h"
+#include "amsiAnalysis.h"
 #include <cassert>
 #include <iterator>
 #include <vector>
@@ -12,9 +13,8 @@ int main(int argc, char * argv[])
 {
   assert(argc == 3);
   int failed = 0;
-  MPI_Init(&argc,&argv);
-  Sim_readLicenseFile("/net/common/meshSim/license/license.txt");
-  SimPartitionedMesh_start(NULL,NULL);
+  amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
+  amsi::initAnalysis(argc, argv);
   Sim_logOn("sim.log");
   // above here taken care of by amsi init
   pPList lst = PList_new();
@@ -49,7 +49,6 @@ int main(int argc, char * argv[])
   amsi::freeCase(css[0]);
   // below here taken care of by amsi free
   Sim_logOff();
-  SimPartitionedMesh_stop();
-  MPI_Finalize();
+  amsi::freeAnalysis();
   return failed;
-};
+}
