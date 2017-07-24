@@ -31,7 +31,7 @@ function(add_mpi_gtest name file no_mpi_proc)
   target_link_libraries(${name} gtest_main)
   set(test_parameters -np ${no_mpi_proc} ${name} ${ARGN})
   add_test(NAME ${name} COMMAND "mpirun" ${test_parameters} )
-endfunction(add_mpi_test)
+endfunction(add_mpi_gtest)
 
 add_subdirectory(util)
 add_subdirectory(multiscale)
