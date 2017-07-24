@@ -4,6 +4,9 @@ multiscale/amsiMultiscaleConfig.h
 build_debug/
 build_release/
 simmetrix_log
+GPATH
+GRTAGS
+GTAGS
 # Prerequisites
 *.d
 
