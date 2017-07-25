@@ -234,7 +234,7 @@ namespace amsi
       if(msh->isOwned(*ent))
       {
         int sd = side(mdl_ent,msh,*ent);
-        assert(sd == 1);
+        //assert(sd == 1);
         vol += measureDisplacedMeshEntity_greens(*ent,u,sd);
       }
     }
