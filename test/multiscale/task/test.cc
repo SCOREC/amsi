@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
   ProcessSet * ps0 = static_cast<ProcessSet*>(new ProcessSet_T<std::pair<int, int> >(-1,-1));
   Task * t0 = new Task(ps0);
   failed += test_neq("Task(0)",static_cast<Task*>(NULL),t0);
-  DataDistribution * dd = createDataDistribution(t0,"to_data");
+  DataDistribution * dd = createDataDistribution(t0,"not_t0_data");
   failed += test(".verifyDD()",false,t0->verifyDD("t0_data"));
   size_t dd_id0 = t0->getDD_ID("t0_data");
   failed += test_neq(".getDD_ID()",(size_t)0,dd_id0);
@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
   t1->setExecutionFunction(&task1);
   failed += test(".execute()",0,t1->execute(argc,argv));
   (*dd1) = rank % 3;
-  failed += test(".getLocalDDValue()",rank % 3,(*dd)[t1->localRank()]);
+  failed += test(".getLocalDDValue()",rank % 3,(*dd1)[t1->localRank()]);
   //t1->DataDist_Assemble("t1_data");
   freeMultiscale();
   return failed;

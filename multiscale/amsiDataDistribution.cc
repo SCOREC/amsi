@@ -41,8 +41,9 @@ namespace amsi
     return wgts[idx];
   }
 # ifdef ZOLTAN
-  DataDistribution::DataDistribution(int sz, int l, bool w, Zoltan_Struct * z)
-    : lcl_rnk(l)
+  DataDistribution::DataDistribution(int s, int l, bool w, Zoltan_Struct * z)
+    : sz(s)
+    , lcl_rnk(l)
     , valid(false)
     , wgtd(w)
     , wgts(wgtd ? sz : 0)
@@ -50,8 +51,9 @@ namespace amsi
     , zs(z)
   { }
 #else
-  DataDistribution::DataDistribution(int sz, int l, bool w)
-    : lcl_rnk(l)
+  DataDistribution::DataDistribution(int s, int l, bool w)
+    : sz(s)
+    , lcl_rnk(l)
     , valid(false)
     , wgtd(w)
     , wgts(wgt ? sz : 0)
@@ -72,17 +74,27 @@ namespace amsi
   }
   int DataDistribution::operator[](unsigned idx) const
   {
-    return dd[idx];
+    if(sz)
+      return dd[idx];
+    return -1;
   }
   int DataDistribution::operator=(int qnt)
   {
-    unassembled();
-    return dd[lcl_rnk] = qnt;
+    if(sz)
+    {
+      unassembled();
+      return dd[lcl_rnk] = qnt;
+    }
+    return -1;
   }
   int DataDistribution::operator+=(int qnt)
   {
-    unassembled();
-    return dd[lcl_rnk] += qnt;
+    if(sz)
+    {
+      unassembled();
+      return dd[lcl_rnk] += qnt;
+    }
+    return -1;
   }
   double & DataDistribution::getWeight(unsigned nth, unsigned wgt)
   {
