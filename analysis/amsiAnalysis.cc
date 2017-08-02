@@ -149,7 +149,7 @@ namespace amsi
       }
     }
   }
-// call inside of a scale/task main, not in the binary main
+  // call inside of a scale/task main, not in the binary main (preferably)
   void initAnalysis(int argc, char ** argv, MPI_Comm cm)
   {
     initUtil(argc,argv,cm);
@@ -157,10 +157,10 @@ namespace amsi
       configureAnalysisFromFile(getOptionsFilename());
 #   ifdef PETSC
     if(use_petsc)
-      petscInit(argc,argv,AMSI_COMM_SCALE);
+      petscInit(argc,argv,cm);
 #   endif
     if(use_simmetrix)
-      simmetrixInit(argc,argv,AMSI_COMM_SCALE);
+      simmetrixInit(argc,argv,cm);
     gmi_register_null();
   }
   void freeAnalysis()
