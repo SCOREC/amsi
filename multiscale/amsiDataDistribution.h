@@ -90,6 +90,7 @@ namespace amsi
     double & getWeight(unsigned nth, unsigned wgt);
   protected:
     DataDistribution();
+    int sz;
     int lcl_rnk;
     bool valid;
     bool wgtd;

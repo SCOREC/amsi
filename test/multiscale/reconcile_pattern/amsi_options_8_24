@@ -1,5 +1,6 @@
+@scales
 task1 8
 task2 24
-#
+@relations
 task1 task2
 task2 task1

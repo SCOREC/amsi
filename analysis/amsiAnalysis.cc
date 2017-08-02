@@ -66,26 +66,24 @@ namespace amsi
   }
   void simmetrixInit(int argc, char ** argv, MPI_Comm cm)
   {
-    PMU_setCommunicator(AMSI_COMM_SCALE);
+    PMU_setCommunicator(cm);
     Sim_readLicenseFile(simmetrix_license_file.c_str());
     MS_init();
-    SimPartitionedMesh_start(NULL,NULL);
+    SimPartitionedMesh_start(0,0);
+    //SimModel_start();
     SimDiscrete_start(0);
     SimMeshing_start();
-#   ifdef SCOREC
-    SimField_start();
-#   endif
     gmi_sim_start();
     gmi_register_sim();
+    //SimField_start();
   }
   void simmetrixFree()
   {
+    //SimField_stop();
     gmi_sim_stop();
-#   ifdef SCOREC
-    SimField_stop();
-#   endif
     SimMeshing_stop();
     SimDiscrete_stop(0);
+    //SimModel_stop();
     SimPartitionedMesh_stop();
     MS_exit();
     Sim_unregisterAllKeys();
@@ -162,7 +160,7 @@ namespace amsi
       petscInit(argc,argv,AMSI_COMM_SCALE);
 #   endif
     if(use_simmetrix)
-      simmetrixInit(argc,argv,cm);
+      simmetrixInit(argc,argv,AMSI_COMM_SCALE);
     gmi_register_null();
   }
   void freeAnalysis()

@@ -20,7 +20,7 @@ namespace amsi
     , task_group()
     , proc(p)
     , data()
-    , local_rank()
+    , local_rank(-1)
     , id_gen()
   {
     // Create a comm for the task
@@ -134,41 +134,37 @@ namespace amsi
   {
     return proc->size();
   }
-  DataDistribution * createDataDistribution(Task * tsk,
-                                            const std::string & nm)
+  DataDistribution * createDataDistribution(Task * tsk, const std::string & nm)
   {
     DataDistribution * dd = NULL;
-    if(tsk->assignedTo())
+    int sz = tsk->size();
+    int rnk = tsk->localRank();
+    MPI_Comm cm = tsk->comm();
+#   ifndef ZOLTAN
+    dd = new DataDistribution(sz,rnk,true);
+#   else
+    if(!sz)
+      dd = new DataDistribution(sz,rnk);
+    else
     {
-      int sz = tsk->size();
-      int rnk = tsk->localRank();
-      MPI_Comm cm = tsk->comm();
-#     ifndef ZOLTAN
-      dd = new DataDistribution(sz,rnk,true);
-#     else
-      if(!sz)
-        dd = new DataDistribution(sz,rnk);
-      else
-      {
-        Zoltan_Struct * zs = Zoltan_Create(cm);
-        dd = new DataDistribution(sz,rnk,true,zs);
-        size_t s1 = sizeof(DataDistribution*);
-        size_t s2 = sizeof(int);
-        void * buffer = (void*) new char[s1+s2];
-        memcpy(buffer,&dd,s1);
-        memcpy((void*)(((size_t)buffer)+s1),&rnk,s2);
-        Zoltan_Set_Fn(zs,
-                      ZOLTAN_NUM_OBJ_FN_TYPE,
-                      (void(*)()) &DD_get,
-                      buffer);
-        Zoltan_Set_Fn(zs,
-                      ZOLTAN_OBJ_LIST_FN_TYPE,
-                      (void(*)()) &DD_describe,
-                      buffer);
-      }
-#     endif
-      tsk->registerDataDistribution(nm,dd);
+      Zoltan_Struct * zs = Zoltan_Create(cm);
+      dd = new DataDistribution(sz,rnk,true,zs);
+      size_t s1 = sizeof(DataDistribution*);
+      size_t s2 = sizeof(int);
+      void * buffer = (void*) new char[s1+s2];
+      memcpy(buffer,&dd,s1);
+      memcpy((void*)(((size_t)buffer)+s1),&rnk,s2);
+      Zoltan_Set_Fn(zs,
+                    ZOLTAN_NUM_OBJ_FN_TYPE,
+                    (void(*)()) &DD_get,
+                    buffer);
+      Zoltan_Set_Fn(zs,
+                    ZOLTAN_OBJ_LIST_FN_TYPE,
+                    (void(*)()) &DD_describe,
+                    buffer);
     }
+#   endif
+    tsk->registerDataDistribution(nm,dd);
     return dd;
   }
 } // namespace amsi
