@@ -15,20 +15,23 @@ namespace amsi
   //   essentially spew new data accross the comm pattern without regard for filling
   //   lighter loaded processes. So essentially it only load balances the new data.
   // This algorithm is efficient but doesn't really load balance
-  void addData_evenSpread(CommPattern * cp, CommPattern * dlta, int * num)
+  void addData_evenSpread(CommPattern * cp, CommPattern * dlta, DataDistribution * dd_dlta)
   {
     int s1 = cp->getNumSenders();
     int s2 = cp->getNumRecvers();
+    int dd[s1]{};
+    for(int ii = 0; ii < s1; ++ii)
+      dd[ii] = (*dd_dlta)[ii];
     int total_data = 0;
     for(int ii = 0; ii < s1; ii++)
-      total_data += num[ii];
+      total_data += (*dd_dlta)[ii];
     int even_distro = total_data / s2;
     int extra_distro = total_data % s2;
     int dst = 0;
     int dst_rcv = even_distro + (dst < extra_distro);
     for(int src = 0; src < s1; src++)
     {
-      int src_count = num[src];
+      int src_count = (*dd_dlta)[src];
       while(src_count > 0)
       {
         // if there are enough to send all needed to dstCommPattern_LoadBalance_Spread
@@ -49,6 +52,9 @@ namespace amsi
         }
       }
     }
+    int rnk = -1;
+    MPI_Comm_rank(AMSI_COMM_SCALE,&rnk);
+    (*dd_dlta) = dd[rnk];
   }
   // Load balancing with added data (no migration)
   // Updates pattern (current comm pattern) and init (initialization comm pattern)
@@ -60,10 +66,13 @@ namespace amsi
   // Any left over data, after filling lighter loads is sorted by using the
   //   algorithm found in both CommPattern_CreateDistro and CommPattern_LoadBalance_Spread
   // i hate the way this is written and it needs to be improved / made more clear
-  void addData_leastFirst(CommPattern * cp, CommPattern * init, int * num)
+  void addData_leastFirst(CommPattern * cp, CommPattern * init, DataDistribution * dd_dlta)
   {
     int s1 = cp->getNumSenders();
     int s2 = cp->getNumRecvers();
+    int dd[s1]{};
+    for(int ii = 0; ii < s1; ++ii)
+      dd[ii] = (*dd_dlta)[ii];
     int cnts[s2];
     getUnitsRecv(cp,cnts);
     int mx = 0;
@@ -89,7 +98,7 @@ namespace amsi
       even = true; // All loads are even
     int idx = 0;
     // get first sending index with data to add
-    while(idx < s1 && num[idx] == 0)
+    while(idx < s1 && dd[idx] == 0)
       idx++;
     // if there was nothing to add, then everything has been assigned
     if(idx >= s1)
@@ -104,10 +113,10 @@ namespace amsi
         // Update patterns and data counts
         (*cp)(idx,prm[jdx])++;
         (*init)(idx,prm[jdx])++;
-        num[idx]--;
+        dd[idx]--;
         dlts[prm[jdx]]--;
         // Check if there is still data to add
-        while(idx < s1 && num[idx] == 0)
+        while(idx < s1 && dd[idx] == 0)
           idx++;
         if(idx >= s1)
         {
@@ -126,7 +135,7 @@ namespace amsi
     // Distribute any remaining data by default algorithm
     int total_data = 0;
     for(int ii = 0; ii < s1; ii++)
-      total_data += num[ii];
+      total_data += dd[ii];
     if (total_data == 0)
       return;
     int even_distro = total_data / s2;
@@ -135,7 +144,7 @@ namespace amsi
     int dst_rcv = even_distro + (dst < extra_distro);
     for(int src = 0; src < s1; src++)
     {
-      int src_count = num[src];
+      int src_count = dd[src];
       while(src_count > 0)
       {
         // if there are enough to send all needed to dst
@@ -156,8 +165,11 @@ namespace amsi
         }
       }
     }
+    int rnk = -1;
+    MPI_Comm_rank(AMSI_COMM_SCALE,&rnk);
+    (*dd_dlta) = dd[rnk];
   }
-  void addData_randTest(CommPattern * cp, CommPattern * init, int * num)
+  void addData_randTest(CommPattern * cp, CommPattern * init, DataDistribution * num)
   {
     assert(cp);
     assert(init);
@@ -167,7 +179,7 @@ namespace amsi
     MPI_Comm_rank(AMSI_COMM_SCALE,&rnk);
     int s2 = cp->getNumRecvers();
     srand(8675309);
-    for(int ii = 0; ii < num[rnk]; ii++)
+    for(int ii = 0; ii < (*num)[rnk]; ii++)
     {
       int addTo = rand()%s2;
       (*cp)(rnk,addTo)++;

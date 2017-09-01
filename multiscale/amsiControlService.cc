@@ -209,6 +209,65 @@ namespace amsi
     t1s = taskSize(t1);
     t2s = taskSize(t2);
   }
+  size_t ControlService::addData(size_t rdd_id, size_t & cnt)
+  {
+    std::pair<size_t,size_t> r_dd_ids = rdd_map[rdd_id];
+    size_t r_id = r_dd_ids.first;
+    size_t dd_id = r_dd_ids.second;
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_id);
+    size_t tsk1_id = t_ids.first;
+    //size_t tsk2_id = t_ids.second;
+    //
+    size_t delta_id = r_init[rdd_id];
+    Task * lcl_tsk = task_man->getLocalTask();
+    Task * tsk1 = task_man->Task_Get(tsk1_id);
+    //Task * tsk2 = task_man->Task_Get(tsk2_id);
+    int tsk1_sz = taskSize(tsk1);
+    //int tsk2_sz = taskSize(tsk2);
+    int tsk_rnk = lcl_tsk->localRank();
+    //
+    CommPattern * ptrn = comm_man->getCommPattern(rdd_id);
+    CommPattern * ptrn_dlta = comm_man->getCommPattern(delta_id);
+    if(amSender(rdd_id))
+    {
+      DataDistribution dd_delta(tsk1_sz,tsk_rnk);
+      dd_delta = cnt;
+      dd_delta.Assemble(lcl_tsk->comm());
+      addData_leastFirst(ptrn,ptrn_dlta,&dd_delta);
+      DataDistribution * dd = lcl_tsk->getDD(dd_id);
+      (*dd) += dd_delta[tsk_rnk];
+      CommPattern_Assemble(rdd_id);
+      CommPattern_Assemble(delta_id);
+      CommPattern_Reconcile(rdd_id);
+      CommPattern_Reconcile(delta_id);
+    }
+    if(amRecver(rdd_id))
+    {
+      CommPattern_Reconcile(rdd_id);
+      CommPattern_Reconcile(delta_id);
+      int recv[tsk1_sz]{};
+      // get the units sent to this task rank
+      getUnitsSendingTo(ptrn_dlta,tsk_rnk,&recv[0]);
+      cnt = std::accumulate(&recv[0],&recv[tsk1_sz-1],0);
+    }
+    return delta_id;
+  }
+  bool ControlService::amSender(size_t rdd_id)
+  {
+    std::pair<size_t,size_t> r_dd_ids = rdd_map[rdd_id];
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_ids.first);
+    Task * lcl_tsk = task_man->getLocalTask();
+    Task * snd_tsk = task_man->Task_Get(t_ids.first);
+    return lcl_tsk == snd_tsk;
+  }
+  bool ControlService::amRecver(size_t rdd_id)
+  {
+    std::pair<size_t,size_t> r_dd_ids = rdd_map[rdd_id];
+    std::pair<size_t,size_t> t_ids = comm_man->Relation_GetTasks(r_dd_ids.first);
+    Task * lcl_tsk = task_man->getLocalTask();
+    Task * snd_tsk = task_man->Task_Get(t_ids.second);
+    return lcl_tsk == snd_tsk;
+  }
   // This function takes indices of the data to be removed in the vector 'data'
   // It directly alters the communcation pattern specified by rdd_id
   // Using the comm pattern, it sends indices to be removed to the recv task

@@ -326,17 +326,15 @@ namespace amsi
       // If sending task
       if(tl == t1)
       {
-        int numNewData[t1s];
-        numNewData[task_rank] = data.size();
+        DataDistribution dd_delta(t1s,task_rank);
+        dd_delta = data.size();
+        dd_delta.Assemble(tl->comm());
         CommPattern * pattern = comm_man->getCommPattern(rdd_id);
         CommPattern * delta_pattern = comm_man->getCommPattern(delta_id);
         // Zero out delta comm pattern
         for(int ii=0;ii<t1s;ii++)
           for(int jj=0;jj<t2s;jj++)
             (*delta_pattern)(ii,jj) = 0;
-        // exchange numNewData among all sending task processes
-        int tempData = numNewData[task_rank]; // On Q the send and recv buffers need to be different
-        MPI_Allgather(&tempData,1,MPI_INT,&numNewData[0],1,MPI_INT,t1->comm());
         // Call function to update both the original comm pattern and init comm pattern
         // based on numNewData (this function will actually do the load balancing)
         addDataFctn algo = NULL;
@@ -357,9 +355,11 @@ namespace amsi
           algo = addData_randTest;
           break;
         }
-        (*algo)(pattern,delta_pattern,&numNewData[0]);
+        (*algo)(pattern,delta_pattern,&dd_delta);
         CommPattern_Assemble(rdd_id);
         CommPattern_Assemble(delta_id);
+        
+        
         // Reorder objects vector based on comm patterns (Need to fill data indices? Probably not)
         // Trying to make something that will work for both vectors and lists...
         int numOldData = objects.size() - data.size();

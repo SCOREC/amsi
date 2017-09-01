@@ -32,6 +32,13 @@ namespace amsi
     void RemoveData(size_t rdd_id, std::vector<int> & data);
     template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
       size_t AddData(size_t rdd_id, Container<D> & objects, std::vector<int> & data, int option = 0, void (*userFunc)() = NULL );
+    // simpler addData that only effects the datadistribution and commpattern, not the user data ordering
+    // always spreads the data evenly (make adddata an object built ontop of the commpattern or datadist or something)
+    size_t addData(size_t rdd_id, size_t & cnt);
+    // todo move inxto commpattern
+    bool amSender(size_t rdd_id);
+    // todo move into commpatter
+    bool amRecver(size_t rdd_id);
     // Migration functions
     void planMigration(std::vector<int> & migration_indices, size_t rdd_id, int option = 0, void (*userFunc)() = NULL);
     template <typename D, template<typename T, typename All = std::allocator<T> > class Container>

@@ -1,12 +1,13 @@
 #ifndef AMSI_ADDDATA_LOADBALANCING_H_
 #define AMSI_ADDDATA_LOADBALANCING_H_
+#include "amsiDataDistribution.h"
 #include <cassert>
 #include <iterator>
 #include <vector>
 namespace amsi
 {
   class CommPattern;
-  typedef void (*addDataFctn)(CommPattern * cp, CommPattern * dlta, int * num);
+  typedef void (*addDataFctn)(CommPattern*, CommPattern*, DataDistribution*);
   class DynamicAddAlgorithms
   {
   private:
@@ -23,8 +24,8 @@ namespace amsi
       return algos[idx];
     }
   };
-  void addData_evenSpread(CommPattern * cp, CommPattern * dlta, int * num);
-  void addData_leastFirst(CommPattern * cp, CommPattern * dlta, int * num);
-  void addData_randTest(CommPattern * cp, CommPattern * dlta, int * num);
+  void addData_evenSpread(CommPattern * cp, CommPattern * dlta, DataDistribution * dd_dlta);
+  void addData_leastFirst(CommPattern * cp, CommPattern * dlta, DataDistribution * dd_dlta);
+  void addData_randTest(CommPattern * cp, CommPattern * dlta, DataDistribution * dd_dlta);
 } // namespace amsi
 #endif
