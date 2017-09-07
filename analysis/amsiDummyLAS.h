@@ -62,7 +62,7 @@ namespace amsi
       nrm = sqrt(nrm);
     }
     // stubb
-    virtual void GetAccumSolutionNorm(double & nrm)
+    virtual void GetAccumSolutionNorm(double &)
     {   }
     virtual bool ZeroMatrix()
     {
@@ -94,7 +94,7 @@ namespace amsi
       nrm = sqrt(nrm);
     }
     // stubb
-    virtual void GetAccumVectorNorm(double & nrm)
+    virtual void GetAccumVectorNorm(double & )
     {   }
     // stubb
     virtual void GetDotNorm(double &)
