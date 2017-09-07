@@ -17,7 +17,7 @@ namespace amsi
   public:
      Distributed(MPI_Comm c = MPI_COMM_NULL, bool v = false)
       : cm(c)
-      , vld(false)
+      , vld(v)
     { }
     bool isLocallyValid() {return vld;}
     bool isValid()
