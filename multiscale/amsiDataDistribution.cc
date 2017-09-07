@@ -68,8 +68,9 @@ namespace amsi
     MPI_Allgather(&lcl,1,mpi_type<int>(),
                   &dd[0],1,mpi_type<int>(),
                   comm);
-    for(unsigned ii = 0; ii < dd.size(); ii++)
-      wgts[ii].resize(dd[ii]);
+    if(wgtd)
+      for(unsigned ii = 0; ii < dd.size(); ii++)
+        wgts[ii].resize(dd[ii]);
     assembled = true;
   }
   int DataDistribution::operator[](unsigned idx) const
