@@ -4,6 +4,7 @@
 #include <iostream>
 namespace amsi
 {
+  // a class to facilitate simultaneous printing to two stream buffers
   template <typename char_type, typename traits = std::char_traits<char_type> >
     class basic_teebuf : public std::basic_streambuf<char_type, traits>
   {
@@ -37,7 +38,14 @@ namespace amsi
     std::basic_streambuf<char_type, traits> * sb1;
     std::basic_streambuf<char_type, traits> * sb2;
   };
+  // realization of the template combined buffer class on a basic char
   typedef basic_teebuf<char> teebuf;
+  /**
+   *  @brief a class used to pring to two ostreams, since
+   *         this class is itself an ostream, it can be
+   *         composed to write to an arbitrary number
+   *         of ostreams.
+   */
   class teestream : public std::ostream
   {
   public:
