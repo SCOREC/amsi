@@ -205,14 +205,14 @@ namespace amsi
     Task * tl = task_man->getLocalTask();
     int task_rank = tl->localRank();
     Task * t1 = task_man->Task_Get(t_ids.first);
-    Task * t2 = task_man->Task_Get(t_ids.second);
+    //Task * t2 = task_man->Task_Get(t_ids.second);
     int t1s = taskSize(t1);
     int tp_sz = 0;
     MPI_Type_size(tp,&tp_sz);
     PCU_Switch_Comm(comm_man->CommRelation_GetInterComm(r_dd_id.first));
     PCU_Comm_Begin();
     CommPattern * ptrn = NULL; //t1->getLocalDDValue(r_dd_id.second);
-    if(tl == t1)
+    if(amSender(rdd_id))
     {
       unsigned cnt_snt_frm = countRanksSentToFrom(ptrn,task_rank);
       std::vector<int> snt_rnks(cnt_snt_frm);
@@ -248,7 +248,7 @@ namespace amsi
       size_t rcv_sz = 0;
       while(PCU_Comm_Read(&frm,&rcv,&rcv_sz)) { }
     }
-    else
+    if(amRecver(rdd_id))
     {
       PCU_Comm_Send();
       size_t bfr_sz = 0;
@@ -323,8 +323,7 @@ namespace amsi
       // If user indicated a user specified load balancing function but did not provide one
       if(option == -1 && userFunc == NULL)
         option = 0;
-      // If sending task
-      if(tl == t1)
+      if(amSender(rdd_id))
       {
         DataDistribution dd_delta(t1s,task_rank);
         dd_delta = data.size();
@@ -358,8 +357,6 @@ namespace amsi
         (*algo)(pattern,delta_pattern,&dd_delta);
         CommPattern_Assemble(rdd_id);
         CommPattern_Assemble(delta_id);
-        
-        
         // Reorder objects vector based on comm patterns (Need to fill data indices? Probably not)
         // Trying to make something that will work for both vectors and lists...
         int numOldData = objects.size() - data.size();
@@ -393,13 +390,13 @@ namespace amsi
         CommPattern_Reconcile(rdd_id);
         CommPattern_Reconcile(delta_id);
       }
-      else
+      if(amRecver(rdd_id))
       {
         // Get the new orig and init comm patterns
         CommPattern_Reconcile(rdd_id);
         CommPattern_Reconcile(delta_id);
         // Fill data vector with appropriate indices
-        CommPattern * pattern = comm_man->getCommPattern(rdd_id);
+        //CommPattern * pattern = comm_man->getCommPattern(rdd_id);
         CommPattern * delta_pattern = comm_man->getCommPattern(delta_id);
         for(int ii = 0; ii < t1s; ii++)
         {
@@ -441,7 +438,7 @@ namespace amsi
       Task * t1 = task_man->Task_Get(t_ids.first);
       Task * t2 = task_man->Task_Get(t_ids.second);
       int t1s = taskSize(t1);
-      int t2s = taskSize(t1);
+      //int t2s = taskSize(t1);
       int task_rank = tl->localRank();
       MPI_Comm task_comm = t2->comm();
       int recv_from;
@@ -460,7 +457,7 @@ namespace amsi
       {
         for(int jj = 0; jj < (*pattern)(ii,task_rank); jj++)
         {
-          if(current_send >= m_send_to.size())
+          if(current_send >= static_cast<int>(m_send_to.size()))
             break;
           // Send migration data
           if(current_data == m_index[current_send])
@@ -495,10 +492,10 @@ namespace amsi
       // the above explanation is weak, it will need to be made more clear
       int offset[t1s];
       offset[0] = (*pattern)(0,task_rank);
-      for(int ii=1;ii<t1s;ii++)
+      for(int ii = 1; ii < t1s; ii++)
         offset[ii] = offset[ii-1] + (*pattern)(ii,task_rank);
-      for(int ii=0;ii<m_send_to.size();ii++)
-        for(int jj=0;jj<t1s;jj++)
+      for(int ii = 0; ii < static_cast<int>(m_send_to.size()); ii++)
+        for(int jj = 0; jj < t1s; jj++)
           if(m_index[ii] < offset[jj])
           {
             (*pattern)(jj,task_rank)--;
@@ -539,9 +536,9 @@ namespace amsi
         Container<D> temp_objects;
         typename Container<D>::iterator currentObject = objects.begin();
         // Order data by task 1 process
-        for(int ii=0;ii<t1s;ii++)
+        for(int ii = 0; ii < t1s; ii++)
         {
-          for(int jj=0;jj<migration_data.size();jj++)
+          for(int jj = 0; jj < static_cast<int>(migration_data.size()); jj++)
             if(m_t1process[jj] == ii)
             {
               temp_md.push_back(migration_data[jj]);
@@ -550,7 +547,7 @@ namespace amsi
               temp_rf.push_back(m_recv_from[jj]);
               temp_objects.push_back(NULL);
             }
-          for(int jj=0;jj<(*pattern)(ii,task_rank);jj++)
+          for(int jj = 0; jj < (*pattern)(ii,task_rank); jj++)
           {
             temp_objects.push_back(*currentObject);
             currentObject++;
@@ -635,7 +632,6 @@ namespace amsi
         Container<D> tempObj;
         typename Container<D>::iterator currentObj = objects.begin();
         // Re construct object list/vector from old list and migration lists
-        int index = 0;
         for(int ii=0;ii<t2s;ii++)
         {
           // Search for data that was migrated to corresponding task 2 process
