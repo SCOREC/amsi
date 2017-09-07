@@ -34,7 +34,7 @@ namespace amsi
     void CommPattern_PlanMigration_Test(std::vector<int> & m_index,
                                         std::vector<int> & m_send_to,
                                         CommPattern * pattern,
-                                        const DataDistribution * dd,
+                                        const DataDistribution *,
                                         int rank,
                                         MPI_Comm task_comm)
     {
@@ -99,7 +99,7 @@ namespace amsi
     void CommPattern_PlanMigration_Full(std::vector<int> & m_index,
                                         std::vector<int> & m_send_to,
                                         CommPattern * pattern,
-                                        const DataDistribution * dd,
+                                        const DataDistribution *,
                                         int rank,
                                         MPI_Comm task_comm)
     {
@@ -172,10 +172,10 @@ namespace amsi
 # ifdef ZOLTAN
   void CommPattern_PlanMigration_Zoltan(std::vector<int> & m_index,
                                         std::vector<int> & m_send_to,
-                                        CommPattern * pattern,
+                                        CommPattern *,
                                         const DataDistribution * dd,
-                                        int rank,
-                                        MPI_Comm task_comm)
+                                        int,
+                                        MPI_Comm)
   {
     Zoltan_Struct * zs = dd->GetZS();
 
