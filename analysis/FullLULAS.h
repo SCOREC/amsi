@@ -26,11 +26,11 @@ namespace amsi
     { memset(&matrix[0][0],0,num_rows*num_rows*sizeof(double)); return true; }
     bool ZeroVector()
     { memset(&vector[0],0,num_rows*sizeof(double)); return true; }
-    void GetSolution(double * sol)
+    void GetSolution(double *& sol)
     { sol = &solution[0]; }
-    void GetVector(double * vec)
+    void GetVector(double *& vec)
     { vec = &vector[0]; }
-    void SetVector(double * vec)
+    void SetVector(const double * vec)
     { std::copy(vec, vec + vector.size(), vector.begin()); }
     bool SeperateSolve() {return false;}
   };
