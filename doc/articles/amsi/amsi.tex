@@ -1,0 +1,71 @@
+% SISC 3 : Software and High-Performance Computing. Papers in this category should concern the novel design and development of computational methods and high-quality software, parallel algorithms, high-performance computing issues, new architectures, data analysis, or visualization. The primary focus should be on computational methods that have potentially large impact for an important class of scientific or engineering problems.
+
+
+\title{The Adaptive Multiscale Simulation Infrastructure - Methods and Soft-tissue Example Simulation}
+\author{W.R. Tobin, V.W.L. Chan, M.S. Shephard}
+\date{\today}
+\documentclass[review]{siamart1116}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Discuss multi-scale and frameworks, show how AMSI does multi-scale, and how it is different than others. Introduce the soft-tissue problem. Discuss hierarchical multi-scale and relate it to well-known multi-scale models, and what requirements it imposes. Discuss how AMSI works, and how to use AMSI to address the requirements of a hierarchical multi-scale problem. Show how AMSI was used to construct the soft-tissue problem. Show results somehow...
+
+\end{abstract}
+
+Targeting the SIAM Journal On Scientific Computing
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{Multi-scale Simulation}\label{sec:multiscale}
+
+Boilerplate about why multi-scale simulation is required, what issues it attempts to confront.
+
+Introduce concept that multi-scale is difficult from an implemenetation and computational efficiency standpoint, while there has been a proliferation in the development of actual physical coupling models through largely ad-hoc implementations.
+
+Briefly discuss hierarchical multi-scale vs concurrent multi-scale, mention that AMSI is currently focused on providing support for hierarchical multi-scale problems, though leaving development paths open for concurrent.
+
+Discuss 2-3 other multi-scale frameworks (UINTAH, MPCCI, one more..?)
+
+\subsection{AMSI}\label{sec:amsi}
+
+Introduce AMSI, show how it intends to adress the issues of difficult implementation as a top priority while attempting to maintain computational efficiency as well.
+
+Show how the AMSI approach is different from the other multi-scale frameworks discussed above.
+
+\subsection{Soft-Tissue Problem}\label{sec:bio}
+
+Brief overview of the multi-scale structure of AMSI with reference back to papers covering the physics and some results particular to the physics in greater detail (the neuron paper).
+
+\section{Methods}\label{sec:methods}
+
+Maybe add a section before \ref{sec:hierarchic} taking the most generic parts of \ref{sec:amsi-construction} and discussing them first, before moving into hierarchical in particular?
+
+\subsection{General Hierarchical Multi-scale}\label{sec:hierarchic}
+
+Dig a little deeper into hierarchical multi-scale, discuss the computational aspects of this type of multi-scale, and reference some well-known multi-scale models that fall into this category.
+
+\subsection{AMSI Simulation Construction}\label{sec:amsi-construction}
+
+Discuss how AMSI operates in general, then go in to how to use AMSI to address the needs of a hierarchical multi-scale problem.
+
+\subsection{Soft-Tissue Implementation}\label{sec:bio-construction}
+
+Show how AMSI was used with the existing single-scale simulations to construct the biotissue problem.
+
+\section{Results}\label{sec:results}
+
+What constitutes a good set of results? It likely mostly depends on how we describe our difference from the existing frameworks and what our key goals in AMSI are
+
+  - We mostly focus on the ease of implementing a multi-scale simulation from existing simulations - but this is hard to develop a metric for
+  
+  - We also want computational efficiency, and while we can calculate our overall compute efficiency for any run we don't really have anything to compare against
+
+\section{Future Work}\label{sec:future-work}
+
+Brief overview of obstacles being worked on towards concurrent multi-scale.
+
+\bibliographystyle{siamplain}
+\bibliography{amsi}
+\end{document}
