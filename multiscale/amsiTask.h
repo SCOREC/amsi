@@ -20,8 +20,8 @@ namespace amsi
     bool assignedTo() { return local_rank != -1; }
     int localToGlobalRank(int);
     int size();
-    const MPI_Comm comm() {return task_comm;}
-    const MPI_Group group() {return task_group;}
+    MPI_Comm comm() {return task_comm;}
+    MPI_Group group() {return task_group;}
     void setExecutionFunction(ExecuteFunc e) {exec = e;}
     int execute(int& argc,char**& argv)
     {
