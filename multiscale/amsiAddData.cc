@@ -19,7 +19,7 @@ namespace amsi
   {
     int s1 = cp->getNumSenders();
     int s2 = cp->getNumRecvers();
-    int dd[s1]{};
+    std::vector<int> dd(s1);
     for(int ii = 0; ii < s1; ++ii)
       dd[ii] = (*dd_dlta)[ii];
     int total_data = 0;
@@ -70,7 +70,7 @@ namespace amsi
   {
     int s1 = cp->getNumSenders();
     int s2 = cp->getNumRecvers();
-    int dd[s1]{};
+    std::vector<int> dd(s1);
     for(int ii = 0; ii < s1; ++ii)
       dd[ii] = (*dd_dlta)[ii];
     int cnts[s2];
