@@ -8,7 +8,7 @@ namespace amsi
   void PetscLAS::Reinitialize(int num_local_unknowns,
                               int num_global_unknowns,
                               int global_offset,
-                              int * nonzero_per_row)
+                              int * )
   {
     Reinitialize(num_local_unknowns,num_global_unknowns,global_offset);
   }

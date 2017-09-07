@@ -97,7 +97,7 @@ namespace las
       ops->zero(f);
       ops->zero(K);
     }
-    void Reinitialize(int lcl, int glb, int low, int * nnz)
+    void Reinitialize(int lcl, int glb, int low, int *)
     {
       Reinitialize(lcl,glb,low);
     }
