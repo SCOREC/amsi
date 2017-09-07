@@ -50,7 +50,7 @@ namespace amsi
                         I bgn,
                         I nd,
                         NeumannIntegrator * i,
-                        double t)
+                        double)
   {
     apf::Field * fld = apf::getField(nm);
     for(I it = bgn; it != nd; ++it)

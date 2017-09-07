@@ -75,7 +75,7 @@ namespace amsi
       dim = apf::getDimension(me);
       mesh_coord_elem = apf::createElement(apf::getMesh(f)->getCoordinateField(),me);
     }
-    void atPoint(apf::Vector3 const &p, double w, double dV)
+    void atPoint(apf::Vector3 const &, double w, double)
     {
       int & nen = nenodes; // = 4 (tets)
       // 1. Get coordinates on underlying mesh
@@ -130,7 +130,7 @@ namespace amsi
       /** We want to consider 3D space, however MeshElement me is for 2D entity. Therefore we need to hardcode dim for now.. */
       dim = 3;
     }
-    void atPoint(apf::Vector3 const &p, double w, double dV)
+    void atPoint(apf::Vector3 const &, double, double)
     {
       int & nen = nenodes; // = 3 (triangle)
       // 1. Get coordinates on underlying mesh

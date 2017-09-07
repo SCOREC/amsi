@@ -53,7 +53,7 @@ namespace amsi
   }
   */
   template <typename I>
-    int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t)
+    int applySimDirichletBCs(apf::Numbering * nm, pMesh, I bgn, I nd, double t)
   {
     int fxd = 0;
     for(auto it = bgn; it != nd; it++)
@@ -72,7 +72,7 @@ namespace amsi
     return fxd;
   }
   template <typename I>
-    void applySimNeumannBCs(LAS * las, apf::Numbering * nm, pMesh msh, I bgn, I nd, double t)
+    void applySimNeumannBCs(LAS * las, apf::Numbering * nm, pMesh, I bgn, I nd, double t)
   {
     apf::Field * fld = apf::getField(nm);
     for(auto it = bgn; it != nd; it++)
