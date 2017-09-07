@@ -141,7 +141,7 @@ namespace amsi
     else if(isSpaceExpr(ii))
       rslt = AttributeTensor0_evalDS((pAttributeTensor0)att,&args[0]);
     va_end(prms);
-    delete args;
+    delete [] args;
     return rslt;
   }
   double SimTensor1Query::getValue(int ii, ...)
