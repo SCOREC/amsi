@@ -20,7 +20,7 @@ namespace amsi
       for(int jj = 0; jj < num_field_components; jj++)
         (*U)[ii*num_field_components + jj] = u[ii][jj];
   }
-  void LinearStressStrainIntegrator::atPoint(apf::Vector3 const & p, double w, double dV)
+  void LinearStressStrainIntegrator::atPoint(apf::Vector3 const & p, double, double)
   {
     apf::NewArray<apf::Vector3> grads;
     apf::getShapeGrads(e,p,grads);
