@@ -21,16 +21,18 @@ int main(int argc, char ** argv)
   pGModel mdl = GM_load(argv[1],0,NULL);
   pParMesh sm_msh = PM_load(argv[2],mdl,NULL);
   pMesh prt = PM_mesh(sm_msh,0);
+  (void)prt;
   // get all analysis cases
   std::vector<pACase> css;
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
   // only run the first attribute case
   amsi::initCase(mdl,css[0]);
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
+  (void)pd;
   apf::Mesh * msh =  apf::createMesh(sm_msh);
   apf::Field * u = apf::createLagrangeField(msh,"displacement",apf::VECTOR,1);
   apf::Numbering * nm = apf::createNumbering(u);
-  int dofs = apf::NaiveOrder(nm);
+  apf::NaiveOrder(nm);
   /*
   amsi::DummyLAS las(dofs);
   int tps[] = {amsi::NeuBCType::traction,amsi::NeuBCType::pressure};
