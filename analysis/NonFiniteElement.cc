@@ -16,7 +16,7 @@ namespace amsi
           T(ii,jj) += B0T(ii,kk) * hookes[kk][jj];
     apf::multiply(T,B0,K0);
   }
-  void nonLinearStiffness(int num_nodes,
+  void nonLinearStiffness(int,
                           apf::DynamicMatrix & BNL,
                           apf::Matrix3x3 & pk2,
                           apf::DynamicMatrix & KNL)
@@ -57,9 +57,9 @@ namespace amsi
       B(5,3*ii + 2) = disp[0];
     }
   }
-  void computeGreenStrain(apf::DynamicMatrix & H,
-                          apf::DynamicMatrix & y,
-                          apf::Matrix3x3 & E)
+  void computeGreenStrain(apf::DynamicMatrix & ,
+                          apf::DynamicMatrix & ,
+                          apf::Matrix3x3 & )
   {
     /*
       double L[3][3];
