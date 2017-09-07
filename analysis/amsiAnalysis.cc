@@ -9,7 +9,7 @@ namespace amsi
 {
   #define ANALYSIS_OPTIONS(OP) OP(petsc), OP(petsc_options), OP(simmetrix), OP(simmetrix_license), OP(num_analysis_options)
   enum AnalysisOptions{ANALYSIS_OPTIONS(MAKE_ENUM_OP)};
-  const char * const getAnalysisOptionString(int ii)
+  const char * getAnalysisOptionString(int ii)
   {
     static const char * const AnalysisOptionStrings[] = {ANALYSIS_OPTIONS(MAKE_STRING_OP)};
     assert(ii < num_analysis_options);
@@ -24,7 +24,7 @@ namespace amsi
     }
     return -1;
   }
-  const char * const getAnalysisSectionString(int ii)
+  const char * getAnalysisSectionString(int ii)
   {
     static const char * const AnalysisConfigSectionStrings[] = {ANALYSIS_CONFIG_SECTIONS(MAKE_STRING_OP)};
     assert(ii < num_analysis_config_sections);
@@ -64,7 +64,7 @@ namespace amsi
     use_simmetrix = true;
     simmetrix_license_file = sim_lic;
   }
-  void simmetrixInit(int argc, char ** argv, MPI_Comm cm)
+  void simmetrixInit(int, char **, MPI_Comm cm)
   {
     PMU_setCommunicator(cm);
     Sim_readLicenseFile(simmetrix_license_file.c_str());
