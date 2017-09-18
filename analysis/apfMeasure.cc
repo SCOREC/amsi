@@ -10,7 +10,6 @@ namespace amsi
     double len = 0.0;
     for (int ii = 0; ii < 3; ii++)
       len += (pt_a[ii] - pt_b[ii]) * (pt_a[ii] - pt_b[ii]);
-
     return std::sqrt(len);
   }
   double triangleArea(const apf::Vector3 & pt_a, const apf::Vector3 & pt_b, const apf::Vector3 & pt_c)
@@ -61,7 +60,7 @@ namespace amsi
   public:
     MeasureDisplaced(apf::Field * field, int o)
       : ElementalSystem(field,o)
-      , dim(0)
+      , dim(apf::getMesh(field)->getDimension())
       , fs(NULL)
       , es(NULL)
       , mesh_coord_elem(NULL)
@@ -72,7 +71,6 @@ namespace amsi
       ElementalSystem::inElement(me);
       fs = apf::getShape(f);
       es = fs->getEntityShape(apf::getMesh(f)->getType(apf::getMeshEntity(me)));
-      dim = apf::getDimension(me);
       mesh_coord_elem = apf::createElement(apf::getMesh(f)->getCoordinateField(),me);
     }
     void atPoint(apf::Vector3 const &, double w, double)
