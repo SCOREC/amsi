@@ -1,9 +1,32 @@
-#include "apfMeshGen.h"
+#include "apfMeshUtil.h"
 #include <gmi.h>
 #include <gmi_null.h>
 #include <apfMDS.h>
 namespace amsi
 {
+  apf::Mesh2 * makeNullMdlEmptyMesh()
+  {
+    gmi_register_null();
+    gmi_model * mdl = gmi_load(".null");
+    return apf::makeEmptyMdsMesh(mdl,3,false);
+  };
+  apf::Mesh2 * makeSingleEntityMesh(apf::Mesh::Type t, const apf::Vector3 * vs)
+  {
+    apf::Mesh2 * msh = makeNullMdlEmptyMesh();
+    apf::buildOneElement(msh,NULL,t,vs);
+    msh->acceptChanges();
+    if(t != apf::Mesh::EDGE)
+      apf::reorderMdsMesh(msh);
+    return msh;
+  }
+  apf::MeshEntity * getFirstMeshEntity(apf::Mesh * msh, int d)
+  {
+    apf::MeshEntity * ent = NULL;
+    apf::MeshIterator * itr = msh->begin(d);
+    ent = msh->iterate(itr);
+    msh->end(itr);
+    return ent;
+  }
   const apf::Vector3 five_tet_vrts[8] =
   {
     apf::Vector3(-1.0,-1.0, 1.0),
@@ -23,15 +46,9 @@ namespace amsi
     {4,6,5,1},
     {4,6,7,2}
   };
-  apf::Mesh2 * makeNullMdlEmptyMsh()
-  {
-    gmi_register_null();
-    gmi_model * mdl = gmi_load(".null");
-    return apf::makeEmptyMdsMesh(mdl,3,false);
-  }
   apf::Mesh2 * fiveTetCube()
   {
-    apf::Mesh2 * msh = makeNullMdlEmptyMsh();
+    apf::Mesh2 * msh = makeNullMdlEmptyMesh();
     for(int tt = 0; tt < 5; ++tt)
     {
       apf::MeshEntity * vrts[4];

@@ -41,7 +41,7 @@ set(analysis_public_headers
     apfFunctions_impl.h
     apfMeasure.h
     apfMeasure_impl.h
-    apfMeshGen.h
+    apfMeshUtil.h
     apfWrapper.h
     apfWrapper_impl.h
     apfsimWrapper.h
@@ -96,7 +96,7 @@ set(analysis_src_files
     apfFields.cc
     apfFunctions.cc
     apfMeasure.cc
-    apfMeshGen.cc
+    apfMeshUtil.cc
     apfWrapper.cc
     apfsimWrapper.cc
     MatrixUtil.h
