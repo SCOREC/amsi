@@ -246,6 +246,48 @@ namespace amsi
     }
     void run() { apply(fld); }
   };
+  class ToArray : public amsi::FieldOp
+  {
+  protected:
+    apf::Numbering * nm;
+    apf::Field * fld;
+    apf::MeshEntity * me;
+    double * arry;
+    int fldcmp;
+    int dof0;
+    double * cmps;
+    ApplyOp * op;
+  public:
+    ToArray(apf::Numbering * n, apf::Field * f, double * a, int d, ApplyOp * o)
+      : amsi::FieldOp()
+      , nm(n)
+      , fld(f)
+      , me(NULL)
+      , arry(a)
+      , fldcmp(apf::countComponents(fld))
+      , dof0(d)
+      , cmps(new double[fldcmp])
+      , op(o)
+    { }
+    ~ToArray()
+    {
+      delete [] cmps;
+    }
+    bool inEntity(apf::MeshEntity * m) { me = m; return apf::getMesh(fld)->isOwned(me); }
+    void outEntity() { }
+    void atNode(int nde)
+    {
+      memset(&cmps[0],0.0,sizeof(double)*fldcmp);
+      apf::getComponents(fld,me,nde,&cmps[0]);
+      for(int ei = 0; ei < fldcmp; ++ei)
+        if(apf::isNumbered(nm,me,nde,ei))
+        {
+          int dof = apf::getNumber(nm,me,nde,ei);
+          op->apply(me,nde,ei,fldcmp,arry[dof - dof0],cmps[ei]);
+        }
+    }
+    void run() { apply(fld); }
+  };
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);
