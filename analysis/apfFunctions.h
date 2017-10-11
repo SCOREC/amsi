@@ -10,6 +10,28 @@
 #include <ostream>
 namespace amsi
 {
+  class XpYFunc : public apf::Function
+  {
+  private:
+    apf::Field * x;
+    apf::Field * u;
+  public:
+    XpYFunc(apf::Field * xf, apf::Field * yf)
+      : x(xf)
+      , u(yf)
+    {}
+    void eval(apf::MeshEntity * e, double * result)
+    {
+      // make sure that we are only evaluating on vertices
+      assert(apf::getMesh(x)->getType(e) == apf::Mesh::VERTEX);
+      apf::Vector3 X, U;
+      apf::getVector(u, e, 0, U);
+      apf::getVector(x, e, 0, X);
+      apf::Vector3 xu;
+      xu = X + U;
+      xu.toArray(result);
+    }
+  };
   // TODO : push the operation classes down a level, retrieve them by function, and make them static since
   //        they have no state
   /// Write a paraview collection file for meshes with the format msh_prfx(ii) where ii ranges from 1 to sz.
@@ -288,6 +310,7 @@ namespace amsi
     }
     void run() { apply(fld); }
   };
+  void copyIntTag(const std::string & nm, apf::Mesh * org, apf::Mesh * dst, int dm_lw, int dm_hg);
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);

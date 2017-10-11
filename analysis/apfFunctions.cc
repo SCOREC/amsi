@@ -147,5 +147,28 @@ namespace amsi
     mat[1][2] = mat[2][1] = vec[4];
     mat[0][2] = mat[2][0] = vec[5];
   }
-
+  void copyIntTag(const std::string & nm, apf::Mesh * org, apf::Mesh * dst, int dm_lw, int dm_hg)
+  {
+    apf::MeshTag * org_tg = org->findTag(nm.c_str());
+    assert(org_tg);
+    int sz = org->getTagSize(org_tg);
+    apf::MeshTag * dst_tg = dst->createIntTag(nm.c_str(),sz);
+    int * bfr = new int[sz]();
+    for(int dd = dm_lw; dd <= dm_hg; dd++)
+    {
+      apf::MeshEntity * oe = NULL;
+      apf::MeshEntity * de = NULL;
+      apf::MeshIterator * oit = NULL;
+      apf::MeshIterator * dit = NULL;
+      for((oit = org->begin(dd)) && (dit = dst->begin(dd)); (oe = org->iterate(oit)) && (de = dst->iterate(dit));)
+      {
+        memset(&bfr[0],0,sz*sizeof(long));
+        org->getIntTag(oe,org_tg,&bfr[0]);
+        dst->setIntTag(de,dst_tg,&bfr[0]);
+      }
+      org->end(oit);
+      dst->end(dit);
+    }
+    delete [] bfr;
+  }
 }
