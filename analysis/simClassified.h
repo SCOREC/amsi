@@ -5,7 +5,7 @@
 namespace amsi
 {
   class SimClassifiedIter : public SimIterator
- {
+  {
   protected:
     apf::MeshSIM * msh;
     apf::ModelEntity * mdl_ent;
