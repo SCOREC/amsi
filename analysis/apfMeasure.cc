@@ -53,6 +53,7 @@ namespace amsi
   {
   private:
     int dim;
+    int ent_dim;
     apf::FieldShape * fs;
     apf::EntityShape * es;
     apf::Element * mesh_coord_elem;
@@ -61,6 +62,7 @@ namespace amsi
     MeasureDisplaced(apf::Field * field, int o)
       : ElementalSystem(field,o)
       , dim(apf::getMesh(field)->getDimension())
+      , ent_dim(-1)
       , fs(NULL)
       , es(NULL)
       , mesh_coord_elem(NULL)
@@ -71,6 +73,7 @@ namespace amsi
       ElementalSystem::inElement(me);
       fs = apf::getShape(f);
       es = fs->getEntityShape(apf::getMesh(f)->getType(apf::getMeshEntity(me)));
+      ent_dim = apf::getDimension(me);
       mesh_coord_elem = apf::createElement(apf::getMesh(f)->getCoordinateField(),me);
     }
     void atPoint(apf::Vector3 const &, double w, double)
