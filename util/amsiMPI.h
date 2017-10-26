@@ -9,7 +9,9 @@ extern MPI_Comm AMSI_COMM_SCALE;
 namespace amsi
 {
   template <typename T>
-    MPI_Datatype mpi_type(T t = 0);
+    MPI_Datatype mpi_type();
+  template <typename T>
+    MPI_Datatype mpi_type(T t);
   template<typename T>
     T comm_sum(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {

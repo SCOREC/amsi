@@ -5,16 +5,30 @@ namespace amsi
 {
   template <typename T>
   MPI_Datatype mpi_type(T) {return MPI_BYTE;}
+  template <typename T>
+  MPI_Datatype mpi_type() {return MPI_BYTE;}
   template <>
-  MPI_Datatype mpi_type<char>(char) {return MPI_CHAR;}
+  MPI_Datatype mpi_type<char>() {return MPI_CHAR;}
   template <>
   MPI_Datatype mpi_type<const char>(const char) {return MPI_CHAR;}
   template <>
-  MPI_Datatype mpi_type<double>(double) {return MPI_DOUBLE;}
+  MPI_Datatype mpi_type<const char>() {return MPI_CHAR;}
   template <>
-  MPI_Datatype mpi_type<int>(int) {return MPI_INT;}
+  MPI_Datatype mpi_type(char) {return MPI_CHAR;}
   template <>
-  MPI_Datatype mpi_type<bool>(bool) { assert(sizeof(bool) == 1); return MPI_BYTE;}
+  MPI_Datatype mpi_type<double>() {return MPI_DOUBLE;}
   template <>
-  MPI_Datatype mpi_type<unsigned long>(unsigned long) {return MPI_UNSIGNED_LONG;}
+  MPI_Datatype mpi_type(double) {return MPI_DOUBLE;}
+  template <>
+  MPI_Datatype mpi_type<int>() {return MPI_INT;}
+  template <>
+  MPI_Datatype mpi_type(int) {return MPI_INT;}
+  template <>
+  MPI_Datatype mpi_type<bool>() { assert(sizeof(bool) == 1); return MPI_BYTE;}
+  template <>
+  MPI_Datatype mpi_type(bool) { assert(sizeof(bool) == 1); return MPI_BYTE;}
+  template <>
+  MPI_Datatype mpi_type<unsigned long>() {return MPI_UNSIGNED_LONG;}
+  template <>
+  MPI_Datatype mpi_type(unsigned long) {return MPI_UNSIGNED_LONG;}
 }
