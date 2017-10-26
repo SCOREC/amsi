@@ -4,6 +4,6 @@
 #include "amsiElementalSystem.h"
 namespace amsi
 {
-  void assemble(las::LasOps * ops, las::Mat * k, las::Vec * u, ElementalSystem2 * es);
+  void assemble(las::LasOps * ops, las::Mat * k, las::Vec * f, ElementalSystem2 * es);
 }
 #endif
