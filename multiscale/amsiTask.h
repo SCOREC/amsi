@@ -29,8 +29,11 @@ namespace amsi
       // don't execute of the global rank is not valid
       if(localToGlobalRank(localRank()) >= 0)
       {
+        MPI_Comm cm;
+        MPI_Comm_dup(PCU_Get_Comm(),&cm);
         PCU_Switch_Comm(task_comm);
         result +=  (*exec)(argc,argv,task_comm);
+        PCU_Switch_Comm(cm);
       }
       return result;
     };
