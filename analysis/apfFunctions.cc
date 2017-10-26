@@ -160,9 +160,10 @@ namespace amsi
       apf::MeshEntity * de = NULL;
       apf::MeshIterator * oit = NULL;
       apf::MeshIterator * dit = NULL;
+      // assumes mesh entity ordering is the same
       for((oit = org->begin(dd)) && (dit = dst->begin(dd)); (oe = org->iterate(oit)) && (de = dst->iterate(dit));)
       {
-        memset(&bfr[0],0,sz*sizeof(long));
+        memset(&bfr[0],0,sz*sizeof(int));
         org->getIntTag(oe,org_tg,&bfr[0]);
         dst->setIntTag(de,dst_tg,&bfr[0]);
       }
