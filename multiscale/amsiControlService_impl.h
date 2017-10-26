@@ -190,6 +190,7 @@ namespace amsi
           size_t rcv_cnt = rcv_sz / tp_sz;
           bfr_sz += rcv_cnt;
           buffer.resize(bfr_sz); // this is stupid and awful and assumes the buffer is empty initially
+          assert(rcv_cnt * tp_sz == rcv_sz);
           memcpy(&buffer[bfr_hd],rcv,rcv_sz);
           bfr_hd += rcv_cnt;
         }
