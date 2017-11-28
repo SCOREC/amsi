@@ -39,8 +39,10 @@ set(analysis_public_headers
     apfFields.h
     apfFunctions.h
     apfFunctions_impl.h
+    apfMatrixUtil.h
     apfMeasure.h
     apfMeasure_impl.h
+    apfMeshIterator.h
     apfMeshUtil.h
     apfWrapper.h
     apfWrapper_impl.h
@@ -95,7 +97,9 @@ set(analysis_src_files
     apfElementalSystem.cc
     apfFields.cc
     apfFunctions.cc
+    apfMatrixUtil.cc
     apfMeasure.cc
+    apfMeshIterator.cc
     apfMeshUtil.cc
     apfWrapper.cc
     apfsimWrapper.cc
