@@ -1,10 +1,10 @@
 #ifndef SIM_CLASSIFIED_H_
 #define SIM_CLASSIFIED_H_
-#include "simIterator.h"
+#include "apfMeshIterator.h"
 #include <apfSIM.h>
 namespace amsi
 {
-  class SimClassifiedIter : public SimIterator
+  class SimClassifiedIter : public apfMeshIterator
   {
   protected:
     apf::MeshSIM * msh;
@@ -28,7 +28,7 @@ namespace amsi
     friend SimClassifiedIter endClassified(const SimClassifiedIter &);
   public:
     SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me, int d);
-    bool operator==(const SimIterator & o) const;
+    bool operator==(const apfMeshIterator & o) const;
     void operator++();
     apf::MeshEntity * operator*() const;
   };

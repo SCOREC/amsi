@@ -4,7 +4,7 @@
 namespace amsi
 {
   SimClassifiedIter::SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me, int d)
-    : SimIterator()
+    : apfMeshIterator()
     , msh(reinterpret_cast<apf::MeshSIM*>(m))
     , mdl_ent(me)
     , dim(d)
@@ -35,9 +35,9 @@ namespace amsi
   {
     ent.vtx = NULL;
   }
-  bool SimClassifiedIter::operator==(const SimIterator & o) const
+  bool SimClassifiedIter::operator==(const apfMeshIterator & o) const
   {
-    const SimClassifiedIter * ot = reinterpret_cast<const SimClassifiedIter*>(&o);
+    const SimClassifiedIter * ot = static_cast<const SimClassifiedIter*>(&o);
     if(ot->msh == msh && ot->mdl_ent == mdl_ent && ot->dim == dim)
     {
       switch(dim)
