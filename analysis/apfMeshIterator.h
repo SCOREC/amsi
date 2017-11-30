@@ -27,6 +27,9 @@ namespace amsi
       itr = msh->begin(ed);
       operator++();
     }
+    apfMeshIterator(const apfMeshIterator & o)
+      : apfMeshIterator(o.msh,o.ent_dim) //c++11
+    { }
     virtual ~apfMeshIterator()
     {
       msh->end(itr);
@@ -50,7 +53,8 @@ namespace amsi
     {
       msh = m;
     }
-    virtual void operator++() {}
+    virtual ~apfEndIterator() { }
+    virtual void operator++() { }
   };
 }
 #endif
