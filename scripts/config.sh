@@ -25,6 +25,8 @@ elif [ "$BUILD_TYPE" == "Release" ] ; then
   fi
 fi
 verify_directory_recreate ${BUILD_DIR}
+mkdir $BUILD_DIR
+rm -rf $BUILD_DIR/CMakeCache.txt
 cd $BUILD_DIR
 HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
@@ -50,6 +52,7 @@ else
     cmake \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=$BUILD_TESTS \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
         -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/ \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \

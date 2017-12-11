@@ -14,7 +14,7 @@ namespace amsi
                                double poisson_ratio,
                                double shear_modulus);
     void inElement(apf::MeshElement * melm);
-    void outElement(apf::MeshElement * melm) {};
+    void outElement() {};
     void atPoint(apf::Vector3 const &p, double w, double dV);
     void parallelReduce() {};
     int numElementalEqs() {return num_element_eqs;}

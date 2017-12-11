@@ -61,7 +61,7 @@ namespace amsi
                     LAS * las,
                     int iteration_cap,
                     double epsilon,
-                    double dt,
+                    double,
                     double & residual_norm)
   {
     int global_dof_count, local_dof_count, first_local_dof;

@@ -15,8 +15,8 @@ namespace amsi
     apf::Field * stress_ip_field;
     apf::Field * strain_ip_field;
     apf::DynamicMatrix C;
-    double v;
-    double E;
+    //double v;
+    //double E;
   };
 }
 #endif

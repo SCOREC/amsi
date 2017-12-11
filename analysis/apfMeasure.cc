@@ -10,7 +10,6 @@ namespace amsi
     double len = 0.0;
     for (int ii = 0; ii < 3; ii++)
       len += (pt_a[ii] - pt_b[ii]) * (pt_a[ii] - pt_b[ii]);
-
     return std::sqrt(len);
   }
   double triangleArea(const apf::Vector3 & pt_a, const apf::Vector3 & pt_b, const apf::Vector3 & pt_c)
@@ -54,6 +53,7 @@ namespace amsi
   {
   private:
     int dim;
+    int ent_dim;
     apf::FieldShape * fs;
     apf::EntityShape * es;
     apf::Element * mesh_coord_elem;
@@ -61,7 +61,8 @@ namespace amsi
   public:
     MeasureDisplaced(apf::Field * field, int o)
       : ElementalSystem(field,o)
-      , dim(0)
+      , dim(apf::getMesh(field)->getDimension())
+      , ent_dim(-1)
       , fs(NULL)
       , es(NULL)
       , mesh_coord_elem(NULL)
@@ -72,10 +73,10 @@ namespace amsi
       ElementalSystem::inElement(me);
       fs = apf::getShape(f);
       es = fs->getEntityShape(apf::getMesh(f)->getType(apf::getMeshEntity(me)));
-      dim = apf::getDimension(me);
+      ent_dim = apf::getDimension(me);
       mesh_coord_elem = apf::createElement(apf::getMesh(f)->getCoordinateField(),me);
     }
-    void atPoint(apf::Vector3 const &p, double w, double dV)
+    void atPoint(apf::Vector3 const &, double w, double)
     {
       int & nen = nenodes; // = 4 (tets)
       // 1. Get coordinates on underlying mesh
@@ -130,7 +131,7 @@ namespace amsi
       /** We want to consider 3D space, however MeshElement me is for 2D entity. Therefore we need to hardcode dim for now.. */
       dim = 3;
     }
-    void atPoint(apf::Vector3 const &p, double w, double dV)
+    void atPoint(apf::Vector3 const &, double, double)
     {
       int & nen = nenodes; // = 3 (triangle)
       // 1. Get coordinates on underlying mesh

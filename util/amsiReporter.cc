@@ -39,7 +39,7 @@ namespace amsi
     }
     std::stringstream & getBuffer() { return stream; }
     const std::string & getName() const { return name; }
-    const double getCreation() const { return creation_time; }
+    double getCreation() const { return creation_time; }
     double post() { return last_post = MPI_Wtime(); }
     double sincePost()
     {

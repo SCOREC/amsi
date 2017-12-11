@@ -10,7 +10,7 @@ namespace amsi
 {
   #define UTIL_OPTIONS(OP) OP(results), OP(num_util_options)
   enum UtilOptions{UTIL_OPTIONS(MAKE_ENUM_OP)};
-  const char * const getUtilOptionString(int ii)
+  const char * getUtilOptionString(int ii)
   {
     static const char * const UtilOptionStrings[] = {UTIL_OPTIONS(MAKE_STRING_OP)};
     assert(ii < num_util_options);
@@ -25,7 +25,7 @@ namespace amsi
     }
     return -1;
   }
-  const char * const getUtilConfigSectionString(int ii)
+  const char * getUtilConfigSectionString(int ii)
   {
     static const char * const UtilConfigSectionStrings[] = {UTIL_CONFIG_SECTIONS(MAKE_STRING_OP)};
     assert(ii < num_util_config_sections);

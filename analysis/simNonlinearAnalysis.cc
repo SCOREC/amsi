@@ -26,7 +26,7 @@ namespace amsi
       std::cerr << "ERROR: initial reference is unimplemented." << std::endl;
     return new LASNormQuery(las,ref_ops[cvg_tp][ref_tp]);
   }
-  Convergence * buildSimConvergenceOperator(pACase cs, pAttribute cn, Iteration * it, LAS * las)
+  Convergence * buildSimConvergenceOperator(pACase, pAttribute cn, Iteration * it, LAS * las)
   {
     Convergence * cnvg = NULL;
     char * tp = Attribute_imageClass(cn);
@@ -36,7 +36,6 @@ namespace amsi
     }
     if(std::string("nonlinear iteration").compare(tp) == 0)
     {
-
       pAttribute cvg_tp = Attribute_childByType(cn,"convergence type");
       pAttribute eps_att = Attribute_childByType(cn,"epsilon");
       pAttribute ref_tp = Attribute_childByType(cn,"reference value");

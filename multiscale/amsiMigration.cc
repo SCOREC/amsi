@@ -3,18 +3,18 @@
 namespace amsi
 {
 #ifdef ZOLTAN
-int getLocalCount(void * data, int * ierr)
+int getLocalCount(void * data, int *)
 {
   return *static_cast<int*>(data);
 }
 void getWeights(void * data,
-                int num_gid_entries,
-                int num_lid_entries, // not used
+                int ,
+                int ,
                 ZOLTAN_ID_PTR global_ids,
-                ZOLTAN_ID_PTR local_ids, // not used
-                int wgt_dim,
+                ZOLTAN_ID_PTR local_ids,
+                int ,
                 float * obj_wgts,
-                int * ierr)
+                int *)
 {
   size_t int_sz= sizeof(int);
   char * d = static_cast<char*>(data);

@@ -16,7 +16,7 @@ namespace amsi
     if(!(apf_primary_field = apf_mesh->findField("displacement")))
     {
       apf_primary_field = apf::createSIMLagrangeField(apf_mesh,"displacement",apf::VECTOR,1);
-      addFieldToMap(apf_primary_field);
+      addFieldToMap(reinterpret_cast<pField>(apf_primary_field));
     }
     apf_primary_numbering = apf::createNumbering(apf_primary_field);
     elemental_system = new NonLinElasticIntegrator(apf_primary_field,1,youngs_modulus,poisson_ratio);

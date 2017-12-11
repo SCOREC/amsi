@@ -42,7 +42,7 @@ namespace amsi
     // collective on current rank set in amsi comm world
     void synchronize() { reinitComm(); }
     const RankSet * getRankSet() const {return rnks;}
-    const MPI_Comm getComm()
+    MPI_Comm getComm()
     {
       AMSI_DEBUG
       (

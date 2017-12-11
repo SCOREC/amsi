@@ -8,9 +8,10 @@
 #include <zoltan.h>
 #endif
 #include <PCU.h>
-#include <fstream>
 #include <algorithm>
 #include <cstring> //memcpy
+#include <fstream>
+#include <numeric>
 namespace amsi
 {
   ControlService * ControlService::instance = NULL;
@@ -245,7 +246,7 @@ namespace amsi
     {
       CommPattern_Reconcile(rdd_id);
       CommPattern_Reconcile(delta_id);
-      int recv[tsk1_sz]{};
+      std::vector<int> recv(tsk1_sz);
       // get the units sent to this task rank
       getUnitsSendingTo(ptrn_dlta,tsk_rnk,&recv[0]);
       cnt = std::accumulate(&recv[0],&recv[tsk1_sz-1],0);

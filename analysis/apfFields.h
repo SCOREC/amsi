@@ -5,5 +5,6 @@ namespace amsi
 {
   struct FieldSpec;
   apf::Field * buildFieldFromSpec(apf::Mesh * msh, FieldSpec * fs);
+  apf::Field * buildXpYField(const char * nm, apf::Field * x, apf::Field * y);
 }
 #endif

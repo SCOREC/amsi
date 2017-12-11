@@ -1,5 +1,5 @@
-#ifndef UTILFUNCTIONS_H_
-#define UTILFUNCTIONS_H_
+#ifndef AMSI_UTILFUNCTIONS_H_
+#define AMSI_UTILFUNCTIONS_H_
 #include <iostream>
 namespace amsi
 {
@@ -12,10 +12,11 @@ namespace amsi
     result += b & 0x0000FFFF;
     return result;
   }
-
-  /// @brief A templated struct used to ease communication to allow offsets into a data buffer
-  ///        of some type to be used with templated MPI wrapper functions.
-  /// @tparam Data The type of data being sent.
+  /**
+     @brief A templated struct used to ease communication to allow offsets into a data buffer
+           of some type to be used with templated MPI wrapper functions.
+     @tparam Data The type of data being sent.
+  */
   template <typename Data>
     struct buffer_offset
     {
@@ -25,12 +26,13 @@ namespace amsi
       int offset; // offset into array
       Data & operator[](int) {return buffer[offset];}
     };
-
-  /// @brief A templated struct to ease communication to allow offsets into a data buffer
-  ///        of some type to be used with templated MPI wrapper functions.
-  /// @tparam Data The type of data being recved in the buffer.
-  /// @tparam Cont The data container object type.
-  /// @tparam Alloc The allocator object type for the data container object type.
+  /**
+     @brief A templated struct to ease communication to allow offsets into a data buffer
+           of some type to be used with templated MPI wrapper functions.
+     @tparam Data The type of data being recved in the buffer.
+     @tparam Cont The data container object type.
+     @tparam Alloc The allocator object type for the data container object type.
+   */
   template <typename D, template <typename T, typename All = std::allocator<T> > class Container>
     struct recv_buffer_offset
     {
@@ -42,7 +44,6 @@ namespace amsi
       D & operator[](int) {return (*buffer)[offset];}
       size_t offset;
     };
-  
 # if defined(__i386__)
   inline unsigned long long rdtsc(void)
   {
@@ -74,11 +75,8 @@ namespace amsi
     result = upper;
     result = result<<32;
     result = result|lower;
-    
     return(result);
   }
 # endif
-
-} // namespace amsi
-
+}
 #endif

@@ -10,7 +10,7 @@ namespace amsi
   public:
     virtual bool inEntity(apf::MeshEntity *) {return true;}
     virtual void outEntity() {}
-    virtual void atNode(int node) {}
+    virtual void atNode(int) {}
     void apply(apf::Field * f)
     {
       apf::Mesh * msh = apf::getMesh(f);

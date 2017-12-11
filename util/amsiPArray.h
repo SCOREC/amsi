@@ -16,7 +16,7 @@ namespace amsi
     T f;
   public:
   PArray(MPI_Comm comm)
-    : Distributed(false)
+    : Distributed(comm,false)
       , cm(comm)
       , sz(0)
       , arr(0)

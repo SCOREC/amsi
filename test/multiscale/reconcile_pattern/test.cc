@@ -1,6 +1,6 @@
 #include "amsiMultiscale.h"
 #include "amsiControlService.h"
-int task1(int & argc, char **& argv, MPI_Comm cm)
+int task1(int &, char **&, MPI_Comm cm)
 {
   amsi::ControlService * cs = amsi::ControlService::Instance();
   amsi::Task * t1 = amsi::getLocal();
@@ -11,7 +11,7 @@ int task1(int & argc, char **& argv, MPI_Comm cm)
   cs->CommPattern_Reconcile(id);
   return 0;
 }
-int task2(int & argc, char **& argv, MPI_Comm cm)
+int task2(int &, char **&, MPI_Comm)
 {
   amsi::ControlService * cs = amsi::ControlService::Instance();
   size_t id = cs->RecvCommPattern("to_t2","task1","","task2");

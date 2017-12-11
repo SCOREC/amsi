@@ -1,4 +1,4 @@
-#ifndef AMSI_ELASTICITY_FEAo_H_
+#ifndef AMSI_ELASTICITY_FEA_H_
 #define AMSI_ELASTICITY_FEA_H_
 #include "apfSimFEA.h"
 #include <apf.h>
