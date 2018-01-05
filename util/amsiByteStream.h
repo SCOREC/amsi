@@ -1,14 +1,14 @@
-#ifndef AMSIBYTESTREAM_H_
-#define AMSIBYTESTREAM_H_
+#ifndef AMSI_BYTESTREAM_H_
+#define AMSI_BYTESTREAM_H_
 //hacky and not portable
 typedef char byte;
 template <typename Head>
-size_t talloc_helper(Head & head)
+size_t talloc_helper(Head &)
 {
   return sizeof(Head);
 }
 template <typename Head, typename ... Tail>
-size_t talloc_helper(Head & head, Tail & ... tail)
+size_t talloc_helper(Head &, Tail & ... tail)
 {
   return sizeof(Head) + talloc_helper(tail...);
 }
@@ -49,6 +49,7 @@ void byte_unpack(void * memory, Head & value, Tail & ... tail)
 {
   byte_unpack(byte_read(memory,value),tail...);
 }
+// don't know that this recursive limit is actually required...
 template <typename Head>
 void * serialize(Head & head)
 {

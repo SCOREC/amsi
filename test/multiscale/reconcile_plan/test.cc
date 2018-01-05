@@ -1,6 +1,6 @@
 #include "test.h"
 #include "amsiAssemblable.h"
-int main(int argc, char ** argv)
+int main(int, char **)
 {
   int failed = 0;
   int t1s = 3;

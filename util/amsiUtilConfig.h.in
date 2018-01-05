@@ -3,9 +3,8 @@
 #define AMSI_MAJOR_VERSION @AMSI_MAJOR_VERSION@
 #define AMSI_MINOR_VERSION @AMSI_MINOR_VERSION@
 #define AMSI_PATCH_VERSION @AMSI_PATCH_VERSION@
-#define VALUE_TO_STRING(x) #x
-#define VALUE(x) VALUE_TO_STRING(x)
-#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+#define VAR_NAME(x) #x
+#define DESCRIBE(stream,var) stream << #var << " : " << (var) << " "
 #define @HOST@
 #define SCOREC
 #define SIM

@@ -3,9 +3,8 @@
 namespace amsi
 {
   template <>
-  void Model_PrintInfo<pGModel>(pGModel model, std::ostream & out)
-  {
-  }
+  void Model_PrintInfo<pGModel>(pGModel, std::ostream &)
+  { }
   template <>
   void Mesh_PrintInfo<pMesh>(pMesh mesh, std::ostream & out)
   {

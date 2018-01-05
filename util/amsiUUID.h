@@ -2,6 +2,10 @@
 #define AMSI_UUID_H_
 #include "amsiHost.h"
 #include <cstdlib>
+// definitely not UUIDs, but sufficient for now
+//  drop in a proper implementation if it seems
+//  necessary, but honestly these SHOULD be
+//  phased out of the codebase anyway.
 namespace amsi
 {
   typedef size_t uuid;

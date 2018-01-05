@@ -1,3 +1,4 @@
+/*
 #ifndef SIM_ITERATOR_H_
 #define SIM_ITERATOR_H_
 #include <apfMesh.h>
@@ -14,3 +15,4 @@ namespace amsi
   };
 }
 #endif
+*/

@@ -167,6 +167,7 @@ namespace amsi
    *  operations in lieu of implementing a bespoke
    *  combined class. Cannot modify the convergence
    *  operations after construction.
+   * This is kind of a variation on the Composite pattern.
    */
   class MultiConvergence : public Convergence
   {

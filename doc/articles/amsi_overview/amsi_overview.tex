@@ -1,5 +1,5 @@
-\title{The Adaptive Multiscale Simulation Infrastructure -- Core Features and Biological Tissue Simulation Feature Utilization}
-\author{W.R. Tobin, D. Fovargue, V.W.L. Chan, M.S. Shephard}
+\title{The Adaptive Multiscale Simulation Infrastructure -- Core Features and Multi-scale Soft Tissue Simulation}
+\author{W.R. Tobin, V.W.L. Chan, M.S. Shephard}
 \date{\today}
 \documentclass[11pt]{article}
 \bibliographystyle{siam}
@@ -34,7 +34,7 @@ Another key peice of scale-local metadata is the RankSet associated with non-loc
 Global metadata is currently nonexistent, maintaining zero global metadata is important to the design philosophy of AMSI, though it may be required at some point. Though global metadata determined essential to AMSI will be designed to be exteremely minimal.
 
 \label{amsi_scales}
-Individual scales in a simulation are declared during the initialization of the simulation, follow by the determination and asignment of RankSets to scales, guided by a supplied configuration file or user-implemented algorithm. Scale-coupling relations are also declared at initialization time, though this decleration is limited to the indication that two scale may interact at some point during the simulation, and nothing more.
+Individual scales in a simulation are declared during the initialization of the simulation, follow by the determination and assignment of RankSets to scales, guided by a supplied configuration file or user-implemented algorithm. Scale-coupling relations are also declared at initialization time, though this decleration is limited to the indication that two scale may interact at some point during the simulation, and nothing more.
 
 RankSets are simply mathematical sets of MPI ranks implemented so as to take advantage of any mathematical conveniences to minimize explicit storage whenever possible.
 

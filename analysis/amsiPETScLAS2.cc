@@ -116,7 +116,7 @@ namespace las
   {
     return new PetscLUSolve;
   }
-  PetscErrorCode PetscIterate(SNES snes,::Vec x,::Vec f,void * i)
+  PetscErrorCode PetscIterate(SNES ,::Vec x,::Vec f,void * i)
   {
     LasOps * ops = getPetscOps();
     // x vector needs to be applied to simulation prior to assembling force vector...

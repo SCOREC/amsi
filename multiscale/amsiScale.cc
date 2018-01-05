@@ -5,7 +5,7 @@
 #include <vector>
 namespace amsi
 {
-  void Scale::assignRanks(RankSet * rs, MPI_Comm cm)
+  void Scale::assignRanks(RankSet * rs, MPI_Comm )
   {
     RankSet * ns = new DefaultRankSet;
     merge(rnks,rs,ns);
@@ -13,7 +13,7 @@ namespace amsi
     rnks = ns;
     setValid(false);
   }
-  bool Scale::validResign(RankSet * rs, MPI_Comm cm)
+  bool Scale::validResign(RankSet * rs, MPI_Comm )
   {
     bool result = false;
     DefaultRankSet intrsctn;

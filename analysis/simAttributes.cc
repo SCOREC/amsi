@@ -152,8 +152,9 @@ namespace amsi
   void clearModelAttributes(pGModel mdl)
   {
     // get the associated attribute case, call AttCase_unassociate()
+    (void)mdl;
   }
-  bool isIncrementallyLoaded(pGEntity ent, const char * attr)
+  bool isIncrementallyLoaded(pGEntity ent, const char *)
   {
     bool result = false;
     pAttribute force_constraint = GEN_attrib(ent,"force constraint");

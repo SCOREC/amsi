@@ -20,8 +20,8 @@ namespace amsi
     bool assignedTo() { return local_rank != -1; }
     int localToGlobalRank(int);
     int size();
-    const MPI_Comm comm() {return task_comm;}
-    const MPI_Group group() {return task_group;}
+    MPI_Comm comm() {return task_comm;}
+    MPI_Group group() {return task_group;}
     void setExecutionFunction(ExecuteFunc e) {exec = e;}
     int execute(int& argc,char**& argv)
     {
@@ -29,8 +29,11 @@ namespace amsi
       // don't execute of the global rank is not valid
       if(localToGlobalRank(localRank()) >= 0)
       {
+        MPI_Comm cm;
+        MPI_Comm_dup(PCU_Get_Comm(),&cm);
         PCU_Switch_Comm(task_comm);
         result +=  (*exec)(argc,argv,task_comm);
+        PCU_Switch_Comm(cm);
       }
       return result;
     };

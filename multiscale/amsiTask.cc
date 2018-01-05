@@ -48,7 +48,7 @@ namespace amsi
   }
 # ifdef ZOLTAN
   // hacky hard-coded bullshit
-  int DD_get(void * data, int * ierr)
+  int DD_get(void * data, int *)
   {
     DataDistribution * dd = NULL;
     int local_rank = -1;
@@ -67,13 +67,13 @@ namespace amsi
     return (*dd)[local_rank];
   }
   void DD_describe(void * data,
-                   int num_gid_entries,
-                   int num_lid_entries, // not used
+                   int,
+                   int,
                    ZOLTAN_ID_PTR global_ids,
-                   ZOLTAN_ID_PTR local_ids, // not used
-                   int wgt_dim,
+                   ZOLTAN_ID_PTR local_ids,
+                   int,
                    float * obj_wgts,
-                   int * ierr)
+                   int *)
   {
     DataDistribution * dd = NULL;
     int local_rank = -1;

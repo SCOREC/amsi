@@ -1,5 +1,6 @@
 #ifndef AMSI_CASTERS_H_
 #define AMSI_CASTERS_H_
+// what were these for?
 namespace amsi
 {
   template <typename From, typename To>

@@ -31,9 +31,8 @@ namespace amsi
     std::vector<uuid>::iterator ne = std::unique(nds.begin(), nds.end());
     nds.erase(ne,nds.end());
   }
-  void getRanksOnSocket(uuid n_id, RankSet & rnks, MPI_Comm cm)
-  {
-  }
+  void getRanksOnSocket(uuid, RankSet &, MPI_Comm)
+  { }
   void getRanksOnNode(uuid n_id, RankSet & rnks, MPI_Comm cm)
   {
     // init

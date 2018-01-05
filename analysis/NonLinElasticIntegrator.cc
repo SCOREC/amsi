@@ -9,8 +9,6 @@ namespace amsi
     , stress_ip_field(NULL)
     , strain_ip_field(NULL)
     , C(isotropicLinearElasticityTensor(E_,v_))
-    , v(v_)
-    , E(E_)
   { }
   void NonLinElasticIntegrator::getDisplacements(apf::DynamicVector & u)
   {

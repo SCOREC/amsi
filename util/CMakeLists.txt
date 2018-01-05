@@ -4,6 +4,7 @@ set(util_public_headers
   amsiConversionIterator.h
   amsiDistributed.h
   amsiEnumOps.h
+  amsiFail.h
   amsiFileSys.h
   amsiUtil.h
   amsiUtilConfig.h

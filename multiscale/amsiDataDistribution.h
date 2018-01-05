@@ -13,6 +13,7 @@ struct Zoltan_Struct;
 #endif
 namespace amsi
 {
+  // unused
   class DistributedData : public Distributed
   {
   private:

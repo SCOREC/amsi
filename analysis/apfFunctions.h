@@ -10,6 +10,28 @@
 #include <ostream>
 namespace amsi
 {
+  class XpYFunc : public apf::Function
+  {
+  private:
+    apf::Field * x;
+    apf::Field * u;
+  public:
+    XpYFunc(apf::Field * xf, apf::Field * yf)
+      : x(xf)
+      , u(yf)
+    {}
+    void eval(apf::MeshEntity * e, double * result)
+    {
+      // make sure that we are only evaluating on vertices
+      assert(apf::getMesh(x)->getType(e) == apf::Mesh::VERTEX);
+      apf::Vector3 X, U;
+      apf::getVector(u, e, 0, U);
+      apf::getVector(x, e, 0, X);
+      apf::Vector3 xu;
+      xu = X + U;
+      xu.toArray(result);
+    }
+  };
   // TODO : push the operation classes down a level, retrieve them by function, and make them static since
   //        they have no state
   /// Write a paraview collection file for meshes with the format msh_prfx(ii) where ii ranges from 1 to sz.
@@ -246,6 +268,50 @@ namespace amsi
     }
     void run() { apply(fld); }
   };
+  class ToArray : public amsi::FieldOp
+  {
+  protected:
+    apf::Numbering * nm;
+    apf::Field * fld;
+    apf::MeshEntity * me;
+    double * arry;
+    int fldcmp;
+    int dof0;
+    double * cmps;
+    ApplyOp * op;
+  public:
+    ToArray(apf::Numbering * n, apf::Field * f, double * a, int d, ApplyOp * o)
+      : amsi::FieldOp()
+      , nm(n)
+      , fld(f)
+      , me(NULL)
+      , arry(a)
+      , fldcmp(apf::countComponents(fld))
+      , dof0(d)
+      , cmps(new double[fldcmp])
+      , op(o)
+    { }
+    ~ToArray()
+    {
+      delete [] cmps;
+    }
+    bool inEntity(apf::MeshEntity * m) { me = m; return apf::getMesh(fld)->isOwned(me); }
+    void outEntity() { }
+    void atNode(int nde)
+    {
+      memset(&cmps[0],0.0,sizeof(double)*fldcmp);
+      apf::getComponents(fld,me,nde,&cmps[0]);
+      for(int ei = 0; ei < fldcmp; ++ei)
+        if(apf::isNumbered(nm,me,nde,ei))
+        {
+          int dof = apf::getNumber(nm,me,nde,ei);
+          op->apply(me,nde,ei,fldcmp,arry[dof - dof0],cmps[ei]);
+        }
+    }
+    void run() { apply(fld); }
+  };
+  // make this generic as soon as we need to copy another type of tag
+  void copyIntTag(const std::string & nm, apf::Mesh * org, apf::Mesh * dst, int dm_lw, int dm_hg);
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);

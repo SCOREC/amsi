@@ -14,7 +14,7 @@ namespace amsi
       : ElementalSystem2(nedofs)
       , Ke(nedofs,nedofs)
       , Fe(nedofs)
-    { }
+    { zero(); }
     void zero()
     {
       Fe.zero();
