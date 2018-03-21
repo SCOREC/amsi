@@ -480,6 +480,7 @@ namespace amsi
       break;
     default:
       std::cerr << "Warning: AMSI Plan Migration option not defined - proceeding with default option" << std::endl;
+      break;
     case 0:  // Default case is the test case, for now
       CommPattern_PlanMigration_Test(m_index,m_send_to,pattern,dd,task_rank,t2->comm());
       break;
