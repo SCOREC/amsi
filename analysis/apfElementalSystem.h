@@ -7,6 +7,7 @@
 namespace amsi
 {
   ElementalSystem2 * buildApfElementalSystem(apf::Element * e, apf::Numbering * n);
+  void destroyApfElementalSystem(ElementalSystem2* es);
   /*
   class apfElementalSystem : public apf::Integrator, public ElementalSystem
   {

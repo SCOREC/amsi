@@ -220,6 +220,7 @@ namespace amsi
    * Takes a numbering and array of doubles with an initial dof offset and either
    *  sets or accumulates the array values at the index corresponding to the
    *  numbering minus the initial dof offset.
+   *  \note this only operates on free values. e.g. numbered values that are not fixed
    */
   class ApplyVector : public amsi::FieldOp
   {
@@ -268,6 +269,9 @@ namespace amsi
     }
     void run() { apply(fld); }
   };
+  /*
+   *  \note this only operates on free values. e.g. numbered values that are not fixed
+   */
   class ToArray : public amsi::FieldOp
   {
   protected:

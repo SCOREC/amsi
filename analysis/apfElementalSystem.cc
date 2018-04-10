@@ -29,6 +29,10 @@ namespace amsi
       return Ke(rdx,cdx);
     }
   };
+  /*
+   * creates a new elemental system
+   * \warning destroyApfElementalSystem needs to be called after usage
+   */
   ElementalSystem2 * buildApfElementalSystem(apf::Element * e, apf::Numbering * n)
   {
     int dof_per_nd = apf::countComponents(apf::getField(n));
@@ -40,5 +44,8 @@ namespace amsi
     for(int ii = 0; ii < nedofs; ++ii)
       (*es).dofs(ii) = dofs[ii];
     return es;
+  }
+  void destroyApfElementalSystem(ElementalSystem2* es) {
+    delete es;
   }
 }
