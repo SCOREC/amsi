@@ -15,9 +15,9 @@ namespace amsi
     apf::Mesh2 * msh = makeNullMdlEmptyMesh();
     apf::buildOneElement(msh,NULL,t,vs);
     // only required in parallel
-    //msh->acceptChanges();
-    //if(t != apf::Mesh::EDGE)
-    //apf::reorderMdsMesh(msh);
+    msh->acceptChanges();
+    if(t != apf::Mesh::EDGE)
+      apf::reorderMdsMesh(msh);
     return msh;
   }
   apf::MeshEntity * getFirstMeshEntity(apf::Mesh * msh, int d)
