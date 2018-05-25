@@ -128,11 +128,7 @@ namespace amsi
       , ref_gen(r)
     { }
     ~UpdatingConvergence()
-    {
-      delete cvg_gen;
-      delete eps_gen;
-      delete ref_gen;
-    }
+    { }
     /**
      * Update the internal values used to determine
      *  convergence, the test value, epsilon, and
