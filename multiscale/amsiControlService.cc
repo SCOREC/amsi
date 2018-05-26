@@ -229,6 +229,7 @@ namespace amsi
     //
     CommPattern * ptrn = comm_man->getCommPattern(rdd_id);
     CommPattern * ptrn_dlta = comm_man->getCommPattern(delta_id);
+    ptrn_dlta->zero();
     if(amSender(rdd_id))
     {
       DataDistribution dd_delta(tsk1_sz,tsk_rnk);
