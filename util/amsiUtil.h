@@ -16,7 +16,7 @@ namespace amsi
   const std::string & getOptionsFilename();
   bool configuredFromFile();
   extern FileSystemInfo * fs;
-  void initUtil(int argc, char ** argv, MPI_Comm cm = MPI_COMM_WORLD);
+  void initUtil(int argc, char ** argv, MPI_Comm cm);
   void freeUtil();
   typedef unsigned long ulong;
 }
