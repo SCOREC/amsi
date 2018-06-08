@@ -92,11 +92,7 @@ namespace amsi
     int rcnt = mat.getRows();
     int ccnt = mat.getColumns();
     for(int rr = 0; rr < rcnt; ++rr)
-    {
-      apf::DynamicVector row;
-      mat.getRow(rr,row);
       for(int cc = 0; cc < ccnt; ++cc)
-        ptr[rr*cc+cc] = row[cc];
-    }
+        ptr[rr*ccnt+cc] = mat(rr,cc);
   }
 }
