@@ -1,11 +1,11 @@
-#include "amsiAnalysis.h"
-#include "NonLinElasticity.h"
-#include "Solvers.h"
 #include <mpi.h>
+#include "amsiAnalysis.h"
+#include "Solvers.h"
 #include <cassert>
 #include <iostream>
 int main (int argc, char ** argv)
 {
+  std::cout<< "start"<<std::endl;
   int result = 0;
   amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::usePetsc("petsc_options");
@@ -17,7 +17,7 @@ int main (int argc, char ** argv)
   amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
   amsi::initCase(mdl,css[0]);
   pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
-  amsi::LAS * las = new amsi::PetscLAS(0,0);
+  amsi::PetscLAS las(0,0);
   apf::Mesh * apf_msh = apf::createMesh(msh);
   std::vector<apf::Field*> flds;
   amsi::buildFieldsFromSim(pd,apf_msh,std::back_inserter(flds));
@@ -39,11 +39,12 @@ int main (int argc, char ** argv)
   //after building queries, associate them with fields, since we need the geometric entities they lie on anyway, but we also have to relate the SimBCQueries BACK to the attributes taged on the model...
   amsi::NonLinElasticity iso_non(mdl,msh,pd);
   double nrm = 0.0;
-  amsi::NewtonSolver(&iso_non,las,30,1e-4,1.0,nrm);
+  amsi::NewtonSolver(&iso_non,&las,30,1e-4,1.0,nrm);
   apf::writeVtkFiles("isotropic_nonlinear_elastic_result",iso_non.getMesh());
-  delete las;
   amsi::freeCase(css[0]);
   Sim_logOff();
+  std::cout<< "before free"<<std::endl;
   amsi::freeAnalysis();
+  std::cout<< "end"<<std::endl;
   return result;
 }

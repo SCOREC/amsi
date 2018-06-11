@@ -146,7 +146,7 @@ int pureShearTest(apf::Mesh* mesh)
 }
 int main(int argc, char** argv)
 {
-  amsi::initAnalysis(argc, argv);
+  amsi::initAnalysis(argc, argv, MPI_COMM_WORLD);
   // simplex mesh
   // apf::Mesh2* m = apf::makeMdsBox(1,1,1,1,1,1,1);
   // quad mesh

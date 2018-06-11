@@ -9,7 +9,7 @@ int main (int argc, char ** argv)
   assert(argc == 3);
   amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
   amsi::usePetsc("petsc_options");
-  amsi::initAnalysis(argc,argv);
+  amsi::initAnalysis(argc,argv, MPI_COMM_WORLD);
   Sim_logOn("sim.log");
   {
     pGModel mdl = GM_load(argv[1],0,NULL);

@@ -1,6 +1,7 @@
 #include "apfFEA.h"
 #include "apfFunctions.h"
 #include <apfShape.h>
+#include <apfNumbering.h>
 #include <maShape.h>
 #include <cassert>
 namespace amsi

@@ -14,7 +14,7 @@ int main(int argc, char * argv[])
   assert(argc == 3);
   int failed = 0;
   amsi::useSimmetrix("/net/common/meshSim/license/license.txt");
-  amsi::initAnalysis(argc, argv);
+  amsi::initAnalysis(argc, argv, MPI_COMM_WORLD);
   Sim_logOn("sim.log");
   // above here taken care of by amsi init
   pPList lst = PList_new();

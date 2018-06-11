@@ -9,7 +9,7 @@ inline bool close(double a, double b, double eps = 1e-8)
 int main(int argc, char * argv[])
 {
   int result = 0;
-  amsi::initAnalysis(argc,argv);
+  amsi::initAnalysis(argc,argv, MPI_COMM_WORLD);
   /*
   apf::Vector3 pt(0.0,0.0,0.0);
   apf::Mesh2 * pt_msh = amsi::makeNullMdlEmptyMesh();

@@ -19,7 +19,7 @@ int task1_run(int &, char **&, MPI_Comm)
 /// test entry point
 int main(int argc, char * argv[])
 {
-  initMultiscale(argc,argv);
+  initMultiscale(argc,argv, MPI_COMM_WORLD);
   int failed = 0;
   int rank = -1;
   MPI_Comm_rank(AMSI_COMM_WORLD,&rank);

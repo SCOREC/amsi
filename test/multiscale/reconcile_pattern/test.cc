@@ -21,7 +21,7 @@ int task2(int &, char **&, MPI_Comm)
 int main(int argc, char ** argv)
 {
   int failed = 0;
-  amsi::initMultiscale(argc,argv);
+  amsi::initMultiscale(argc,argv, MPI_COMM_WORLD);
   amsi::ControlService * cs = amsi::ControlService::Instance();
   amsi::TaskManager * tm = cs->GetTaskManager();
   amsi::Task * t1 = tm->getTask("task1");

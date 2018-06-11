@@ -131,7 +131,7 @@ int task2_run(int &, char **&, MPI_Comm cm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::initMultiscale(argc,argv);
+  amsi::initMultiscale(argc,argv, MPI_COMM_WORLD);
   std::cout << "Initializing test object(s):" << std::endl;
   // create an MPI datatypes used in the simulation as coupling data
   MPI_Type_contiguous(vsize,MPI_DOUBLE,&sigma_type);

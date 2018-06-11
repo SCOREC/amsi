@@ -17,7 +17,7 @@ int main(int argc, char * argv[])
   int failed = 0;
   assert(argc == 3);
   amsi::use_simmetrix = true;
-  amsi::initAnalysis(argc,argv);
+  amsi::initAnalysis(argc,argv, MPI_COMM_WORLD);
   amsi::TaskManager tm(AMSI_COMM_WORLD);
   amsi::Task * tsk = tm.createTask("task",2);
   tsk->setExecutionFunction(&task);

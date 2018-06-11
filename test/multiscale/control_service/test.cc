@@ -66,7 +66,7 @@ int task2_run(int &, char **&, MPI_Comm cm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::initMultiscale(argc,argv);
+  amsi::initMultiscale(argc,argv, MPI_COMM_WORLD);
   Task * t1 = amsi::getScaleManager()->getTask("task1");
   Task * t2 = amsi::getScaleManager()->getTask("task2");
   ControlService * cs = ControlService::Instance();

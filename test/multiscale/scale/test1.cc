@@ -5,7 +5,7 @@
 int main(int argc, char * argv[])
 {
   using namespace amsi;
-  initMultiscale(argc,argv);
+  initMultiscale(argc,argv, MPI_COMM_WORLD);
   int failed = 0;
   std::vector<uuid> nodes;
   getNodeSet(nodes,AMSI_COMM_WORLD);

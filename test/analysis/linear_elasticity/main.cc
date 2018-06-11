@@ -11,7 +11,7 @@ int main (int argc, char ** argv)
   int result = 0;
   amsi::useSimmetrix(std::string("/net/common/meshSim/license/license.txt"));
   amsi::usePetsc(std::string("petsc_options"));
-  amsi::initAnalysis(argc,argv);
+  amsi::initAnalysis(argc,argv, MPI_COMM_WORLD);
   {
     Sim_logOn("sim.log");
     pGModel mdl = GM_load(argv[1],0,NULL);

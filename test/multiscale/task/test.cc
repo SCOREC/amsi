@@ -15,7 +15,7 @@ int task1(int&,char**&,MPI_Comm)
 }
 int main(int argc, char * argv[])
 {
-  initMultiscale(argc,argv);
+  initMultiscale(argc,argv, MPI_COMM_WORLD);
   int rank = -1;
   MPI_Comm_rank(AMSI_COMM_SCALE,&rank);
   int size = 0;
