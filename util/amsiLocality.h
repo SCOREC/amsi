@@ -2,13 +2,13 @@
 #define AMSI_MPI_H_
 #include "amsiMPI.h"
 #include "amsiUUID.h"
-#include <hwloc.h>
+//#include <hwloc.h>
 #include <mpi.h>
 #include <vector>
 namespace amsi
 {
-  extern hwloc_topology_t machine_topology;
-  class RankSet;
+  //extern hwloc_topology_t machine_topology;
+  //class RankSet;
   /**
    * Get a uuid (misnomer) which identifies the hardware processor
    *  the local mpi rank is executing on. This is based on hashing
@@ -17,7 +17,7 @@ namespace amsi
    *  fine.
    * @todo Should this be getSocketID?
    */
-  uuid getNodeID();
+  //uuid getNodeID();
   /**
    * Get a vector containing the uuid of every hardware processor
    *  in the specified comm in no particular order.
@@ -27,7 +27,7 @@ namespace amsi
    * @note This call is collective over the specified comm.
    * @todo Should this be getSocketSet?
    */
-  void getNodeSet(std::vector<uuid> & nodes, MPI_Comm c = AMSI_COMM_WORLD);
+  //void getNodeSet(std::vector<uuid> & nodes, MPI_Comm c = AMSI_COMM_WORLD);
   // brief : get all mpi ranks in comm associated with the hardware processor p_id
   /**
    * Get the mpi ranks of the processes executing on the specific
@@ -35,7 +35,7 @@ namespace amsi
    * @note Currently unimplemented
    * @todo implement!
    */
-  void getRanksOnSocket(uuid p_id, RankSet & rnks, MPI_Comm c = AMSI_COMM_WORLD);
+  //void getRanksOnSocket(uuid p_id, RankSet & rnks, MPI_Comm c = AMSI_COMM_WORLD);
   /**
    * Get the mpi ranks (in the specified comm) of the processes executing
    *  on the specific machine node specified.
@@ -43,14 +43,14 @@ namespace amsi
    * @param ranks The set of ranks on the specified machine node.
    * @param c The mpi comm in which the ranks are specified.
    */
-  void getRanksOnNode(uuid n_id, RankSet & ranks, MPI_Comm c = AMSI_COMM_WORLD);
+  //void getRanksOnNode(uuid n_id, RankSet & ranks, MPI_Comm c = AMSI_COMM_WORLD);
   /**
    * Get the nth rank on the specified machine node in the specified comm.
    * @return The mpi rank of the nth process on machine node n_id
    */
-  int getNthRankOnNode(uuid n_id,
-                       int nth,
-                       MPI_Comm c = AMSI_COMM_WORLD);
+  //int getNthRankOnNode(uuid n_id,
+  //                     int nth,
+  //                     MPI_Comm c = AMSI_COMM_WORLD);
   /**
    * Get the nth rank of every machine node specified in the specified comm.
    * @param nids The machine nodes to get the mpi rank of the nth local process on.
@@ -58,9 +58,9 @@ namespace amsi
    * @param rnks The resulting set of mpi ranks.
    * @param c The MPI_Comm the resulting ranks are valid in.
    */
-  void getNthRankOnNodes(const std::vector<uuid> & nids,
-                         int nth,
-                         RankSet * rnks,
-                         MPI_Comm c = AMSI_COMM_WORLD);
+  //void getNthRankOnNodes(const std::vector<uuid> & nids,
+  //                       int nth,
+  //                       RankSet * rnks,
+  //                       MPI_Comm c = AMSI_COMM_WORLD);
 }
 #endif

@@ -3,6 +3,7 @@
 #include "amsiBoundaryConditions.h"
 #include "amsiLAS.h"
 #include "amsiMPI.h"
+#include <PCU.h>
 #include <cstring> // memset
 #include <iostream>
 #include <list>
@@ -55,7 +56,8 @@ namespace amsi
     void setSimulationTime(double t)
     {
       T = t;
-      std::cout << "Simulation time updated: " << T << std::endl;
+      if(!PCU_Comm_Self())
+	std::cout << "Simulation time updated: " << T << std::endl;
     }
     template <typename NODE_TYPE>
       void AssembleDOFs(LAS * las,

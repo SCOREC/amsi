@@ -31,11 +31,11 @@ namespace las
   }
   ::Mat * getPetscMat(las::Mat * m)
   {
-    return reinterpret_cast<::Mat*>(m);
+    return reinterpret_cast< ::Mat* >(m);
   }
   ::Vec * getPetscVec(las::Vec * v)
   {
-    return reinterpret_cast<::Vec*>(v);
+    return reinterpret_cast< ::Vec* >(v);
   }
   LasOps * getPetscOps()
   {

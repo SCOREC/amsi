@@ -128,7 +128,7 @@ namespace amsi
     result = logs[nm];
     if(result == NULL)
     {
-      std::cout << "Creating log: " << nm << std::endl;
+      //std::cout << "Creating log: " << nm << std::endl;
       result = logs[nm] = Log(new log_class(nm));
     }
     return result;

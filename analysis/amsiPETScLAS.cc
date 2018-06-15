@@ -42,10 +42,10 @@ namespace amsi
       VecDuplicate(b_i,&w);
       VecGetOwnershipRange(b_i,&vec_low,&vec_high);
       MatGetOwnershipRange(A,&mat_low,&mat_high);
-      std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;
-      std::cout << "Vector ownership range: " << vec_low << "-" << vec_high << std::endl;
-      std::cout << "Matrix ownership range: " << mat_low << "-" << mat_high << std::endl;
-      std::cout << "(Re)initialized the matrix, vectors and the solver" << std::endl;
+      //std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;
+      //std::cout << "Vector ownership range: " << vec_low << "-" << vec_high << std::endl;
+      //std::cout << "Matrix ownership range: " << mat_low << "-" << mat_high << std::endl;
+      //std::cout << "(Re)initialized the matrix, vectors and the solver" << std::endl;
     }
   }
   void PetscLAS::iter()

@@ -68,7 +68,7 @@ namespace amsi
     int newton_iteration = 0;
     while(true)
     {
-      std::cout << "Newton iteration " << newton_iteration << ":" << std::endl;
+      //std::cout << "Newton iteration " << newton_iteration << ":" << std::endl;
       fem->ApplyBC_Dirichlet();
       fem->RenumberDOFs();
       fem->GetDOFInfo(global_dof_count,local_dof_count,first_local_dof);

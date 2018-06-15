@@ -8,6 +8,7 @@
 //  phased out of the codebase anyway.
 namespace amsi
 {
+  /*
   typedef size_t uuid;
   template <typename T>
     inline uuid generateUUID(const T & src)
@@ -30,5 +31,6 @@ namespace amsi
       combineUUID(result,*it);
     return result;
   }
+  */
 }
 #endif

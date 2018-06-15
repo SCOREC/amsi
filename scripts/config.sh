@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # CMake config for AMSI
 # usage: ./config.sh [build_type] [build_tests_flag]
 #
@@ -30,21 +30,20 @@ rm -rf $BUILD_DIR/CMakeCache.txt
 cd $BUILD_DIR
 HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
-  module use /gpfs/u/home/PASC/PASCtbnw/barn-shared/install/petsc-3.6.3/bgq/xl/lib/petsc/conf/modules/
-  module use /gpfs/u/barn/PASC/shared/module
-  module load xl
-  module load petsc/3.6.3
-  module load proprietary/simmetrix/simModSuite/11.0-160922pre-xl
-  module load boost
+  #module use /gpfs/u/home/PASC/PASCtbnw/barn-shared/install/petsc-3.6.3/bgq/xl/lib/petsc/conf/modules/
+  #module use /gpfs/u/barn/PASC/shared/module
+  #module load xl
+  #module load petsc/3.6.3
+  #module load proprietary/simmetrix/simModSuite/11.0-160922pre-xl
+  #module load boost
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_C_COMPILER="mpicc" \
     -DCMAKE_CXX_COMPILER="mpicxx" \
     -DBUILD_TESTS=$BUILD_TESTS \
-    -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/ \
-    -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
-    -DHWLOC_ROOT=$DEVROOT/install/hwloc/xl/ \
-    -DBOOST_INCLUDE_DIR=$BOOST_INCLUDE_DIR \
+    -DCMAKE_INSTALL_PREFIX=/gpfs/u/scratch/PASC/shared/install/amsi/ \
+    -DSCOREC_DIR=/gpfs/u/scratch/PASC/shared/install/core/lib/cmake/SCOREC\ \
+    -DBOOST_INCLUDE_DIR=/gpfs/u/barn/PASC/shared/boost_1_56_0/ \
     ..
 else
     CC=`which mpicc`

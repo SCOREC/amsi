@@ -61,7 +61,7 @@ namespace amsi
     MPI_Request asend(T * msg, int to, int cnt = 1, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     MPI_Request rqst;
-    MPI_Isend(msg,cnt,mpi_type<T>(),to,0,cm,&rqst);
+    MPI_Isend((void*)msg,cnt,mpi_type<T>(),to,0,cm,&rqst);
     return rqst;
   }
   template <typename T>

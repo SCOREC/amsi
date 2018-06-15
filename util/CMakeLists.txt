@@ -46,7 +46,7 @@ set(util_source_files
   pystring.cc
   )
 
-find_package(HWLOC REQUIRED)
+#find_package(HWLOC REQUIRED)
 find_package(SCOREC CONFIG REQUIRED)
 
 # FIXME configured files should be configured into build dir

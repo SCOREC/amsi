@@ -46,7 +46,7 @@ namespace amsi
   void initCase(pModel mdl, pACase cs)
   {
     char * nm = AttNode_name(cs);
-    std::cout << "Initializing analysis case: " << nm << std::endl;
+    //std::cout << "Initializing analysis case: " << nm << std::endl;
     pPList chdrn = AttNode_children(cs);
     pACase chd = NULL;
     void * it = NULL;
@@ -59,7 +59,7 @@ namespace amsi
   void freeCase(pACase cs)
   {
     char * nm = AttNode_name(cs);
-    std::cout << "Freeing analysis case " << nm << std::endl;
+    //std::cout << "Freeing analysis case " << nm << std::endl;
     AttCase_unassociate(cs);
     Sim_deleteString(nm);
   }
@@ -133,7 +133,7 @@ namespace amsi
   }
   void initAttributeCase(pGModel mdl,const char * att_cs)
   {
-    std::cout << "Initializing attribute case " << att_cs << std::endl;
+    //std::cout << "Initializing attribute case " << att_cs << std::endl;
     pACase cs = AMAN_findCase(SModel_attManager(mdl),att_cs);
     if(cs)
     {

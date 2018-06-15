@@ -1,4 +1,4 @@
-find_package(PETSC REQUIRED)
+find_package(PETSC)
 find_package(zoltan)
 find_package(SCOREC CONFIG REQUIRED)
 

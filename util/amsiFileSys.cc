@@ -11,8 +11,8 @@ namespace amsi
   }
   void describeFSInfo(FileSystemInfo * fsi, std::ostream & out)
   {
-    out << "Executing in " << fsi->getcwd() << std::endl;
-    out << "Results written to " << fsi->getResultsDir() << std::endl;
+    //out << "Executing in " << fsi->getcwd() << std::endl;
+    //out << "Results written to " << fsi->getResultsDir() << std::endl;
   }
   bool isRelativePath(const std::string & pth)
   {
@@ -38,7 +38,7 @@ namespace amsi
     struct stat sb;
     if(stat(rslts.c_str(),&sb) != 0)
     {
-      std::cout << "STATUS: specified results directory [" << rslts << "] doesn't exist, creating..." << std::endl;
+      //std::cout << "STATUS: specified results directory [" << rslts << "] doesn't exist, creating..." << std::endl;
       mkdir(rslts.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
     else if(!S_ISDIR(sb.st_mode))

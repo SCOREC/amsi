@@ -4,7 +4,8 @@
 #include <algorithm>
 namespace amsi
 {
-  hwloc_topology_t machine_topology;
+  /*
+  //hwloc_topology_t machine_topology;
   uuid getNodeID()
   {
     uuid lid = 0;
@@ -69,4 +70,5 @@ namespace amsi
     for(std::vector<uuid>::const_iterator nid = nids.begin(); nid != nids.end(); nid++)
       rnks->insert(getNthRankOnNode(*nid,nth,cm));
   }
+  */
 }
