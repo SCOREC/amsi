@@ -82,6 +82,7 @@ namespace amsi
           apf::setVector(apf_coord_field,me,jj,new_coord);
         }
       }
+      mesh->end(it);
     }
   }
   void printNumbering(std::ostream & out, apf::Numbering * numbering)
@@ -115,6 +116,7 @@ namespace amsi
           }
         }
       }
+      mesh->end(it);
     }
   }
   void SymmMatrixToVoigtVector(const apf::Matrix3x3 & mat,
