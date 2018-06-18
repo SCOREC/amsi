@@ -56,7 +56,6 @@ else
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
         -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH \
-        -DHWLOC_LIB_DIR=$DEVROOT/install/hwloc/lib/ \
         -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
         ..
 fi
