@@ -57,6 +57,7 @@ set(CONFIGURE_OPTIONS
   "-DCMAKE_CXX_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
   "-DCMAKE_C_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
   "-DCMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
+  "-DVERBOSITY=3"
   )
 
 function(git_exec CMD ACTION)

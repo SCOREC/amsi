@@ -6,6 +6,7 @@
 #include <numeric>
 #include <stdexcept>
 #include <vector>
+#include <amsiVerbosity.h>
 namespace amsi
 {
   class LinearIteration : public Iteration
@@ -68,7 +69,7 @@ namespace amsi
     int newton_iteration = 0;
     while(true)
     {
-      //std::cout << "Newton iteration " << newton_iteration << ":" << std::endl;
+      AMSI_V1(std::cout << "Newton iteration " << newton_iteration << ":" << std::endl;)
       fem->ApplyBC_Dirichlet();
       fem->RenumberDOFs();
       fem->GetDOFInfo(global_dof_count,local_dof_count,first_local_dof);

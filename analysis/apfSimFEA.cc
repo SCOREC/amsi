@@ -5,6 +5,7 @@
 #include <apfSIM.h>
 #include <apfShape.h>
 #include <cassert>
+#include <amsiVerbosity.h>
 namespace amsi
 {
   apfSimFEA::apfSimFEA(pGModel imdl,
@@ -25,7 +26,7 @@ namespace amsi
                                             dir_bcs.end(),
                                             T);
     fixed_dofs = comm_sum(fixed_dofs,analysis_comm);
-    //std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;
+    AMSI_V1(std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;)
   }
   void apfSimFEA::ApplyBC_Neumann(LAS * las)
   {

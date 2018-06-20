@@ -44,6 +44,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     -DCMAKE_INSTALL_PREFIX=/gpfs/u/scratch/PASC/shared/install/amsi/ \
     -DSCOREC_DIR=/gpfs/u/scratch/PASC/shared/install/core/lib/cmake/SCOREC\ \
     -DBOOST_INCLUDE_DIR=/gpfs/u/barn/PASC/shared/boost_1_56_0/ \
+    -DVERBOSITY=0 \
     ..
 else
     CC=`which mpicc`
@@ -57,5 +58,6 @@ else
         -DCMAKE_CXX_COMPILER=$CXX \
         -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH \
         -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
+        -DVERBOSITY=3 \
         ..
 fi

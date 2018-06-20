@@ -4,7 +4,7 @@ project(amsi)
 
 set(AMSI_MAJOR_VERSION 1)
 set(AMSI_MINOR_VERSION 0)
-set(AMSI_PATCH_VERSION 0)
+set(AMSI_PATCH_VERSION 1)
 set(AMSI_VERSION ${AMSI_MAJOR_VERSION}.${AMSI_MINOR_VERSION}.${AMSI_PATCH_VERSION})
 
 # add FindPACKAGE.cmake files to path
@@ -42,6 +42,22 @@ if(BUILD_TESTS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
   endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 endif(BUILD_TESTS)
+
+if(VERBOSITY)
+  if(VERBOSITY GREATER 3)
+    message(WARNING "Invalid verbosity. Seting VERBOSITY=3")
+  endif(VERBOSITY GREATER 3)
+
+  if(VERBOSITY EQUAL 1)
+    add_definitions(-DAMSI_VERBOSE_1)
+  elseif(VERBOSITY EQUAL 2)
+    add_definitions(-DAMSI_VERBOSE_1 -DAMSI_VERBOSE_2)
+  elseif(VERBOSITY EQUAL 3)
+    add_definitions(-DAMSI_VERBOSE_1 -DAMSI_VERBOSE_2 -DAMSI_VERBOSE_3)
+  else(VERBOSITY EQUAL 1)
+    message(FATAL_ERROR "Something went wrong with VERBOSITY setting: ${VERBOSITY}")
+  endif(VERBOSITY EQUAL 1)
+endif(VERBOSITY)
 
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)

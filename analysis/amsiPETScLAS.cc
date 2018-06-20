@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <iostream>
 #include <limits>
+#include <amsiVerbosity.h>
 namespace amsi
 {
   void PetscLAS::Reinitialize(int num_local_unknowns,
@@ -42,10 +43,11 @@ namespace amsi
       VecDuplicate(b_i,&w);
       VecGetOwnershipRange(b_i,&vec_low,&vec_high);
       MatGetOwnershipRange(A,&mat_low,&mat_high);
-      //std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;
-      //std::cout << "Vector ownership range: " << vec_low << "-" << vec_high << std::endl;
-      //std::cout << "Matrix ownership range: " << mat_low << "-" << mat_high << std::endl;
-      //std::cout << "(Re)initialized the matrix, vectors and the solver" << std::endl;
+      AMSI_V1(std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;)
+      AMSI_V1(std::cout << "Local equations = " << n << ", Global Equations = " << N << std::endl;)
+      AMSI_V1(std::cout << "Vector ownership range: " << vec_low << "-" << vec_high << std::endl;)
+      AMSI_V1(std::cout << "Matrix ownership range: " << mat_low << "-" << mat_high << std::endl;)
+      AMSI_V1(std::cout << "(Re)initialized the matrix, vectors and the solver" << std::endl;)
     }
   }
   void PetscLAS::iter()

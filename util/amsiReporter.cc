@@ -9,6 +9,7 @@
 #include <map>
 #include <sstream>
 #include <mpi.h>
+#include <amsiVerbosity.h>
 namespace amsi
 {
   class log_class
@@ -128,7 +129,7 @@ namespace amsi
     result = logs[nm];
     if(result == NULL)
     {
-      //std::cout << "Creating log: " << nm << std::endl;
+      AMSI_V1(std::cout << "Creating log: " << nm << std::endl;)
       result = logs[nm] = Log(new log_class(nm));
     }
     return result;

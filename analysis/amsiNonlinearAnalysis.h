@@ -3,6 +3,7 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <amsiVerbosity.h>
 namespace amsi
 {
   class Iteration;
@@ -150,12 +151,11 @@ namespace amsi
     {
       update();
       bool cvrgd = false;
-      /*
+      AMSI_V1(
       std::cout << "convergence criteria: " << std::endl
                 << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
                 << "\t" << cvg_vl << " < " << eps * ref_vl << std::endl
-                << "\t" << ((cvrgd = cvg_vl < eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;
-      */
+                << "\t" << ((cvrgd = cvg_vl < eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;)
       cvrgd = cvg_vl < eps * ref_vl;
       return cvrgd;
     }

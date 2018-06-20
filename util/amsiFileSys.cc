@@ -1,6 +1,7 @@
 #include "amsiFileSys.h"
 #include <iostream>
 #include <sys/stat.h>
+#include <amsiVerbosity.h>
 namespace amsi
 {
   const std::string getpwd()
@@ -11,8 +12,8 @@ namespace amsi
   }
   void describeFSInfo(FileSystemInfo * fsi, std::ostream & out)
   {
-    //out << "Executing in " << fsi->getcwd() << std::endl;
-    //out << "Results written to " << fsi->getResultsDir() << std::endl;
+    AMSI_V1(out << "Executing in " << fsi->getcwd() << std::endl;)
+    AMSI_V1(out << "Results written to " << fsi->getResultsDir() << std::endl;)
   }
   bool isRelativePath(const std::string & pth)
   {
@@ -38,7 +39,7 @@ namespace amsi
     struct stat sb;
     if(stat(rslts.c_str(),&sb) != 0)
     {
-      //std::cout << "STATUS: specified results directory [" << rslts << "] doesn't exist, creating..." << std::endl;
+      AMSI_V1(std::cout << "STATUS: specified results directory [" << rslts << "] doesn't exist, creating..." << std::endl;)
       mkdir(rslts.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
     else if(!S_ISDIR(sb.st_mode))

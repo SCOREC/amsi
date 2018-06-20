@@ -30,7 +30,7 @@ namespace amsi
       int fxd = 0;
       for(auto fld = bc_flds.begin(); fld != bc_flds.end(); ++fld)
         fxd += fld->applyDirichletBCs();
-      //std::cout << "Dirichlet boundary conditions fixed " << fxd << " local degrees of freedom on all constrained fields" << std::endl;
+      AMSI_V1(std::cout << "Dirichlet boundary conditions fixed " << fxd << " local degrees of freedom on all constrained fields" << std::endl;)
     }
     virtual void applyNeumannBCs(LAS * ls)
     {

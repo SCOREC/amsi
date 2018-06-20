@@ -25,7 +25,7 @@ set(util_public_headers
   amsiTee.h
   amsiUtilFunctions.h
   amsiUUID.h
-  amsiByteStream.h
+  amsiVerbosity.h
   unordered_map.h
   pystring.h
   )
