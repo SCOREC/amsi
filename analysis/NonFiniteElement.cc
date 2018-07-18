@@ -96,6 +96,10 @@ namespace amsi
     B.setSize(6,num_nodes*3);
     B.zero();
     apf::Matrix3x3 L;
+    // initialize L to all zeros
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
+        L[i][j] = 0.0;
     for(int kk = 0; kk < num_nodes; kk++)
       for(int ii = 0; ii < 3; ii++)
         for(int jj = 0; jj < 3; jj++)
@@ -150,8 +154,6 @@ namespace amsi
     }
   }
 }
-
-
 
 
 

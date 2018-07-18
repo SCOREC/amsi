@@ -60,6 +60,7 @@ namespace amsi {
   void ludcmp(double **a, int n, IntArray& indx, double& d)
   {
     int i, imax, j,k;
+    imax = 0; // initialize imax to zero to quell compiler warnings
     double big,dum,sum,temp;
     std::vector<double> vv(n);
     d=1.0;
