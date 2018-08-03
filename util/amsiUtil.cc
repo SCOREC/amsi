@@ -120,10 +120,10 @@ namespace amsi
       }
     }
   }
-  static bool inited = false;
+  static int inited = 0;
   void initUtil(int argc, char ** argv, MPI_Comm cm)
   {
-    if(!inited)
+    if(inited == 0)
     {
       MPI_Init(&argc,&argv);
       MPI_Comm_dup(cm,&AMSI_COMM_SCALE);
@@ -137,16 +137,17 @@ namespace amsi
         configureUtilFromFile(options_filename);
       if(rnk > 1)
         amsi::expressOutput(std::cout);
-      inited = true;
     }
+    inited++;
   }
   void freeUtil()
   {
-    if(inited)
+    inited--;
+    assert(inited >= 0);
+    if(inited == 0)
     {
       PCU_Comm_Free();
       MPI_Finalize();
-      inited = false;
     }
   }
 }
