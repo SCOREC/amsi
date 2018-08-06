@@ -53,7 +53,7 @@ set(CONFIGURE_OPTIONS
   "-DCMAKE_CXX_COMPILER=mpicxx"
   "-DCMAKE_PREFIX_PATH=$ENV{CMAKE_PREFIX_PATH}"
   "-DHWLOC_LIB_DIR=$ENV{DEVROOT}/install/hwloc/lib/"
-  "-DSCOREC_DIR=$ENV{DEVROOT}/install/core/lib/cmake/SCOREC"
+  "-DSCOREC_DIR=$ENV{DEVROOT}/install/core/Debug/lib/cmake/SCOREC"
   "-DCMAKE_CXX_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
   "-DCMAKE_C_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
   "-DCMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=-g -O0 -fprofile-arcs -ftest-coverage"
