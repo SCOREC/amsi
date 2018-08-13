@@ -14,6 +14,7 @@ namespace amsi
     apfSimFEA(pGModel imdl,
               pParMesh imsh,
               pACase pd,
+              pACase ss,
               MPI_Comm cm = AMSI_COMM_SCALE);
     virtual void Adapt();
     virtual void ApplyBC_Dirichlet();

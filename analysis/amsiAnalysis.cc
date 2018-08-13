@@ -64,27 +64,22 @@ namespace amsi
     use_simmetrix = true;
     simmetrix_license_file = sim_lic;
   }
-  void simmetrixInit(int, char **, MPI_Comm cm)
+  void simmetrixInit(int argc, char ** argv, MPI_Comm cm)
   {
     PMU_setCommunicator(cm);
-    Sim_readLicenseFile(simmetrix_license_file.c_str());
     MS_init();
-    SimPartitionedMesh_start(0,0);
-    //SimModel_start();
-    SimDiscrete_start(0);
+    Sim_readLicenseFile(simmetrix_license_file.c_str());
+    //SimPartitionedMesh_start(0,0);
+    SimPartitionedMesh_start(&argc,&argv);
     SimMeshing_start();
     gmi_sim_start();
     gmi_register_sim();
-    //SimField_start();
   }
   void simmetrixFree()
   {
-    //SimField_stop();
-    gmi_sim_stop();
-    SimMeshing_stop();
-    SimDiscrete_stop(0);
-    //SimModel_stop();
     SimPartitionedMesh_stop();
+    SimMeshing_stop();
+    gmi_sim_stop();
     MS_exit();
     Sim_unregisterAllKeys();
   }

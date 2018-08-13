@@ -11,10 +11,11 @@ namespace amsi
   apfSimFEA::apfSimFEA(pGModel imdl,
                        pParMesh imsh,
                        pACase pd,
+                       pACase ss,
                        MPI_Comm cm)
     : FEA(cm)
     , apfFEA(apf::createMesh(imsh),cm)
-    , SimFEA(imdl,imsh,pd,cm)
+    , SimFEA(imdl,imsh,pd,ss,cm)
     , mesh_size_field(NULL)
     , mesh_adapted(false)
   { }

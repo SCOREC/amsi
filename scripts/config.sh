@@ -18,6 +18,7 @@ if [ "$BUILD_TYPE" == "Debug" ]; then
     BUILD_TESTS=OFF
   fi
 elif [ "$BUILD_TYPE" == "Release" ] ; then
+  BUILD_TYPE="RelWithDebugInfo"
   BUILD_DIR=$ROOT/build_release
   BUILD_TESTS=OFF
   if [ "$TEST_OVERRIDE" == "ON" ] ; then
@@ -40,7 +41,7 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_C_COMPILER="mpicc" \
     -DCMAKE_CXX_COMPILER="mpicxx" \
-    -DBUILD_TESTS=$BUILD_TESTS \
+    -DBUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX=/gpfs/u/scratch/PASC/shared/install/amsi/ \
     -DSCOREC_DIR=/gpfs/u/scratch/PASC/shared/install/core/lib/cmake/SCOREC\ \
     -DBOOST_INCLUDE_DIR=/gpfs/u/barn/PASC/shared/boost_1_56_0/ \
@@ -53,11 +54,11 @@ else
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=$BUILD_TESTS \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/ \
+        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/$BUILD_TYPE\
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
-        -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH \
-        -DSCOREC_DIR=$DEVROOT/install/core/lib/cmake/SCOREC \
+        -DSCOREC_DIR=$DEVROOT/install/core/$BUILD_TYPE/lib/cmake/SCOREC \
         -DVERBOSITY=3 \
         ..
+        #-DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH \
 fi

@@ -314,8 +314,6 @@ namespace amsi
     }
     void run() { apply(fld); }
   };
-  // make this generic as soon as we need to copy another type of tag
-  void copyIntTag(const std::string & nm, apf::Mesh * org, apf::Mesh * dst, int dm_lw, int dm_hg);
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,
                   apf::Vector3 & n);

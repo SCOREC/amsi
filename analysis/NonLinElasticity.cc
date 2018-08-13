@@ -7,9 +7,10 @@ namespace amsi
   NonLinElasticity::NonLinElasticity(pGModel imdl,
                                      pParMesh imsh,
                                      pACase pd,
+                                     pACase ss,
                                      MPI_Comm cm)
     : FEA(cm)
-    , apfSimFEA(imdl,imsh,pd,cm)
+    , apfSimFEA(imdl,imsh,pd,ss,cm)
     , poisson_ratio(0.3)
     , youngs_modulus(20000)
   {

@@ -17,6 +17,7 @@ namespace amsi
   SimFEA::SimFEA(pGModel imdl,
                  pParMesh imsh,
                  pACase pd,
+                 pACase ss,
                  MPI_Comm cm)
     : FEA(cm)
     , model(imdl)
@@ -24,6 +25,7 @@ namespace amsi
     , part(PM_mesh(imsh,0))
     , should_adapt(false)
     , prob_def(pd)
+    , solution_strategy(ss)
     , sim_size_field()
     , fields_to_map(PList_new())
   {  }

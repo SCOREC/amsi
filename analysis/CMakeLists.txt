@@ -13,6 +13,8 @@ set(analysis_public_headers
     amsiBoundaryConditions.h
     amsiBoundaryConditions_impl.h
     amsiDeformation.h
+    amsiDetectOscillation.h
+    amsiDetectOscillation_impl.h
     amsiDofHolder.h
     amsiDummyLAS.h
     amsiElasticityFEA.h

@@ -7,9 +7,9 @@
 #include <limits>
 namespace amsi
 {
-  ElasticityFEA::ElasticityFEA(pGModel imdl, pParMesh imsh, pACase pd, MPI_Comm cm, double E, double v)
+  ElasticityFEA::ElasticityFEA(pGModel imdl, pParMesh imsh, pACase pd, pACase ss, MPI_Comm cm, double E, double v)
     : FEA(cm)
-    , apfSimFEA(imdl,imsh,pd,cm)
+    , apfSimFEA(imdl,imsh,pd,ss,cm)
     , youngs_modulus(E)
     , poisson_ratio(v)
   {

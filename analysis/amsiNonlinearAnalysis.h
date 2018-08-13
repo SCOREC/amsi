@@ -3,7 +3,9 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <functional>
 #include <amsiVerbosity.h>
+#include <cassert>
 namespace amsi
 {
   class Iteration;
@@ -28,7 +30,6 @@ namespace amsi
   {
     virtual void step() = 0;
   };
-  struct ResetIteration;
   /**
    * An iteration object that represents a single iteration
    *  for a numerical simulation. The base class merely tracks
@@ -41,46 +42,61 @@ namespace amsi
    */
   class Iteration
   {
-  private:
+  protected:
     int itr;
+    bool fail;
   public:
-    Iteration() : itr(0) {}
+    Iteration() : itr(0), fail(false) {}
     virtual ~Iteration() {}
     virtual void iterate()
     {
       ++itr;
     }
-    int iteration() { return itr; }
-  protected:
+    int iteration() const { return itr; }
+    virtual bool failed() { return fail; }
     void reset() { itr = 0; }
-    friend ResetIteration;
   };
-  /**
-   * An iteration object composed of a sequence of
-   *  operations modeled by PerIter objects to allow
-   *  for more dynamic construction of the flow of a
-   *  simulation.
+  /*
+   * A class that allows the construction of an interation out of list of
+   * iteration objects. This is used in the same way as MultiConverence. It is
+   * also similar to ModularIteration, however since it contains full iteration
+   * objects it gives more control over the ordering of things.
+   * MultiIteration does not take ownership of any sub iterations and expects the user
+   * to delete them after use
+   *
    */
-  class ModularIteration : public Iteration
-  {
-  private:
-    std::vector<PerIter*> ops;
-  public:
-    ModularIteration()
-      : Iteration()
-      , ops()
-    { }
-    virtual ~ModularIteration() {};
-    virtual void iterate()
+  class MultiIteration : public Iteration {
+    protected:
+    std::vector<Iteration*> itrs;
+
+    public:
+    template <typename I>
+    MultiIteration(I bgn, I end) : Iteration(), itrs()
     {
-      for(auto op = ops.begin(); op != ops.end(); ++op)
-        (*op)->iter();
-      Iteration::iterate();
+      std::copy(bgn, end, std::back_inserter(itrs));
     }
-    void addOperation(PerIter * op)
+    // do not assume ownership of sub iterations e.g. do not delete them
+    // we do this for 2 reasons.
+    // 1. we may want to access the subiteration after the multiiteration is complete (unlikely)
+    // 2. we do not want to assume all sub iterations are allocated on the heap
+    virtual ~MultiIteration() {}
+    virtual void iterate() override
     {
-      ops.push_back(op);
+      for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
+        (*itr)->iterate();
+      }
     }
+    virtual bool failed() override
+    {
+      for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
+        if ((*itr)->failed()) {
+          fail = true;
+          return true;
+        }
+      }
+      return false;
+    }
+    virtual void addIteration(Iteration* itr) { itrs.push_back(itr); }
   };
   /**
    * An operation which determines whether the
@@ -89,9 +105,12 @@ namespace amsi
   class Convergence
   {
   public:
+    Convergence() : fail(false) {}
     virtual bool converged() = 0;
-    virtual bool failed() {return false;}
+    virtual bool failed() {return fail;}
     virtual ~Convergence() {};
+  protected:
+    bool fail;
   };
   /**
    * The updating convergence class allows the internal
@@ -104,7 +123,7 @@ namespace amsi
    *            has a double operator()() function which
    *            gives the current epsilon value.
    * @tparam R the current reference value object,
-   *            has a double operator()() functino which
+   *            has a double operator()() function which
    *            gives the current reference value.
    */
   template <typename V, typename E, typename R>
@@ -113,21 +132,24 @@ namespace amsi
   protected:
     Iteration * itr;
     double cvg_vl;
+    double prev_vl;
     double eps;
     double ref_vl;
     V cvg_gen;
     E eps_gen;
     R ref_gen;
   public:
-    UpdatingConvergence(Iteration * it, V v, E e, R r)
+  // prev_vl is initialized greater than cvg_vl so oscillation detection have problems
+  UpdatingConvergence(Iteration* it, V val_gen, E eps_gen, R ref_gen)
       : itr(it)
-      , cvg_vl(0.0)
+      , cvg_vl(std::numeric_limits<double>::max())
+      , prev_vl(std::numeric_limits<double>::max())
       , eps(1e-16)
       , ref_vl(std::numeric_limits<double>::max())
-      , cvg_gen(v)
-      , eps_gen(e)
-      , ref_gen(r)
-    { }
+      , cvg_gen(val_gen)
+      , eps_gen(eps_gen)
+      , ref_gen(ref_gen)
+  { }
     ~UpdatingConvergence()
     { }
     /**
@@ -138,10 +160,13 @@ namespace amsi
      */
     virtual void update()
     {
+      prev_vl = cvg_vl;
       cvg_vl = (*cvg_gen)();
       eps = (*eps_gen)(itr->iteration());
       ref_vl = (*ref_gen)();
     }
+    double getPrevNorm() const {return prev_vl;}
+    double getCurrNorm() const {return cvg_vl;}
     /**
      * Determine whether the modeled operation has
      *  converged.
@@ -160,6 +185,27 @@ namespace amsi
       return cvrgd;
     }
   };
+  /*
+  // this class is designed for use in the MultiIteration
+  template <typename T>
+  class DetectOscillation : public Iteration {
+    protected:
+    T osc;
+
+    public:
+    DetectOscillation(T osc) : osc(osc) {};
+    virtual void iterate() override
+    {
+      if (isOscillating()) {
+        fail = true;
+      }
+      // here for completeness, however we don't really care about the iteration
+      // number of the DetectOscillation class
+      Iteration::iterate();
+    }
+    bool isOscillating() { return (*osc)(); }
+  };
+  */
   /**
    * A convergence class that wraps multiple convergence
    *  objects. Useful for composing simple convergence
@@ -167,6 +213,8 @@ namespace amsi
    *  combined class. Cannot modify the convergence
    *  operations after construction.
    * This is kind of a variation on the Composite pattern.
+   * MultiConvergence does not take ownership of any sub convergence and expects
+   * the user to delete them after use
    */
   class MultiConvergence : public Convergence
   {
@@ -180,18 +228,25 @@ namespace amsi
     {
       std::copy(bgn,end,std::back_inserter(cvgs));
     }
-    virtual bool converged()
+    // do not assume ownership of sub iterations e.g. do not delete them
+    // we do this for 2 reasons.
+    // 1. we may want to access the subiteration after the multiiteration is complete (unlikely)
+    // 2. we do not want to assume all sub iterations are allocated on the heap
+    virtual ~MultiConvergence() {}
+    virtual bool converged() override
     {
       for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
         if(!(*cvg)->converged())
           return false;
       return true;
     }
-    virtual bool failed()
+    virtual bool failed() override
     {
-      for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
-        if((*cvg)->failed())
+      for (auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
+        if ((*cvg)->failed()) {
+          fail = true;
           return true;
+        }
       return false;
     }
   };
@@ -207,24 +262,6 @@ namespace amsi
     virtual bool converged() {return true;}
   };
   extern LinearConvergence linear_convergence; // should be const but converged() isn't const
-  /**
-   * A Convergence class which resets an Iteration object
-   *  if the wrapped Convergence class has converged.
-   */
-  struct ResetIteration : public Convergence
-  {
-    ResetIteration(Convergence * c, Iteration * i) : cvg(c), itr(i) {}
-    virtual bool converged()
-    {
-      bool c = cvg->converged();
-      if(c)
-        itr->reset();
-      return c;
-    }
-  private:
-    Convergence * cvg;
-    Iteration * itr;
-  };
 }
 #include "amsiNonlinearAnalysis_impl.h"
 #endif

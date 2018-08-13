@@ -59,10 +59,10 @@ namespace amsi
   }
   void freeCase(pACase cs)
   {
-    char * nm = AttNode_name(cs);
-    AMSI_V1(std::cout << "Freeing analysis case " << nm << std::endl;)
+    AMSI_V1(char *nm = AttNode_name(cs);
+            std::cout << "Freeing analysis case " << nm << std::endl;)
     AttCase_unassociate(cs);
-    Sim_deleteString(nm);
+    AMSI_V1(Sim_deleteString(nm);)
   }
   const char * attRepTypeString(AttRepType tp)
   {

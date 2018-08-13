@@ -19,9 +19,14 @@ int main (int argc, char ** argv)
     std::vector<pACase> css;
     amsi::getTypeCases(SModel_attManager(mdl),"analysis",std::back_inserter(css));
     amsi::initCase(mdl,css[0]);
-    pACase pd = (pACase)AttNode_childByType((pANode)css[0],"problem definition");
+    pACase pd = (pACase)AttNode_childByType(
+        (pANode)css[0],
+        amsi::getSimCaseAttributeDesc(amsi::PROBLEM_DEFINITION));
+    pACase ss = (pACase)AttNode_childByType(
+        (pANode)css[0],
+        amsi::getSimCaseAttributeDesc(amsi::SOLUTION_STRATEGY));
     amsi::PetscLAS las(0,0);
-    amsi::ElasticityFEA iso_lin(mdl,msh,pd,AMSI_COMM_SCALE);
+    amsi::ElasticityFEA iso_lin(mdl,msh,pd,ss,AMSI_COMM_SCALE);
     amsi::LinearSolver(&iso_lin,&las);
     apf::writeVtkFiles("isotropic_linear_elastic_result",
                        iso_lin.getMesh());

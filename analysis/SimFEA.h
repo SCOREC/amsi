@@ -19,12 +19,14 @@ namespace amsi
     pMesh part;
     bool should_adapt;
     pACase prob_def;
+    pACase solution_strategy;
     pField sim_size_field;
     pPList fields_to_map;
   public:
     SimFEA(pGModel imdl,
            pParMesh imsh,
            pACase pd,
+           pACase ss,
            MPI_Comm cm = AMSI_COMM_SCALE);
     pGModel getGeometricDomain() { return model; }
     pMesh getPart() { return part; }
