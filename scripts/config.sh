@@ -58,7 +58,9 @@ else
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
         -DSCOREC_DIR=$DEVROOT/install/core/$BUILD_TYPE/lib/cmake/SCOREC \
-        -DVERBOSITY=3 \
+        -DPETSC_DIR="$PETSC_DIR" \
+        -DPETSC_ARCH="$PETSC_ARCH" \
+        -DENABLE_VERBOSITY:STRING=HIGH \
         ..
         #-DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH \
 fi

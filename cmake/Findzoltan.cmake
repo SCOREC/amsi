@@ -1,29 +1,33 @@
-include(util)
+# - Try to find zoltan
+# Once done this will define
+#  ZOLTAN_FOUND - System has ZOLTAN
+#  ZOLTAN_INCLUDE_DIRS - The ZOLTAN include directories
+#  ZOLTAN_LIBRARIES - The libraries needed to use ZOLTAN
+#  ZOLTAN_DEFINITIONS - Compiler switches required for using ZOLTAN
 
-# check for explicit parameters
-checkSetParam(PETSC_DIR FALSE)
-checkSetParam(PETSC_ARCH FALSE)
-checkSetParam(ZOLTAN_DIR FALSE)
+set(ZOLTAN_PREFIX "${ZOLTAN_PREFIX_DEFAULT}" CACHE STRING "Zoltan install directory")
+if(ZOLTAN_PREFIX)
+  message(STATUS "ZOLTAN_PREFIX ${ZOLTAN_PREFIX}")
+endif()
 
-# check for pkg?
+find_path(ZOLTAN_INCLUDE_DIR zoltan.h PATHS "${ZOLTAN_PREFIX}/include")
 
-find_path(ZOLTAN_INCLUDE_DIR zoltan.h 
-          HINTS ${PETSC_DIR}/${PETSC_ARCH} ${ZOLTAN_DIR}
-          PATH_SUFFIXES include)
+find_library(ZOLTAN_LIBRARY zoltan PATHS "${ZOLTAN_PREFIX}/lib")
 
-find_library(ZOLTAN_LIBRARY libzoltan.a zoltan 
-             HINTS ${PETSC_DIR}/${PETSC_ARCH} ${ZOLTAN_DIR}
-             PATH_SUFFIXES lib)
+set(ZOLTAN_LIBRARIES ${ZOLTAN_LIBRARY} )
+set(ZOLTAN_INCLUDE_DIRS ${ZOLTAN_INCLUDE_DIR} )
 
-find_package(parmetis REQUIRED)
-# todo (m) Bill : only check for scotch if zoltan is a petsc external package, since otherwise it is not a required dependency of zoltan
-find_package(scotch REQUIRED)
-
-set(ZOLTAN_LIBRARIES ${ZOLTAN_LIBRARY} ${PARMETIS_LIBRARIES} ${SCOTCH_LIBRARIES})
-set(ZOLTAN_INCLUDE_DIRS ${ZOLTAN_INCLUDE_DIR} ${PARMETIS_INCLUDE_DIRS})
+find_package(Parmetis MODULE REQUIRED)
+set(ZOLTAN_LIBRARIES ${ZOLTAN_LIBRARIES} ${PARMETIS_LIBRARIES})
+set(ZOLTAN_INCLUDE_DIRS ${ZOLTAN_INCLUDE_DIRS} ${PARMETIS_INCLUDE_DIRS})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ZOLTAN DEFAULT_MSG
-  ZOLTAN_LIBRARIES 
-  ZOLTAN_INCLUDE_DIRS)
-mark_as_advanced(ZOLTAN_INCLUDE_DIRS ZOLTAN_LIBRARIES)
+# handle the QUIETLY and REQUIRED arguments and set ZOLTAN_FOUND to TRUE
+# if all listed variables are TRUE
+find_package_handle_standard_args(
+    ZOLTAN
+    DEFAULT_MSG
+    ZOLTAN_LIBRARY ZOLTAN_INCLUDE_DIR
+)
+
+mark_as_advanced(ZOLTAN_INCLUDE_DIR ZOLTAN_LIBRARY )

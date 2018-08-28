@@ -3,7 +3,6 @@
 #include "amsiTask.h"
 #include "amsiProcessSet.h"
 #include "amsiProcessAllocator.h"
-#include "amsiMultiscaleConfig.h"
 #include "amsiHost.h"
 #include "amsiScale.h"
 #include "amsiLocality.h"

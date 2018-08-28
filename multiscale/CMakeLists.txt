@@ -1,13 +1,6 @@
-find_package(zoltan)
-
-# FIXME configured files should be configured into build dir
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h.in
-               ${CMAKE_CURRENT_SOURCE_DIR}/amsiMultiscaleConfig.h
-               @ONLY)
 
 set(multiscale_public_headers
   amsiMultiscale.h
-  amsiMultiscaleConfig.h
   amsiAssemblable.h
   amsiAddData.h
   amsiCommunicationManager.h
@@ -52,9 +45,13 @@ target_include_directories(multiscale PUBLIC
                                 $<INSTALL_INTERFACE:include/amsi>)
 target_link_libraries(multiscale PUBLIC util)
 
-if(ZOLTAN_FOUND)
+
+option(ENABLE_ZOLTAN "Enable Zoltan Support" ON)
+if (ENABLE_ZOLTAN)
+  find_package(zoltan MODULE REQUIRED)
   target_link_libraries(multiscale PUBLIC ${ZOLTAN_LIBRARIES})
   target_include_directories(multiscale PUBLIC ${ZOLTAN_INCLUDE_DIRS})
+  target_compile_definitions(multiscale PUBLIC -DZOLTAN)
 endif()
 
 set_property(TARGET multiscale PROPERTY VERSION ${AMSI_VERSION})

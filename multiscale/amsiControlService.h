@@ -1,6 +1,5 @@
 #ifndef AMSI_CONTROLSERVICE_AMSI_H_
 #define AMSI_CONTROLSERVICE_AMSI_H_
-#include "amsiMultiscaleConfig.h"
 #include "amsiCoupling.h"
 #include "amsiAssemblable.h"
 #include "amsiCommunicationManager.h"

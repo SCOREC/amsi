@@ -1,6 +1,5 @@
 #ifndef AMSI_TASK_H_
 #define AMSI_TASK_H_
-#include "amsiMultiscaleConfig.h"
 #include "amsiHost.h"
 #include <PCU.h>
 #include <amsiMPI.h>

@@ -8,5 +8,5 @@ string(REGEX REPLACE "\n" "" PTS ${PTS})
 add_mpi_test(util_logging logging/main.cc 1 "${PTS}")
 target_link_libraries(util_logging util)
 
-#add_mpi_test(byte_packing byte_packing/test.cc 1)
-#target_link_libraries(byte_packing util)
+add_mpi_test(byte_packing byte_packing/test.cc 1)
+target_link_libraries(byte_packing util)
