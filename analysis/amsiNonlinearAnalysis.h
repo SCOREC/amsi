@@ -54,7 +54,7 @@ namespace amsi
     }
     int iteration() const { return itr; }
     virtual bool failed() { return fail; }
-    void reset() { itr = 0; }
+    virtual void reset() { itr = 0; }
   };
   /*
    * A class that allows the construction of an interation out of list of
@@ -95,6 +95,13 @@ namespace amsi
         }
       }
       return false;
+    }
+    virtual void reset() override {
+      for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
+        (*itr)->reset();
+      }
+      // reset the global iteration too
+      itr = 0; 
     }
     virtual void addIteration(Iteration* itr) { itrs.push_back(itr); }
   };
