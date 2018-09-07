@@ -5,8 +5,6 @@ build_debug/
 build_release/
 tags
 compile_commands.json
-test/analysis/meshes/
-doc/
 
 # Prerequisites
 *.d
