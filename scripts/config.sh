@@ -31,12 +31,6 @@ rm -rf $BUILD_DIR/CMakeCache.txt
 cd $BUILD_DIR
 HOSTNAME=`hostname`
 if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
-  #module use /gpfs/u/home/PASC/PASCtbnw/barn-shared/install/petsc-3.6.3/bgq/xl/lib/petsc/conf/modules/
-  #module use /gpfs/u/barn/PASC/shared/module
-  #module load xl
-  #module load petsc/3.6.3
-  #module load proprietary/simmetrix/simModSuite/11.0-160922pre-xl
-  #module load boost
   cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_C_COMPILER="mpicc" \
@@ -54,7 +48,7 @@ else
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=$BUILD_TESTS \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/$BUILD_TYPE\
+        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/$BUILD_TYPE \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
         -DSCOREC_DIR=$DEVROOT/install/core/$BUILD_TYPE/lib/cmake/SCOREC \
