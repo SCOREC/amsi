@@ -54,7 +54,7 @@ install:
   - cd ${DEVROOT}/core
   - mkdir -p ${DEVROOT}/core/build
   - cd ${DEVROOT}/core/build
-  - cmake .. -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_INSTALL_PREFIX=${DEVROOT}/install/core/release -DIS_TESTING=OFF -DBUILD_EXES=OFF -DCMAKE_BUILD_TYPE=Release
+  - cmake .. -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_INSTALL_PREFIX=${DEVROOT}/install/core/Release -DIS_TESTING=OFF -DBUILD_EXES=OFF -DCMAKE_BUILD_TYPE=Release
   - make -j ${NP} && make install
   - cd ${DEVROOT}
   - pwd && ls
