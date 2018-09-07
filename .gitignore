@@ -1,12 +1,13 @@
-util/amsiUtilConfig.h
-analysis/amsiAnalysisConfig.h
-multiscale/amsiMultiscaleConfig.h
+GTAGS
+GRTAGS
+GPATH
 build_debug/
 build_release/
-simmetrix_log
-GPATH
-GRTAGS
-GTAGS
+tags
+compile_commands.json
+test/analysis/meshes/
+doc/
+
 # Prerequisites
 *.d
 
@@ -260,13 +261,47 @@ TSWLatexianTemp*
 
 # expex forward references with \gathertags
 *-tags.tex
-# CMAKE files
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
+# EMACS
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Org-mode
+.org-id-locations
+*_archive
+
+# flymake-mode
+*_flymake.*
+
+# eshell files
+/eshell/history
+/eshell/lastdir
+
+# elpa packages
+/elpa/
+
+# reftex files
+*.rel
+
+# cask packages
+.cask/
+dist/
+
+# Flycheck
+flycheck_*.el
+
+# server auth directory
+/server/
+
+# projectiles files
+.projectile
+
+# directory configuration
+.dir-locals.el
+
+#VIM
+*.swp
