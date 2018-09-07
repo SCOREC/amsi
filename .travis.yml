@@ -56,12 +56,17 @@ install:
   - cd ${DEVROOT}/core/build
   - cmake .. -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_INSTALL_PREFIX=${DEVROOT}/install/core/Release -DIS_TESTING=OFF -DBUILD_EXES=OFF -DCMAKE_BUILD_TYPE=Release
   - make -j ${NP} && make install
+  - cmake .. -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_INSTALL_PREFIX=${DEVROOT}/install/core/Debug -DIS_TESTING=OFF -DBUILD_EXES=OFF -DCMAKE_BUILD_TYPE=Debug
+  - make -j ${NP} && make install
   - cd ${DEVROOT}
   - pwd && ls
 
 script:
   - cd ${DEVROOT}/wrtobin/amsi/scripts
   - ./config.sh Debug
+  - make -j ${NP} VERBOSE=1
+  - ctest
+  - ./config.sh Release
   - make -j ${NP} VERBOSE=1
   - ctest
 

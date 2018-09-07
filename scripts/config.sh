@@ -51,7 +51,7 @@ else
         -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/$BUILD_TYPE \
         -DCMAKE_C_COMPILER=$CC \
         -DCMAKE_CXX_COMPILER=$CXX \
-        -DSCOREC_DIR=$DEVROOT/install/core/$BUILD_TYPE/lib/cmake/SCOREC \
+        -DSCOREC_DIR=$DEVROOT/install/core/${BUILD_TYPE}/lib/cmake/SCOREC \
         -DPETSC_DIR="$PETSC_DIR" \
         -DPETSC_ARCH="$PETSC_ARCH" \
         -DENABLE_VERBOSITY:STRING=HIGH \
