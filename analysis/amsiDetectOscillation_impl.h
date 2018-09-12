@@ -10,7 +10,7 @@ namespace amsi {
         : cnvg(cnvg), itr(itr), maxItr(maxItr)
     {
     }
-    virtual void iterate() override
+    virtual void iterate() 
     {
       // so we want to subtract 1 to get the actual current iteration number
       if (itr->iteration() - 1 >= maxItr) {
@@ -31,7 +31,7 @@ namespace amsi {
         : cnvg(cnvg), itr(itr), prevNormFactor(prevNormFactor)
     {
     }
-    virtual void iterate() override
+    virtual void iterate() 
     {
       if (cnvg->getPrevNorm() * prevNormFactor < cnvg->getCurrNorm()) {
         AMSI_V2(std::cout << "Previous Norm *" << prevNormFactor

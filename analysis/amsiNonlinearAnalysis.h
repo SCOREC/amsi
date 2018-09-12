@@ -80,13 +80,13 @@ namespace amsi
     // 1. we may want to access the subiteration after the multiiteration is complete (unlikely)
     // 2. we do not want to assume all sub iterations are allocated on the heap
     virtual ~MultiIteration() {}
-    virtual void iterate() override
+    virtual void iterate() 
     {
       for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
         (*itr)->iterate();
       }
     }
-    virtual bool failed() override
+    virtual bool failed() 
     {
       for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
         if ((*itr)->failed()) {
@@ -96,7 +96,7 @@ namespace amsi
       }
       return false;
     }
-    virtual void reset() override {
+    virtual void reset() {
       for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
         (*itr)->reset();
       }
@@ -192,27 +192,6 @@ namespace amsi
       return cvrgd;
     }
   };
-  /*
-  // this class is designed for use in the MultiIteration
-  template <typename T>
-  class DetectOscillation : public Iteration {
-    protected:
-    T osc;
-
-    public:
-    DetectOscillation(T osc) : osc(osc) {};
-    virtual void iterate() override
-    {
-      if (isOscillating()) {
-        fail = true;
-      }
-      // here for completeness, however we don't really care about the iteration
-      // number of the DetectOscillation class
-      Iteration::iterate();
-    }
-    bool isOscillating() { return (*osc)(); }
-  };
-  */
   /**
    * A convergence class that wraps multiple convergence
    *  objects. Useful for composing simple convergence
@@ -240,14 +219,14 @@ namespace amsi
     // 1. we may want to access the subiteration after the multiiteration is complete (unlikely)
     // 2. we do not want to assume all sub iterations are allocated on the heap
     virtual ~MultiConvergence() {}
-    virtual bool converged() override
+    virtual bool converged() 
     {
       for(auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
         if(!(*cvg)->converged())
           return false;
       return true;
     }
-    virtual bool failed() override
+    virtual bool failed() 
     {
       for (auto cvg = cvgs.begin(); cvg != cvgs.end(); ++cvg)
         if ((*cvg)->failed()) {
