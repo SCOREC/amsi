@@ -65,10 +65,13 @@ namespace amsi {
             new DetectOscillationIteration<T>(cnvg, itr, maxIteration);
         Iteration* dtct_prev_nrm =
             new DetectOscillationPrevNorm<T>(cnvg, itr, prevNormFactor);
-        std::vector<Iteration*> itr_stps = {dtct_itr, dtct_prev_nrm};
+        std::vector<Iteration*> itr_stps;
+        itr_stps.push_back(dtct_itr);
+        itr_stps.push_back(dtct_prev_nrm);
         return new MultiIteration(itr_stps.begin(), itr_stps.end());
         break;
     }
+    return NULL;
   }
 }  // namespace amsi
 #endif

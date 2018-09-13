@@ -1,3 +1,9 @@
+# config files
+analysis/amsiAnalysisConfig.h
+multiscale/amsiMultiscaleConfig.h
+util/amsiUtilConfig.h
+
+# tags
 GTAGS
 GRTAGS
 GPATH

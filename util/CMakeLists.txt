@@ -82,7 +82,11 @@ endif(ENABLE_VERBOSITY)
 target_compile_definitions(util PUBLIC ${AMSI_VERBOSITY_DEFINITIONS})
 
 if("${HOST}" STREQUAL "BGQ")
-  target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})
+  find_package(Boost REQUIRED)
+  message(WARNING "BOOST: ${Boost_INCLUDE_DIRS}")
+  #target_include_directories(util PUBLIC ${BOOST_INCLUDE_DIR})
+  target_include_directories(util PUBLIC ${Boost_INCLUDE_DIRS})
+  target_compile_definitions(util PUBLIC "-DBGQ")
 endif()
 
 install(TARGETS util
