@@ -3,7 +3,6 @@
 #include <iostream>
 #include <limits>
 #include <vector>
-#include <functional>
 #include <amsiVerbosity.h>
 #include <cassert>
 namespace amsi
@@ -249,5 +248,4 @@ namespace amsi
   };
   extern LinearConvergence linear_convergence; // should be const but converged() isn't const
 }
-#include "amsiNonlinearAnalysis_impl.h"
 #endif

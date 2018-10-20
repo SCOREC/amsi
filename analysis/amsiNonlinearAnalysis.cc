@@ -1,17 +1,22 @@
 #include "amsiNonlinearAnalysis.h"
-namespace amsi {
+namespace amsi
+{
   LinearConvergence linear_convergence;
-  bool numericalSolve(Iteration* it, Convergence* cn)
+  bool numericalSolve(Iteration * it, Convergence * cn)
   {
-    bool scs = true;
-    do {
+    do
+    {
+      if (cn->failed())
+      {
+        return false;
+      }
       it->iterate();
-      if (cn->failed() || it->failed()) {
-        scs = false;
-        break;
+      if (it->failed())
+      {
+        return false;
       }
     } while (!cn->converged());
     it->reset();
-    return scs;
+    return true;
   }
 }  // namespace amsi
