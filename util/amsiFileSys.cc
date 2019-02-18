@@ -28,7 +28,7 @@ namespace amsi
   }
   FileSystemInfo::FileSystemInfo(const std::string & rs)
     : cwd(getpwd())
-    , rslts()
+    , rslts("")
     , rslts_rel(false)
   {
     rslts_rel = isRelativePath(rs);

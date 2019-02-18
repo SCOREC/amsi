@@ -30,7 +30,6 @@ set(analysis_public_headers
     amsiLinearElasticConstitutive.h
     amsiLinearStressStrainIntegrator.h
     amsiNonlinearAnalysis.h
-    amsiNonlinearAnalysis_impl.h
     amsiNeumannIntegrators.h
     amsiPETScLAS.h
     amsiPETScLAS2.h

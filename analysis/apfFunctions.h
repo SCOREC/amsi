@@ -34,8 +34,20 @@ namespace amsi
   };
   // TODO : push the operation classes down a level, retrieve them by function, and make them static since
   //        they have no state
+  struct PvdData
+  {
+    PvdData(std::string filename, double timestep, int part=-1) : filename(filename), timestep(timestep), part(part)
+    {
+      if(part<0)
+        part=0;
+    }
+    std::string filename;
+    double timestep;
+    int part;
+  };
   /// Write a paraview collection file for meshes with the format msh_prfx(ii) where ii ranges from 1 to sz.
   void writePvdFile(const std::string & col_fnm, const std::string & msh_prfx, int sz);
+  void writePvdFile(const std::string & col_fnm, const std::vector<PvdData> & pvd_data);
   ///
   template <typename I>
     void setEntitiesNode(apf::Field * fld, double vl, I bgn, I nd);
@@ -78,6 +90,17 @@ namespace amsi
         op->apply(me,nde,cmp,cmps,to,frm);
     }
   };
+  class WriteScalarMultOp : public ApplyOp
+  {
+    private:
+      double s;
+  public:
+    WriteScalarMultOp(double s) : s(s) {}
+    virtual void apply(apf::MeshEntity*, int, int, int, double & to, const double & frm)
+    {
+      to = s*frm;
+    }
+  };
   class WriteOp : public ApplyOp
   {
   public:
@@ -106,6 +129,14 @@ namespace amsi
     virtual void apply(apf::MeshEntity*, int, int, int, double & to, const double & frm)
     {
       to += frm;
+    }
+  };
+  class SubtractOp : public ApplyOp
+  {
+  public:
+    virtual void apply(apf::MeshEntity*, int, int, int, double & to, const double & frm)
+    {
+      to -= frm;
     }
   };
   class WriteNZOp : public ApplyOp
@@ -219,7 +250,7 @@ namespace amsi
   /**
    * Takes a numbering and array of doubles with an initial dof offset and either
    *  sets or accumulates the array values at the index corresponding to the
-   *  numbering minus the initial dof offset.
+   *  numbering minus the initial dof offset into the field.
    *  \note this only operates on free values. e.g. numbered values that are not fixed
    */
   class ApplyVector : public amsi::FieldOp
@@ -270,6 +301,7 @@ namespace amsi
     void run() { apply(fld); }
   };
   /*
+   *  Copies field values into an array
    *  \note this only operates on free values. e.g. numbered values that are not fixed
    */
   class ToArray : public amsi::FieldOp
@@ -313,6 +345,8 @@ namespace amsi
         }
     }
     void run() { apply(fld); }
+    template <class IteratorType>
+    void run(IteratorType bgn_ent, IteratorType end_ent) { apply(bgn_ent, end_ent, fld); }
   };
   void faceNormal(apf::Mesh *,
                   apf::MeshEntity *,

@@ -42,7 +42,7 @@ namespace amsi
   class Iteration
   {
   protected:
-    int itr;
+    unsigned long itr;
     bool fail;
   public:
     Iteration() : itr(0), fail(false) {}
@@ -51,7 +51,7 @@ namespace amsi
     {
       ++itr;
     }
-    int iteration() const { return itr; }
+    unsigned long iteration() const { return itr; }
     virtual bool failed() { return fail; }
     virtual void reset() { itr = 0; }
   };
@@ -144,9 +144,10 @@ namespace amsi
     V cvg_gen;
     E eps_gen;
     R ref_gen;
+    bool failOnNonConvergence;
   public:
   // prev_vl is initialized greater than cvg_vl so oscillation detection have problems
-  UpdatingConvergence(Iteration* it, V val_gen, E eps_gen, R ref_gen)
+  UpdatingConvergence(Iteration* it, V val_gen, E eps_gen, R ref_gen, bool failOnNonConvergence=false)
       : itr(it)
       , cvg_vl(std::numeric_limits<double>::max())
       , prev_vl(std::numeric_limits<double>::max())
@@ -155,6 +156,7 @@ namespace amsi
       , cvg_gen(val_gen)
       , eps_gen(eps_gen)
       , ref_gen(ref_gen)
+      , failOnNonConvergence(failOnNonConvergence)
   { }
     ~UpdatingConvergence()
     { }
@@ -182,12 +184,17 @@ namespace amsi
     {
       update();
       bool cvrgd = false;
+      
       AMSI_V1(
       std::cout << "convergence criteria: " << std::endl
                 << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
                 << "\t" << cvg_vl << " < " << eps * ref_vl << std::endl
                 << "\t" << ((cvrgd = cvg_vl < eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;)
       cvrgd = cvg_vl < eps * ref_vl;
+      if(!cvrgd && failOnNonConvergence)
+      {
+        this->fail = true;
+      }
       return cvrgd;
     }
   };
