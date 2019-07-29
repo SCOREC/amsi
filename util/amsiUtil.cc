@@ -125,10 +125,10 @@ namespace amsi
   {
     if(inited == 0)
     {
-      MPI_Init(&argc,&argv);
+      //MPI_Init(&argc,&argv);
       MPI_Comm_dup(cm,&AMSI_COMM_SCALE);
       MPI_Comm_dup(cm,&AMSI_COMM_WORLD);
-      PCU_Comm_Init();
+      //PCU_Comm_Init();
       int rnk = -1;
       MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
       if(rnk > 1)

@@ -100,7 +100,7 @@ namespace amsi
         (*itr)->reset();
       }
       // reset the global iteration too
-      itr = 0; 
+      this->itr = 0; 
     }
     virtual void addIteration(Iteration* itr) { itrs.push_back(itr); }
   };

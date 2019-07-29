@@ -56,10 +56,8 @@ namespace amsi {
     switch (type) {
       case DetectOscillationType::IterationOnly:
         return new DetectOscillationIteration<T>(cnvg, itr, maxIteration);
-        break;
       case DetectOscillationType::PrevNorm:
         return new DetectOscillationPrevNorm<T>(cnvg, itr, prevNormFactor);
-        break;
       case DetectOscillationType::IterationPrevNorm:
         Iteration* dtct_itr =
             new DetectOscillationIteration<T>(cnvg, itr, maxIteration);
@@ -69,7 +67,6 @@ namespace amsi {
         itr_stps.push_back(dtct_itr);
         itr_stps.push_back(dtct_prev_nrm);
         return new MultiIteration(itr_stps.begin(), itr_stps.end());
-        break;
     }
     return NULL;
   }

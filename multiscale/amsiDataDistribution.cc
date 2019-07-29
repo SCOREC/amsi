@@ -56,7 +56,7 @@ namespace amsi
     , lcl_rnk(l)
     , valid(false)
     , wgtd(w)
-    , wgts(wgt ? sz : 0)
+    , wgts(wgtd ? sz : 0)
     , dd(sz)
   { }
 #endif

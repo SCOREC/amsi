@@ -1,5 +1,5 @@
 find_package(PETSC)
-find_package(zoltan)
+#find_package(zoltan)
 find_package(SCOREC CONFIG REQUIRED)
 
 # FIXME configured files should be configured into build dir

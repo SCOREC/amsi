@@ -102,8 +102,6 @@ Migration::Migration(MPI_Comm c,
 {
 # ifdef ZOLTAN
   zs = Zoltan_Create(comm);
-# else
-  zs = NULL;
 # endif
   MPI_Comm_size(comm,&comm_size);
 }

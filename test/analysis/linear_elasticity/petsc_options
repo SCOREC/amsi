@@ -10,3 +10,4 @@
 -malloc_log
 -with-scalar-type=real
 -with-precision=double
+-fp_trap
