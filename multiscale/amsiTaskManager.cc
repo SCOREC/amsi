@@ -39,12 +39,15 @@ namespace amsi {
     std::map<size_t,Task*>::iterator it = tasks.find(id);
     return it != tasks.end() ? it->second : NULL;
   }
-  size_t TaskManager::getTaskID(const std::string & nm)
+  size_t TaskManager::getTaskID(const std::string & nm, bool checkIfExists)
   {
     size_t result = id_gen(nm);
-    std::map<size_t,Task*>::iterator it = tasks.find(result);
-    if(it == tasks.end())
-      result = 0;
+    if(checkIfExists)
+    {
+      std::map<size_t,Task*>::iterator it = tasks.find(result);
+      if(it == tasks.end())
+        result = 0;
+    }
     return result;
   }
   Task * TaskManager::getLocalTask()
@@ -62,6 +65,12 @@ namespace amsi {
       result = t->getDD_ID(dd_nm);
     }
     return result;
+  }
+  bool TaskManager::setProcessAllocator(ProcessAllocator * pa)
+  {
+    delete process_allocator;
+    process_allocator = pa;
+    return true;
   }
   bool TaskManager::lockConfiguration()
   {

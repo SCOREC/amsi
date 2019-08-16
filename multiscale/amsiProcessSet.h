@@ -1,6 +1,7 @@
 #ifndef AMSI_PROCESSSET_H_
 #define AMSI_PROCESSSET_H_
 #include <utility>
+#include <set>
 namespace amsi
 {
   /// The interface specification to which all ProcessSet classes must adhere.
@@ -23,11 +24,11 @@ namespace amsi
   {
   public:
     ProcessSet_T(T&);
-    virtual int operator[](int) const;
-    virtual int size() const;
-    virtual bool isIn(int) const;
-    virtual int indexOf(int) const;
-    virtual ProcessSet * extract(int);
+    virtual int operator[](int) const override;
+    virtual int size() const override;
+    virtual bool isIn(int) const override;
+    virtual int indexOf(int) const override;
+    virtual ProcessSet * extract(int) override;
   private:
     T val;
   };
@@ -41,13 +42,40 @@ namespace amsi
     ProcessSet_T(int,int);
     ProcessSet_T(std::pair<int,int>);
     ProcessSet_T(std::pair<int,int> &);
-    virtual int operator[](int) const;
-    virtual int size() const;
-    virtual bool isIn(int) const;
-    virtual int indexOf(int) const;
-    virtual ProcessSet * extract(int); // 'carves' off a chunk of the set
+    virtual int operator[](int) const final;
+    virtual int size() const final;
+    virtual bool isIn(int) const final;
+    virtual int indexOf(int) const final;
+    virtual ProcessSet * extract(int) final; // 'carves' off a chunk of the set
   private:
     std::pair<int,int> val;
+  };
+  template <>
+    class ProcessSet_T<std::set<int>> : public ProcessSet
+  {
+  private:
+    typedef std::set<int> ValSet;
+    ValSet valSet;
+    int lowVal, highVal;
+  public:
+    ProcessSet_T(int,int);
+    ProcessSet_T();
+    virtual int operator[](int) const final;
+    virtual int size() const final;
+    virtual bool isIn(int) const final;
+    virtual int indexOf(int) const final;
+    virtual ProcessSet * extract(int) final; // 'carves' off a chunk of the set
+    // extract strided values from the set. If onStride is true then it will
+    // return values on the stride, otherwise it will return off stride values.
+    // e.g. if stride is 4, onStride will return 0,4,8,... and offStride will return
+    // 1,2,3,5,6,7,9,...
+    ProcessSet * extractStrided(int size, int stride, bool onStride);
+    void insert(int);
+    typedef ValSet::iterator iterator;
+    typedef ValSet::const_iterator const_iterator;
+    iterator begin() { return valSet.begin(); }
+    iterator end() { return valSet.end(); }
+    void setRange(int low, int high) {lowVal=low; highVal=high; }
   };
   inline void toArray(ProcessSet * ps, int * arr)
   {
