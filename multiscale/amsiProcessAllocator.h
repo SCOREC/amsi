@@ -15,6 +15,7 @@ namespace amsi
     {
       managed_processes = static_cast<ProcessSet*>(new ProcessSet_T<std::pair<int,int> >(0,size));
     }
+    virtual ~ProcessAllocator() {};
     bool isAssigned(int rank)
     {
       assert(rank < managed_processes->size());
@@ -26,7 +27,7 @@ namespace amsi
         a = assignments[rank];
     }
     virtual ProcessSet * assign(int size, size_t task_id) = 0;
-    void addAssign(ProcessSet * set, size_t task_id)
+    virtual void addAssign(ProcessSet * set, size_t task_id)
     {
       for(int ii = 0; ii < set->size(); ii++)
         assignments[(*set)[ii]].push_back(task_id);
@@ -51,6 +52,43 @@ namespace amsi
         addAssign(result,task_id);
       }
       return result;
+    }
+  };
+  class StridedProcessAllocator : public ProcessAllocator
+  {
+  protected:
+    ProcessSet_T<std::set<int>> * free_processes;
+    int stride;
+    size_t stride_task_id;
+  public:
+  StridedProcessAllocator(int size, int stride, size_t stride_task_id) :
+    ProcessAllocator(size),
+    stride(stride),
+    stride_task_id(stride_task_id)
+    {
+    
+      //free_processes = static_cast<ProcessSet*>(new ProcessSet_T<std::pair<int,int> >(0,size));
+      free_processes = new ProcessSet_T<std::set<int>>(0,size);
+    }
+    ProcessSet * assign(int size, size_t task_id)
+    {
+      ProcessSet * result = NULL;
+      if( size <= free_processes->size())
+      {
+        assert(stride_task_id);
+        bool onStride = (task_id==stride_task_id);
+        result = free_processes->extractStrided(size, stride, onStride);
+        addAssign(result,task_id);
+      }
+      return result;
+    }
+    // use iterator based loops because index based loops will be
+    // very slow for this operation
+    virtual void addAssign(ProcessSet * set, size_t task_id)
+    {
+      ProcessSet_T<std::set<int>>::iterator it;
+      for(int ii = 0; ii < set->size(); ii++)
+        assignments[(*set)[ii]].push_back(task_id);
     }
   };
   class OverlapProcessAllocator : public ProcessAllocator

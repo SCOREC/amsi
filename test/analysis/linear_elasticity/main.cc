@@ -9,7 +9,8 @@ int main (int argc, char ** argv)
 {
   assert(argc == 3);
   int result = 0;
-  amsi::useSimmetrix(std::string("/net/common/meshSim/license/license.txt"));
+  std::string lic = std::getenv("SIM_LICENSE_FILE");
+  amsi::useSimmetrix(std::string(lic));
   amsi::usePetsc(std::string("petsc_options"));
   amsi::initAnalysis(argc,argv, MPI_COMM_WORLD);
   {

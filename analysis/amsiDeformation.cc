@@ -21,4 +21,15 @@ namespace amsi {
       for (int jj = 0; jj < cmp; ++jj)
         for (int kk = 0; kk < nen; ++kk) F[ii][jj] += u[kk][ii] * Ni_j[kk][jj];
   }
+  /*
+  void deformationGradientDerivative(apf::Element* e, const apf::Vector3& p,
+                           apf::NewArray<apf::Matrix3x3>& dFdxi)
+  {
+    //number of nodes can be found by shape->coundNodes;
+    //number of components can be found by field->coundComponents;
+    apf::NewArray<apf::Vector3> Ni_j;
+    apf::getShapeGrads(e, p, Ni_j);
+    // for each node: dFdxi = Fi*Ni_j
+  }
+  */
 }  // namespace amsi

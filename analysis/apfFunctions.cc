@@ -26,6 +26,24 @@ namespace amsi
     pvdf << "  </Collection>" << std::endl;
     pvdf << "</VTKFile>" << std::endl;
   }
+  void writePvdFile(const std::string & col_fnm, const std::vector<PvdData> & pvd_data) {
+     std::stringstream pvd;
+     if(fs)
+       pvd<<fs->getResultsDir();
+     pvd <<col_fnm;
+    //std::string pvd(fs->getResultsDir() + col_fnm);
+    std::fstream pvdf(pvd.str().c_str(), std::ios::out);
+    pvdf << "<VTKFile type=\"Collection\" version=\"0.1\">" << std::endl;
+    pvdf << "  <Collection>" << std::endl;
+    for(std::size_t ii = 0; ii < pvd_data.size(); ii++)
+    {
+      pvdf << "    <DataSet timestep=\"" << pvd_data[ii].timestep << "\" group=\"\" ";
+      pvdf << "part=\""<<pvd_data[ii].part<<"\" file=\"" << pvd_data[ii].filename << "/" << pvd_data[ii].filename;
+      pvdf << ".pvtu\"/>" << std::endl;
+    }
+    pvdf << "  </Collection>" << std::endl;
+    pvdf << "</VTKFile>" << std::endl;
+  }
   bool isFixed(int n)
   {
     return n == -2;

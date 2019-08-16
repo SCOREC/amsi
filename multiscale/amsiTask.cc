@@ -139,10 +139,10 @@ namespace amsi
     DataDistribution * dd = NULL;
     int sz = tsk->size();
     int rnk = tsk->localRank();
-    MPI_Comm cm = tsk->comm();
 #   ifndef ZOLTAN
     dd = new DataDistribution(sz,rnk,true);
 #   else
+    MPI_Comm cm = tsk->comm();
     if(!sz)
       dd = new DataDistribution(sz,rnk);
     else

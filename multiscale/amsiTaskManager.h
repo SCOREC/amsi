@@ -24,10 +24,11 @@ namespace amsi
     Task * createTask(const std::string & nm, int s);
     Task * getTask(const std::string & nm);
     Task * Task_Get(size_t id);
-    size_t getTaskID(const std::string & nm);
+    size_t getTaskID(const std::string & nm, bool checkIfExists=true);
     Task * getLocalTask();
     size_t DataDist_GetID(const std::string & t_nm,
                           const std::string & dd_nm);
+    bool setProcessAllocator(ProcessAllocator * pa);
     bool lockConfiguration();
     int Execute(int&,char**&);
   protected:

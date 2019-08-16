@@ -1,5 +1,5 @@
 find_package(PETSC)
-find_package(zoltan)
+#find_package(zoltan)
 find_package(SCOREC CONFIG REQUIRED)
 
 # FIXME configured files should be configured into build dir
@@ -30,7 +30,6 @@ set(analysis_public_headers
     amsiLinearElasticConstitutive.h
     amsiLinearStressStrainIntegrator.h
     amsiNonlinearAnalysis.h
-    amsiNonlinearAnalysis_impl.h
     amsiNeumannIntegrators.h
     amsiPETScLAS.h
     amsiPETScLAS2.h

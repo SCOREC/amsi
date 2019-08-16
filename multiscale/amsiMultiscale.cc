@@ -16,7 +16,7 @@ namespace amsi
   {
     return cm;
   }
-  int parseMultiscaleSection(const std::string & ln)
+  static int parseMultiscaleSection(const std::string & ln)
   {
     for(int ii = 0; ii < num_multiscale_config_sections; ++ii)
     {
@@ -25,7 +25,7 @@ namespace amsi
     }
     return -1;
   }
-  void parseScales(std::istream & fl)
+  static void parseScales(std::istream & fl)
   {
     std::string ln;
     std::vector<std::string> tks;
@@ -48,7 +48,7 @@ namespace amsi
         parsing = false;
     }
   }
-  void parseRelations(std::istream & fl)
+  static void parseRelations(std::istream & fl)
   {
     std::string ln;
     std::vector<std::string> tks;
@@ -74,6 +74,50 @@ namespace amsi
         parsing = false;
     }
   }
+  static void parseAllocator(std::istream & fl)
+  {
+    std::string ln;
+    std::vector<std::string> tks;
+    bool parsing = true;
+    while(parsing)
+    {
+      std::streampos ln_bgn = fl.tellg();
+      if(std::getline(fl,ln))
+      {
+        if(pystring::startswith(ln,std::string("@")))
+        {
+          fl.seekg(ln_bgn);
+          break;
+        }
+        //pystring::partition(ln," ",tks);
+        pystring::split(ln, tks);
+        // do nothing this is the default allocator
+        if (tks[0] == "ExclusiveProcess")
+        {
+        }
+        else if (tks[0] == "Strided")
+        {
+          assert(tks.size() == 3);
+          int size = 0;
+          int stride = std::atoi(tks[2].c_str());
+          size_t strided_task_id = tm->getTaskID(tks[1], false);
+          assert(strided_task_id);
+          MPI_Comm_size(AMSI_COMM_WORLD, &size);
+          ProcessAllocator * allocator = static_cast<ProcessAllocator*>(new 
+              StridedProcessAllocator(size, stride, strided_task_id));
+          tm->setProcessAllocator(allocator);
+        }
+        else
+        {
+          std::cerr<<"The Process allocator " << tks[0] <<" is not a valid option.\n";
+          std::cerr<<"Please use ExclusiveProcess with no arguments, or Strided with the stride task name and a stide size argument\n";
+          MPI_Abort(AMSI_COMM_WORLD, 1);
+        }
+      }
+      else
+        parsing = false;
+    }
+  }
   void configureMultiscaleFromFile(const std::string & filename)
   {
     std::fstream file(filename.c_str(),std::fstream::in);
@@ -84,11 +128,15 @@ namespace amsi
     while(std::getline(file,line))
     {
       line = pystring::strip(line);
+      std::cout<<line<<std::endl;
       if(pystring::startswith(line,std::string("@")))
       {
         int sctn = parseMultiscaleSection(line);
         switch(sctn)
         {
+        case allocator:
+          parseAllocator(file);
+          break;
         case scales:
           parseScales(file);
           break;
