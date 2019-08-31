@@ -66,9 +66,10 @@ namespace amsi
         (me = apf_mesh->iterate(it));)
     {
       apf::MeshElement * melm = apf::createMeshElement(apf_mesh,me);
+      apf::Element * elm = apf::createElement(elemental_system->getField(), melm);
       elemental_system->process(melm);
       apf::NewArray<apf::Vector3> dofs;
-      apf::getVectorNodes(elemental_system->getElement(),dofs);
+      apf::getVectorNodes(elm,dofs);
       apf::NewArray<int> ids;
       apf::getElementNumbers(apf_primary_numbering,me,ids);
       AssembleDOFs(las,
@@ -78,6 +79,7 @@ namespace amsi
                    &elemental_system->getKe()(0,0),
                    &elemental_system->getfe()(0),
                    elemental_system->includesBodyForces());
+      apf::destroyElement(elm);
       apf::destroyMeshElement(melm);
     }
   }

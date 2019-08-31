@@ -35,5 +35,6 @@ namespace amsi
   void ElementalSystem::outElement()
   {
     apf::destroyElement(e);
+    e = NULL;
   }
 }

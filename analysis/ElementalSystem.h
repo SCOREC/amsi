@@ -26,6 +26,7 @@ namespace amsi
     virtual apf::Element * getElement() {return e;}
     virtual apf::DynamicMatrix& getKe() {return Ke;}
     virtual apf::DynamicVector& getfe() {return fe;}
+    virtual apf::Field * getField() {return f;}
   };
 }
 #endif
