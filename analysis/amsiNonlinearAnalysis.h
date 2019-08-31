@@ -189,8 +189,8 @@ namespace amsi
       std::cout << "convergence criteria: " << std::endl
                 << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
                 << "\t" << cvg_vl << " < " << eps * ref_vl << std::endl
-                << "\t" << ((cvrgd = cvg_vl < eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;)
-      cvrgd = cvg_vl < eps * ref_vl;
+                << "\t" << ((cvrgd = cvg_vl <= eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;)
+      cvrgd = cvg_vl <= eps * ref_vl;
       if(!cvrgd && failOnNonConvergence)
       {
         this->fail = true;

@@ -35,7 +35,7 @@ namespace amsi
     size_t RelationDistribution_GetID(size_t r_id, DataDistribution * dd);
     /// called prior to execution of tasks
     void InitInterComms(TaskManager * tm);
-    void CommPattern_Create(size_t rdd_id, DataDistribution * dd, int t1s, int t2s,CommPatternAlgo func);
+    void CommPattern_Create(size_t rdd_id, DataDistribution * dd, int t1s, int t2s, CommPatternAlgo func);
     void CommPattern_CreateRecv(size_t rdd_id, int t1s, int t2s);
     void CommPattern_Invert(size_t n_rdd_id, size_t o_rdd_id);
   private:

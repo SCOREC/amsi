@@ -117,7 +117,9 @@ void Migration::plan(std::vector<int> & to_serialize,
     for(int ii = 0; ii < local_size; ii++)
       local_weights[ii] = 1.0;
   }
+# ifdef ZOLTAN
   int offset = 0;
+# endif
   switch(algo)
   {
   case USER_ALGO:

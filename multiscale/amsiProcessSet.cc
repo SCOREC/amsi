@@ -1,8 +1,9 @@
 #include "amsiProcessSet.h"
 #include <iostream>
+#include <cassert>
 namespace amsi
 {
-  /// @brief Default constructor for a range ProcessSet, takes low and high ranks
+  /// @brief Default constructor foraa range ProcessSet, takes low and high ranks
   /// @param l The first process rank in the set
   /// @param h One over the last process rank in the set
   ProcessSet_T<std::pair<int,int> >::ProcessSet_T(int l, int h)

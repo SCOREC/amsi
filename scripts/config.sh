@@ -18,7 +18,7 @@ if [ "$BUILD_TYPE" == "Debug" ]; then
     BUILD_TESTS=OFF
   fi
 elif [ "$BUILD_TYPE" == "Release" ] ; then
-  BUILD_TYPE="RelWithDebugInfo"
+  #BUILD_TYPE="RelWithDebugInfo"
   BUILD_DIR=$ROOT/build_release
   BUILD_TESTS=OFF
   if [ "$TEST_OVERRIDE" == "ON" ] ; then
@@ -42,18 +42,19 @@ if [ "$HOSTNAME" == "q.ccni.rpi.edu" ]; then
     -DVERBOSITY=0 \
     ..
 else
-    CC=`which mpicc`
-    CXX=`which mpicxx`
     cmake \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DBUILD_TESTS=$BUILD_TESTS \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-        -DCMAKE_INSTALL_PREFIX=$DEVROOT/install/amsi/$BUILD_TYPE \
-        -DCMAKE_C_COMPILER=$CC \
-        -DCMAKE_CXX_COMPILER=$CXX \
-        -DSCOREC_DIR=$DEVROOT/install/core/${BUILD_TYPE}/lib/cmake/SCOREC \
+        -DCMAKE_INSTALL_PREFIX=/lore/mersoj/biotissue/install/amsi/$BUILD_TYPE \
+        -DCMAKE_C_COMPILER=`which mpicc` \
+        -DCMAKE_CXX_COMPILER=`which mpicxx` \
+        -DSCOREC_DIR=/lore/mersoj/biotissue/install/core/${BUILD_TYPE}/lib/cmake/SCOREC \
         -DPETSC_DIR="$PETSC_DIR" \
         -DPETSC_ARCH="$PETSC_ARCH" \
+        -DENABLE_ZOLTAN=OFF \
+        -DZOLTAN_INCLUDE_DIR="$ZOLTAN_ROOT/include" \
+        -DZOLTAN_LIBRARY="$ZOLTAN_ROOT/lib/libzoltan.so" \
         -DENABLE_VERBOSITY:STRING=HIGH \
         ..
         #-DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH \

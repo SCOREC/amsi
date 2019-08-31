@@ -29,8 +29,8 @@ if(PKGCONFIG_FOUND)
     #        it would be preferable for this functionality to be included in the relavent FindXXX.cmake files
     #        for each package
     include(${PETSC_DIR}/${PETSC_ARCH}/lib/petsc/conf/PETScBuildInternal.cmake)
-    set(PETSC_INCLUDE_DIRS "${PETSC_STATIC_INCLUDE_DIRS}")
-    set(PETSC_LIBRARIES "${PETSC_STATIC_LDFLAGS};${PETSC_STATIC_LIBRARIES}")
+    set(PETSC_INCLUDE_DIRS "${PETSC_INCLUDE_DIRS}")
+    set(PETSC_LIBRARIES "${PETSC_LDFLAGS}")
     if(PETSC_ZOLTAN_LIB)
       message(STATUS "Found Zoltan library as PETSc dependency.")
       set(ZOLTAN_FOUND true)
