@@ -33,27 +33,21 @@ namespace amsi
   {
     if(!numbered)
     {
-      global_dof_count = 0;
       local_dof_count = apf::NaiveOrder(apf_primary_numbering);
       int analysis_size, analysis_rank;
       MPI_Comm_rank(analysis_comm,&analysis_rank);
       MPI_Comm_size(analysis_comm,&analysis_size);
+      // add constraint DOFs to the last rank
       if(analysis_size - 1 == analysis_rank)
         local_dof_count += constraint_dofs;
-      int dofs[analysis_size];
-      memset(&dofs[0],0,analysis_size*sizeof(int));
-      dofs[analysis_rank] = local_dof_count;
-      MPI_Allgather(&local_dof_count,1,MPI_INTEGER,
-                    &dofs[0],1,MPI_INTEGER,
-                    analysis_comm);
-      for(int ii = 0; ii < analysis_size; ii++)
-      {
-        if(ii == analysis_rank)
-          first_local_dof = global_dof_count;
-        global_dof_count += dofs[ii];
-      }
-      if(first_local_dof > 0)
-        apf::SetNumberingOffset(apf_primary_numbering,first_local_dof);
+      // FIXME use nonblocking calls here.
+      MPI_Exscan(&local_dof_count, &first_local_dof, 1,
+                  MPI_INTEGER, MPI_SUM, analysis_comm);
+      // need to set the global dof counts for the fea class
+      // which is used externally.
+      MPI_Allreduce(&local_dof_count, &global_dof_count, 1,
+                    MPI_INTEGER, MPI_SUM, analysis_comm);
+      apf::SetNumberingOffset(apf_primary_numbering,first_local_dof);
       apf::synchronize(apf_primary_numbering);
       numbered = true;
     }
