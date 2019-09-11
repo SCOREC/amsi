@@ -254,5 +254,24 @@ namespace amsi
     virtual bool converged() {return true;}
   };
   extern LinearConvergence linear_convergence; // should be const but converged() isn't const
+  // an iteration which will stop when the max number of iterations is reached
+  struct StopAtMaxIters : public Iteration {
+    StopAtMaxIters(unsigned int maxItr)
+        :  maxItr(maxItr)
+    {
+    }
+    virtual void iterate() 
+    {
+      // so we want to subtract 1 to get the actual current iteration number
+      if (this->iteration() - 1 >= maxItr) {
+        AMSI_V2(std::cout << "Solution has surpassed iteration cap of "
+                          << this->iteration() - 1 << "\n";)
+        fail = true;
+        Iteration::iterate();
+      }
+    }
+    protected:
+    unsigned int maxItr;
+  };
 }
 #endif

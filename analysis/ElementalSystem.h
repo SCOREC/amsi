@@ -23,7 +23,9 @@ namespace amsi
     virtual void parallelReduce() {};
     virtual bool includesBodyForces() {return false;}
     virtual int numElementalDOFs() {return nedofs;}
-    virtual apf::Element * getElement() {return e;}
+    // This shouldn't be used because it causes segfaults when
+    // used improperly (which is almost always!
+    // virtual apf::Element * getElement() {return e;}
     virtual apf::DynamicMatrix& getKe() {return Ke;}
     virtual apf::DynamicVector& getfe() {return fe;}
     virtual apf::Field * getField() {return f;}

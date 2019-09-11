@@ -26,7 +26,7 @@ namespace amsi
       std::cerr << "ERROR: initial reference is unimplemented." << std::endl;
     return new LASNormQuery(las,ref_ops[cvg_tp][ref_tp]);
   }
-  Convergence * buildSimConvergenceOperator(pACase, pAttribute cn, Iteration * it, LAS * las)
+  Convergence * buildSimConvergenceOperator(pACase, pAttribute cn, MultiIteration * it, LAS * las)
   {
     Convergence * cnvg = NULL;
     char * tp = Attribute_imageClass(cn);
@@ -46,7 +46,11 @@ namespace amsi
       to_R1 * ref_vl = getReferenceValueOp(ref_tp_vl,cvg_tp_vl,las);
       auto * eps_vl = new SimUpdatingEpsilon((pAttributeDouble)eps_att);
       if(cap_att)
-        eps_vl->setCap(AttributeInt_value((pAttributeInt)cap_att));
+      {
+        // lifetime of this iteration is linked to the lifetime of the associated MultiIteration
+        Iteration * stop_at_max_iters = new StopAtMaxIters(AttributeInt_value((pAttributeInt)cap_att));
+        it->addIteration(stop_at_max_iters);
+      }
       cnvg = new UpdatingConvergence<to_R1*,R1_to_R1*,to_R1*>(it,cvg_vl,eps_vl,ref_vl);
     }
     Sim_deleteString(tp);
