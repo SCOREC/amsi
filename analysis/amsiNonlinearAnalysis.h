@@ -262,13 +262,12 @@ namespace amsi
     }
     virtual void iterate() 
     {
-      // so we want to subtract 1 to get the actual current iteration number
-      if (this->iteration() - 1 >= maxItr) {
+      if ((maxItr == 0) || this->iteration() >= maxItr-1) {
         AMSI_V2(std::cout << "Solution has surpassed iteration cap of "
-                          << this->iteration() - 1 << "\n";)
+                          << this->iteration() << "\n";)
         fail = true;
-        Iteration::iterate();
       }
+      Iteration::iterate();
     }
     protected:
     unsigned int maxItr;
