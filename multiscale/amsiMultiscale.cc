@@ -128,7 +128,6 @@ namespace amsi
     while(std::getline(file,line))
     {
       line = pystring::strip(line);
-      std::cout<<line<<std::endl;
       if(pystring::startswith(line,std::string("@")))
       {
         int sctn = parseMultiscaleSection(line);
