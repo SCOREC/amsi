@@ -183,14 +183,12 @@ namespace amsi
     virtual bool converged()
     {
       update();
-      bool cvrgd = false;
-      
+      bool cvrgd = cvg_vl <= eps * ref_vl;
       AMSI_V1(
-      std::cout << "convergence criteria: " << std::endl
-                << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << std::endl
-                << "\t" << cvg_vl << " < " << eps * ref_vl << std::endl
-                << "\t" << ((cvrgd = cvg_vl <= eps * ref_vl) ? "TRUE" : "FALSE") << std::endl;)
-      cvrgd = cvg_vl <= eps * ref_vl;
+      std::cout << "convergence criteria: \n"
+                << "\t" << cvg_vl << " < " << eps << " * " << ref_vl << "\n"
+                << "\t" << cvg_vl << " < " << eps * ref_vl << "\n"
+                << "\t" << (cvrgd ? "TRUE" : "FALSE") << std::endl;)
       if(!cvrgd && failOnNonConvergence)
       {
         this->fail = true;
