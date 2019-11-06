@@ -18,6 +18,7 @@ namespace amsi
     msh->acceptChanges();
     if(t != apf::Mesh::EDGE)
       apf::reorderMdsMesh(msh);
+    apf::deriveMdsModel(msh);
     return msh;
   }
   apf::MeshEntity * getFirstMeshEntity(apf::Mesh * msh, int d)
