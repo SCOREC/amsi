@@ -81,6 +81,7 @@ namespace amsi
     virtual ~MultiIteration() {}
     virtual void iterate() 
     {
+      Iteration::iterate();
       for (auto itr = itrs.begin(); itr != itrs.end(); ++itr) {
         (*itr)->iterate();
       }
