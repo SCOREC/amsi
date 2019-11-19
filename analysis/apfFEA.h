@@ -44,6 +44,7 @@ namespace amsi
   protected:
     apf::Mesh * apf_mesh;
     apf::Field * apf_primary_field;
+    apf::Field * apf_primary_delta_field;
     apf::Numbering * apf_primary_numbering;
     ElementalSystem * elemental_system;
   public:
@@ -51,15 +52,16 @@ namespace amsi
       : FEA(cm)
       , apf_mesh(in_mesh)
       , apf_primary_field(NULL)
+      , apf_primary_delta_field(NULL)
       , apf_primary_numbering(NULL)
       , elemental_system(NULL)
     {
       analysis_dim = apf_mesh->getDimension();
     };
     apf::Mesh * getMesh() { return apf_mesh; }
-    virtual void RenumberDOFs();
-    virtual void Assemble(LAS*);
-    virtual void UpdateDOFs(const double*);
+    virtual void RenumberDOFs() override;
+    virtual void Assemble(LAS*) override;
+    virtual void UpdateDOFs(const double*) override;
   };
 }
 #endif

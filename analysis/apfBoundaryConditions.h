@@ -17,7 +17,8 @@ namespace amsi
                          I begin,
                          I end,
                          BCQuery * qry,
-                         double t);
+                         double t,
+                         apf::Field* deltaField=NULL);
   template <typename I>
     void applyNeumannBC(LAS * las,
                         apf::Numbering * nm,

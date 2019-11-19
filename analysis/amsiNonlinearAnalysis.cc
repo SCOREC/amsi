@@ -16,7 +16,9 @@ namespace amsi
         return false;
       }
     } while (!cn->converged());
-    it->reset();
+    // require the user to reset the iteration, because they may have tasks
+    // to perform with the unreset iteration.
+    //it->reset();
     return true;
   }
 }  // namespace amsi

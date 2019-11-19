@@ -16,10 +16,10 @@ namespace amsi
               pACase pd,
               pACase ss,
               MPI_Comm cm = AMSI_COMM_SCALE);
-    virtual void Adapt();
-    virtual void ApplyBC_Dirichlet();
-    virtual void ApplyBC_Neumann(LAS * las);
-    virtual void Assemble(LAS * las);
+    virtual void Adapt() override;
+    virtual void ApplyBC_Dirichlet() override;
+    virtual void ApplyBC_Neumann(LAS * las) override;
+    virtual void Assemble(LAS * las) override;
   private:
   };
 }

@@ -12,7 +12,8 @@ namespace amsi
                          I begin,
                          I end,
                          BCQuery * qry,
-                         double t)
+                         double t,
+                         apf::Field* deltaField)
   {
     int fxd = 0;
     apf::Field * fld = apf::getField(nm);
@@ -20,6 +21,7 @@ namespace amsi
     apf::FieldShape * fs = apf::getShape(fld);
     int cmps = apf::countComponents(fld);
     double * vls = new double[cmps];
+    double * old_vls = new double[cmps];
     assert(qry->numComps() == cmps);
     for(I it = begin; it != end; ++it)
     {
@@ -29,6 +31,7 @@ namespace amsi
       for(int ii = 0; ii < nds; ii++)
       {
         apf::getComponents(fld,ent,ii,vls);
+        apf::getComponents(fld,ent,ii,old_vls);
         for(int jj = 0; jj < cmps; jj++)
         {
           if(qry->isFixed(jj))
@@ -38,10 +41,20 @@ namespace amsi
             vls[jj] = getDirichletValue(qry,msh,ent,ii,jj,t);
           }
         }
+        // if the user supplied a delta field such as the delta_U field
+        // in a solid mechanics problem set this value as well
+        // we should only really set the components that lie of the fixe surfaces
+        if(deltaField)
+        {
+          for(int i=0; i<cmps; ++i)
+            old_vls[i] = vls[i]-old_vls[i];
+          apf::setComponents(deltaField,ent,ii,old_vls);
+        }
         apf::setComponents(fld,ent,ii,vls);
       }
     }
     delete [] vls;
+    delete [] old_vls;
     return fxd;
   }
   template <typename I>

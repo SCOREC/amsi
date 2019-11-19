@@ -15,10 +15,14 @@ namespace amsi
   private:
     apf::Field * x;
     apf::Field * u;
+    double x_factor;
+    double y_factor;
   public:
-    XpYFunc(apf::Field * xf, apf::Field * yf)
+    XpYFunc(apf::Field * xf, apf::Field * yf, double x_factor=1, double y_factor=1)
       : x(xf)
       , u(yf)
+      , x_factor(x_factor)
+      , y_factor(y_factor)
     {}
     void eval(apf::MeshEntity * e, double * result)
     {
@@ -28,7 +32,7 @@ namespace amsi
       apf::getVector(u, e, 0, U);
       apf::getVector(x, e, 0, X);
       apf::Vector3 xu;
-      xu = X + U;
+      xu = X*x_factor + U * y_factor;
       xu.toArray(result);
     }
   };

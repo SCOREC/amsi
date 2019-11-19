@@ -53,8 +53,9 @@ namespace amsi
   }
   */
   template <typename I>
-    int applySimDirichletBCs(apf::Numbering * nm, pMesh, I bgn, I nd, double t)
+    int applySimDirichletBCs(apf::Numbering * nm, pMesh, I bgn, I nd, double t, apf::Field * delta_field)
   {
+    std::cout<<(delta_field?"Delta Field in simBoundaryConditions_impl.h\n":"No Delta Field in simBoundaryConditions_impl.h\n");
     int fxd = 0;
     for(auto it = bgn; it != nd; it++)
     {
@@ -66,7 +67,7 @@ namespace amsi
       {
         auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
         auto end = amsi::endClassified(bgn);
-        fxd += applyDirichletBC(nm,bgn,end,*it,t);
+        fxd += applyDirichletBC(nm,bgn,end,*it,t,delta_field);
       }
     }
     return fxd;

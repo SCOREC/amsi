@@ -131,7 +131,7 @@ namespace amsi
    * @todo no reason that should have to use a numbered field technically, so allow to pass in a field and a numbering
    */
   template <typename I>
-    int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t);
+    int applySimDirichletBCs(apf::Numbering * nm, pMesh msh, I bgn, I nd, double t, apf::Field* delta_field=NULL);
   //template <typename I>
   //  int applySimDirichletBCs(apf::Field * fld, pMesh msh, I bgn, I nd, double t);
   /**

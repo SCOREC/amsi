@@ -21,11 +21,12 @@ namespace amsi
   { }
   void apfSimFEA::ApplyBC_Dirichlet()
   {
+    std::cout<<(apf_primary_delta_field ? "Delta Field in apfSimFEA":"No Delta Field in apfSimFEA")<<std::endl;
     fixed_dofs = amsi::applySimDirichletBCs(apf_primary_numbering,
                                             part,
                                             dir_bcs.begin(),
                                             dir_bcs.end(),
-                                            T);
+                                            T, apf_primary_delta_field);
     fixed_dofs = comm_sum(fixed_dofs,analysis_comm);
     AMSI_V1(std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;)
   }
