@@ -21,7 +21,6 @@ namespace amsi
   { }
   void apfSimFEA::ApplyBC_Dirichlet()
   {
-    std::cout<<(apf_primary_delta_field ? "Delta Field in apfSimFEA":"No Delta Field in apfSimFEA")<<std::endl;
     fixed_dofs = amsi::applySimDirichletBCs(apf_primary_numbering,
                                             part,
                                             dir_bcs.begin(),

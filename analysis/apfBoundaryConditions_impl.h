@@ -13,6 +13,7 @@ namespace amsi
                          I end,
                          BCQuery * qry,
                          double t,
+                         bc_set_map & already_set_map,
                          apf::Field* deltaField)
   {
     int fxd = 0;
@@ -21,7 +22,7 @@ namespace amsi
     apf::FieldShape * fs = apf::getShape(fld);
     int cmps = apf::countComponents(fld);
     double * vls = new double[cmps];
-    double * old_vls = new double[cmps];
+    double * delta_vls = new double[cmps];
     assert(qry->numComps() == cmps);
     for(I it = begin; it != end; ++it)
     {
@@ -31,30 +32,44 @@ namespace amsi
       for(int ii = 0; ii < nds; ii++)
       {
         apf::getComponents(fld,ent,ii,vls);
-        apf::getComponents(fld,ent,ii,old_vls);
+        if(deltaField)
+          apf::getComponents(deltaField,ent,ii,delta_vls);
         for(int jj = 0; jj < cmps; jj++)
         {
           if(qry->isFixed(jj))
           {
-            apf::fix(nm,ent,ii,jj,true);
-            fxd++;
-            vls[jj] = getDirichletValue(qry,msh,ent,ii,jj,t);
+            auto has_ent = already_set_map.find(ent);
+            // if the entity doesn't have any bc's set yet,
+            // or the specific component of the given node
+            // isn't set yet, then apply the boundary condition
+            if(has_ent == already_set_map.end() || 
+               !has_ent->second[ii*cmps+jj])
+            {
+              auto current_loc = already_set_map.emplace(std::make_pair(ent,
+                                                 std::vector<bool>(cmps*nds, false)));
+              // set the current dof of the current entity to a alredy written state
+              current_loc.first->second[ii*cmps+jj] = true;
+              apf::fix(nm,ent,ii,jj,true);
+              double dirichlet_vl = getDirichletValue(qry,msh,ent,ii,jj,t); 
+              // the vls field must already be in the updated state here...
+              // how is this possible?
+              delta_vls[jj] = dirichlet_vl-vls[jj];
+              //delta_vls[jj] = vls[jj];
+              vls[jj] = dirichlet_vl;
+              fxd++;
+            }
           }
         }
         // if the user supplied a delta field such as the delta_U field
         // in a solid mechanics problem set this value as well
         // we should only really set the components that lie of the fixe surfaces
         if(deltaField)
-        {
-          for(int i=0; i<cmps; ++i)
-            old_vls[i] = vls[i]-old_vls[i];
-          apf::setComponents(deltaField,ent,ii,old_vls);
-        }
+          apf::setComponents(deltaField,ent,ii,delta_vls);
         apf::setComponents(fld,ent,ii,vls);
       }
     }
     delete [] vls;
-    delete [] old_vls;
+    delete [] delta_vls;
     return fxd;
   }
   template <typename I>

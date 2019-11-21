@@ -33,7 +33,7 @@ namespace amsi
   {
     if(!numbered)
     {
-      local_dof_count = apf::NaiveOrder(apf_primary_numbering);
+      local_dof_count = apf::naiveOrder(apf_primary_numbering);
       int analysis_size, analysis_rank;
       MPI_Comm_rank(analysis_comm,&analysis_rank);
       MPI_Comm_size(analysis_comm,&analysis_size);

@@ -8,8 +8,10 @@
 #include "simAttributes.h"
 #include "simWrapper.h"
 #include <apfSIM.h>
+#include <unordered_map>
 namespace amsi
 {
+  typedef std::unordered_map<apf::MeshEntity*,std::vector<bool>> bc_set_map;
   template <typename I>
     SimBCQuery * findSimBCQueryOn(I bgn, I nd, pGEntity ent)
   {
@@ -55,7 +57,7 @@ namespace amsi
   template <typename I>
     int applySimDirichletBCs(apf::Numbering * nm, pMesh, I bgn, I nd, double t, apf::Field * delta_field)
   {
-    std::cout<<(delta_field?"Delta Field in simBoundaryConditions_impl.h\n":"No Delta Field in simBoundaryConditions_impl.h\n");
+    bc_set_map already_set_map;
     int fxd = 0;
     for(auto it = bgn; it != nd; it++)
     {
@@ -67,7 +69,7 @@ namespace amsi
       {
         auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
         auto end = amsi::endClassified(bgn);
-        fxd += applyDirichletBC(nm,bgn,end,*it,t,delta_field);
+        fxd += applyDirichletBC(nm,bgn,end,*it,t,already_set_map,delta_field);
       }
     }
     return fxd;

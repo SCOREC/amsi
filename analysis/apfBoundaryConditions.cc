@@ -26,7 +26,9 @@ namespace amsi
         msh->getPoint(ent,nd,pt);
         // map local coord to global coord
         apf::Vector3 xyz;
-        apf::mapLocalToGlobal(apf::createMeshElement(msh,ent),pt,xyz);
+        apf::MeshElement * melmt =apf::createMeshElement(msh,ent);
+        apf::mapLocalToGlobal(melmt,pt,xyz);
+        apf::destroyMeshElement(melmt);
         // check if also time expr
         if(time)
           val = qry->getValue(cmp,t,xyz[0],xyz[1],xyz[2]);
