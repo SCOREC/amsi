@@ -3,12 +3,7 @@
 #include <apfSIM.h>
 namespace amsi
 {
-  SimClassifiedIter::SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me, int d)
-    : msh(reinterpret_cast<apf::MeshSIM*>(m))
-    , mdl_ent(me)
-    , dim(d)
-    , it()
-    , ent()
+  void SimClassifiedIter::init()
   {
     switch(dim)
     {
@@ -30,9 +25,80 @@ namespace amsi
       break;
     };
   }
+  SimClassifiedIter::SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me, int d)
+    : msh(reinterpret_cast<apf::MeshSIM*>(m))
+    , mdl_ent(me)
+    , dim(d)
+    , it()
+    , ent()
+  {
+    init();
+  }
+  SimClassifiedIter::SimClassifiedIter(const SimClassifiedIter & itr, bool construct_itr)
+  : msh(itr.msh)
+  , mdl_ent(itr.mdl_ent)
+  , dim(itr.dim)
+  , it()
+  , ent()
+  {
+    if(construct_itr)
+    {
+      init();
+    }
+    else
+    {
+      switch(dim)
+      {
+      case 0:
+        it.viter = NULL;
+        break;
+      case 1:
+        it.eiter = NULL;
+        break;
+      case 2:
+        it.fiter = NULL;
+        break;
+      case 3:
+        it.riter = NULL;
+        break;
+      }
+    }
+  }
+  SimClassifiedIter::~SimClassifiedIter()
+  {
+    switch(dim)
+    {
+    case 0:
+      VIter_delete(it.viter);
+      break;
+    case 1:
+      EIter_delete(it.eiter);
+      break;
+    case 2:
+      FIter_delete(it.fiter);
+      break;
+    case 3:
+      RIter_delete(it.riter);
+      break;
+    };
+  }
   void SimClassifiedIter::end()
   {
-    ent.vtx = NULL;
+    switch(dim)
+    {
+    case 0:
+      ent.vtx = NULL;
+      break;
+    case 1:
+      ent.edg = NULL;
+      break;
+    case 2:
+      ent.fac = NULL;
+      break;
+    case 3:
+      ent.rgn = NULL;
+      break;
+    }
   }
   bool SimClassifiedIter::operator==(const SimClassifiedIter & ot) const
   {
@@ -95,7 +161,7 @@ namespace amsi
   }
   SimClassifiedIter endClassified(const SimClassifiedIter & bgn)
   {
-    SimClassifiedIter it(bgn);
+    SimClassifiedIter it(bgn, false);
     it.end();
     return it;
   }

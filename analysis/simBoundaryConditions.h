@@ -116,6 +116,8 @@ namespace amsi
    */
   template <typename I, typename O>
     void buildSimBCQueries(pACase pd, int tp, I bgn, I nd, O out);
+  template <typename I>
+    void destroySimBCQueries(pACase pd, int tp, I bgn, I nd);
   template <typename O>
     void buildBCQueriesFromSim(pACase pd, int tp, O out);
   /**

@@ -39,6 +39,10 @@ namespace amsi
     for(auto bc = bcs.begin(); bc != bcs.end(); ++bc)
       *out++ = buildSimBCQuery(*bc);
   }
+  template <typename I>
+    void destroySimBCQueries(pACase pd, int tp, I bgn, I nd)
+    {
+    }
   /*
   template <typename I1, typename I2>
     int applyAllSimDirichletBCs(I1 nm_bgn, I2 nm_nd, pMesh msh, I2 bgn, I2 nd, double t)

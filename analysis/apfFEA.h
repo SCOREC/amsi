@@ -47,17 +47,26 @@ namespace amsi
     apf::Field * apf_primary_delta_field;
     apf::Numbering * apf_primary_numbering;
     ElementalSystem * elemental_system;
+    bool own_mesh;
   public:
-    apfFEA(apf::Mesh * in_mesh, MPI_Comm cm = AMSI_COMM_SCALE)
+    apfFEA(apf::Mesh * in_mesh, MPI_Comm cm = AMSI_COMM_SCALE, bool own_mesh=false)
       : FEA(cm)
       , apf_mesh(in_mesh)
       , apf_primary_field(NULL)
       , apf_primary_delta_field(NULL)
       , apf_primary_numbering(NULL)
       , elemental_system(NULL)
+      , own_mesh(own_mesh)
     {
       analysis_dim = apf_mesh->getDimension();
     };
+    ~apfFEA()
+    {
+      if(own_mesh)
+      {
+        apf::destroyMesh(apf_mesh);
+      }
+    }
     apf::Mesh * getMesh() { return apf_mesh; }
     virtual void RenumberDOFs() override;
     virtual void Assemble(LAS*) override;

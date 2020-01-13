@@ -24,9 +24,15 @@ namespace amsi
       pVertex vtx;
     } ent;
     void end();
+    void  init();
     friend SimClassifiedIter endClassified(const SimClassifiedIter &);
   public:
     SimClassifiedIter(apf::Mesh * m, apf::ModelEntity * me, int d);
+    // construct iter can be set to false if we don't actually want to construct
+    // the classified iterator which can take some time...this is useful in the
+    // case of creating the end iterator
+    SimClassifiedIter(const SimClassifiedIter & itr, bool construct_itr=true);
+    ~SimClassifiedIter();
     bool operator==(const SimClassifiedIter & o) const;
     bool operator!=(const SimClassifiedIter & o) const { return !operator==(o); }
     void operator++();

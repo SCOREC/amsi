@@ -14,7 +14,7 @@ namespace amsi
                        pACase ss,
                        MPI_Comm cm)
     : FEA(cm)
-    , apfFEA(apf::createMesh(imsh),cm)
+    , apfFEA(apf::createMesh(imsh),cm, true)
     , SimFEA(imdl,imsh,pd,ss,cm)
     , mesh_size_field(NULL)
     , mesh_adapted(false)

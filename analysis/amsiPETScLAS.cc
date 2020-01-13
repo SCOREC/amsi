@@ -336,6 +336,7 @@ namespace amsi
     VecDestroy(&x);
     VecDestroy(&x_i);
     VecDestroy(&x_im);
+    VecDestroy(&b);
     VecDestroy(&x);
     VecDestroy(&b_i);
     VecDestroy(&b_im);

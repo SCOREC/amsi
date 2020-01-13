@@ -16,8 +16,8 @@ namespace amsi
                            double t);
   template <typename I>
     int applyDirichletBC(apf::Numbering * nm,
-                         I begin,
-                         I end,
+                         const I& begin,
+                         const I& end,
                          BCQuery * qry,
                          double t,
                          bc_set_map& already_set_numbering,
@@ -25,8 +25,8 @@ namespace amsi
   template <typename I>
     void applyNeumannBC(LAS * las,
                         apf::Numbering * nm,
-                        I bgn,
-                        I nd,
+                        const I& bgn,
+                        const I& nd,
                         NeumannIntegrator * i,
                         double t);
 }

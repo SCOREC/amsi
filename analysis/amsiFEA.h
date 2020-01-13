@@ -104,6 +104,8 @@ namespace amsi
         for(int ii = 0; ii < num_elemental_dofs; ii++)
         {
           const int & global_i = dof_numbers[ii];
+          // this is the isFixed function from apfFunctions
+          // which is different from the sim query is fixed function!
           if(!isFixed(global_i))
           {
             for(int jj = 0; jj < num_elemental_dofs; jj++)

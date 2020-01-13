@@ -56,8 +56,8 @@ namespace amsi
   {
     assert(elemental_system);
     apf::MeshEntity * me = NULL;
-    for(apf::MeshIterator * it = apf_mesh->begin(analysis_dim);
-        (me = apf_mesh->iterate(it));)
+    apf::MeshIterator * it = apf_mesh->begin(analysis_dim);
+    while((me = apf_mesh->iterate(it)))
     {
       apf::MeshElement * melm = apf::createMeshElement(apf_mesh,me);
       apf::Element * elm = apf::createElement(elemental_system->getField(), melm);
@@ -76,6 +76,7 @@ namespace amsi
       apf::destroyElement(elm);
       apf::destroyMeshElement(melm);
     }
+    apf_mesh->end(it);
   }
   // use solution vector to update displacement dofs associated with locally-owned nodes
   void apfFEA::UpdateDOFs(const double * solution)
