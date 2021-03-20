@@ -17,8 +17,7 @@ set(analysis_public_headers
     amsiDetectOscillation_impl.h
     amsiDofHolder.h
     amsiDummyLAS.h
-    amsiElasticityFEA.h
-    amsiElementalSystem.h
+        amsiElementalSystem.h
     amsiFiniteElementAnalysis.h
     amsiFields.h
     amsiFields_impl.h
@@ -37,8 +36,7 @@ set(analysis_public_headers
     apfBoundaryConditions_impl.h
     apfElementalSystem.h
     apfFieldOp.h
-    apfFields.h
-    apfFunctions.h
+        apfFunctions.h
     apfFunctions_impl.h
     apfMatrixUtil.h
     apfMeasure.h
@@ -58,9 +56,7 @@ set(analysis_public_headers
     ConvenienceFunctions.h
     ElementalSystem.h
     apfFEA.h
-    NonLinElasticIntegrator.h
-    NonLinearElasticIntegrator.h
-    MatrixUtil.h
+        MatrixUtil.h
     sim.h
     simAnalysis.h
     simAnalysis_impl.h
@@ -69,22 +65,17 @@ set(analysis_public_headers
     simBoundaryConditions.h
     simBoundaryConditions_impl.h
     simClassified.h
-    simFields.h
-    simFields_impl.h
-    simIterator.h
+        simIterator.h
     simNonlinearAnalysis.h
     simWrapper.h
-    SimFEA.h
     apfSimFEA.h
-    NonLinElasticity.h
-   )
+        )
 
 set(analysis_src_files
     amsiAnalysis.cc
     amsiBoundaryConditions.cc
     amsiDeformation.cc
-    amsiElasticityFEA.cc
-    amsiFiniteElementAnalysis.cc
+        amsiFiniteElementAnalysis.cc
     amsiFields.cc
     amsiFEA.cc
     amsiLASAssembly.cc
@@ -96,8 +87,7 @@ set(analysis_src_files
     amsiPETScLAS2.cc
     apfBoundaryConditions.cc
     apfElementalSystem.cc
-    apfFields.cc
-    apfFunctions.cc
+        apfFunctions.cc
     apfMatrixUtil.cc
     apfMeasure.cc
     apfMeshIterator.cc
@@ -111,20 +101,15 @@ set(analysis_src_files
     ConvenienceFunctions.cc
     ElementalSystem.cc
     apfFEA.cc
-    NonLinElasticIntegrator.cc
-    NonLinearElasticIntegrator.cc
-    MatrixUtil.cc
+        MatrixUtil.cc
     simAnalysis.cc
     simAttributes.cc
     simBoundaryConditions.cc
     simClassified.cc
-    simFields.cc
-    simNonlinearAnalysis.cc
+        simNonlinearAnalysis.cc
     simWrapper.cc
-    SimFEA.cc
     apfSimFEA.cc
-    NonLinElasticity.cc
-   )
+        )
 
 # Add the library to create
 add_library(analysis STATIC ${analysis_src_files})

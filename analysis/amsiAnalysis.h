@@ -3,9 +3,7 @@
 #include "amsiFields.h"
 #include "amsiAnalysisConfig.h"
 #include "amsiPETScLAS.h"
-#include "apfFields.h"
 #include "simAttributes.h"
-#include "simFields.h"
 #include "amsiNonlinearAnalysis.h"
 namespace amsi
 {

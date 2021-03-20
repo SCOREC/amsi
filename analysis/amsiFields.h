@@ -13,28 +13,6 @@ namespace amsi
   enum FieldType{FIELD_TYPES(MAKE_ENUM_OP)};
   const char * const FieldTypes[] = {FIELD_TYPES(MAKE_STRING_OP)};
   // note: modifications here MUST be reflected in amsiFields.cc::fld_strs
-  /*
-  enum FieldUnit
-  {
-    UNITLESS = 0,
-    DISPLACEMENT = 1,
-    NUM_FIELD_UNITS = 2
-  };
-  enum FieldType
-  {
-    FULL = 0,
-    DELTA = 1,
-    NUM_FIELD_TYPES = 2
-  };
-  */
-  struct FieldSpec
-  {
-    std::string nm;
-    int nt;
-    int tp;
-    int vt;
-    int rd;
-  };
   char const * fieldUnitString(FieldUnit nt);
   char const * fieldTypeString(FieldType tp);
   int decodeFieldUnit(const std::string & fld_nm);
