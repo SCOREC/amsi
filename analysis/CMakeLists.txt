@@ -18,21 +18,16 @@ set(analysis_public_headers
     amsiDofHolder.h
     amsiDummyLAS.h
         amsiElementalSystem.h
-    amsiFiniteElementAnalysis.h
-    amsiFields.h
+        amsiFields.h
     amsiFields_impl.h
     amsiFEA.h
     amsiLAS.h
-    amsiLAS2.h
-    amsiLASAssembly.h
-    amsiLASQuery.h
+        amsiLASQuery.h
     amsiLinearElasticConstitutive.h
-    amsiLinearStressStrainIntegrator.h
-    amsiNonlinearAnalysis.h
+        amsiNonlinearAnalysis.h
     amsiNeumannIntegrators.h
     amsiPETScLAS.h
-    amsiPETScLAS2.h
-    apfBoundaryConditions.h
+        apfBoundaryConditions.h
     apfBoundaryConditions_impl.h
     apfElementalSystem.h
     apfFieldOp.h
@@ -64,24 +59,19 @@ set(analysis_public_headers
     simClassified.h
     simNonlinearAnalysis.h
     simWrapper.h
-    apfSimFEA.h
         )
 
 set(analysis_src_files
     amsiAnalysis.cc
     amsiBoundaryConditions.cc
     amsiDeformation.cc
-        amsiFiniteElementAnalysis.cc
-    amsiFields.cc
+        amsiFields.cc
     amsiFEA.cc
-    amsiLASAssembly.cc
-    amsiLinearElasticConstitutive.cc
-    amsiLinearStressStrainIntegrator.cc
-    amsiNonlinearAnalysis.cc
+        amsiLinearElasticConstitutive.cc
+        amsiNonlinearAnalysis.cc
     amsiNeumannIntegrators.cc
     amsiPETScLAS.cc
-    amsiPETScLAS2.cc
-    apfBoundaryConditions.cc
+        apfBoundaryConditions.cc
     apfElementalSystem.cc
         apfFunctions.cc
     apfMatrixUtil.cc
@@ -102,7 +92,6 @@ set(analysis_src_files
     simClassified.cc
         simNonlinearAnalysis.cc
     simWrapper.cc
-    apfSimFEA.cc
         )
 
 # Add the library to create
