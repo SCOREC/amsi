@@ -9,8 +9,10 @@ GRTAGS
 GPATH
 build_debug/
 build_release/
+*build*/
 tags
 compile_commands.json
+.idea/
 
 # Prerequisites
 *.d

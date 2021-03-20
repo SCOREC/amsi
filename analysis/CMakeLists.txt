@@ -135,7 +135,7 @@ target_include_directories(analysis PUBLIC
                                      $<INSTALL_INTERFACE:include/amsi>
                                      ${PETSC_INCLUDE_DIRS})
 
-target_link_libraries(analysis PUBLIC util SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LIBRARIES})
+target_link_libraries(analysis PUBLIC util SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LINK_LIBRARIES})
 
 install(TARGETS analysis
         EXPORT amsianalysisTargets
