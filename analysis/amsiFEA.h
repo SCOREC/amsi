@@ -49,10 +49,10 @@ namespace amsi
     std::vector<BCQuery*> neu_bcs;
   public:
     FEA(MPI_Comm cm = AMSI_COMM_SCALE);
-    virtual void Adapt() {};
-    virtual void ApplyBC_Dirichlet() {};
-    virtual void ApplyBC_Neumann(LAS *) {};
-    virtual void Assemble(LAS *) {};
+    virtual void Adapt()=0;
+    virtual void ApplyBC_Dirichlet()=0;
+    virtual void ApplyBC_Neumann(LAS *)=0;
+    virtual void Assemble(LAS*) = 0;
     void setSimulationTime(double t)
     {
       T = t;

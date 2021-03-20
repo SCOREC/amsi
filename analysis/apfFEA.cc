@@ -111,4 +111,34 @@ namespace amsi
     }
     apf::synchronize(apf_primary_field);
   }
+  // FIXME Apply boundary conditions without simmetrix
+  void apfFEA::ApplyBC_Dirichlet()
+  {
+    std::cerr<<"Need to implement without simmetrix\n";
+    exit(1);
+    //fixed_dofs = amsi::applySimDirichletBCs(apf_primary_numbering,
+    //                                        part,
+    //                                        dir_bcs.begin(),
+    //                                        dir_bcs.end(),
+    //                                        T, apf_primary_delta_field);
+    //fixed_dofs = comm_sum(fixed_dofs,analysis_comm);
+    //AMSI_V1(std::cout << "There are " << fixed_dofs << " dofs fixed by essential boundary conditions." << std::endl;)
+  }
+  // FIXME apply boundary conditions without simmetrix
+  void apfFEA::ApplyBC_Neumann(LAS * las)
+  {
+    std::cerr<<"Need to implement without simmetrix\n";
+    exit(1);
+    //amsi::applySimNeumannBCs(las,
+    //                         apf_primary_numbering,
+    //                         part,
+    //                         neu_bcs.begin(),
+    //                         neu_bcs.end(),
+    //                         T);
+  }
+  void apfFEA::Adapt()
+  {
+    std::cerr<<"APF Adaption loop needs to be added!\n";
+    exit(1);
+  }
 }

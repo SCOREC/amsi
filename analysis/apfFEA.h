@@ -39,7 +39,7 @@ namespace amsi
       apply(f);
     }
   };
-  class apfFEA : public virtual FEA
+  class apfFEA : public FEA
   {
   protected:
     apf::Mesh * apf_mesh;
@@ -71,6 +71,10 @@ namespace amsi
     virtual void RenumberDOFs() override;
     virtual void Assemble(LAS*) override;
     virtual void UpdateDOFs(const double*) override;
+
+    virtual void Adapt() override;
+    virtual void ApplyBC_Dirichlet() override;
+    virtual void ApplyBC_Neumann(LAS * las) override;
   };
 }
 #endif
