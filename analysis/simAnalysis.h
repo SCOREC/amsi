@@ -5,13 +5,6 @@
 namespace amsi
 {
   /**
-   * Get a list of all analysis cases
-   * \param [in] mdl simmetrix model
-   * \param [out] out an output iterator which will store the cases
-   */
-  template <typename O>
-    void getAnalysisCases(pGModel mdl, O out);
-  /**
    * Get a pointer to the analysis case with the specified name
    * \param [in] mdl simmetrix model
    * \return pointer to analysis cases
@@ -22,11 +15,6 @@ namespace amsi
    */
   template <typename O>
     void getClassifiedEnts(pMesh msh, pGEntity mdl_ent, int dm, O out);
-  /**
-   * Get all mesh entities classified on the model entities from dimension ld to dimension hd inclusive [ld,hd]
-   */
-  template <typename O>
-    void getClassifiedDimEnts(pMesh msh, pGEntity mdl_ent, int ld, int hd, O out);
 }
 #include "simAnalysis_impl.h"
 #endif

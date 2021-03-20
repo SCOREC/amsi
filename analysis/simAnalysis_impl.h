@@ -3,11 +3,6 @@
 namespace amsi
 {
   template <typename O>
-    void getAnalysisCases(pGModel mdl, O out)
-  {
-    amsi::getTypeCases(SModel_attManager(mdl),"analysis",out);
-  }
-  template <typename O>
     void getClassifiedEnts(pMesh msh, pGEntity mdl_ent, int dm, O out)
   {
     switch(dm)
@@ -49,12 +44,5 @@ namespace amsi
       break;
     }
     }
-  }
-  template <typename O>
-    void getClassifiedDimEnts(pMesh msh, pGEntity mdl_ent, int ld, int hd, O out)
-  {
-    assert(hd >= ld);
-    for(int d = ld; d <= hd; d++)
-      getClassifiedEnts(msh,mdl_ent,d,out);
   }
 }

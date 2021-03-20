@@ -47,14 +47,11 @@ set(analysis_public_headers
     apfWrapper_impl.h
     apfsimWrapper.h
     ElementalSystem.h
-    ErrorEstimators.h
     MatrixUtil.h
     FullLULAS.h
     Solvers.h
     TensorFieldQuery.h
-    NonFiniteElement.h
-    ConvenienceFunctions.h
-    ElementalSystem.h
+        ElementalSystem.h
     apfFEA.h
         MatrixUtil.h
     sim.h
@@ -65,7 +62,6 @@ set(analysis_public_headers
     simBoundaryConditions.h
     simBoundaryConditions_impl.h
     simClassified.h
-        simIterator.h
     simNonlinearAnalysis.h
     simWrapper.h
     apfSimFEA.h
@@ -97,9 +93,7 @@ set(analysis_src_files
     MatrixUtil.h
     FullLULAS.cc
     Solvers.cc
-    NonFiniteElement.cc
-    ConvenienceFunctions.cc
-    ElementalSystem.cc
+        ElementalSystem.cc
     apfFEA.cc
         MatrixUtil.cc
     simAnalysis.cc
