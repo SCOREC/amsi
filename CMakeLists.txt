@@ -15,38 +15,49 @@ site_name(HOSTNAME)
 message(STATUS "Configuring to build on " ${HOSTNAME})
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
-if("${HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
-  set(HOST BGQ)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qlanglvl=extended -qlanglvl=extended0x")
-  message("HOST SET to BGQ")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
-  set(HOST SCOREC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  message("HOST SET to SCOREC/Generic")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(HOST SCOREC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-unused-parameter -Wextra -Werror")
-  message("HOST SET to SCOREC/Generic")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(HOST SCOREC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -Wall -Wextra -Werror")
-  message("HOST SET to SCOREC/Generic")
-endif()
+
+set(CMAKE_CXX_STANDARD 14)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(CMAKE_CXX_EXTENSIONS OFF)
+
+if ("${HOSTNAME}" STREQUAL "q.ccni.rpi.edu")
+    set(HOST BGQ)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qlanglvl=extended -qlanglvl=extended0x")
+    message("HOST SET to BGQ")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
+    set(HOST SCOREC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    message("HOST SET to SCOREC/Generic")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(HOST SCOREC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-unused-parameter -Wextra -Werror")
+    message("HOST SET to SCOREC/Generic")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(HOST SCOREC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -Wall -Wextra -Werror")
+    message("HOST SET to SCOREC/Generic")
+endif ()
 
 option(BUILD_TESTS "Build amsi tests" ON)
-if(BUILD_TESTS)
-  include(CTest)
-  #SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
-  #SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
-  endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-endif(BUILD_TESTS)
+if (BUILD_TESTS)
+    include(CTest)
+    #SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+    #SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+    endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+endif (BUILD_TESTS)
 
 include(GenerateExportHeader)
 set(ConfigPackageLocation lib/cmake/amsi)
 
 find_package(SCOREC CONFIG REQUIRED)
+
+option(BUILD_EXTERNAL "build external dependencies" ON)
+if (BUILD_EXTERNAL)
+    add_subdirectory(external)
+endif ()
+
 
 message(STATUS "Configuring util")
 add_subdirectory(util)
@@ -57,32 +68,32 @@ add_subdirectory(multiscale)
 message(STATUS "Configuring analysis")
 add_subdirectory(analysis)
 
-if(BUILD_TESTS)
-  add_subdirectory(test)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in
-                 ${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake @ONLY)
-endif()
+if (BUILD_TESTS)
+    add_subdirectory(test)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake.in
+            ${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake @ONLY)
+endif ()
 
 find_package(Doxygen)
-if(DOXYGEN_FOUND)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
-                 ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-  add_custom_target(doc
-                    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                    COMMENT "Generating API documentation with doxygen." VERBATIM)
-endif()
+if (DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+            ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    add_custom_target(doc
+            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Generating API documentation with doxygen." VERBATIM)
+endif ()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/amsi/amsiConfigVersion.cmake"
-  VERSION ${AMSI_VERSION}
-  COMPATIBILITY AnyNewerVersion )
+        "${CMAKE_CURRENT_BINARY_DIR}/amsi/amsiConfigVersion.cmake"
+        VERSION ${AMSI_VERSION}
+        COMPATIBILITY AnyNewerVersion)
 
 configure_file(cmake/amsiConfig.cmake
-  "${CMAKE_CURRENT_BINARY_DIR}/amsi/amsiConfig.cmake"
-  COPYONLY)
+        "${CMAKE_CURRENT_BINARY_DIR}/amsi/amsiConfig.cmake"
+        COPYONLY)
 
 install(FILES cmake/amsiConfig.cmake "${CMAKE_CURRENT_BINARY_DIR}/amsi/amsiConfigVersion.cmake"
-  DESTINATION ${ConfigPackageLocation}
-  COMPONENT Devel)
+        DESTINATION ${ConfigPackageLocation}
+        COMPONENT Devel)
