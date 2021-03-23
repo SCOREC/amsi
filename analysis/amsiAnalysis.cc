@@ -1,13 +1,11 @@
 #include "amsiAnalysis.h"
-#include "sim.h"
 #include <amsiUtil.h>
 #include <gmi_null.h>
-#include <gmi_sim.h>
 #include <pystring.h>
 #include <cassert>
 namespace amsi
 {
-  #define ANALYSIS_OPTIONS(OP) OP(petsc), OP(petsc_options), OP(simmetrix), OP(simmetrix_license), OP(num_analysis_options)
+  #define ANALYSIS_OPTIONS(OP) OP(petsc), OP(petsc_options), OP(num_analysis_options)
   enum AnalysisOptions{ANALYSIS_OPTIONS(MAKE_ENUM_OP)};
   const char * getAnalysisOptionString(int ii)
   {
@@ -57,32 +55,6 @@ namespace amsi
     PetscFinalize();
   }
 # endif
-  bool use_simmetrix = false;
-  std::string simmetrix_license_file("");
-  void useSimmetrix(const std::string & sim_lic)
-  {
-    use_simmetrix = true;
-    simmetrix_license_file = sim_lic;
-  }
-  void simmetrixInit(int argc, char ** argv, MPI_Comm cm)
-  {
-    PMU_setCommunicator(cm);
-    MS_init();
-    Sim_readLicenseFile(simmetrix_license_file.c_str());
-    //SimPartitionedMesh_start(0,0);
-    SimPartitionedMesh_start(&argc,&argv);
-    SimMeshing_start();
-    gmi_sim_start();
-    gmi_register_sim();
-  }
-  void simmetrixFree()
-  {
-    SimPartitionedMesh_stop();
-    SimMeshing_stop();
-    gmi_sim_stop();
-    MS_exit();
-    Sim_unregisterAllKeys();
-  }
   void parseAnalysis(std::istream & fl)
   {
     std::string ln;
@@ -108,12 +80,6 @@ namespace amsi
           break;
         case petsc_options:
           petsc_options_file = tks[2];
-          break;
-        case simmetrix:
-          use_simmetrix = string2Bool(tks[2]);
-          break;
-        case simmetrix_license:
-          simmetrix_license_file = tks[2];
           break;
         default:
           std::cerr << "ERROR: Unknown amsi analysis option: " << tks[0] << std::endl;
@@ -154,14 +120,10 @@ namespace amsi
     if(use_petsc)
       petscInit(argc,argv,cm);
 #   endif
-    if(use_simmetrix)
-      simmetrixInit(argc,argv,cm);
     gmi_register_null();
   }
   void freeAnalysis()
   {
-    if(use_simmetrix)
-      simmetrixFree();
 #   ifdef PETSC
     if(use_petsc)
       petscFree();

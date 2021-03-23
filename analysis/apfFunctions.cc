@@ -1,6 +1,5 @@
 #include "apfFunctions.h"
 #include "ElementalSystem.h"
-#include "simClassified.h"
 #include <apfDynamicMatrix.h>
 #include <apfGeometry.h>
 #include <apfMesh.h>

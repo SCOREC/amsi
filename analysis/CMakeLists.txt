@@ -41,7 +41,7 @@ set(analysis_public_headers
         apfMeshUtil.h
         apfWrapper.h
         apfWrapper_impl.h
-        apfsimWrapper.h
+        apfLabelRegions.h
         ElementalSystem.h
         MatrixUtil.h
         FullLULAS.h
@@ -49,16 +49,7 @@ set(analysis_public_headers
         ElementalSystem.h
         apfFEA.h
         MatrixUtil.h
-        sim.h
-        simAnalysis.h
-        simAnalysis_impl.h
-        simAttributes.h
-        simAttributes_impl.h
-        simBoundaryConditions.h
-        simBoundaryConditions_impl.h
-        simClassified.h
-        simNonlinearAnalysis.h
-        simWrapper.h
+        amsiNonlinearConvergenceOperator.h
         )
 
 set(analysis_src_files
@@ -80,19 +71,14 @@ set(analysis_src_files
         apfMeshIterator.cc
         apfMeshUtil.cc
         apfWrapper.cc
-        apfsimWrapper.cc
+        apfLabelRegions.cc
         MatrixUtil.h
         FullLULAS.cc
         Solvers.cc
         ElementalSystem.cc
         apfFEA.cc
         MatrixUtil.cc
-        simAnalysis.cc
-        simAttributes.cc
-        simBoundaryConditions.cc
-        simClassified.cc
-        simNonlinearAnalysis.cc
-        simWrapper.cc
+        amsiNonlinearConvergenceOperator.cc
         amsiNeumannIntegratorsMT.cc)
 
 # Add the library to create
@@ -108,7 +94,7 @@ if (NOT ${BUILD_EXTERNAL})
     find_package(ModelTraits REQUIRED)
 endif ()
 
-target_link_libraries(analysis PUBLIC util SCOREC::gmi_sim SCOREC::apf_sim SCOREC::ma ${PETSC_LINK_LIBRARIES} ModelTraits::ModelTraits)
+target_link_libraries(analysis PUBLIC util SCOREC::gmi SCOREC::apf SCOREC::ma ${PETSC_LINK_LIBRARIES} ModelTraits::ModelTraits)
 
 install(TARGETS analysis
         EXPORT amsianalysisTargets

@@ -3,7 +3,6 @@
 #include "amsiFields.h"
 #include "amsiAnalysisConfig.h"
 #include "amsiPETScLAS.h"
-#include "simAttributes.h"
 #include "amsiNonlinearAnalysis.h"
 namespace amsi
 {
@@ -15,6 +14,5 @@ namespace amsi
 #ifdef PETSC
   void usePetsc(const std::string & petsc_opts);
 #endif
-  void useSimmetrix(const std::string & sim_lic);
 }
 #endif
