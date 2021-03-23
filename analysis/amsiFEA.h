@@ -1,15 +1,17 @@
 #ifndef AMSI_FEA_H_
 #define AMSI_FEA_H_
-#include "amsiBoundaryConditions.h"
-#include "amsiLAS.h"
-#include "amsiMPI.h"
 #include <PCU.h>
-#include <cstring> // memset
+#include <mpi.h>
+#include <cstring>  // memset
 #include <iostream>
 #include <list>
 #include <map>
 #include <vector>
-#include <mpi.h>
+#include "amsiBoundaryConditionQuery.h"
+#include "amsiLAS.h"
+#include "amsiMPI.h"
+#include "model_traits/AssociatedModelTraits.h"
+#include "amsiBoundaryConditions.h"
 namespace amsi
 {
   typedef int ldof_type;
@@ -45,20 +47,19 @@ namespace amsi
     int analysis_dim;
     // mpi communicator containing only those processes undertaking this analysis
     MPI_Comm analysis_comm;
-    std::vector<BCQuery*> dir_bcs;
-    std::vector<BCQuery*> neu_bcs;
+    std::shared_ptr<const mt::AssociatedModelTraits<mt::DimIdGeometry>> model_traits;
+    std::vector<DirichletBCEntry> dirichlet_bcs;
+    std::vector<NeumannBCEntry> neumann_bcs;
+
   public:
-    FEA(MPI_Comm cm = AMSI_COMM_SCALE);
+    FEA(std::shared_ptr<const mt::AssociatedModelTraits<mt::DimIdGeometry>> mt,
+        std::vector<DirichletBCEntry> dbc, std::vector<NeumannBCEntry> nbc,
+          MPI_Comm cm = AMSI_COMM_SCALE);
     virtual void Adapt()=0;
     virtual void ApplyBC_Dirichlet()=0;
     virtual void ApplyBC_Neumann(LAS *)=0;
     virtual void Assemble(LAS*) = 0;
-    void setSimulationTime(double t)
-    {
-      T = t;
-      if(!PCU_Comm_Self())
-	std::cout << "Simulation time updated: " << T << std::endl;
-    }
+    void setSimulationTime(double t);
     template <typename NODE_TYPE>
       void AssembleDOFs(LAS * las,
                         int num_elemental_dofs,
@@ -67,12 +68,7 @@ namespace amsi
                         double * Ke,
                         double * fe,
                         bool includes_body_forces) const;
-    virtual void GetDOFInfo(int& global,int& local,int& offset)
-    {
-      global = global_dof_count;
-      local = local_dof_count;
-      offset = first_local_dof;
-    };
+    virtual void GetDOFInfo(int& global,int& local,int& offset);
     virtual void RenumberDOFs() {};
     virtual void UpdateDOFs(const double * sol) = 0;
   private:

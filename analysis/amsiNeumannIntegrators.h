@@ -68,6 +68,7 @@ namespace amsi
     { }
     void atPoint(apf::Vector3 const & p, double w, double dV)
     {
+      // loads the value for t, p(xyz point) into vls
       updateBCQueryValues(p);
       apf::NewArray<double> N;
       apf::getShapeValues(e,p,N);

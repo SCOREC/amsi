@@ -1,9 +1,12 @@
 #include "amsiNeumannIntegrators.h"
-#include "amsiBoundaryConditions.h"
+#include "amsiBoundaryConditionQuery.h"
 namespace amsi
 {
   void NeumannIntegrator::updateBCQueryValues(apf::Vector3 const & p)
   {
+    // nfcmps is the number of components on the field
+    // this assumes that the the query has the same number of
+    // components as the field...should probably be tested
     if(qry->isConst())
       for(int ii = 0; ii < nfcmps; ii++)
         vls[ii] = qry->getValue(ii);

@@ -59,7 +59,8 @@ namespace amsi
   }
   */
   template <typename I>
-    int applySimDirichletBCs(apf::Numbering * nm, pMesh, I bgn, I nd, double t, apf::Field * delta_field)
+    int applySimDirichletBCs(apf::Numbering * nm, pMesh, I bgn, I nd,
+                             double t, apf::Field * delta_field)
   {
     bc_set_map already_set_map;
     int fxd = 0;
@@ -68,11 +69,14 @@ namespace amsi
       SimBCQuery * dir_bc = dynamic_cast<SimBCQuery*>(*it);
       SimBC * sim_bc = dir_bc->getSimBC();
       assert(sim_bc->tp == BCType::dirichlet);
+      // dimension of geometric entity 0 Vert, 1 Edge, 2 Face
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
+      // loop over all entities of all dimensions classified on the geometry
       for(int ii = 0; ii <= dm; ++ii)
       {
         auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),ii);
         auto end = amsi::endClassified(bgn);
+        // apply the dirichlet boundary condition to the
         fxd += applyDirichletBC(nm,bgn,end,*it,t,already_set_map,delta_field);
       }
     }
@@ -82,15 +86,22 @@ namespace amsi
     void applySimNeumannBCs(LAS * las, apf::Numbering * nm, pMesh, I bgn, I nd, double t)
   {
     apf::Field * fld = apf::getField(nm);
+    // for each BCQuery in the set
     for(auto it = bgn; it != nd; it++)
     {
       SimBCQuery * neu_bc = dynamic_cast<SimBCQuery*>(*it);
       SimBC * sim_bc = neu_bc->getSimBC();
       assert(sim_bc->tp == BCType::neumann);
+      // build a first order integrator
       NeumannIntegrator * i = buildNeumannIntegrator(las,fld,1,neu_bc,sim_bc->sbtp,t);
+      // dimension of the geometric entity
       int dm = modelItemTypeDim(GEN_type((pGEntity)sim_bc->itm));
-      auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),dm);
+      //
+      auto bgn = amsi::beginClassified(apf::getMesh(apf::getField(nm)),
+                                       reinterpret_cast<apf::ModelEntity*>(sim_bc->itm),dm);
       auto end = amsi::endClassified(bgn);
+      // loop over all of the entities classified on the geometric entity with the same dimension
+      // as the geometric entity
       applyNeumannBC(las,nm,bgn,end,i,t);
       deleteNeumannIntegrator(i);
     }

@@ -1,13 +1,13 @@
 #ifndef AMSI_APFFEA_H_
 #define AMSI_APFFEA_H_
-#include "amsiFEA.h"
-#include "amsiBoundaryConditions.h"
-#include "apfFieldOp.h"
-#include "ElementalSystem.h"
 #include <apf.h>
 #include <apfMesh.h>
 #include <apfNumbering.h>
 #include <iomanip>
+#include "ElementalSystem.h"
+#include "amsiBoundaryConditionQuery.h"
+#include "amsiFEA.h"
+#include "apfFieldOp.h"
 namespace amsi
 {
   apf::Field * analyzeMeshQuality(apf::Mesh * mesh, apf::Field * disp_field);
@@ -49,8 +49,11 @@ namespace amsi
     ElementalSystem * elemental_system;
     bool own_mesh;
   public:
-    apfFEA(apf::Mesh * in_mesh, MPI_Comm cm = AMSI_COMM_SCALE, bool own_mesh=false)
-      : FEA(cm)
+    apfFEA(apf::Mesh * in_mesh,
+           std::shared_ptr<const mt::AssociatedModelTraits<mt::DimIdGeometry>> mt,
+           std::vector<DirichletBCEntry> dbc, std::vector<NeumannBCEntry> nbc,
+         MPI_Comm cm = AMSI_COMM_SCALE, bool own_mesh=false)
+      : FEA(std::move(mt), std::move(dbc), std::move(nbc), cm)
       , apf_mesh(in_mesh)
       , apf_primary_field(NULL)
       , apf_primary_delta_field(NULL)

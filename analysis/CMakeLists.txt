@@ -11,7 +11,8 @@ set(analysis_public_headers
         amsiAnalysis.h
         amsiAnalysisConfig.h
         amsiBoundaryConditions.h
-        amsiBoundaryConditions_impl.h
+        amsiBoundaryConditionQuery.h
+        amsiBoundaryConditionQuery_impl.h
         amsiDeformation.h
         amsiDetectOscillation.h
         amsiDetectOscillation_impl.h
@@ -63,6 +64,7 @@ set(analysis_public_headers
 set(analysis_src_files
         amsiAnalysis.cc
         amsiBoundaryConditions.cc
+        amsiBoundaryConditionQuery.cc
         amsiDeformation.cc
         amsiFields.cc
         amsiFEA.cc
@@ -91,7 +93,7 @@ set(analysis_src_files
         simClassified.cc
         simNonlinearAnalysis.cc
         simWrapper.cc
-        )
+        amsiNeumannIntegratorsMT.cc)
 
 # Add the library to create
 add_library(analysis STATIC ${analysis_src_files})

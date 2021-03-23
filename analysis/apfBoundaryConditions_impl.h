@@ -1,10 +1,10 @@
 #ifndef APF_BOUNDARY_CONDITIONS_IMPL_H_
 #define APF_BOUNDARY_CONDITIONS_IMPL_H_
-#include "apfShape.h"
-#include "apfNumbering.h"
-#include "amsiNeumannIntegrators.h"
-#include "amsiBoundaryConditions.h"
 #include <cassert>
+#include "amsiBoundaryConditionQuery.h"
+#include "amsiNeumannIntegrators.h"
+#include "apfNumbering.h"
+#include "apfShape.h"
 namespace amsi
 {
   template <typename I>

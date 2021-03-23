@@ -1,14 +1,14 @@
 #ifndef SIM_BOUNDARY_CONDITIONS_H_
 #define SIM_BOUNDARY_CONDITIONS_H_
-#include "amsiBoundaryConditions.h"
-#include "amsiLAS.h"
-#include "sim.h"
 #include <apfNumbering.h>
 #include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iterator>
 #include <vector>
+#include "amsiBoundaryConditionQuery.h"
+#include "amsiLAS.h"
+#include "sim.h"
 namespace amsi
 {
   /**
