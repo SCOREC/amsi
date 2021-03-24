@@ -83,6 +83,7 @@ set(analysis_src_files
 
 # Add the library to create
 add_library(analysis STATIC ${analysis_src_files})
+add_library(amsi::analysis ALIAS analysis)
 
 # properties for downstream packages
 target_include_directories(analysis PUBLIC

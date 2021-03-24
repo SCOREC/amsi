@@ -55,6 +55,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h.in
                @ONLY)
 
 add_library(util ${util_source_files})
+add_library(amsi::util ALIAS util)
 set_property(TARGET util PROPERTY VERSION ${AMSI_VERSION})
 
 target_include_directories(util PUBLIC
