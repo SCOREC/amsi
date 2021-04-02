@@ -16,12 +16,12 @@ namespace amsi {
     std::string mt_name;
     NeumannBCType mt_type;
   };
-  void applyNeumannBCs(
-      LAS* las, apf::Numbering* nm,
-      const mt::AssociatedModelTraits<mt::DimIdGeometry>& bcs,
-      const std::vector<NeumannBCEntry> bc_paths, double t);
+  void applyNeumannBCs(LAS* las, apf::Numbering* nm,
+                       const mt::AssociatedModelTraits<mt::DimIdGeometry>& bcs,
+                       const std::vector<NeumannBCEntry>& bc_paths, double t);
   int applyDirichletBCs(apf::Numbering* nm, apf::Field* delta_field,
                         const mt::AssociatedModelTraits<mt::DimIdGeometry>& bcs,
-                        const std::vector<DirichletBCEntry>& bc_paths, double t);
+                        const std::vector<DirichletBCEntry>& bc_paths,
+                        double t);
 }  // namespace amsi
 #endif  // AMSI_AMSIBOUNDARYCONDITIONS_H

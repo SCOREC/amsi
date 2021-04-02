@@ -42,7 +42,7 @@ add_library(multiscale ${multiscale_source_files})
 add_library(amsi::multiscale ALIAS multiscale)
 
 target_include_directories(multiscale PUBLIC
-                                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                                 $<INSTALL_INTERFACE:include/amsi>)
 target_link_libraries(multiscale PUBLIC util)
 

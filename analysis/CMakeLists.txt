@@ -27,6 +27,7 @@ set(analysis_public_headers
         amsiLinearElasticConstitutive.h
         amsiNonlinearAnalysis.h
         amsiNeumannIntegrators.h
+        amsiNeumannIntegratorsMT.h
         amsiPETScLAS.h
         apfBoundaryConditions.h
         apfBoundaryConditions_impl.h
@@ -87,7 +88,7 @@ add_library(amsi::analysis ALIAS analysis)
 
 # properties for downstream packages
 target_include_directories(analysis PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include/amsi>
         ${PETSC_INCLUDE_DIRS})
 

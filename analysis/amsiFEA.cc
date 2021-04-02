@@ -4,9 +4,11 @@
 #include <fstream>
 #include <vector>
 namespace amsi {
-  FEA::FEA(std::shared_ptr<const mt::AssociatedModelTraits<mt::DimIdGeometry>> mt,
-      std::vector<DirichletBCEntry> dbc, std::vector<NeumannBCEntry> nbc,
-      MPI_Comm cm)
+  FEA::FEA(const ModelDefinition& pd,
+           const ModelDefinition& ss,
+           const ModelDefinition& out, std::vector<DirichletBCEntry> dbc,
+           std::vector<NeumannBCEntry> nbc, const std::string& analysis_name,
+           MPI_Comm cm)
       : constraint_dofs(0)
       , local_dof_count(0)
       , first_local_dof(0)
@@ -15,15 +17,59 @@ namespace amsi {
       , numbered(false)
       , T(0.0)
       , analysis_comm(cm)
-      , model_traits(std::move(mt))
+      , problem_definition(pd)
+      , output(out)
+      , solution_strategy(ss)
       , dirichlet_bcs(std::move(dbc))
       , neumann_bcs(std::move(nbc))
   {
   }
+  FEA::FEA(const mt::CategoryNode& analysis_case,
+           std::vector<DirichletBCEntry> dbc, std::vector<NeumannBCEntry> nbc,
+           const std::string& analysis_name, MPI_Comm cm)
+      : constraint_dofs(0)
+      , local_dof_count(0)
+      , first_local_dof(0)
+      , global_dof_count(0)
+      , fixed_dofs(0)
+      , numbered(false)
+      , T(0.0)
+      , analysis_comm(cm)
+      , dirichlet_bcs(std::move(dbc))
+      , neumann_bcs(std::move(nbc))
+  {
+    const mt::CategoryNode* pd;
+    const mt::CategoryNode* ss;
+    const mt::CategoryNode* out;
+    const mt::CategoryNode* tmp;
+    pd = analysis_case.FindCategoryNodeByType("problem definition");
+    ss = analysis_case.FindCategoryNodeByType("output");
+    out = analysis_case.FindCategoryNodeByType("solution strategy");
+    if (pd == nullptr || ss == nullptr || out == nullptr) {
+      std::cerr << "analysis case should have \"problem "
+                   "definition\",\"output\", and \"solution strategy\".\n";
+      MPI_Abort(AMSI_COMM_WORLD, 1);
+    }
+    tmp = pd->FindCategoryNodeByType(analysis_name);
+    pd = (tmp == nullptr) ? pd : tmp;
+    tmp = ss->FindCategoryNodeByType(analysis_name);
+    ss = (tmp == nullptr) ? ss : tmp;
+    tmp = out->FindCategoryNodeByType(analysis_name);
+    out = (tmp == nullptr) ? out : tmp;
+    problem_definition = ModelDefinition{
+        .associated = mt::AssociateModel(pd),
+        .unassociated = std::make_shared<mt::CategoryNode>(*pd)};
+    solution_strategy = ModelDefinition{
+        .associated = mt::AssociateModel(ss),
+        .unassociated = std::make_shared<mt::CategoryNode>(*ss)};
+    output = ModelDefinition{
+        .associated = mt::AssociateModel(out),
+        .unassociated = std::make_shared<mt::CategoryNode>(*out)};
+  }
   void FEA::setSimulationTime(double t)
   {
     T = t;
-    if(!PCU_Comm_Self())
+    if (!PCU_Comm_Self())
       std::cout << "Simulation time updated: " << T << std::endl;
   }
   void FEA::GetDOFInfo(int& global, int& local, int& offset)

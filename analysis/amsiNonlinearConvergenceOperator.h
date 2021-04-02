@@ -7,8 +7,31 @@
 namespace amsi
 {
   class LAS;
-  std::unique_ptr<Convergence> createConvergenceOperator(const mt::AssociatedCategoryNode& nd,
+  std::unique_ptr<Convergence> createConvergenceOperator(
+      const mt::CategoryNode *nd,
                                             MultiIteration * it,
                                             LAS * las);
+  class MTUpdatingEpsilon : public R1_to_R1
+  {
+    protected:
+      mt::ScalarFunctionMT<1> eps;
+    public:
+    MTUpdatingEpsilon(mt::ScalarFunctionMT<1> e)
+        : eps(std::move(e))
+    { }
+    double operator()(double t)
+    {
+      return eps(t);
+    }
+  };
+  class MTConstantEpsilon : public R1_to_R1
+  {
+    double eps;
+    public:
+    MTConstantEpsilon(double e) : eps(e) {}
+    double operator()(double) {
+      return eps;
+    }
+  };
 }
 #endif

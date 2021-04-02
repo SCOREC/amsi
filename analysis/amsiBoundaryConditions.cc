@@ -19,10 +19,10 @@ namespace amsi {
     return -1;
   }
   static int SetScalarValue(const std::string& name, apf::Field* field,
-                             apf::Field* delta_field, apf::Numbering* nm,
-                             apf::MeshEntity* ent, int nd,
-                             std::vector<double>& data,
-                             apf::Numbering* already_set, double val)
+                            apf::Field* delta_field, apf::Numbering* nm,
+                            apf::MeshEntity* ent, int nd,
+                            std::vector<double>& data,
+                            apf::Numbering* already_set, double val)
   {
     int cmp = ScalarComponent(name);
     if (cmp < 1) {
@@ -60,8 +60,8 @@ namespace amsi {
   }
   template <typename MT, typename... Args>
   int SetVectorValue(apf::Field* field, apf::Field* delta_field,
-                      apf::Numbering* nm, apf::MeshEntity* ent, int nd,
-                      apf::Numbering* already_set, const MT& mt, Args... args)
+                     apf::Numbering* nm, apf::MeshEntity* ent, int nd,
+                     apf::Numbering* already_set, const MT& mt, Args... args)
   {
     int num_fixed = 0;
     size_t num_comp = apf::countComponents(field);
@@ -98,7 +98,8 @@ namespace amsi {
     public:
     SetDirichletVisitor(const std::string& name, apf::Field* field,
                         apf::Field* delta_field, apf::Numbering* nm,
-                        double time, apf::Numbering* already_set, int& num_fixed)
+                        double time, apf::Numbering* already_set,
+                        int& num_fixed)
         : field_(field)
         , delta_field_(delta_field)
         , nm_(nm)
@@ -117,22 +118,23 @@ namespace amsi {
     }
     void visit(mt::BoolMT& mt) override
     {
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt());
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt());
     }
     void visit(mt::ScalarMT& mt) override
     {
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt());
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt());
     };
     void visit(mt::IntMT& mt) override
     {
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt());
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt());
     }
     void visit(mt::VectorMT& mt) override
     {
-      num_fixed_ += SetVectorValue(field_, delta_field_, nm_, ent_, nd_, already_set_, mt);
+      num_fixed_ += SetVectorValue(field_, delta_field_, nm_, ent_, nd_,
+                                   already_set_, mt);
     }
     void visit(mt::StringMT&) override
     {
@@ -149,26 +151,30 @@ namespace amsi {
     void visit(mt::BoolFunctionMT<4>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(time_, xyz[0], xyz[1], xyz[2]));
+      num_fixed_ +=
+          SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
+                         already_set_, mt(time_, xyz[0], xyz[1], xyz[2]));
     }
     void visit(mt::ScalarFunctionMT<4>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(time_, xyz[0], xyz[1], xyz[2]));
+      num_fixed_ +=
+          SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
+                         already_set_, mt(time_, xyz[0], xyz[1], xyz[2]));
     }
     void visit(mt::IntFunctionMT<4>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(time_, xyz[0], xyz[1], xyz[2]));
+      num_fixed_ +=
+          SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
+                         already_set_, mt(time_, xyz[0], xyz[1], xyz[2]));
     }
     void visit(mt::VectorFunctionMT<4>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetVectorValue(field_, delta_field_, nm_, ent_, nd_, already_set_, mt,
-                     time_, xyz[0], xyz[1], xyz[2]);
+      num_fixed_ +=
+          SetVectorValue(field_, delta_field_, nm_, ent_, nd_, already_set_, mt,
+                         time_, xyz[0], xyz[1], xyz[2]);
     }
     void visit(mt::StringFunctionMT<4>&) override
     {
@@ -184,26 +190,29 @@ namespace amsi {
     void visit(mt::BoolFunctionMT<3>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(xyz[0], xyz[1], xyz[2]));
+      num_fixed_ +=
+          SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
+                         already_set_, mt(xyz[0], xyz[1], xyz[2]));
     }
     void visit(mt::ScalarFunctionMT<3>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(xyz[0], xyz[1], xyz[2]));
+      num_fixed_ +=
+          SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
+                         already_set_, mt(xyz[0], xyz[1], xyz[2]));
     }
     void visit(mt::IntFunctionMT<3>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(xyz[0], xyz[1], xyz[2]));
+      num_fixed_ +=
+          SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
+                         already_set_, mt(xyz[0], xyz[1], xyz[2]));
     }
     void visit(mt::VectorFunctionMT<3>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-     num_fixed_ +=  SetVectorValue(field_, delta_field_, nm_, ent_, nd_, already_set_, mt,
-                     xyz[0], xyz[1], xyz[2]);
+      num_fixed_ += SetVectorValue(field_, delta_field_, nm_, ent_, nd_,
+                                   already_set_, mt, xyz[0], xyz[1], xyz[2]);
     }
     void visit(mt::StringFunctionMT<3>&) override
     {
@@ -219,26 +228,26 @@ namespace amsi {
     void visit(mt::BoolFunctionMT<2>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-     num_fixed_ +=  SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(xyz[0], xyz[1]));
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt(xyz[0], xyz[1]));
     }
     void visit(mt::ScalarFunctionMT<2>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-     num_fixed_ +=  SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(xyz[0], xyz[1]));
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt(xyz[0], xyz[1]));
     }
     void visit(mt::IntFunctionMT<2>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-     num_fixed_ +=  SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(xyz[0], xyz[1]));
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt(xyz[0], xyz[1]));
     }
     void visit(mt::VectorFunctionMT<2>& mt) override
     {
       auto xyz = GetPosition(apf::getMesh(field_), ent_, nd_);
-     num_fixed_ +=  SetVectorValue(field_, delta_field_, nm_, ent_, nd_, already_set_, mt,
-                     xyz[0], xyz[1]);
+      num_fixed_ += SetVectorValue(field_, delta_field_, nm_, ent_, nd_,
+                                   already_set_, mt, xyz[0], xyz[1]);
     }
     void visit(mt::StringFunctionMT<2>&) override
     {
@@ -253,23 +262,23 @@ namespace amsi {
     // 1 parameters (time)
     void visit(mt::BoolFunctionMT<1>& mt) override
     {
-     num_fixed_ +=  SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(time_));
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt(time_));
     }
     void visit(mt::ScalarFunctionMT<1>& mt) override
     {
-     num_fixed_ +=  SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(time_));
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt(time_));
     }
     void visit(mt::IntFunctionMT<1>& mt) override
     {
-     num_fixed_ +=  SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_, data_,
-                     already_set_, mt(time_));
+      num_fixed_ += SetScalarValue(name_, field_, delta_field_, nm_, ent_, nd_,
+                                   data_, already_set_, mt(time_));
     }
     void visit(mt::VectorFunctionMT<1>& mt) override
     {
-     num_fixed_ +=  SetVectorValue(field_, delta_field_, nm_, ent_, nd_, already_set_, mt,
-                     time_);
+      num_fixed_ += SetVectorValue(field_, delta_field_, nm_, ent_, nd_,
+                                   already_set_, mt, time_);
     }
     void visit(mt::StringFunctionMT<1>&) override
     {
@@ -281,6 +290,7 @@ namespace amsi {
       std::cerr << "Cannot apply a matrix boundary condition\n";
       exit(1);
     }
+
     private:
     // set once
     apf::Field* field_;
@@ -297,12 +307,13 @@ namespace amsi {
     int& num_fixed_;
   };
   static int setDirichletValue(mt::IModelTrait* bc, const std::string& name,
-                                apf::Numbering* nm, apf::Field* field,
-                                apf::Field* delta_field, apf::MeshEntity* ent,
-                                double t, apf::Numbering* already_set)
+                               apf::Numbering* nm, apf::Field* field,
+                               apf::Field* delta_field, apf::MeshEntity* ent,
+                               double t, apf::Numbering* already_set)
   {
     int num_fixed = 0;
-    SetDirichletVisitor visitor(name, field, delta_field, nm, t, already_set, num_fixed);
+    SetDirichletVisitor visitor(name, field, delta_field, nm, t, already_set,
+                                num_fixed);
     assert(field != nullptr);
     auto* field_shape = apf::getShape(field);
     int num_nds = field_shape->countNodesOn(apf::getMesh(field)->getType(ent));
@@ -312,13 +323,13 @@ namespace amsi {
     }
     return num_fixed;
   }
-  int applyDirichletBCs(apf::Numbering* nm, apf::Field* field,
-                        apf::Field* delta_field,
+  int applyDirichletBCs(apf::Numbering* nm, apf::Field* delta_field,
                         const mt::AssociatedModelTraits<mt::DimIdGeometry>& bcs,
-                        const std::vector<DirichletBCEntry> bc_paths, double t)
+                        const std::vector<DirichletBCEntry>& bc_paths, double t)
   {
     int num_fixed = 0;
     auto* mesh = apf::getMesh(nm);
+    auto* field = apf::getField(nm);
     // a numbering so we can keep track of if we already set the components of
     // the field
     auto* already_set =
@@ -341,7 +352,7 @@ namespace amsi {
         for (const auto& path : bc_paths) {
           const mt::AssociatedCategoryNode* nd = traits;
           for (auto& category : path.categories) {
-            nd = nd->FindCategory(category);
+            nd = nd->FindCategoryByType(category);
             if (nd == nullptr) {
               break;
             }
@@ -355,8 +366,9 @@ namespace amsi {
             std::cerr << "Invalid Dirichlet BC\n";
             exit(1);
           }
-          num_fixed += setDirichletValue(const_cast<mt::IModelTrait*>(bc), bc_name, nm,
-                            field, delta_field, e, t, already_set);
+          num_fixed +=
+              setDirichletValue(const_cast<mt::IModelTrait*>(bc), bc_name, nm,
+                                field, delta_field, e, t, already_set);
           // apply the bcs to any entities classified on the model entity
           // of a lower dimension. This makes sure we apply the dirichlet bc
           // to all entities on the closure of the geometry
@@ -364,8 +376,9 @@ namespace amsi {
             apf::Adjacent adjacent;
             mesh->getAdjacent(e, lower_dim, adjacent);
             for (auto& adj : adjacent) {
-              num_fixed += setDirichletValue(const_cast<mt::IModelTrait*>(bc), bc_name, nm,
-                                field, delta_field, adj, t, already_set);
+              num_fixed += setDirichletValue(const_cast<mt::IModelTrait*>(bc),
+                                             bc_name, nm, field, delta_field,
+                                             adj, t, already_set);
             }
           }
         }
@@ -405,7 +418,7 @@ namespace amsi {
         for (const auto& path : bc_paths) {
           const mt::AssociatedCategoryNode* nd = traits;
           for (auto& category : path.categories) {
-            nd = nd->FindCategory(category);
+            nd = nd->FindCategoryByType(category);
             if (nd == nullptr) {
               break;
             }

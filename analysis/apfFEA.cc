@@ -106,7 +106,7 @@ namespace amsi {
   {
     fixed_dofs =
         applyDirichletBCs(apf_primary_numbering, apf_primary_delta_field,
-                          *model_traits.get(), dirichlet_bcs, T);
+                          *problem_definition.associated, dirichlet_bcs, T);
     fixed_dofs = comm_sum(fixed_dofs, analysis_comm);
     AMSI_V1(std::cout << "There are " << fixed_dofs
                       << " dofs fixed by essential boundary conditions."
@@ -115,7 +115,7 @@ namespace amsi {
   // FIXME apply boundary conditions without simmetrix
   void apfFEA::ApplyBC_Neumann(LAS* las)
   {
-    applyNeumannBCs(las, apf_primary_numbering, *model_traits.get(),
+    applyNeumannBCs(las, apf_primary_numbering, *problem_definition.associated,
                     neumann_bcs, T);
   }
   void apfFEA::Adapt()
