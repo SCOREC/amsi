@@ -43,8 +43,8 @@ namespace amsi {
     const mt::CategoryNode* out;
     const mt::CategoryNode* tmp;
     pd = analysis_case.FindCategoryNodeByType("problem definition");
-    ss = analysis_case.FindCategoryNodeByType("output");
-    out = analysis_case.FindCategoryNodeByType("solution strategy");
+    out = analysis_case.FindCategoryNodeByType("output");
+    ss = analysis_case.FindCategoryNodeByType("solution strategy");
     if (pd == nullptr || ss == nullptr || out == nullptr) {
       std::cerr << "analysis case should have \"problem "
                    "definition\",\"output\", and \"solution strategy\".\n";
@@ -65,6 +65,7 @@ namespace amsi {
     output = ModelDefinition{
         .associated = mt::AssociateModel(out),
         .unassociated = std::make_shared<mt::CategoryNode>(*out)};
+    assert(solution_strategy.associated->GetNullGeometry() != nullptr);
   }
   void FEA::setSimulationTime(double t)
   {

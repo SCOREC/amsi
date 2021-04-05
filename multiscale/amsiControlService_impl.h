@@ -59,8 +59,14 @@ namespace amsi
     Task * lt = task_man->getLocalTask();
     Task * t1 = task_man->Task_Get(t_ids.first);
     Task * t2 = task_man->Task_Get(t_ids.second);
+    assert(lt != nullptr);
+    assert(t1 != nullptr);
+    assert(t2 != nullptr);
+
     int t1s = taskSize(t1);
     int t2s = taskSize(t2);
+    assert(t1s == 1);
+    assert(t2s == 1);
     int t2_per_t1 = t2s / t1s;
     int extra_t2 = t2s % t1s;
     int task_rank = lt->localRank();

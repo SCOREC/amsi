@@ -117,8 +117,9 @@ namespace amsi
     if(configuredFromFile())
       configureAnalysisFromFile(getOptionsFilename());
 #   ifdef PETSC
-    if(use_petsc)
+    if(use_petsc) {
       petscInit(argc,argv,cm);
+    }
 #   endif
     gmi_register_null();
   }

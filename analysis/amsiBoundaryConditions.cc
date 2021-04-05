@@ -31,7 +31,7 @@ namespace amsi {
     // if the node has already been set by lower order BC don't
     // set it again
     if (apf::isNumbered(already_set, ent, nd, cmp)) {
-      return 1;
+      return 0;
     }
     apf::number(already_set, ent, nd, cmp, 1);
     data.resize(apf::countComponents(field));
@@ -41,6 +41,7 @@ namespace amsi {
     apf::setComponents(field, ent, nd, data.data());
     // set the delta fields
     if (delta_field) {
+      apf::getComponents(delta_field, ent, nd, data.data());
       data[cmp] = delta_val;
       apf::setComponents(delta_field, ent, nd, data.data());
     }
@@ -361,24 +362,22 @@ namespace amsi {
             continue;
           }
           const auto& bc_name = path.mt_name;
-          auto* bc = nd->FindModelTrait(bc_name);
-          if (bc == nullptr) {
-            std::cerr << "Invalid Dirichlet BC\n";
-            exit(1);
-          }
-          num_fixed +=
-              setDirichletValue(const_cast<mt::IModelTrait*>(bc), bc_name, nm,
-                                field, delta_field, e, t, already_set);
-          // apply the bcs to any entities classified on the model entity
-          // of a lower dimension. This makes sure we apply the dirichlet bc
-          // to all entities on the closure of the geometry
-          for (int lower_dim = 0; lower_dim < dimension; ++lower_dim) {
-            apf::Adjacent adjacent;
-            mesh->getAdjacent(e, lower_dim, adjacent);
-            for (auto& adj : adjacent) {
-              num_fixed += setDirichletValue(const_cast<mt::IModelTrait*>(bc),
-                                             bc_name, nm, field, delta_field,
-                                             adj, t, already_set);
+          auto* bc = mt::GetCategoryModelTraitByType(nd, bc_name);
+          if (bc != nullptr) {
+            num_fixed +=
+                setDirichletValue(const_cast<mt::IModelTrait*>(bc), bc_name, nm,
+                                  field, delta_field, e, t, already_set);
+            // apply the bcs to any entities classified on the model entity
+            // of a lower dimension. This makes sure we apply the dirichlet bc
+            // to all entities on the closure of the geometry
+            for (int lower_dim = 0; lower_dim < dimension; ++lower_dim) {
+              apf::Adjacent adjacent;
+              mesh->getAdjacent(e, lower_dim, adjacent);
+              for (auto& adj : adjacent) {
+                num_fixed += setDirichletValue(const_cast<mt::IModelTrait*>(bc),
+                                               bc_name, nm, field, delta_field,
+                                               adj, t, already_set);
+              }
             }
           }
         }
@@ -427,30 +426,28 @@ namespace amsi {
             continue;
           }
           const auto& bc_name = path.mt_name;
-          auto* bc = nd->FindModelTrait(bc_name);
-          if (bc == nullptr) {
-            std::cerr << "Invalid Neumann BC\n";
-            exit(1);
+          auto* bc = mt::GetCategoryModelTraitByType(nd, bc_name);
+          if (bc != nullptr) {
+            NeumannIntegratorMT* integrator;
+            auto* mnt = apf::createMeshElement(mesh, e);
+            auto integrator_type = path.mt_type;
+            auto rslt = integrators.find(integrator_type);
+            if (rslt == integrators.end()) {
+              auto r = integrators.emplace(
+                  integrator_type,
+                  createNeumannIntegrator(las, fld, bc, 1, t, integrator_type));
+              integrator = r.first->second.get();
+            }
+            else {
+              integrator = rslt->second.get();
+            }
+            integrator->process(mnt);
+            apf::NewArray<int> dofs;
+            apf::getElementNumbers(nm, e, dofs);
+            las->AddToVector(integrator->getnedofs(), &dofs[0],
+                             &integrator->getFe()[0]);
+            apf::destroyMeshElement(mnt);
           }
-          NeumannIntegratorMT* integrator;
-          auto* mnt = apf::createMeshElement(mesh, e);
-          auto integrator_type = path.mt_type;
-          auto rslt = integrators.find(integrator_type);
-          if (rslt == integrators.end()) {
-            auto r = integrators.emplace(
-                integrator_type,
-                createNeumannIntegrator(las, fld, bc, 1, t, integrator_type));
-            integrator = r.first->second.get();
-          }
-          else {
-            integrator = rslt->second.get();
-          }
-          integrator->process(mnt);
-          apf::NewArray<int> dofs;
-          apf::getElementNumbers(nm, e, dofs);
-          las->AddToVector(integrator->getnedofs(), &dofs[0],
-                           &integrator->getFe()[0]);
-          apf::destroyMeshElement(mnt);
         }
       }
     }

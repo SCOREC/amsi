@@ -69,6 +69,7 @@ namespace amsi
         size_t t2 = tm->getTaskID(tks[2]);
         assert(t1 && t2);
         cm->defineRelation(t1,t2);
+        assert(cm->CommRelation_Exists(t1,t2));
       }
       else
         parsing = false;

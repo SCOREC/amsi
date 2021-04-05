@@ -17,8 +17,9 @@ namespace amsi
                               int num_global_unknowns,
                               int global_offset)
   {
-    int rsz = num_local_unknowns != vec_high - vec_low || global_offset != vec_low;
-    MPI_Allreduce(&rsz,&rsz,1,MPI_INTEGER,MPI_SUM,PETSC_COMM_WORLD);
+    int rsz_root = num_local_unknowns != vec_high - vec_low || global_offset != vec_low;
+    int rsz = 0;
+    MPI_Allreduce(&rsz_root,&rsz,1,MPI_INTEGER,MPI_SUM,PETSC_COMM_WORLD);
     if(rsz)
     {
       if(x_arr)
@@ -429,6 +430,8 @@ namespace amsi
   {
     MPI_Comm cm;
     PetscObjectGetComm((PetscObject)b_i,&cm);
-    return comm_min(b_assembled,cm);
+    int assembled = b_assembled;
+    // not valid MPI to do min on bool type
+    return comm_min(assembled,cm);
   }
 }
