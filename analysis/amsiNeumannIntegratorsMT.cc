@@ -73,18 +73,18 @@ namespace amsi {
     apf::Vector3 xyz;
     apf::mapLocalToGlobal(me, p, xyz);
     mt_evaluator(tm, xyz[0], xyz[1], xyz[2], vals);
-    if (vals.size() != static_cast<size_t>(nfcmps)) {
-      std::cerr << "The Neumann model trait must have the same number of "
-                   "components as the field\n";
+    if (vals.size() != 1) {
+      std::cerr << "The Pressure model trait is expected to have 1 component.\n";
       exit(1);
     }
     apf::NewArray<double> N;
+    std::array<double,3> pressure;
     apf::getShapeValues(e, p, N);
     apf::Vector3 nrml;
     faceNormal(msh, ent, nrml);
-    vals[0] *= nrml.x();
-    vals[1] *= nrml.y();
-    vals[2] *= nrml.z();
+    pressure[0] = nrml.x()*vals[0];
+    pressure[1] = nrml.y()*vals[0];
+    pressure[2] = nrml.z()*vals[0];
     double wxdV = w * dV;
     for (int nd = 0; nd < nenodes; nd++) {
       for (int cmp= 0; cmp < nfcmps; cmp++) {
