@@ -1,5 +1,6 @@
 include(CMakeFindDependencyMacro)
 set(_supported_components amsi::util amsi::multiscale amsi::analysis)
+find_dependency(ModelTraits)
 include("${CMAKE_CURRENT_LIST_DIR}/amsiutilTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/amsimultiscaleTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/amsianalysisTargets.cmake")
