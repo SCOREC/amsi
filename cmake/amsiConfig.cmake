@@ -1,6 +1,18 @@
 include(CMakeFindDependencyMacro)
-set(_supported_components amsi::util amsi::multiscale amsi::analysis)
+
 find_dependency(ModelTraits)
+unset(extraArgs)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+  list(APPEND extraArgs QUIET)
+endif()
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
+  list(APPEND extraArgs REQUIRED)
+endif()
+find_dependency(PkgConfig ${extraArgs})
+pkg_check_modules(PETSc ${extraArgs} IMPORTED_TARGET PETSc)
+
+
+set(_supported_components amsi::util amsi::multiscale amsi::analysis)
 include("${CMAKE_CURRENT_LIST_DIR}/amsiutilTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/amsimultiscaleTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/amsianalysisTargets.cmake")

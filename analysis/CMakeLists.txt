@@ -1,5 +1,6 @@
-find_package(PETSc)
-#find_package(zoltan)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PETSc REQUIRED IMPORTED_TARGET PETSc)
+
 find_package(SCOREC CONFIG REQUIRED)
 
 # FIXME configured files should be configured into build dir
@@ -89,14 +90,13 @@ add_library(amsi::analysis ALIAS analysis)
 # properties for downstream packages
 target_include_directories(analysis PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:include/amsi>
-        ${PETSC_INCLUDE_DIRS})
+        $<INSTALL_INTERFACE:include/amsi>)
 
 if (NOT ${BUILD_EXTERNAL})
     find_package(ModelTraits REQUIRED)
 endif ()
 
-target_link_libraries(analysis PUBLIC util SCOREC::gmi SCOREC::apf SCOREC::ma ${PETSC_LINK_LIBRARIES} ModelTraits::ModelTraits)
+target_link_libraries(analysis PUBLIC util SCOREC::gmi SCOREC::apf SCOREC::ma PkgConfig::PETSc ModelTraits::ModelTraits)
 
 install(TARGETS analysis
         EXPORT amsianalysisTargets

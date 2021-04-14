@@ -1,6 +1,6 @@
 #ifndef AMSI_ANALYSISCONFIG_H_
 #define AMSI_ANALYSISCONFIG_H_
-#if @PETSC_FOUND@ == TRUE
+#if @PETSc_FOUND@ == TRUE
 #  define PETSC
 #endif
 #endif
