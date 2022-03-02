@@ -311,3 +311,4 @@ flycheck_*.el
 
 #VIM
 *.swp
+spack*

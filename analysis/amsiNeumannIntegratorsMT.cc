@@ -1,4 +1,5 @@
 #include "amsiNeumannIntegratorsMT.h"
+#include <array>
 
 namespace amsi {
   NeumannIntegratorMT::NeumannIntegratorMT(LAS *l, apf::Field *f,

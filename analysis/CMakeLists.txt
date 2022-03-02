@@ -96,6 +96,8 @@ if (NOT ${BUILD_EXTERNAL})
     find_package(ModelTraits REQUIRED)
 endif ()
 
+target_compile_features(analysis PUBLIC cxx_std_17)
+
 target_link_libraries(analysis PUBLIC util SCOREC::gmi SCOREC::apf SCOREC::ma PkgConfig::PETSc ModelTraits::ModelTraits)
 
 install(TARGETS analysis
