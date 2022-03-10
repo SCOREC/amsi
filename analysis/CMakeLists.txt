@@ -84,7 +84,7 @@ set(analysis_src_files
         amsiNeumannIntegratorsMT.cc)
 
 # Add the library to create
-add_library(analysis STATIC ${analysis_src_files})
+add_library(analysis ${analysis_src_files})
 add_library(amsi::analysis ALIAS analysis)
 
 # properties for downstream packages
@@ -109,7 +109,7 @@ install(TARGETS analysis
 # this allows us to use the package from the
 # build tree which is wanted for multiple build configs
 export(EXPORT amsianalysisTargets
-        FILE "${CMAKE_BINARY_DIR}/amsi/amsianalysisTargets.cmake"
+        FILE ${CMAKE_BINARY_DIR}/amsi/amsianalysisTargets.cmake
         NAMESPACE amsi::)
 
 install(EXPORT amsianalysisTargets

@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
-
+cmake_minimum_required(VERSION 3.21.1)
 project(amsi)
 
 set(AMSI_MAJOR_VERSION 1)
@@ -19,7 +18,6 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
 set(CMAKE_CXX_STANDARD 14)
 SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_CXX_EXTENSIONS OFF)
-
 
 option(BUILD_TESTS "Build amsi tests" ON)
 if (BUILD_TESTS)
@@ -50,6 +48,30 @@ add_subdirectory(multiscale)
 
 message(STATUS "Configuring analysis")
 add_subdirectory(analysis)
+
+find_package(MPI REQUIRED)
+# top level amsi library. Eventually this should get reorganized into a src/ folder
+add_library(amsi_amsi amsi.cc)
+target_link_libraries(amsi_amsi PUBLIC amsi::util amsi::multiscale amsi::analysis MPI::MPI_CXX)
+add_library(amsi::amsi ALIAS amsi_amsi)
+SET(AMSI_PUBLIC_HEADERS amsi.h util/amsiConfigurationOptions.h)
+set_target_properties(amsi_amsi PROPERTIES EXPORT_NAME amsi PUBLIC_HEADER "${AMSI_PUBLIC_HEADERS}")
+target_include_directories(amsi_amsi PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<INSTALL_INTERFACE:include/amsi>
+        )
+install(TARGETS amsi_amsi
+        EXPORT amsi_amsi
+        DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/amsi
+        )
+export(EXPORT amsi_amsi
+        NAMESPACE amsi::
+        FILE amsiamsiTargets.cmake
+        )
+install(EXPORT amsi_amsi
+        DESTINATION lib/cmake/amsi
+        NAMESPACE amsi::
+        FILE amsiamsiTargets.cmake
+        )
 
 if (BUILD_TESTS)
     add_subdirectory(test)

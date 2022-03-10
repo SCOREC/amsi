@@ -38,17 +38,18 @@ namespace amsi
   /// @param nm2 A string containing the name of the recving task
   /// @return size_t An identifier for the CommRelation or 0 if the relation could
   ///                not be created (typically if one of the Tasks doesn't exist).
-  size_t ControlService::CommRelation_Define(const std::string & nm1,
-                                             const std::string & nm2)
+  size_t ControlService::CommRelation_Define(const std::string& nm1,
+                                             const std::string& nm2)
   {
     size_t result = 0;
     size_t t1_id = task_man->getTaskID(nm1);
     size_t t2_id = task_man->getTaskID(nm2);
-    if(t1_id != 0 && t2_id != 0)
-      result = comm_man->defineRelation(t1_id,t2_id);
+    if (t1_id != 0 && t2_id != 0)
+      result = comm_man->defineRelation(t1_id, t2_id);
     return result;
   }
-  void ControlService::setScaleMain(const std::string & scale, ExecuteFunc function)
+  void ControlService::setScaleMain(const std::string& scale,
+                                    ExecuteFunc function)
   {
     task_man->getTask(scale)->setExecutionFunction(function);
   }
@@ -56,18 +57,18 @@ namespace amsi
   /// @param argc Command line parameter count
   /// @param argv Command line parameter content
   /// @return int Result code for the Task (0 success)
-  int ControlService::Execute(int & argc, char **& argv)
+  int ControlService::Execute(int& argc, char**& argv,
+                              amsi::Multiscale& multiscale)
   {
     int result = 0;
     // still don't like this method of initiating the inter-comms...
     comm_man->InitInterComms(task_man);
-    if(task_man->lockConfiguration())
-    {
-#     ifdef ZOLTAN
+    if (task_man->lockConfiguration()) {
+#ifdef ZOLTAN
       float version = 0.0;
-      Zoltan_Initialize(0,NULL,&version);
-#     endif
-      result += task_man->Execute(argc,argv);
+      Zoltan_Initialize(0, NULL, &version);
+#endif
+      result += task_man->Execute(argc, argv, multiscale);
     }
     else
       result = -1;

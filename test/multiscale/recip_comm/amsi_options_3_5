@@ -1,6 +1,0 @@
-@scales
-macro 3
-micro 5
-@relations
-macro micro
-micro macro

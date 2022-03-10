@@ -5,10 +5,6 @@
 #include <cassert>
 #include <iostream>
 namespace amsi {
-  Task * getLocal()
-  {
-    return getScaleManager()->getLocalTask();
-  }
   TaskManager::TaskManager(MPI_Comm gc)
     : id_gen()
     , tasks()
@@ -80,28 +76,25 @@ namespace amsi {
     {
       if(process_allocator->isAssigned(rank))
       {
-        for(std::map<size_t,Task*>::iterator it = tasks.begin(), itend = tasks.end(); it != itend; it++)
-        {
-          const ProcessSet * ps = it->second->getProcessSet();
-          if(ps->isIn(rank))
-            local_task = it->second;
+        for(std::map<size_t,Task*>::iterator it = tasks.begin(), itend = tasks.end(); it != itend; it++) {
+          const ProcessSet* ps = it->second->getProcessSet();
+          if (ps->isIn(rank)) local_task = it->second;
         }
       }
       bool valid_config = true;
-      if(valid_config)
-        config_locked = true;
+      if (valid_config) config_locked = true;
     }
     return config_locked;
   }
-  int TaskManager::Execute(int& argc,char**& argv)
+  int TaskManager::Execute(int& argc, char**& argv,
+                           amsi::Multiscale& multiscale)
   {
     int result = -1;
-    if(lockConfiguration())
-    {
-      if(local_task != NULL)
-      result = local_task->execute(argc,argv);
+    if (lockConfiguration()) {
+      if (local_task != nullptr)
+        result = local_task->execute(argc, argv, multiscale);
       PCU_Switch_Comm(AMSI_COMM_WORLD);
     }
     return result;
   }
-} // namespace amsi
+}  // namespace amsi
