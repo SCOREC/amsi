@@ -6,32 +6,33 @@
 #include <getopt.h>
 #include <iostream>
 #include <cassert>
-namespace amsi
-{
-  #define UTIL_OPTIONS(OP) OP(results), OP(num_util_options)
-  enum UtilOptions{UTIL_OPTIONS(MAKE_ENUM_OP)};
-  const char * getUtilOptionString(int ii)
+namespace amsi {
+  // global variables YIKES!
+  std::string options_filename("");
+  FileSystemInfo* fs = NULL;
+  static int inited = 0;
+#define UTIL_OPTIONS(OP) OP(results), OP(num_util_options)
+  enum UtilOptions { UTIL_OPTIONS(MAKE_ENUM_OP) };
+  const char* getUtilOptionString(int ii)
   {
-    static const char * const UtilOptionStrings[] = {UTIL_OPTIONS(MAKE_STRING_OP)};
+    static const char* const UtilOptionStrings[] = {
+        UTIL_OPTIONS(MAKE_STRING_OP)};
     assert(ii < num_util_options);
     return UtilOptionStrings[ii];
   }
-  int getUtilOption(const std::string & optstr)
+  int getUtilOption(const std::string& optstr)
   {
-    for(int ii = 0; ii < num_util_options; ++ii)
-    {
-      if(optstr == std::string(getUtilOptionString(ii)))
-        return ii;
+    for (int ii = 0; ii < num_util_options; ++ii) {
+      if (optstr == std::string(getUtilOptionString(ii))) return ii;
     }
     return -1;
   }
-  const char * getUtilConfigSectionString(int ii)
+  const char* getUtilConfigSectionString(int ii)
   {
     static const char * const UtilConfigSectionStrings[] = {UTIL_CONFIG_SECTIONS(MAKE_STRING_OP)};
     assert(ii < num_util_config_sections);
     return UtilConfigSectionStrings[ii];
   }
-  std::string options_filename("");
   const std::string & getOptionsFilename()
   {
     return options_filename;
@@ -68,7 +69,6 @@ namespace amsi
     }
     return -1;
   }
-  FileSystemInfo * fs = NULL;
   void parseUtil(std::istream & fl)
   {
     std::string ln;
@@ -109,34 +109,31 @@ namespace amsi
     std::fstream fl(flnm.c_str(),std::fstream::in);
     assert(fl.is_open());
     std::string ln;
-    while(std::getline(fl,ln))
-    {
+    while (std::getline(fl, ln)) {
       int sctn = parseUtilSection(ln);
-      switch(sctn)
-      {
-      case util:
-        parseUtil(fl);
-        break;
+      switch (sctn) {
+        case util:
+          parseUtil(fl);
+          break;
       }
     }
   }
-  static int inited = 0;
-  void initUtil(int argc, char ** argv, MPI_Comm cm)
+  // class MPIScope
+  //{
+  //
+  // };
+  void initUtil(int argc, char** argv, MPI_Comm cm)
   {
-    if(inited == 0)
-    {
-      MPI_Init(&argc,&argv);
-      MPI_Comm_dup(cm,&AMSI_COMM_SCALE);
-      MPI_Comm_dup(cm,&AMSI_COMM_WORLD);
+    if (inited == 0) {
+      MPI_Init(&argc, &argv);
+      MPI_Comm_dup(cm, &AMSI_COMM_SCALE);
+      MPI_Comm_dup(cm, &AMSI_COMM_WORLD);
       PCU_Comm_Init();
       int rnk = -1;
-      MPI_Comm_rank(AMSI_COMM_WORLD,&rnk);
-      if(rnk > 1)
-        amsi::suppressOutput(std::cout);
-      if(parse_options(argc,argv))
-        configureUtilFromFile(options_filename);
-      if(rnk > 1)
-        amsi::expressOutput(std::cout);
+      MPI_Comm_rank(AMSI_COMM_WORLD, &rnk);
+      if (rnk > 1) amsi::suppressOutput(std::cout);
+      if (parse_options(argc, argv)) configureUtilFromFile(options_filename);
+      if (rnk > 1) amsi::expressOutput(std::cout);
     }
     inited++;
   }

@@ -43,7 +43,7 @@ namespace amsi
   /// @return ProcessSet* The newly-created ProcessSet
   ProcessSet * ProcessSet_T<std::pair<int,int> >::extract(int s)
   {
-    ProcessSet * result = NULL;
+    ProcessSet *result = nullptr;
     if(s <= size())
     {
       result =
@@ -111,17 +111,16 @@ namespace amsi
     ProcessSet * ProcessSet_T<std::set<int>>::extract(int size)
     {
       ProcessSet_T<std::set<int>> * result = NULL; 
-      if(size <= this->size())
-      {
+      if(size <= this->size()) {
         result = new ProcessSet_T<std::set<int>>();
         std::set<int>::iterator it;
-        int cnt=0;
-        for(it = valSet.begin(); it!=valSet.end() && cnt<size; ++it,++cnt)
-        {
+        int cnt = 0;
+        for (it = valSet.begin(); it != valSet.end() && cnt < size;
+             ++it, ++cnt) {
           result->insert(*it);
-          valSet.erase(it);
         }
-        result->setRange((*result)[0], lowVal+size);
+        valSet.erase(valSet.begin(), it);
+        result->setRange((*result)[0], lowVal + size);
       }
       return static_cast<ProcessSet *>(result);
     }
