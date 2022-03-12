@@ -22,20 +22,20 @@ int main(int argc, char *argv[])
   amsi::MPI mpi(argc, argv, MPI_COMM_WORLD);
   amsi::Multiscale multiscale({}, mpi);
   int failed = 0;
-  auto rank = mpi.world().rank();
-  auto size = mpi.world().size();
+  auto rank = mpi.getWorld().rank();
+  auto size = mpi.getWorld().size();
   std::cout << "Initializing test object(s):" << std::endl;
-  // Create a taskmanger test object using the world comm as the primary
+  // Create a taskmanger test object using the getCommWorld comm as the primary
   // parallel execution space
-  TaskManager *tm = new TaskManager(mpi.world().comm());
+  TaskManager *tm = new TaskManager(mpi.getWorld().comm());
   // Make sure the task manager was successfully constructed
   failed += test_neq("TaskManager()", static_cast<void *>(NULL),
                      static_cast<void *>(tm));
   // Create a task using the task manager using 8 processes
   Task *t1 = NULL;
-  // TODO create task/execute breaks if all processors in the world are not used
-  // we should assert this somewhere to catch using the wrong number of procs
-  // while debugging
+  // TODO create task/execute breaks if all processors in the getCommWorld are
+  // not used we should assert this somewhere to catch using the wrong number of
+  // procs// while debugging
   t1 = tm->createTask("test_task", size);
   // Test whether the task manager successfully created the task
   failed += test_neq(".Task_Create()", static_cast<void *>(NULL),

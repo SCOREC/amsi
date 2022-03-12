@@ -5,10 +5,14 @@
 #include "amsiNonlinearAnalysis.h"
 #include "amsiConfigurationOptions.h"
 #include "amsiMPI.h"
+#include "amsiFileSys.h"
 namespace amsi {
   class Analysis {
+    // TODO PetscScopeGuard should take MPI object to require that MPI has
+    // already been initialized
     class PetscScopeGuard {
       public:
+      PetscScopeGuard() = default;
       [[nodiscard]] PetscScopeGuard(int argc, char** argv,
                                     const std::string& petsc_options_file,
                                     MPI_Comm cm);
@@ -19,16 +23,26 @@ namespace amsi {
     };
 
     public:
-    Analysis(const AmsiOptions& options, int argc, char** argv, MPI_Comm cm)
-        : petsc_scope_guard_(argc, argv, options.petsc_options_file, cm)
+    Analysis(const AnalysisOptions& options, int argc, char** argv, MPI_Comm cm,
+             const MPI& mpi)
+        : results_directory_(
+              std::make_unique<FileSystemInfo>(options.results_directory))
+        , mpi_(mpi)
     {
+      if (options.use_petsc) {
+        petsc_scope_guard_ =
+            PetscScopeGuard{argc, argv, options.petsc_options_file, cm};
+      }
+    }
+    [[nodiscard]] const std::string& getResultsDir() const
+    {
+      return results_directory_->getResultsDir();
     }
 
     private:
     [[maybe_unused]] PetscScopeGuard petsc_scope_guard_;
+    std::unique_ptr<FileSystemInfo> results_directory_;
+    const MPI& mpi_;
   };
-  //#ifdef PETSC
-  //  void usePetsc(const std::string & petsc_opts);
-  //#endif
 }  // namespace amsi
 #endif

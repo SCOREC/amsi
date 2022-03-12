@@ -14,10 +14,10 @@ int task1(int&, char**&, MPI_Comm, amsi::Multiscale&) { return 0; }
 int main(int argc, char* argv[])
 {
   amsi::MPI mpi(argc, argv, MPI_COMM_WORLD);
-  AmsiOptions options{.scales = {{"scale1", 1}}};
-  Multiscale multiscale(options, mpi);
-  auto rank = mpi.scale().rank();
-  auto size = mpi.scale().size();
+  amsi::MultiscaleOptions multiscale_options{.scales = {{"scale1", 1}}};
+  Multiscale multiscale(multiscale_options, mpi);
+  auto rank = multiscale.getCommScale().rank();
+  auto size = multiscale.getCommScale().size();
   int failed = 0;
   // allocated zero processes to task
   std::cout << "Creating ProcessSet with 0 processes" << std::endl;

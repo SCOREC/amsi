@@ -22,9 +22,10 @@ namespace amsi {
   {
     return cm;
   }
-  Multiscale::Multiscale(const AmsiOptions& options, MPI& mpi)
-      : task_manager_(std::make_unique<TaskManager>(mpi.world().comm()))
+  Multiscale::Multiscale(const MultiscaleOptions& options, const MPI& mpi)
+      : task_manager_(std::make_unique<TaskManager>(mpi.getWorld().comm()))
       , communication_manager_(std::make_unique<CommunicationManager>())
+      , mpi_(mpi)
   {
     // TODO add options for allocator for now default is fine since it's the
     // only thing I actually use. initialize TaskManager and Communication
@@ -36,8 +37,7 @@ namespace amsi {
     //  throw amsi_error{"Multiscale Analysis must have at least one scale in
     //  the configuration."};
     //}
-    AMSI_COMM_WORLD = mpi.world().comm();
-    AMSI_COMM_SCALE = mpi.scale().comm();
+    AMSI_COMM_SCALE = scale_.comm();
     for (const auto& scale : options.scales) {
       task_manager_->createTask(scale.name, scale.nprocs);
     }
@@ -70,8 +70,8 @@ namespace amsi {
         throw amsi_error{
             "ERROR: AMSI multiscale cannot configure with supplied options"};
       }
-      mpi.set_scale(task_manager_->getLocalTask()->comm());
-      AMSI_COMM_SCALE = mpi.scale().comm();
+      scale_.set(task_manager_->getLocalTask()->comm());
+      AMSI_COMM_SCALE = scale_.comm();
     }
     else {
       std::cout << "WARNING: configuring analysis without any scales. This is "
@@ -95,4 +95,7 @@ namespace amsi {
   {
     return control_service_;
   }
+  const MPIComm& Multiscale::getCommScale() const { return scale_; }
+  const MPIComm& Multiscale::getCommWorld() const { return mpi_.getWorld(); }
+  const MPIComm& Multiscale::getCommSelf() const { return mpi_.getSelf(); }
 }  // namespace amsi

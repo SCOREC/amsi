@@ -135,7 +135,7 @@ int main(int argc, char * argv[])
 {
   int failed = 0;
   amsi::MPI mpi{argc, argv};
-  amsi::AmsiOptions options{
+  amsi::MultiscaleOptions options{
       .scales = {{"macro", 3}, {"micro", 5}},
       .relations = {{"macro", "micro"}, {"micro", "macro"}}};
   amsi::Multiscale multiscale(options, mpi);

@@ -4,7 +4,8 @@
 #include "test.h"
 int main(int argc, char* argv[])
 {
-  amsi::AmsiOptions options{.multiscale_analysis = true, .use_petsc = true};
+  amsi::AnalysisOptions analysis_options = {.use_petsc = true};
+  amsi::AmsiOptions options{.analysis = analysis_options};
   [[maybe_unused]] amsi::Amsi amsi{options, argc, argv};
   return 0;
 }

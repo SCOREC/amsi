@@ -50,10 +50,9 @@ int main(int argc, char * argv[])
 {
   int fld = 0;
   amsi::MPI mpi(argc, argv);
-  amsi::AmsiOptions options{
+  amsi::MultiscaleOptions options{
       .scales = {{"task1", 8}, {"task2", 24}},
-      .relations = {{"task1", "task2"}, {"task2", "task1"}},
-      .results_directory = "results"};
+      .relations = {{"task1", "task2"}, {"task2", "task1"}}};
   amsi::Multiscale multiscale(options, mpi);
   auto* t1 = multiscale.getScaleManager()->getTask("task1");
   auto* t2 = multiscale.getScaleManager()->getTask("task2");

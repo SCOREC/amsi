@@ -1,7 +1,6 @@
 set(util_public_headers
         amsiByteStream.h
         amsiCasters.h
-        amsiConversionIterator.h
         amsiDistributed.h
         amsiEnumOps.h
         amsiExceptions.h
@@ -44,7 +43,7 @@ set(util_source_files
         amsiString.cc
         amsiUtil.cc
         amsiUUID.cc
-        pystring.cc)
+        pystring.cc amsiConfigurationOptions.cc)
 
 #find_package(HWLOC REQUIRED)
 find_package(SCOREC CONFIG REQUIRED)
@@ -57,14 +56,16 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/amsiUtilConfig.h.in
 add_library(util ${util_source_files})
 add_library(amsi::util ALIAS util)
 set_property(TARGET util PROPERTY VERSION ${AMSI_VERSION})
+target_compile_features(util PUBLIC cxx_std_17)
 
 find_package(MPI REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 target_include_directories(util PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include/amsi>
         ${HWLOC_INCLUDE_DIRS})
-target_link_libraries(util PUBLIC SCOREC::pcu ${HWLOC_LIBRARIES} MPI::MPI_CXX)
+target_link_libraries(util PUBLIC SCOREC::pcu ${HWLOC_LIBRARIES} MPI::MPI_CXX PRIVATE yaml-cpp)
 
 set(ENABLE_VERBOSITY HIGH CACHE STRING "Enable Debug/Verbosity Level")
 set_property(CACHE ENABLE_VERBOSITY PROPERTY STRINGS HIGH MED LOW OFF)

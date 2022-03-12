@@ -23,9 +23,8 @@ int task2(int&, char**&, MPI_Comm, amsi::Multiscale& multiscale)
 }
 int main(int argc, char** argv)
 {
-  amsi::AmsiOptions options{.multiscale_analysis = true,
-                            .scales = {{"task1", 8}, {"task2", 24}},
-                            .relations = {{"task1", "task2"}}};
+  amsi::MultiscaleOptions options{.scales = {{"task1", 8}, {"task2", 24}},
+                                  .relations = {{"task1", "task2"}}};
   amsi::MPI mpi(argc, argv, MPI_COMM_WORLD);
   amsi::Multiscale multiscale(options, mpi);
   int failed = 0;

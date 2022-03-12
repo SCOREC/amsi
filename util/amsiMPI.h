@@ -8,25 +8,6 @@
 extern MPI_Comm AMSI_COMM_WORLD;
 extern MPI_Comm AMSI_COMM_SCALE;
 namespace amsi {
-  class PCUScopeGuard {
-    public:
-    [[nodiscard]] PCUScopeGuard()
-    {
-      if (!PCU_Comm_Initialized()) {
-        initialized_here_ = true;
-        PCU_Comm_Init();
-      }
-    }
-    ~PCUScopeGuard()
-    {
-      if (initialized_here_) {
-        PCU_Comm_Free();
-      }
-    }
-
-    private:
-    bool initialized_here_{false};
-  };
   class MPIComm {
     public:
     MPIComm() : cm_(MPI_COMM_NULL), rank_(-1), size_(-1){};
@@ -110,23 +91,41 @@ namespace amsi {
       private:
       bool initialized_here_{false};
     };
+    class PCUScopeGuard {
+      public:
+      [[nodiscard]] PCUScopeGuard()
+      {
+        if (!PCU_Comm_Initialized()) {
+          initialized_here_ = true;
+          PCU_Comm_Init();
+        }
+      }
+      ~PCUScopeGuard()
+      {
+        if (initialized_here_) {
+          PCU_Comm_Free();
+        }
+      }
+
+      private:
+      bool initialized_here_{false};
+    };
 
     public:
     // critical that environtment_ is initialized first because that has the
     // call to MPI_Init
     MPI(int argc, char** argv, MPI_Comm cm = MPI_COMM_WORLD)
-        : environment_{argc, argv}, self_{cm}, scale_{cm}, world_{cm}
+        : environment_{argc, argv}, self_{cm}, world_{cm}
     {
+      AMSI_COMM_WORLD = world_.comm();
     }
-    [[nodiscard]] const MPIComm& self() const noexcept { return self_; }
-    [[nodiscard]] const MPIComm& world() const noexcept { return scale_; }
-    [[nodiscard]] const MPIComm& scale() const noexcept { return world_; }
-    void set_scale(MPI_Comm cm) { scale_.set(cm); }
+    [[nodiscard]] const MPIComm& getSelf() const noexcept { return self_; }
+    [[nodiscard]] const MPIComm& getWorld() const noexcept { return world_; }
 
     private:
-    MPIScopeGuard environment_;
+    [[maybe_unused]] MPIScopeGuard environment_;
+    [[maybe_unused]] PCUScopeGuard pcu_environment_;
     MPIComm self_;
-    MPIComm scale_;
     MPIComm world_;
   };
   template <typename T>

@@ -2,10 +2,13 @@
 #define AMSI_AMSICONFIGURATIONOPTIONS_H
 #include <string>
 #include <vector>
+#include <optional>
+namespace mt {
+  class CategoryNode;
+}
 // need functions to parse amsi configuration from file
 namespace amsi {
-  class AmsiOptions {
-    public:
+  struct MultiscaleOptions {
     struct Scale {
       std::string name;
       int nprocs;
@@ -14,13 +17,25 @@ namespace amsi {
       std::string scale1;
       std::string scale2;
     };
-    bool multiscale_analysis{false};
     std::vector<Scale> scales;
     std::vector<Relation> relations;
-    // Filepath?
-    std::string results_directory;
-    bool use_petsc{true};
-    std::string petsc_options_file;
   };
+  struct AnalysisOptions {
+    bool use_petsc{false};
+    std::string petsc_options_file;
+    std::string results_directory;
+  };
+  struct AmsiOptions {
+    std::optional<MultiscaleOptions> multiscale;
+    std::optional<AnalysisOptions> analysis;
+  };
+  /**
+   * Reads Amsi options from model-traits input
+   */
+  AmsiOptions readAmsiOptions(std::string_view filename);
+  /**
+   * Reads Amsi options from model-traits input
+   */
+  AmsiOptions readAmsiOptions(std::istream &yaml);
 }  // namespace amsi
 #endif  // AMSI_AMSICONFIGURATIONOPTIONS_H

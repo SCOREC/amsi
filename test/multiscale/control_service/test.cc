@@ -69,11 +69,9 @@ int main(int argc, char * argv[])
 {
   int failed = 0;
   amsi::MPI mpi(argc, argv, MPI_COMM_WORLD);
-  amsi::AmsiOptions options{
-      .multiscale_analysis = true,
+  amsi::MultiscaleOptions options{
       .scales = {{"task1", 8}, {"task2", 24}},
       .relations = {{"task1", "task2"}, {"task2", "task1"}},
-      .results_directory = "results",
   };
   amsi::Multiscale multiscale(options, mpi);
   auto* t1 = multiscale.getScaleManager()->getTask("task1");
