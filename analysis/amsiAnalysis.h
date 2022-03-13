@@ -6,6 +6,7 @@
 #include "amsiConfigurationOptions.h"
 #include "amsiMPI.h"
 #include "amsiFileSys.h"
+#include "amsiUtil.h"
 namespace amsi {
   class Analysis {
     // TODO PetscScopeGuard should take MPI object to require that MPI has
@@ -17,6 +18,17 @@ namespace amsi {
                                     const std::string& petsc_options_file,
                                     MPI_Comm cm);
       ~PetscScopeGuard();
+      PetscScopeGuard(const PetscScopeGuard&) = delete;
+      PetscScopeGuard(PetscScopeGuard&& old)
+      {
+        std::swap(initialized_here_, old.initialized_here_);
+      }
+      PetscScopeGuard& operator=(const PetscScopeGuard&) = delete;
+      PetscScopeGuard& operator=(PetscScopeGuard&& old)
+      {
+        std::swap(initialized_here_, old.initialized_here_);
+        return *this;
+      }
 
       private:
       bool initialized_here_{false};
@@ -29,6 +41,8 @@ namespace amsi {
               std::make_unique<FileSystemInfo>(options.results_directory))
         , mpi_(mpi)
     {
+      // workaround until we get rid of the global variables!
+      SetGlobalFilesystem(results_directory_.get());
       if (options.use_petsc) {
         petsc_scope_guard_ =
             PetscScopeGuard{argc, argv, options.petsc_options_file, cm};

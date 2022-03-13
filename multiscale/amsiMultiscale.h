@@ -19,6 +19,7 @@ namespace amsi {
     [[nodiscard]] const MPIComm& getCommScale() const;
     [[nodiscard]] const MPIComm& getCommWorld() const;
     [[nodiscard]] const MPIComm& getCommSelf() const;
+    [[nodiscard]] const MPI& getMPI() const;
 
     private:
     std::unique_ptr<TaskManager> task_manager_;

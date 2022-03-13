@@ -1,18 +1,14 @@
 #include "amsiMultiscale.h"
-#include <amsiUtil.h>
-#include <getopt.h>
 #include <pystring.h>
-#include <cassert>
 #include <fstream>
 #include "amsiCommunicationManager.h"
 #include "amsiControlService.h"
 #include "amsiExceptions.h"
-#include "amsiMigration.h"
 #include "amsiTaskManager.h"
 namespace amsi {
-  [[deprecated("use the Multiscale Struct")]] static TaskManager* tm = NULL;
+  [[deprecated("use the Multiscale Struct")]] static TaskManager* tm = nullptr;
   [[deprecated("use Multiscale Struct")]] static CommunicationManager* cm =
-      NULL;
+      nullptr;
   [[deprecated("use Multiscale Struct")]] TaskManager* getScaleManager()
   {
     return tm;
@@ -65,7 +61,7 @@ namespace amsi {
         throw amsi_error{ss.str()};
       }
     }
-    if (options.scales.size() > 0) {
+    if (!options.scales.empty()) {
       if (!task_manager_->lockConfiguration()) {
         throw amsi_error{
             "ERROR: AMSI multiscale cannot configure with supplied options"};
@@ -82,7 +78,7 @@ namespace amsi {
     control_service_->SetTaskManager(task_manager_.get());
     control_service_->SetCommunicationManager(communication_manager_.get());
   }
-  Multiscale::~Multiscale() {}
+  Multiscale::~Multiscale() = default;
   TaskManager* Multiscale::getScaleManager() const
   {
     return task_manager_.get();
@@ -98,4 +94,5 @@ namespace amsi {
   const MPIComm& Multiscale::getCommScale() const { return scale_; }
   const MPIComm& Multiscale::getCommWorld() const { return mpi_.getWorld(); }
   const MPIComm& Multiscale::getCommSelf() const { return mpi_.getSelf(); }
+  const MPI& Multiscale::getMPI() const { return mpi_; }
 }  // namespace amsi

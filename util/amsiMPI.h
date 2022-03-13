@@ -5,8 +5,9 @@
 #include <cstring> //memcpy
 #include <iostream>
 #include <PCU.h>
-extern MPI_Comm AMSI_COMM_WORLD;
-extern MPI_Comm AMSI_COMM_SCALE;
+[[deprecated(
+    "use world communicator from MPI object")]] extern MPI_Comm AMSI_COMM_WORLD;
+[[deprecated("use scale communicator from Multiscale object")]] extern MPI_Comm AMSI_COMM_SCALE;
 namespace amsi {
   class MPIComm {
     public:
@@ -75,6 +76,16 @@ namespace amsi {
           MPI_Init(&argc, &argv);
         }
       };
+      MPIScopeGuard(const MPIScopeGuard&) = delete;
+      MPIScopeGuard(MPIScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+      }
+      MPIScopeGuard& operator=(const MPIScopeGuard& other) = delete;
+      MPIScopeGuard& operator=(MPIScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+      }
       ~MPIScopeGuard()
       {
         if (initialized_here_) {
@@ -100,6 +111,16 @@ namespace amsi {
           PCU_Comm_Init();
         }
       }
+      PCUScopeGuard(const PCUScopeGuard&) = delete;
+      PCUScopeGuard(PCUScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+      }
+      PCUScopeGuard& operator=(const PCUScopeGuard& other) = delete;
+      PCUScopeGuard& operator=(PCUScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+      }
       ~PCUScopeGuard()
       {
         if (initialized_here_) {
@@ -112,12 +133,18 @@ namespace amsi {
     };
 
     public:
-    // critical that environtment_ is initialized first because that has the
+    // critical that environment_ is initialized first because that has the
     // call to MPI_Init
     MPI(int argc, char** argv, MPI_Comm cm = MPI_COMM_WORLD)
         : environment_{argc, argv}, self_{cm}, world_{cm}
     {
       AMSI_COMM_WORLD = world_.comm();
+      // this seems to have been assumed to always exist in the analysis codes
+      // even when multiscale run isn't happening. Therefore, we set to the
+      // world communicator here. The multiscale class resets it to the sub
+      // communicator. the AMSI_COMM variables are depreciated and eventually we
+      // won't have this insanity
+      AMSI_COMM_SCALE = world_.comm();
     }
     [[nodiscard]] const MPIComm& getSelf() const noexcept { return self_; }
     [[nodiscard]] const MPIComm& getWorld() const noexcept { return world_; }
