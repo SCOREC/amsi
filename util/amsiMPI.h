@@ -5,9 +5,12 @@
 #include <cstring> //memcpy
 #include <iostream>
 #include <PCU.h>
+#include "amsiExceptions.h"
 [[deprecated(
-    "use world communicator from MPI object")]] extern MPI_Comm AMSI_COMM_WORLD;
-[[deprecated("use scale communicator from Multiscale object")]] extern MPI_Comm AMSI_COMM_SCALE;
+    "use world communicator from MPI object")]]
+extern MPI_Comm AMSI_COMM_WORLD;
+[[deprecated("use scale communicator from Multiscale object")]]
+extern MPI_Comm AMSI_COMM_SCALE;
 namespace amsi {
   class MPIComm {
     public:
@@ -46,21 +49,39 @@ namespace amsi {
       std::swap(size_, other.size_);
       return *this;
     }
+    /** takes ownership of the communicator! */
     void set(MPI_Comm cm)
     {
-      cm_ = cm;
-      MPI_Comm_rank(cm, &rank_);
-      MPI_Comm_size(cm, &size_);
-    }
-    ~MPIComm() = default;
-    MPI_Comm cm_;
-    int rank_;
-    int size_;
+      if(cm != cm_ && cm!=MPI_COMM_NULL)
+      {
+        if(cm_ != MPI_COMM_NULL) {
 
-    public:
+          MPI_Comm_free(&cm_);
+        }
+          cm_ = cm;
+          MPI_Comm_rank(cm, &rank_);
+          MPI_Comm_size(cm, &size_);
+      }
+      else {
+        throw amsi_error{"Invalid communicator"};
+      }
+    }
+    ~MPIComm()
+    {
+      if (cm_ != MPI_COMM_NULL) {
+        MPI_Comm_free(&cm_);
+      }
+    }
     [[nodiscard]] int rank() const noexcept { return rank_; }
     [[nodiscard]] int size() const noexcept { return size_; }
     [[nodiscard]] MPI_Comm comm() const noexcept { return cm_; }
+
+
+
+    private:
+    MPI_Comm cm_;
+    int rank_;
+    int size_;
   };
   class MPI {
     private:
@@ -85,6 +106,7 @@ namespace amsi {
       MPIScopeGuard& operator=(MPIScopeGuard&& other) noexcept
       {
         std::swap(initialized_here_, other.initialized_here_);
+        return *this;
       }
       ~MPIScopeGuard()
       {
@@ -120,6 +142,7 @@ namespace amsi {
       PCUScopeGuard& operator=(PCUScopeGuard&& other) noexcept
       {
         std::swap(initialized_here_, other.initialized_here_);
+        return *this;
       }
       ~PCUScopeGuard()
       {

@@ -9,8 +9,6 @@
 #include "amsiUtil.h"
 namespace amsi {
   class Analysis {
-    // TODO PetscScopeGuard should take MPI object to require that MPI has
-    // already been initialized
     class PetscScopeGuard {
       public:
       PetscScopeGuard() = default;
@@ -19,12 +17,12 @@ namespace amsi {
                                     MPI_Comm cm);
       ~PetscScopeGuard();
       PetscScopeGuard(const PetscScopeGuard&) = delete;
-      PetscScopeGuard(PetscScopeGuard&& old)
+      PetscScopeGuard(PetscScopeGuard&& old) noexcept
       {
         std::swap(initialized_here_, old.initialized_here_);
       }
       PetscScopeGuard& operator=(const PetscScopeGuard&) = delete;
-      PetscScopeGuard& operator=(PetscScopeGuard&& old)
+      PetscScopeGuard& operator=(PetscScopeGuard&& old) noexcept
       {
         std::swap(initialized_here_, old.initialized_here_);
         return *this;
@@ -39,7 +37,7 @@ namespace amsi {
              const MPI& mpi)
         : results_directory_(
               std::make_unique<FileSystemInfo>(options.results_directory))
-        , mpi_(mpi)
+        , cm_(cm), mpi_(mpi)
     {
       // workaround until we get rid of the global variables!
       SetGlobalFilesystem(results_directory_.get());
@@ -48,14 +46,16 @@ namespace amsi {
             PetscScopeGuard{argc, argv, options.petsc_options_file, cm};
       }
     }
-    [[nodiscard]] const std::string& getResultsDir() const
+    [[nodiscard]] const std::string& getResultsDir() const noexcept
     {
       return results_directory_->getResultsDir();
     }
+    [[nodiscard]] const MPIComm& getComm() const noexcept { return cm_; }
 
     private:
     [[maybe_unused]] PetscScopeGuard petsc_scope_guard_;
     std::unique_ptr<FileSystemInfo> results_directory_;
+    MPIComm cm_;
     const MPI& mpi_;
   };
 }  // namespace amsi
