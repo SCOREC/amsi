@@ -2,6 +2,7 @@
 #include <amsiOperators.h>
 #include <string>
 #include "amsiLASQuery.h"
+#include <model_traits/CategoryNode.h>
 namespace amsi {
   using mt::GetCategoryModelTraitByType;
   using mt::IModelTrait;

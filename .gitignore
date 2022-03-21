@@ -312,3 +312,4 @@ flycheck_*.el
 #VIM
 *.swp
 spack*
+.DS_Store

@@ -1,166 +1,98 @@
 #include "amsiMultiscale.h"
-#include <amsiUtil.h>
-#include <cassert>
-#include <getopt.h>
 #include <pystring.h>
 #include <fstream>
-namespace amsi
-{
-  static TaskManager * tm = NULL;
-  static CommunicationManager * cm = NULL;
-  TaskManager * getScaleManager()
+#include "amsiCommunicationManager.h"
+#include "amsiControlService.h"
+#include "amsiExceptions.h"
+#include "amsiTaskManager.h"
+namespace amsi {
+  [[deprecated("use the Multiscale Struct")]] static TaskManager* tm = nullptr;
+  [[deprecated("use Multiscale Struct")]] static CommunicationManager* cm =
+      nullptr;
+  [[deprecated("use Multiscale Struct")]] TaskManager* getScaleManager()
   {
     return tm;
   }
-  CommunicationManager * getMultiscaleManager()
+  [[deprecated("use Multiscale Struct")]] CommunicationManager*
+  getMultiscaleManager()
   {
     return cm;
   }
-  static int parseMultiscaleSection(const std::string & ln)
+  Multiscale::Multiscale(const MultiscaleOptions& options, const MPI& mpi)
+      : task_manager_(std::make_unique<TaskManager>(mpi.getWorld().comm()))
+      , communication_manager_(std::make_unique<CommunicationManager>())
+      , mpi_(mpi)
   {
-    for(int ii = 0; ii < num_multiscale_config_sections; ++ii)
-    {
-      if(ln == std::string("@")+std::string(MultiscaleConfigSectionStrings[ii]))
-        return ii;
+    // TODO add options for allocator for now default is fine since it's the
+    // only thing I actually use. initialize TaskManager and Communication
+    // Manager task_manager_ initialize multiscale analysis stuff set allocator
+    // (defaults to ExclusiveProcess, need to also have Strided) -->refactor
+    // process allocator to a lambda set scales
+    // if (options.scales.size()  == 0)
+    //{
+    //  throw amsi_error{"Multiscale Analysis must have at least one scale in
+    //  the configuration."};
+    //}
+    AMSI_COMM_SCALE = scale_.comm();
+    for (const auto& scale : options.scales) {
+      task_manager_->createTask(scale.name, scale.nprocs);
     }
-    return -1;
-  }
-  static void parseScales(std::istream & fl)
-  {
-    std::string ln;
-    std::vector<std::string> tks;
-    bool parsing = true;
-    while(parsing)
-    {
-      std::streampos ln_bgn = fl.tellg();
-      if(std::getline(fl,ln))
-      {
-        if(pystring::startswith(ln,std::string("@")))
-        {
-          fl.seekg(ln_bgn);
-          break;
-        }
-        pystring::partition(ln," ",tks);
-        assert(tks.size() == 3);
-        tm->createTask(tks[0],atoi(tks[2].c_str()));
+    // set relations
+    for (const auto& relation : options.relations) {
+      auto t1 = task_manager_->getTaskID(relation.scale1);
+      auto t2 = task_manager_->getTaskID(relation.scale2);
+      if (!t1) {
+        std::stringstream ss;
+        ss << "configuration error: scale " << relation.scale1
+           << " doesn't exist.";
+        throw amsi_error{ss.str()};
       }
-      else
-        parsing = false;
-    }
-  }
-  static void parseRelations(std::istream & fl)
-  {
-    std::string ln;
-    std::vector<std::string> tks;
-    bool parsing = true;
-    while(parsing)
-    {
-      std::streampos ln_bgn = fl.tellg();
-      if(std::getline(fl,ln))
-      {
-        if(pystring::startswith(ln,std::string("@")))
-        {
-          fl.seekg(ln_bgn);
-          break;
-        }
-        pystring::partition(ln," ",tks);
-        assert(tks.size() == 3);
-        size_t t1 = tm->getTaskID(tks[0]);
-        size_t t2 = tm->getTaskID(tks[2]);
-        assert(t1 && t2);
-        cm->defineRelation(t1,t2);
-        assert(cm->CommRelation_Exists(t1,t2));
+      if (!t2) {
+        std::stringstream ss;
+        ss << "configuration error: scale " << relation.scale2
+           << " doesn't exist.";
+        throw amsi_error{ss.str()};
       }
-      else
-        parsing = false;
-    }
-  }
-  static void parseAllocator(std::istream & fl)
-  {
-    std::string ln;
-    std::vector<std::string> tks;
-    bool parsing = true;
-    while(parsing)
-    {
-      std::streampos ln_bgn = fl.tellg();
-      if(std::getline(fl,ln))
-      {
-        if(pystring::startswith(ln,std::string("@")))
-        {
-          fl.seekg(ln_bgn);
-          break;
-        }
-        //pystring::partition(ln," ",tks);
-        pystring::split(ln, tks);
-        // do nothing this is the default allocator
-        if (tks[0] == "ExclusiveProcess")
-        {
-        }
-        else if (tks[0] == "Strided")
-        {
-          assert(tks.size() == 3);
-          int size = 0;
-          int stride = std::atoi(tks[2].c_str());
-          size_t strided_task_id = tm->getTaskID(tks[1], false);
-          assert(strided_task_id);
-          MPI_Comm_size(AMSI_COMM_WORLD, &size);
-          ProcessAllocator * allocator = static_cast<ProcessAllocator*>(new 
-              StridedProcessAllocator(size, stride, strided_task_id));
-          tm->setProcessAllocator(allocator);
-        }
-        else
-        {
-          std::cerr<<"The Process allocator " << tks[0] <<" is not a valid option.\n";
-          std::cerr<<"Please use ExclusiveProcess with no arguments, or Strided with the stride task name and a stide size argument\n";
-          MPI_Abort(AMSI_COMM_WORLD, 1);
-        }
-      }
-      else
-        parsing = false;
-    }
-  }
-  void configureMultiscaleFromFile(const std::string & filename)
-  {
-    std::fstream file(filename.c_str(),std::fstream::in);
-    assert(file.is_open());
-    tm = new TaskManager(AMSI_COMM_WORLD);
-    cm = new CommunicationManager();
-    std::string line;
-    while(std::getline(file,line))
-    {
-      line = pystring::strip(line);
-      if(pystring::startswith(line,std::string("@")))
-      {
-        int sctn = parseMultiscaleSection(line);
-        switch(sctn)
-        {
-        case allocator:
-          parseAllocator(file);
-          break;
-        case scales:
-          parseScales(file);
-          break;
-        case relations:
-          parseRelations(file);
-          break;
-        }
+      communication_manager_->defineRelation(t1, t2);
+      if (!communication_manager_->CommRelation_Exists(t1, t2)) {
+        std::stringstream ss;
+        ss << "configuration error: relation for " << relation.scale1 << " "
+           << relation.scale2 << " not created";
+        throw amsi_error{ss.str()};
       }
     }
-    if(!tm->lockConfiguration())
-      std::cerr << "ERROR: AMSI multiscale cannot configure with supplied file: " << filename << std::endl;
-    AMSI_COMM_SCALE = getLocal()->comm();
+    if (!options.scales.empty()) {
+      if (!task_manager_->lockConfiguration()) {
+        throw amsi_error{
+            "ERROR: AMSI multiscale cannot configure with supplied options"};
+      }
+      scale_.set(task_manager_->getLocalTask()->comm());
+      AMSI_COMM_SCALE = scale_.comm();
+    }
+    else {
+      std::cout << "WARNING: configuring analysis without any scales. This is "
+                   "most likely an error.\n";
+    }
+    // FIXME control service shouldn't be a singleton...
+    control_service_ = ControlService::Instance();
+    control_service_->SetTaskManager(task_manager_.get());
+    control_service_->SetCommunicationManager(communication_manager_.get());
   }
-  void initMultiscale(int argc, char ** argv, MPI_Comm cm)
+  Multiscale::~Multiscale() = default;
+  TaskManager* Multiscale::getScaleManager() const
   {
-    initUtil(argc,argv,cm);
-    if(configuredFromFile())
-      configureMultiscaleFromFile(getOptionsFilename());
-    ControlService * cs = ControlService::Instance();
-    cs->SetTaskManager(amsi::tm);
-    cs->SetCommunicationManager(amsi::cm);
+    return task_manager_.get();
   }
-  void freeMultiscale()
+  CommunicationManager* Multiscale::getMultiscaleManager() const
   {
-    freeUtil();
+    return communication_manager_.get();
   }
-}
+  ControlService* Multiscale::getControlService() const
+  {
+    return control_service_;
+  }
+  const MPIComm& Multiscale::getCommScale() const { return scale_; }
+  const MPIComm& Multiscale::getCommWorld() const { return mpi_.getWorld(); }
+  const MPIComm& Multiscale::getCommSelf() const { return mpi_.getSelf(); }
+  const MPI& Multiscale::getMPI() const { return mpi_; }
+}  // namespace amsi

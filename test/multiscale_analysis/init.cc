@@ -1,11 +1,11 @@
-#include "test.h"
-#include "amsiMultiscale.h"
+#include "amsi.h"
 #include "amsiAnalysis.h"
-int main(int argc, char * argv[])
+#include "amsiConfigurationOptions.h"
+#include "test.h"
+int main(int argc, char* argv[])
 {
-  amsi::initMultiscale(argc,argv,MPI_COMM_WORLD);
-  amsi::initAnalysis(argc,argv,MPI_COMM_WORLD);
-  amsi::freeAnalysis();
-  amsi::freeMultiscale();
+  amsi::AnalysisOptions analysis_options = {.use_petsc = true};
+  amsi::AmsiOptions options{.analysis = analysis_options};
+  [[maybe_unused]] amsi::Amsi amsi{options, argc, argv};
   return 0;
 }

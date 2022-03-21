@@ -4,27 +4,196 @@
 #include <cassert>
 #include <cstring> //memcpy
 #include <iostream>
+#include <PCU.h>
+#include "amsiExceptions.h"
+[[deprecated(
+    "use world communicator from MPI object")]]
 extern MPI_Comm AMSI_COMM_WORLD;
+[[deprecated("use scale communicator from Multiscale object")]]
 extern MPI_Comm AMSI_COMM_SCALE;
-namespace amsi
-{
+namespace amsi {
+  class MPIComm {
+    public:
+    MPIComm() : cm_(MPI_COMM_NULL), rank_(-1), size_(-1){};
+    explicit MPIComm(MPI_Comm cm)
+    {
+      MPI_Comm_dup(cm, &cm_);
+      MPI_Comm_rank(cm_, &rank_);
+      MPI_Comm_size(cm_, &size_);
+    }
+    MPIComm(const MPIComm& other)
+    {
+      MPI_Comm_dup(other.cm_, &cm_);
+      rank_ = other.rank_;
+      size_ = other.size_;
+    }
+    [[nodiscard]] MPIComm(MPIComm&& other) noexcept
+    {
+      std::swap(cm_, other.cm_);
+      std::swap(rank_, other.rank_);
+      std::swap(size_, other.size_);
+    }
+    MPIComm& operator=(const MPIComm& other)
+    {
+      if (this != &other) {
+        MPI_Comm_dup(other.cm_, &cm_);
+        rank_ = other.rank_;
+        size_ = other.size_;
+      }
+      return *this;
+    }
+    MPIComm& operator=(MPIComm&& other) noexcept
+    {
+      std::swap(cm_, other.cm_);
+      std::swap(rank_, other.rank_);
+      std::swap(size_, other.size_);
+      return *this;
+    }
+    /** takes ownership of the communicator! */
+    void set(MPI_Comm cm)
+    {
+      if(cm != cm_ && cm!=MPI_COMM_NULL)
+      {
+        if(cm_ != MPI_COMM_NULL) {
+
+          MPI_Comm_free(&cm_);
+        }
+          cm_ = cm;
+          MPI_Comm_rank(cm, &rank_);
+          MPI_Comm_size(cm, &size_);
+      }
+      else {
+        throw amsi_error{"Invalid communicator"};
+      }
+    }
+    ~MPIComm()
+    {
+      if (cm_ != MPI_COMM_NULL) {
+        MPI_Comm_free(&cm_);
+      }
+    }
+    [[nodiscard]] int rank() const noexcept { return rank_; }
+    [[nodiscard]] int size() const noexcept { return size_; }
+    [[nodiscard]] MPI_Comm comm() const noexcept { return cm_; }
+
+
+
+    private:
+    MPI_Comm cm_;
+    int rank_;
+    int size_;
+  };
+  class MPI {
+    private:
+    class MPIScopeGuard {
+      public:
+      [[nodiscard]] MPIScopeGuard(int argc, char** argv)
+      {
+        int initialized;
+        // should check the error here
+        MPI_Initialized(&initialized);
+        if (!initialized) {
+          initialized_here_ = true;
+          MPI_Init(&argc, &argv);
+        }
+      };
+      MPIScopeGuard(const MPIScopeGuard&) = delete;
+      MPIScopeGuard(MPIScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+      }
+      MPIScopeGuard& operator=(const MPIScopeGuard& other) = delete;
+      MPIScopeGuard& operator=(MPIScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+        return *this;
+      }
+      ~MPIScopeGuard()
+      {
+        if (initialized_here_) {
+          int finalized;
+          MPI_Finalized(&finalized);
+          if (finalized) {
+            std::cerr << "WARNING: MPI finalize called elsewhere despite this "
+                         "scope guard being responsible for MPI finalization.";
+          }
+          MPI_Finalize();
+        }
+      }
+      // need copy move assignment/constructor
+      private:
+      bool initialized_here_{false};
+    };
+    class PCUScopeGuard {
+      public:
+      [[nodiscard]] PCUScopeGuard()
+      {
+        if (!PCU_Comm_Initialized()) {
+          initialized_here_ = true;
+          PCU_Comm_Init();
+        }
+      }
+      PCUScopeGuard(const PCUScopeGuard&) = delete;
+      PCUScopeGuard(PCUScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+      }
+      PCUScopeGuard& operator=(const PCUScopeGuard& other) = delete;
+      PCUScopeGuard& operator=(PCUScopeGuard&& other) noexcept
+      {
+        std::swap(initialized_here_, other.initialized_here_);
+        return *this;
+      }
+      ~PCUScopeGuard()
+      {
+        if (initialized_here_) {
+          PCU_Comm_Free();
+        }
+      }
+
+      private:
+      bool initialized_here_{false};
+    };
+
+    public:
+    // critical that environment_ is initialized first because that has the
+    // call to MPI_Init
+    MPI(int argc, char** argv, MPI_Comm cm = MPI_COMM_WORLD)
+        : environment_{argc, argv}, self_{cm}, world_{cm}
+    {
+      AMSI_COMM_WORLD = world_.comm();
+      // this seems to have been assumed to always exist in the analysis codes
+      // even when multiscale run isn't happening. Therefore, we set to the
+      // world communicator here. The multiscale class resets it to the sub
+      // communicator. the AMSI_COMM variables are depreciated and eventually we
+      // won't have this insanity
+      AMSI_COMM_SCALE = world_.comm();
+    }
+    [[nodiscard]] const MPIComm& getSelf() const noexcept { return self_; }
+    [[nodiscard]] const MPIComm& getWorld() const noexcept { return world_; }
+
+    private:
+    [[maybe_unused]] MPIScopeGuard environment_;
+    [[maybe_unused]] PCUScopeGuard pcu_environment_;
+    MPIComm self_;
+    MPIComm world_;
+  };
   template <typename T>
-    MPI_Datatype mpi_type();
+  MPI_Datatype mpi_type();
   template <typename T>
-    MPI_Datatype mpi_type(T t);
-  template<typename T>
-    T comm_sum(T v, MPI_Comm cm = AMSI_COMM_SCALE)
+  MPI_Datatype mpi_type(T t);
+  template <typename T>
+  T comm_sum(T v, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     T sm = 0;
     MPI_Datatype tp = mpi_type(v);
     size_t sz = 1;
-    if(tp == MPI_BYTE)
-      sz *= sizeof(T);
-    MPI_Allreduce(&v,&sm,sz,mpi_type<T>(),MPI_SUM,cm);
+    if (tp == MPI_BYTE) sz *= sizeof(T);
+    MPI_Allreduce(&v, &sm, sz, mpi_type<T>(), MPI_SUM, cm);
     return sm;
   }
   template <typename T>
-    T comm_scan(T v, MPI_Op op, MPI_Comm cm = AMSI_COMM_SCALE)
+  T comm_scan(T v, MPI_Op op, MPI_Comm cm = AMSI_COMM_SCALE)
   {
     T scn = 0;
     MPI_Scan(&v,&scn,1,mpi_type<T>(),op,cm);

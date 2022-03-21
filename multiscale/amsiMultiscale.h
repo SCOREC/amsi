@@ -1,20 +1,32 @@
 #ifndef AMSI_META_H_
 #define AMSI_META_H_
-#include "amsiCommunicationManager.h"
-#include "amsiControlService.h"
-#include "amsiMigration.h"
-#include "amsiTaskManager.h"
 #include <amsiEnumOps.h>
+#include <sstream>
 #include <string>
-namespace amsi
-{
-  #define MULTISCALE_CONFIG_SECTIONS(OP) OP(scales), OP(relations), OP(allocator), OP(num_multiscale_config_sections)
-  enum MultiscaleConfigSections{MULTISCALE_CONFIG_SECTIONS(MAKE_ENUM_OP)};
-  const char * const MultiscaleConfigSectionStrings[] = {MULTISCALE_CONFIG_SECTIONS(MAKE_STRING_OP)};
-  void initMultiscale(int argc, char ** argv, MPI_Comm cm);
-  void freeMultiscale();
-  TaskManager * getScaleManager();
-  CommunicationManager * getMultiscaleManager();
-  extern bool from_file;
-}
+#include "amsiConfigurationOptions.h"
+#include "amsiMPI.h"
+namespace amsi {
+  class ControlService;
+  class TaskManager;
+  class CommunicationManager;
+  struct Multiscale {
+    Multiscale(const MultiscaleOptions& options, const MPI& mpi);
+    [[nodiscard]] TaskManager* getScaleManager() const;
+    [[nodiscard]] CommunicationManager* getMultiscaleManager() const;
+    ControlService* getControlService() const;
+    // destructor in c++ file so we can unique_ptr with incomplete types.
+    ~Multiscale();
+    [[nodiscard]] const MPIComm& getCommScale() const;
+    [[nodiscard]] const MPIComm& getCommWorld() const;
+    [[nodiscard]] const MPIComm& getCommSelf() const;
+    [[nodiscard]] const MPI& getMPI() const;
+
+    private:
+    std::unique_ptr<TaskManager> task_manager_;
+    std::unique_ptr<CommunicationManager> communication_manager_;
+    ControlService* control_service_;
+    const MPI& mpi_;
+    MPIComm scale_;
+  };
+}  // namespace amsi
 #endif

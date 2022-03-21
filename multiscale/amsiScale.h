@@ -38,7 +38,7 @@ namespace amsi
     //  to return bool if the resign cannot/did not succeed
     bool validResign(RankSet * ps, MPI_Comm cm = AMSI_COMM_WORLD);
     void resignRanks(RankSet * ps, MPI_Comm cm = AMSI_COMM_WORLD);
-    // collective on current rank set in amsi comm world
+    // collective on current rank set in amsi comm getCommWorld
     void synchronize() { reinitComm(); }
     const RankSet * getRankSet() const {return rnks;}
     MPI_Comm getComm()

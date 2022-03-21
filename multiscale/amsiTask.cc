@@ -1,8 +1,7 @@
 #include "amsiTask.h"
 #include "amsiDataDistribution.h"
 #include "amsiProcessSet.h"
-#include <cassert>
-#include <iostream>
+#include "amsiMultiscale.h"
 #ifdef ZOLTAN
 #include <zoltan.h>
 #endif
@@ -118,7 +117,7 @@ namespace amsi
   /// @brief Get a DataDistribution's identifier from the unique name
   /// @param nm A string uniquely identifying the DataDistribution
   /// @return size_t Identifier for the named DataDistribution
-  size_t Task::getDD_ID(const std::string & nm)
+  size_t Task::getDD_ID(const std::string &nm)
   {
     size_t result = id_gen(nm);
     return result;
@@ -126,41 +125,42 @@ namespace amsi
   /// @brief Get the global rank of a local rank
   /// @param r The local rank to translate to global rank
   /// @note May need to relocate this
-  int Task::localToGlobalRank(int r)
+  int Task::localToGlobalRank(int r) { return (*proc)[r]; }
+  int Task::size() { return proc->size(); }
+  int Task::execute(int &argc, char **&argv, Multiscale &multiscale)
   {
-    return (*proc)[r];
+    int result = 0;
+    // don't execute of the global rank is not valid
+    if (localToGlobalRank(localRank()) >= 0) {
+      MPI_Comm cm;
+      MPI_Comm_dup(PCU_Get_Comm(), &cm);
+      PCU_Switch_Comm(task_comm);
+      result += (*exec)(argc, argv, task_comm, multiscale);
+      PCU_Switch_Comm(cm);
+    }
+    return result;
   }
-  int Task::size()
+  DataDistribution *createDataDistribution(Task *tsk, const std::string &nm)
   {
-    return proc->size();
-  }
-  DataDistribution * createDataDistribution(Task * tsk, const std::string & nm)
-  {
-    DataDistribution * dd = NULL;
+    DataDistribution *dd = NULL;
     int sz = tsk->size();
     int rnk = tsk->localRank();
-#   ifndef ZOLTAN
-    dd = new DataDistribution(sz,rnk,true);
-#   else
+#ifndef ZOLTAN
+    dd = new DataDistribution(sz, rnk, true);
+#else
     MPI_Comm cm = tsk->comm();
-    if(!sz)
-      dd = new DataDistribution(sz,rnk);
-    else
-    {
-      Zoltan_Struct * zs = Zoltan_Create(cm);
-      dd = new DataDistribution(sz,rnk,true,zs);
-      size_t s1 = sizeof(DataDistribution*);
+    if (!sz)
+      dd = new DataDistribution(sz, rnk);
+    else {
+      Zoltan_Struct *zs = Zoltan_Create(cm);
+      dd = new DataDistribution(sz, rnk, true, zs);
+      size_t s1 = sizeof(DataDistribution *);
       size_t s2 = sizeof(int);
-      void * buffer = (void*) new char[s1+s2];
-      memcpy(buffer,&dd,s1);
-      memcpy((void*)(((size_t)buffer)+s1),&rnk,s2);
-      Zoltan_Set_Fn(zs,
-                    ZOLTAN_NUM_OBJ_FN_TYPE,
-                    (void(*)()) &DD_get,
-                    buffer);
-      Zoltan_Set_Fn(zs,
-                    ZOLTAN_OBJ_LIST_FN_TYPE,
-                    (void(*)()) &DD_describe,
+      void *buffer = (void *)new char[s1 + s2];
+      memcpy(buffer, &dd, s1);
+      memcpy((void *)(((size_t)buffer) + s1), &rnk, s2);
+      Zoltan_Set_Fn(zs, ZOLTAN_NUM_OBJ_FN_TYPE, (void (*)()) & DD_get, buffer);
+      Zoltan_Set_Fn(zs, ZOLTAN_OBJ_LIST_FN_TYPE, (void (*)()) & DD_describe,
                     buffer);
     }
 #   endif

@@ -80,7 +80,7 @@ namespace amsi
     insertFrom(rslt,rnks,rnks+sz);
     delete [] rnks;
   }
-  // collective on the rankset in amsi comm world
+  // collective on the rankset in amsi comm getCommWorld
   // requires the mpi3 standard
   MPI_Comm makeComm(RankSet * rs)
   {

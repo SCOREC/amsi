@@ -19,27 +19,29 @@ struct Sigma
       return result;
     }
 };
-int task1_run(int &, char **&, MPI_Comm cm)
+int task1_run(int&, char**&, MPI_Comm cm, amsi::Multiscale& multiscale)
 {
   int failed = 0;
   // Retrieve the ControlService
-  ControlService * cs = ControlService::Instance();
-  TaskManager * tm = cs->GetTaskManager();
-  Task * lt = tm->getLocalTask();
+  auto* cs = multiscale.getControlService();
+  TaskManager* tm = cs->GetTaskManager();
+  Task* lt = tm->getLocalTask();
   int local_rank = lt->localRank();
-  int local_data_count = 6+local_rank*2;
-  // Create a DataDistribution for this task, set the local data count, and assembl
-  DataDistribution * dd = createDataDistribution(lt,"micro_init");
+  int local_data_count = 6 + local_rank * 2;
+  // Create a DataDistribution for this task, set the local data count, and
+  // assembl
+  DataDistribution* dd = createDataDistribution(lt, "micro_init");
   (*dd) = local_data_count;
-  Assemble(dd,cm);
+  Assemble(dd, cm);
   // Create a CommPattern to communicate from this task to the other
-  size_t pattern_id = cs->CreateCommPattern("micro_init","macro","micro");
-  failed += test_neq(".CreateCommPattern()",static_cast<size_t>(0),pattern_id);
+  size_t pattern_id = cs->CreateCommPattern("micro_init", "macro", "micro");
+  failed +=
+      test_neq(".CreateCommPattern()", static_cast<size_t>(0), pattern_id);
   // Reconcile the CommPattern with the other task
   cs->CommPattern_Reconcile(pattern_id);
   // Create data to communicate
   std::vector<Sigma> data(local_data_count);
-  for(int ii = 0; ii < local_data_count; ii++){
+  for (int ii = 0; ii < local_data_count; ii++) {
     for(int jj=0;jj<vsize;jj++){
       data[ii].v[jj] = 0.5*(local_rank+1) + ii + jj;
       //data[ii].v[5] = data[ii].v[4] = data[ii].v[3] = data[ii].v[2] = data[ii].v[1] = data[ii].v[0] = 0.5;
@@ -84,41 +86,42 @@ int task1_run(int &, char **&, MPI_Comm cm)
       for(int jj=0;jj<vsize;jj++){
         std::cout<<"  "<<data[ii].v[jj];
       }
-      std::cout<<std::endl;
+      std::cout << std::endl;
     }
-    std::cout<<"result_data:"<<std::endl;
-    for(unsigned ii=0;ii<result_data.size();ii++){
-      for(int jj=0;jj<vsize;jj++){
-        std::cout<<"  "<<result_data[ii].v[jj];
+    std::cout << "result_data:" << std::endl;
+    for (unsigned ii = 0; ii < result_data.size(); ii++) {
+      for (int jj = 0; jj < vsize; jj++) {
+        std::cout << "  " << result_data[ii].v[jj];
       }
-      std::cout<<std::endl;
+      std::cout << std::endl;
     }
   }
-  failed += test("2-Way Communication",data.size(),result_data.size());
-  //std::cout << "Task 1 rank " << local_rank << " has recv'd all data" << std::endl;
+  failed += test("2-Way Communication", data.size(), result_data.size());
+  // std::cout << "Task 1 rank " << local_rank << " has recv'd all data" <<
+  // std::endl;
   return failed;
 }
-int task2_run(int &, char **&, MPI_Comm cm)
+int task2_run(int&, char**&, MPI_Comm cm, amsi::Multiscale& multiscale)
 {
   int failed = 0;
-  // Retrieve the ControlService
-  ControlService * cs = ControlService::Instance();
-  TaskManager * tm = cs->GetTaskManager();
-  Task * lt = tm->getLocalTask();
-  //int local_rank = lt->localRank();
-  // Create a placeholder CommPattern to reconcile into
-  size_t pattern_id = cs->RecvCommPattern("micro_init","macro","","micro");
-  failed += test_neq(".RecvCommPattern",static_cast<size_t>(0),pattern_id);
+  auto* cs = multiscale.getControlService();
+  auto* tm = multiscale.getScaleManager();
+  Task* lt = tm->getLocalTask();
+  // int local_rank = lt->localRank();
+  //  Create a placeholder CommPattern to reconcile into
+  size_t pattern_id = cs->RecvCommPattern("micro_init", "macro", "", "micro");
+  failed += test_neq(".RecvCommPattern", static_cast<size_t>(0), pattern_id);
   // Reconcile the CommPattern from the other task
   cs->CommPattern_Reconcile(pattern_id);
   // Recv data
   std::vector<Sigma> data;
-  cs->Communicate(pattern_id,data,sigma_type);
-  //invert the comm mapping for use as the commpattern for the t2->t1 relation
-  DataDistribution * dd = createDataDistribution(lt,"micro_results");
+  cs->Communicate(pattern_id, data, sigma_type);
+  // invert the comm mapping for use as the commpattern for the t2->t1 relation
+  DataDistribution* dd = createDataDistribution(lt, "micro_results");
   (*dd) = data.size();
-  Assemble(dd,cm);
-  // invert the communication pattern used to get in the t1->t2 "send_to_task2" relation
+  Assemble(dd, cm);
+  // invert the communication pattern used to get in the t1->t2 "send_to_task2"
+  // relation
   size_t send_pattern_id = cs->CommPattern_UseInverted(pattern_id,"micro_results","micro","macro");
   //std::cout << "recv pattern id is " << pattern_id << " send pattern id is " << send_pattern_id << std::endl;
   // assemble the pieces of the inverted pattern so each process has the full pattern (currently required for reconciliation)
@@ -131,25 +134,29 @@ int task2_run(int &, char **&, MPI_Comm cm)
 int main(int argc, char * argv[])
 {
   int failed = 0;
-  amsi::initMultiscale(argc,argv, MPI_COMM_WORLD);
+  amsi::MPI mpi{argc, argv};
+  amsi::MultiscaleOptions options{
+      .scales = {{"macro", 3}, {"micro", 5}},
+      .relations = {{"macro", "micro"}, {"micro", "macro"}}};
+  amsi::Multiscale multiscale(options, mpi);
   std::cout << "Initializing test object(s):" << std::endl;
   // create an MPI datatypes used in the simulation as coupling data
-  MPI_Type_contiguous(vsize,MPI_DOUBLE,&sigma_type);
+  MPI_Type_contiguous(vsize, MPI_DOUBLE, &sigma_type);
   // Need to commit this new type
   MPI_Type_commit(&sigma_type);
   // find size of sigma_type
   int sigmaTypeSize;
-  MPI_Type_size(sigma_type,&sigmaTypeSize);
-  Task * t1 = amsi::getScaleManager()->getTask("macro");
-  Task * t2 = amsi::getScaleManager()->getTask("micro");
-  ControlService * cs = ControlService::Instance();
-  failed += test_neq("ControlService::Instance()",static_cast<ControlService*>(NULL),cs);
+  MPI_Type_size(sigma_type, &sigmaTypeSize);
+  Task* t1 = multiscale.getScaleManager()->getTask("macro");
+  Task* t2 = multiscale.getScaleManager()->getTask("micro");
+  auto* cs = multiscale.getControlService();
+  failed += test_neq("ControlService::Instance()",
+                     static_cast<ControlService*>(NULL), cs);
   // Set the execution functions for the tasks
   t1->setExecutionFunction(&task1_run);
   t2->setExecutionFunction(&task2_run);
   // Begin execution
-  failed += cs->Execute(argc,argv);
-  test("Number failed",0,failed);
-  amsi::freeMultiscale();
+  failed += cs->Execute(argc, argv, multiscale);
+  test("Number failed", 0, failed);
   return failed;
 }
