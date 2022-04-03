@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include "amsiConfigurationOptions.h"
+#include <memory>
 #include "amsiMPI.h"
 namespace amsi {
   class ControlService;
