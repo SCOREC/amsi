@@ -76,7 +76,7 @@ namespace amsi {
   }
   AmsiOptions readAmsiOptions(std::string_view filename)
   {
-    std::ifstream yaml{filename};
+    std::ifstream yaml{std::string(filename)};
     if (!yaml.is_open()) {
       std::stringstream ss;
       ss << "cannot open amsi options file " << filename;

@@ -1,5 +1,6 @@
 #ifndef AMSI_META_H_
 #define AMSI_META_H_
+#include <memory>
 #include <amsiEnumOps.h>
 #include <sstream>
 #include <string>
