@@ -46,6 +46,9 @@ namespace amsi
     int GlobalDOFs() { return globalNumEqs; }
     int LocalDOFs() { return vec_high - vec_low; }
     int LocalOffset() { return vec_low; }
+    Mat GetMatrix() { return A; }
+    Vec GetVector() { return b_i; }
+    Vec GetSolutionVector() { return x; }
     ~PetscLAS();
   private:
     bool isVectorAssembled();
