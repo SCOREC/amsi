@@ -23,6 +23,9 @@ namespace amsi {
     }
     MPIComm(const MPIComm& other)
     {
+      if(cm_ != MPI_COMM_NULL) {
+        MPI_Comm_free(&cm_);
+      }
       MPI_Comm_dup(other.cm_, &cm_);
       rank_ = other.rank_;
       size_ = other.size_;
@@ -36,6 +39,9 @@ namespace amsi {
     MPIComm& operator=(const MPIComm& other)
     {
       if (this != &other) {
+        if(cm_ != MPI_COMM_NULL) {
+          MPI_Comm_free(&cm_);
+        }
         MPI_Comm_dup(other.cm_, &cm_);
         rank_ = other.rank_;
         size_ = other.size_;
