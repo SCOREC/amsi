@@ -5,7 +5,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-#include "amsiAnalysis.h"
 #include "amsiCommunicationManager.h"
 #include "amsiConfigurationOptions.h"
 #include "amsiControlService.h"
