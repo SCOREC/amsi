@@ -46,13 +46,11 @@ add_subdirectory(util)
 message(STATUS "Configuring multiscale")
 add_subdirectory(multiscale)
 
-message(STATUS "Configuring analysis")
-add_subdirectory(analysis)
 
 find_package(MPI REQUIRED)
 # top level amsi library. Eventually this should get reorganized into a src/ folder
 add_library(amsi_amsi amsi.cc)
-target_link_libraries(amsi_amsi PUBLIC amsi::util amsi::multiscale amsi::analysis MPI::MPI_CXX)
+target_link_libraries(amsi_amsi PUBLIC amsi::util amsi::multiscale MPI::MPI_CXX)
 add_library(amsi::amsi ALIAS amsi_amsi)
 SET(AMSI_PUBLIC_HEADERS amsi.h util/amsiConfigurationOptions.h)
 set_target_properties(amsi_amsi PROPERTIES EXPORT_NAME amsi PUBLIC_HEADER "${AMSI_PUBLIC_HEADERS}")
